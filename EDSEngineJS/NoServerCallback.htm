@@ -1,0 +1,342 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+    <title>EDSEngine Web Implementation (No Server Callbacks)</title>
+    <script src="KnowledgeBase.js" type="text/javascript"></script>    
+    <script src="ROMTree.js" type="text/javascript"></script>    
+    <script type="text/javascript">
+        function btnTest_onclick()
+        {
+            clear_results();        
+            var filename = "test_project.xml";
+            var knowledge = new KnowledgeBase(filename);
+            if (knowledge.IsOpen() == false)
+            {
+                write_result("FAILURE: Could not open rules xml file: " + filename);
+                return false;
+            }
+            else
+            {
+                write_result("OK: File opened");
+            }
+                        
+            var cnt = knowledge.TableCount();
+            if (cnt == 3)
+            {
+                write_result("OK: 3 Tables loaded");
+            }
+            else
+            {
+                write_result("FAILURE: Not all tables loaded: " + cnt.toString());
+                return false;
+            }
+            
+            var tableName = "testtable1";
+            write_result("Loading attr output names for " + tableName);
+            var allOutputNames = knowledge.GetOutputAttrs(tableName);
+            for (var i = 0; i < allOutputNames.length; i++)
+	        {
+		        write_result(allOutputNames[i]);
+	        }
+	        if (allOutputNames.length == 2 && allOutputNames[0] == "anotherOutput" && allOutputNames[1] == "outputAttr1")
+	        {
+		        write_result("OK");
+	        }
+	        else
+	        {
+		        write_result("FAILURE: Did not load all the output names");
+		        return false;
+	        }
+	        
+	        write_result("Loading attr input names for " + tableName);
+	        var allInputNames = knowledge.GetInputAttrs(tableName);
+	        for (var i = 0; i < allInputNames.length; i++)
+	        {
+		        write_result(allInputNames[i]);
+	        }
+	        if (allInputNames.length == 2 && allInputNames[0] == "inputAttr1" && allInputNames[1] == "inputAttr2")
+	        {
+		        write_result("OK");
+	        }
+	        else
+	        {
+		        write_result("FAILURE: Did not load all the input names");
+		        return false;
+	        }
+	        
+	        write_result("Loading dependency names for " + tableName);
+	        var allDepNames = knowledge.GetInputDependencies(tableName);
+	        for (var i = 0; i < allDepNames.length; i++)
+	        {
+		        write_result(allDepNames[i]);
+	        }
+	        if (allDepNames.length == 3 && allDepNames[0] == "inputAttr1" && 
+	            allDepNames[1] == "inputAttr2" &&
+	            allDepNames[2] == "outsideAttr1")
+	        {
+		        write_result("OK");
+	        }
+	        else
+	        {
+		        write_result("FAILURE: Did not load all the dependency names");
+		        return false;
+	        }
+	        
+	        var outputAttr = "outputAttr1";
+	        write_result("Getting all possible output values for " + outputAttr);
+	        var allOutputs = knowledge.GetAllPossibleOutputs(tableName, outputAttr);
+	        for (var i = 0; i < allOutputs.length; i++)
+	        {
+		        write_result(allOutputs[i]);
+	        }
+	        if (allOutputs.length == 7 && 
+	            allOutputs[0] == "1" && 
+	            allOutputs[1] == "2" &&
+	            allOutputs[2] == "get(outsideAttr1) with concat" &&
+	            allOutputs[3] == "4" &&
+	            allOutputs[4] == "5" &&
+	            allOutputs[5] == "py(get(outsideAttr1) + 2)" &&
+	            allOutputs[6] == "js(get(outsideAttr1) + 2)")
+	        {
+		        write_result("OK");
+	        }
+	        else
+	        {
+		        write_result("FAILURE: Did not load all the possible output values");
+		        return false;
+	        }
+	        
+	        //testing table evaluation
+	        write_result("testing evaluation of testtable1 with inputAttr1 = 'C', get first only");
+	        knowledge.SetInputValue("inputAttr1", "C");
+	        var results2 = knowledge.EvaluateTable(tableName, false);
+	        if (ArraySize(results2) == 2 && results2["outputAttr1"].length == 1 &&
+	            results2["outputAttr1"][0] == "2")
+	        {
+	            write_result("OK: " + results2["outputAttr1"][0]);
+	        }
+	        else
+	        {
+	            write_result("FAILURE: Did not get proper eval result");
+		        return false;
+	        }
+	        
+	        write_result("testing evaluation of testtable1 with inputAttr1 = 'C', get all");
+	        knowledge.SetInputValue("inputAttr1", "C");
+	        var results = knowledge.EvaluateTable(tableName, true);
+	        if (ArraySize(results) == 2 && results["outputAttr1"].length == 3 &&
+	            results["outputAttr1"][0] == "2" &&
+	            results["outputAttr1"][1] == "4" &&
+	            results["outputAttr1"][2] == "5")
+	        {
+	            write_result("OK: " + results["outputAttr1"][0] + "\n" + 
+	            results["outputAttr1"][1] + "\n" +
+	            results["outputAttr1"][2]);
+	        }
+	        else
+	        {
+	            write_result("FAILURE: Did not get proper eval result");
+		        return false;
+	        }
+	        
+	        write_result("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 10, get all");
+	        knowledge.SetInputValue("inputAttr1", "C");
+	        knowledge.SetInputValue("inputAttr2", "10");
+	        var results3 = knowledge.EvaluateTable(tableName, true);
+	        if (ArraySize(results3) == 2 && results3["outputAttr1"].length == 4 &&
+	            results3["outputAttr1"][0] == "2" &&
+	            results3["outputAttr1"][1] == " with concat" && //empty becuase we never fed it outsideAttr1
+	            results3["outputAttr1"][2] == "4" &&
+	            results3["outputAttr1"][3] == "5")
+	        {
+	            write_result("OK: " + results3["outputAttr1"][0] + "\n" + 
+	            results3["outputAttr1"][1] + "\n" +
+	            results3["outputAttr1"][2] + "\n" + 
+	            results3["outputAttr1"][3]);
+	        }
+	        else
+	        {
+	            write_result("FAILURE: Did not get proper eval result");
+		        return false;
+	        }
+	        
+	        write_result("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 78,  outsideAttr1 = 28, get all");
+	        knowledge.SetInputValue("inputAttr1", "C");
+	        knowledge.SetInputValue("inputAttr2", "78");
+	        knowledge.SetInputValue("outsideAttr1", "28");
+	        var results4 = knowledge.EvaluateTable(tableName, true);
+	        if (ArraySize(results4) == 2 && results4["outputAttr1"].length == 5 &&
+	            results4["outputAttr1"][0] == "2" &&
+	            results4["outputAttr1"][1] == "28 with concat" && //empty becuase we never fed it outsideAttr1
+	            results4["outputAttr1"][2] == "4" &&
+	            results4["outputAttr1"][3] == "5"&&
+	            results4["outputAttr1"][4] == "30")
+	        {
+	            write_result("OK: " + results4["outputAttr1"][0] + "\n" + 
+	            results4["outputAttr1"][1] + "\n" +
+	            results4["outputAttr1"][2] + "\n" + 
+	            results4["outputAttr1"][3] + "\n" + 
+	            results4["outputAttr1"][4]);
+	        }
+	        else
+	        {
+	            write_result("FAILURE: Did not get proper eval result");
+		        return false;
+	        }
+	        
+	        write_result("testing table chaining");
+	        tableName = "testtable2";
+	        var result5 = knowledge.EvaluateTableForAttr(tableName, "out1", true);
+	        if (result5.length == results4["outputAttr1"].length &&
+	            result5[0] == "2" &&
+	            result5[1] == "28 with concat" && //empty becuase we never fed it outsideAttr1
+	            result5[2] == "4" &&
+	            result5[3] == "5"&&
+	            result5[4] == "30")
+	        {
+	            write_result("OK: " + result5[0] + "\n" + 
+	            result5[1] + "\n" +
+	            result5[2] + "\n" + 
+	            result5[3] + "\n" + 
+	            result5[4]);
+	        }
+	        else
+	        {
+	            write_result("FAILURE: Did not get proper eval result on chain");
+		        return false;
+	        }
+	        
+	        write_result("testing input get(), and debug");
+	        tableName = "testtable3";
+	        knowledge.SetInputValue("someAttr", "3");
+	        knowledge.SetDebugHandler(debugHandler);
+	        var result6 = knowledge.EvaluateTableForAttr(tableName, "outputAttr1", true);
+	        if (result6.length == 1 && result6[0] == "inputAttr2: 78 is greater than someAttr: 3")           
+	        {
+	            write_result("OK: " + result6[0]);
+	        }
+	        else
+	        {
+	            write_result("FAILURE: Did not get proper eval result on get() test");
+		        return false;
+	        }
+	        
+	        write_result("testing translation of: A");
+	        var localeValue = knowledge.Localize("A", "en-US");
+	        var reverse = knowledge.DeLocalize(localeValue);
+	        write_result(localeValue + ":" + reverse);
+	        if (localeValue == "A trans" && reverse == "A")
+	            write_result("OK");
+	        else
+	            write_result("FAILURE: translation failed");            
+            	       
+            return false;
+        }
+        
+        function debugHandler(str)
+        {
+            alert(str);
+        }
+
+        function btnTest2_onclick() 
+        {
+            clear_results();
+            
+            write_result("Creating application/doc object myBaseObject");
+            var myBaseObject = new ROMTree("Test Application");
+            write_result("myBaseObject created:\n" + myBaseObject.DumpTree());
+            
+            write_result("Getting the root node");
+            var myRootNode = myBaseObject.GetRoot();
+            if (myRootNode != null)
+                write_result("Root obtained");
+            else
+            {
+                write_result("FAILURE");
+                return;
+            }
+            
+            write_result("Setting some attributes");
+            myBaseObject.SetAttribute(myRootNode, "inputAttr1", "some value of test1");
+            myBaseObject.SetAttribute(myRootNode, "inputAttr2", "some value of test2");
+	        myBaseObject.SetAttributeValue(myRootNode, "inputAttr3", "some value of test3");
+	        myBaseObject.SetAttributeValue(myRootNode, "inputAttr3", "test3a", "some sub value of attr3_a");
+	        myBaseObject.SetAttributeValue(myRootNode, "inputAttr3", "test3b", "some sub value of attr3_b");
+	        write_result("Attrs Set");
+		    
+	        write_result("Testing what we have set");
+	        write_result("inputAttr1 = " + myBaseObject.GetAttribute(myRootNode, "inputAttr1", true));
+		    
+	        write_result("Creating a child object");
+	        var childNode = myBaseObject.CreateROMObject("ChildObject");
+	        myBaseObject.AddChildROMObject(myRootNode, childNode);
+	        myBaseObject.SetAttribute(childNode, "childAttr", "some value of value");
+	        //setting a value on the Object Node
+	        myBaseObject.SetROMObjectValue(childNode, "valueTest", "myValue");
+
+	        write_result("Dump current xml state");
+	        var result = myBaseObject.DumpTree();
+	        write_result(result);
+
+	        write_result("Setting attrs to test eval, inputAttr1 = A, inputAttr2 = 1");
+	        myBaseObject.SetAttribute(myRootNode, "inputAttr1", "A");
+	        myBaseObject.SetAttribute(myRootNode, "inputAttr2", "1");
+	
+	        write_result("New xml state");
+	        result = myBaseObject.DumpTree();
+	        write_result(result);
+
+	        write_result("loading rules");
+	        if (myBaseObject.LoadRules("test_project.xml"))
+	        {
+		        write_result("...loaded");
+		        //deubg
+                myBaseObject.SetRulesDebugHandler(debugHandler);
+		        write_result("Evaluating table testtable1");
+		        var res = myBaseObject.EvaluateTableForAttr(myRootNode, "testtable1", "outputAttr1", true);
+		        for (var i = 0; i < res.length; i++)
+		        {
+			        write_result(res[i]);
+		        }
+		        write_result("Evaluation complete");
+
+		        write_result("Evaluating table testtable2: out1");
+		        var res2 = myBaseObject.EvaluateTableForAttr(myRootNode, "testtable2", "out1", true);
+		        for (var i = 0; i < res2.length; i++)
+		        {
+			        write_result(res2[i]);
+		        }
+		        write_result("Evaluation complete");
+	        }
+	        else
+	        {
+		        write_result("Could not load rules");
+	        }
+		    
+		}               
+        
+        
+        function write_result(res)
+        {
+            var textArea = document.getElementById("resultsText");
+            textArea.value += res + "\n";
+        }
+
+        function clear_results() 
+        {
+            var textArea = document.getElementById("resultsText");
+            textArea.value = "";
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <button id="btnTest" onclick="btnTest_onclick()" type="button" >Test EDSEngineJS</button>
+        <button id="btnTest2" onclick="btnTest2_onclick()" type="button" >Test ROMJS</button>
+    </div>
+    <div>
+        <textarea id="resultsText" cols="100" rows="100" ></textarea>
+    </div>
+</body>
+</html>

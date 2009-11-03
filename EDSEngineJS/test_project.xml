@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables debug="false" connection="localhost:3000">
+  <Table name="testtable1">
+    <Inputs>
+      <Attr>inputAttr1</Attr>
+      <Value id="3,4" operation="1">A|Z</Value>
+      <Value id="5" operation="1">C</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Inputs>
+      <Attr>inputAttr2</Attr>
+      <Value id="6" operation="1">1</Value>
+      <Value/>
+      <Value id="7" operation="16">9</Value>
+      <Value/>
+      <Value/>
+      <Value id="8" operation="64">50,60</Value>
+      <Value id="9" operation="64">70,80</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>anotherOutput</Attr>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>outputAttr1</Attr>
+      <Value id="6,10" operation="1">1|2</Value>
+      <Value id="10" operation="1">2</Value>
+      <Value id="11" operation="2049">get(outsideAttr1) with concat</Value>
+      <Value id="12" operation="1">4</Value>
+      <Value id="13" operation="1">5</Value>
+      <Value id="14" operation="3073">py(get(outsideAttr1) + 2)</Value>
+      <Value id="15" operation="10241">js(get(outsideAttr1) + 2)</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <FormulaInput>outsideAttr1</FormulaInput>
+  </Table>
+  <Table name="testtable2">
+    <Inputs>
+      <Attr>in1</Attr>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Inputs>
+      <Attr>xpath(//Object[@id='ChildObject']/Attribute[@id='childAttr']/@value)</Attr>
+      <Value/>
+      <Value id="17" operation="1">some value of value</Value>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>out1</Attr>
+      <Value id="18" operation="4096">eval(testtable1, outputAttr1, true)</Value>
+      <Value id="19" operation="1">XPATH Worked</Value>
+      <Value/>
+    </Outputs>
+  </Table>
+  <Table name="testtable3">
+    <Inputs>
+      <Attr>inputAttr2</Attr>
+      <Value id="20" operation="2064">get(someAttr)</Value>
+      <Value id="20" operation="2056">get(someAttr)</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <FormulaInput>someAttr</FormulaInput>
+    <Outputs>
+      <Attr>outputAttr1</Attr>
+      <Value id="21" operation="2049">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Value>
+      <Value id="22" operation="2049">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <FormulaInput>inputAttr2</FormulaInput>
+    <FormulaInput>someAttr</FormulaInput>
+  </Table>
+  <Translations>
+    <String id="3" en-US="A trans"/>
+    <String id="4" en-US="Z trans"/>
+    <String id="19" en-US="XPATH Worked trans"/>
+  </Translations>
+  <Scripting>
+    <Python>from math import *
+from xml import *</Python>
+    <Javascript></Javascript>
+  </Scripting>
+</Tables>
