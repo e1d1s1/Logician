@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DecisionLogicProject connection="localhost:3000">
+  <DataSet debug="0">
+    <DataSetName>testtable1.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="1">
+    <DataSetName>testtable2.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>testtable3.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>GlobalORs.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>Translations.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <Compiler>
+    <Javascript></Javascript>
+    <Python>from math import *
+from xml import *</Python>
+  </Compiler>
+  <Tokens>
+    <Token id="6">1</Token>
+    <Token id="10">2</Token>
+    <Token id="12">4</Token>
+    <Token id="13">5</Token>
+    <Token id="8">50,60</Token>
+    <Token id="9">70,80</Token>
+    <Token id="7">9</Token>
+    <Token id="3">A</Token>
+    <Token id="5">C</Token>
+    <Token id="19">XPATH Worked</Token>
+    <Token id="4">Z</Token>
+    <Token id="18">eval(testtable1, outputAttr1, true)</Token>
+    <Token id="11">get(outsideAttr1) with concat</Token>
+    <Token id="20">get(someAttr)</Token>
+    <Token id="21">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Token>
+    <Token id="22">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Token>
+    <Token id="15">js(get(outsideAttr1) + 2)</Token>
+    <Token id="14">py(get(outsideAttr1) + 2)</Token>
+    <Token id="17">some value of value</Token>
+    <Token id="16">this is a comment</Token>
+  </Tokens>
+</DecisionLogicProject>
