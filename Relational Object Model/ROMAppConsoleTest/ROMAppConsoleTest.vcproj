@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Eric\My Documents\Development\Relational Object Model\ROM&quot;;&quot;C:\Documents and Settings\Eric\My Documents\Development\EDSEngine&quot;"
+				AdditionalIncludeDirectories="..\;..\..\EDSEngine"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;USE_MSXML"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -64,7 +64,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;Relational Object Model 2.lib&quot; &quot;EDSEngine.lib&quot;"
 				LinkIncremental="0"
-				AdditionalLibraryDirectories="&quot;..\Relational Object Model\Debug MSXML&quot;;&quot;..\EDSEngine\Debug MSXML&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
+				AdditionalLibraryDirectories="&quot;..\Debug MSXML&quot;;&quot;..\..\EDSEngine\Debug MSXML&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
 				IgnoreDefaultLibraryNames="MSVCRT;MSVCR90"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Eric\My Documents\Development\Relational Object Model\ROM&quot;;&quot;C:\Documents and Settings\Eric\My Documents\Development\EDSEngine&quot;"
+				AdditionalIncludeDirectories="..\;&quot;..\..\EDSEngine&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;USE_MSXML"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -140,7 +140,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;Relational Object Model 2.lib&quot; &quot;EDSEngine.lib&quot;"
 				LinkIncremental="0"
-				AdditionalLibraryDirectories="&quot;..\Relational Object Model\Release MSXML&quot;;&quot;..\EDSEngine\Release MSXML&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
+				AdditionalLibraryDirectories="&quot;..\Release MSXML&quot;;&quot;..\..\EDSEngine\Release MSXML&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -196,7 +196,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;..\Relational Object Model\ROM&quot;;..\EDSEngine;&quot;C:\Documents and Settings\Eric\My Documents\Development\libxml2-2.7.3.win32\include&quot;;&quot;C:\Documents and Settings\Eric\My Documents\Development\iconv-1.9.2.win32\include&quot;"
+				AdditionalIncludeDirectories="..\;..\..\EDSEngine;&quot;..\..\libxml2-2.7.3.win32\include&quot;;&quot;..\..\iconv-1.9.2.win32\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;USE_LIBXML"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -219,7 +219,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;Relational Object Model 2.lib&quot; &quot;EDSEngine.lib&quot;"
 				LinkIncremental="0"
-				AdditionalLibraryDirectories="&quot;..\Relational Object Model\Debug Libxml&quot;;&quot;..\EDSEngine\Debug Libxml&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
+				AdditionalLibraryDirectories="&quot;..\Debug Libxml&quot;;&quot;..\..\EDSEngine\Debug Libxml&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
 				IgnoreDefaultLibraryNames="MSVCRT;MSVCR90"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -274,7 +274,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Eric\My Documents\Development\Relational Object Model\ROM&quot;;&quot;C:\Documents and Settings\Eric\My Documents\Development\EDSEngine&quot;"
+				AdditionalIncludeDirectories="..\;..\..\EDSEngine;&quot;..\..\libxml2-2.7.3.win32\include&quot;;&quot;..\..\iconv-1.9.2.win32\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;USE_MSXML"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -295,7 +295,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;Relational Object Model 2.lib&quot; &quot;EDSEngine.lib&quot;"
 				LinkIncremental="0"
-				AdditionalLibraryDirectories="&quot;..\Relational Object Model\Release Libxml&quot;;&quot;..\EDSEngine\Release Libxml&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
+				AdditionalLibraryDirectories="&quot;..\Release Libxml&quot;;&quot;..\..\EDSEngine\Release Libxml&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
