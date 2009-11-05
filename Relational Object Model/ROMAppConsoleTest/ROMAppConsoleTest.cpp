@@ -18,17 +18,17 @@ void Log(std::wstring strLogLine)
 	string s(strLogLine.begin(), strLogLine.end());
 	std::cout<<s<<endl;
 }
-int _tmain(int argc, _TCHAR* argv[])
-{	
+int main(int argc, char* argv[])
+{
 	try
 	{
 		Log("Creating application/doc object myBaseObject");
-		ROMTree myBaseObject(L"Test Application");   
+		ROMTree myBaseObject(L"Test Application");
 		Log("yyBaseObject Created");
 
 		Log("Getting the root node");
 		Node myRootNode = myBaseObject.GetRoot();
-		Log("Root obtained");		
+		Log("Root obtained");
 
 		Log("Setting some attributes");
 		myBaseObject.SetAttribute(myRootNode, L"inputAttr1", L"some value of test1");
@@ -63,7 +63,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		Log(s2);
 
 		Log("loading rules");
-		if (myBaseObject.LoadRules(L"..\\EDSEngineTestApp\\test_project.xml"))
+		if (myBaseObject.LoadRules(L"..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.xml"))
 		{
 			Log("...loaded");
 			Log("Evaluating table testtable1");
@@ -101,7 +101,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		Log("Error");
 	}
-	
+
 	std::puts("Press any key to continue...");
 	std::getchar();
 	return 0;
