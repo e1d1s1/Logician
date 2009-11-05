@@ -435,21 +435,21 @@
 	<sstream>
 	<stdexcept>
 
-1256973735 /home/eric/Documents/Development/EDSEngine/KnowledgeBase.h
+1257253643 /home/eric/Documents/Development/EDSEngine/KnowledgeBase.h
 	"stdafx.h"
 	<string>
 	"RuleTable.h"
 	"TableSet.h"
 	"XMLWrapper.h"
 
-1254199678 /home/eric/Documents/Development/EDSEngine/stdafx.h
+1257253643 /home/eric/Documents/Development/EDSEngine/stdafx.h
 	<windows.h>
 	<string>
 	<iostream>
 	<sstream>
 	<stdexcept>
 
-1257145660 /home/eric/Documents/Development/EDSEngine/RuleTable.h
+1257253643 /home/eric/Documents/Development/EDSEngine/RuleTable.h
 	<vector>
 	<string>
 	<map>
@@ -457,19 +457,19 @@
 	"Bimapper.h"
 	"RuleCell.h"
 
-1256105105 /home/eric/Documents/Development/EDSEngine/Bimapper.h
+1257253643 /home/eric/Documents/Development/EDSEngine/Bimapper.h
 	<hash_map>
 	<ext/hash_map>
 	<tr1/functional>
 
-1254199678 /home/eric/Documents/Development/EDSEngine/RuleCell.h
+1257253643 /home/eric/Documents/Development/EDSEngine/RuleCell.h
 
-1254276832 /home/eric/Documents/Development/EDSEngine/TableSet.h
+1257253643 /home/eric/Documents/Development/EDSEngine/TableSet.h
 	<string>
 	<map>
 	"RuleTable.h"
 
-1256102459 /home/eric/Documents/Development/EDSEngine/XMLWrapper.h
+1257253643 /home/eric/Documents/Development/EDSEngine/XMLWrapper.h
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
@@ -608,5 +608,25 @@
 	<libxml/xpath.h>
 
 1250872794 source:/home/eric/Documents/Development/EDSEngineTestApp/stdafx.cpp
+	"stdafx.h"
+
+1257405158 source:/home/eric/Documents/Development/EDSEngine/EDSEngineTestApp/EDSEngineTestApp.cpp
+	"stdafx.h"
+	<string>
+	<iostream>
+	<sstream>
+	<vector>
+	<map>
+	<limits>
+	"../KnowledgeBase.h"
+
+1257253643 /home/eric/Documents/Development/EDSEngine/EDSEngineTestApp/stdafx.h
+	<stdio.h>
+	<tchar.h>
+	<iostream>
+	<sstream>
+	<stdexcept>
+
+1257253643 source:/home/eric/Documents/Development/EDSEngine/EDSEngineTestApp/stdafx.cpp
 	"stdafx.h"
 
