@@ -25,6 +25,7 @@ Copyright (C) 2009 Eric D. Schmidt
 #pragma managed(push, off)
 #endif
 
+#ifndef __GNUC__
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
@@ -32,6 +33,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 {
     return TRUE;
 }
+#endif
 
 #ifdef _MANAGED
 #pragma managed(pop)

@@ -20,9 +20,11 @@ Copyright (C) 2009 Eric D. Schmidt
 #include <sstream>
 #if defined(POSIX)
 #include <uuid/uuid.h>
-#else 
+#else
 	#if defined(WIN32)
 	#include "Objbase.h"
+	#else
+	#include <cstdlib>
 	#endif
 #endif
 
@@ -40,7 +42,7 @@ string ROMUTIL::FindAndReplace (const string& source, const string target, const
 		{
 		  str.replace (found, target.size (), replacement);
 		  pos = found + replacement.size ();
-		}		
+		}
 	}
 	return str;
 }
@@ -56,7 +58,7 @@ wstring ROMUTIL::FindAndReplace (const wstring& source, const wstring target, co
 		while ((found = str.find (target, pos)) != wstring::npos)
 		{
 		  str.replace (found, target.size (), replacement);
-		  pos = found + replacement.size ();		  
+		  pos = found + replacement.size ();
 		}
 	}
 	return str;
@@ -67,7 +69,7 @@ bool ROMUTIL::StringContains(wstring source, wstring target)
 	bool retval = false;
 
 	if (source.find(target, 0) != string::npos)
-		retval = true;	
+		retval = true;
 
 	return retval;
 }
@@ -140,7 +142,7 @@ wstring ROMUTIL::TrimString(wstring s)
 
 string ROMUTIL::ToASCIIString(wstring s)
 {
-	string retval(s.begin(), s.end()); 
+	string retval(s.begin(), s.end());
 	return retval;
 }
 
@@ -160,7 +162,7 @@ string ROMUTIL::stringify(double x)
    if (!(o << x))
      throw std::runtime_error("stringify(double)");
    return o.str();
-} 
+}
 
 string ROMUTIL::stringify(long x)
 {
@@ -175,18 +177,18 @@ string ROMUTIL::MakeGUID()
 {
 	string guid;
 	//guid for each ObjectNode
-	#if defined(WIN32)
+	#ifdef WIN32
 		GUID UIDObj;
 		unsigned char* pUIDStr;
 		CoCreateGuid(&UIDObj);
 		// Convert the GUID to a string
-		UuidToString( &UIDObj, &pUIDStr ); 
+		UuidToString( &UIDObj, &pUIDStr );
 		guid = (const char*)pUIDStr;
 		RpcStringFree(&pUIDStr);
-	#else 
-		#if defined(POSIX)
+	#else
+		#ifdef POSIX
 				uuid_t uid;
-				uuid_generate(&uid);
+				uuid_generate(uid);
 				guid = (const char*)uid;
 		#else
 			char* pGuidStr = new char[32];
@@ -222,7 +224,7 @@ string ROMUTIL::MakeGUID()
 			*pGuidStr++ = '}';
 			*pGuidStr = '\0';
 
-			guid = pGuidStr
+			guid = pGuidStr;
 			delete[] pGuidStr;
 		#endif
 	#endif

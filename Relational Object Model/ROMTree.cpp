@@ -15,7 +15,7 @@ Copyright (C) 2009 Eric D. Schmidt
     You should have received a copy of the GNU Lesser General Public License
     along with Relational Object Model 2.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "utilities.h"
 #include "ROMTree.h"
 #ifdef USE_LIBXML
@@ -36,14 +36,14 @@ using namespace ROMUTIL;
 
 ROMTree::ROMTree(wstring name)
 {
-	string guid = MakeGUID();	
+	string guid = MakeGUID();
 	name = FindAndReplace(name, L" ", L"_");
 	#ifdef USE_MSXML
-		CoInitialize(NULL);		
+		CoInitialize(NULL);
 
 		xmlDoc.CreateInstance(__uuidof(MSXML2::DOMDocument));
 		xmlDoc->setProperty("SelectionLanguage", "XPath");
-		
+
 		::IXMLDOMProcessingInstructionPtr pPI = xmlDoc->createProcessingInstruction
 			(X("xml"), X("version='1.0' encoding='UTF-8'"));
 		if (name.length() == 0) {name = L"default";}
@@ -51,13 +51,13 @@ ROMTree::ROMTree(wstring name)
 		vNullVal.vt = VT_NULL;
 		xmlDoc->insertBefore((Node)pPI, vNullVal);
 
-		Node pRootNode = NULL; 
+		Node pRootNode = NULL;
 		_variant_t varNodeType((short)MSXML2::NODE_ELEMENT);
 		pRootNode = xmlDoc->createNode(varNodeType, OBJECT_NODE, "");
-	
+
 		xmlDoc->appendChild(pRootNode);
 		m_tree = xmlDoc->documentElement;
-		m_tree->setAttribute("id", name.c_str());			
+		m_tree->setAttribute("id", name.c_str());
 		m_tree->setAttribute(X("guid"), guid.c_str());
 	#endif
 
@@ -65,12 +65,12 @@ ROMTree::ROMTree(wstring name)
 		xmlInitParser();
 		xmlDoc = xmlNewDoc((xmlChar*)"1.0");
 		Node rootNode = xmlNewNode(NULL, (xmlChar*)WStrToMBCStr(OBJECT_NODE).c_str());
-		
+
 		xmlDocSetRootElement(xmlDoc, rootNode);
 		m_tree = rootNode;
 		xmlNewProp(rootNode, (xmlChar *)"id", (xmlChar*)WStrToMBCStr(name).c_str());
 		xmlNewProp(rootNode, (xmlChar *)"guid", (xmlChar*)guid.c_str());
-	#endif  
+	#endif
 }
 
 ROMTree::~ROMTree(void)
@@ -90,7 +90,7 @@ Node ROMTree::Parent(Node current)
 {
 	if (!current)
 		return NULL;
-	#ifdef USE_LIBXML		
+	#ifdef USE_LIBXML
 			return current->parent;
 	#endif
 
@@ -144,18 +144,18 @@ vector<Node> ROMTree::Find(Node current, wstring searchStr)
 
 Node ROMTree::CreateROMObject(wstring name)
 {
-	Node retval = NULL;	
+	Node retval = NULL;
 	string guid = MakeGUID();
 
 	if (!xmlDoc)
 		return retval;
 
-	#ifdef USE_MSXML	
+	#ifdef USE_MSXML
 		Element elem = xmlDoc->createElement(OBJECT_NODE);
 
 		elem->setAttribute(X("id"), name.c_str());
-		
-		//guid for each ObjectNode	
+
+		//guid for each ObjectNode
 		elem->setAttribute(X("guid"), guid.c_str());
 		retval = (Node)elem;
 	#endif
@@ -174,11 +174,11 @@ Node ROMTree::AddChildROMObject(Node current, Node child)
 	Node retval = NULL;
 	if (!current || !child)
 			return retval;
-	
-	#ifdef USE_MSXML		
+
+	#ifdef USE_MSXML
 		retval = current->appendChild(child);;
 	#endif
-	
+
 	#ifdef USE_LIBXML
 		retval = xmlAddChild(current, child);
 	#endif
@@ -191,7 +191,7 @@ wstring ROMTree::GetROMObjectName(Node current)
 	if (!current)
 		return retval;
 
-	#ifdef USE_MSXML	
+	#ifdef USE_MSXML
 		NamedNodeMap attrs = current->attributes;
 		Node data = (Node)attrs->getNamedItem(X("id"));
 
@@ -208,10 +208,10 @@ wstring ROMTree::GetROMObjectName(Node current)
 
 void ROMTree::SetROMObjectName(Node current, wstring name)
 {
-	#ifdef USE_MSXML	
+	#ifdef USE_MSXML
 		NamedNodeMap attrs = current->attributes;
 		Node data = (Node)attrs->getNamedItem(X("id"));
-		
+
 		if (data)
 			data->nodeValue = name.c_str();
 	#endif
@@ -237,7 +237,7 @@ wstring	ROMTree::GetAttribute(Node currentObject, wstring id, wstring name, bool
 			{
 				Node attrNode = nodes->item[i];
 				if (attrNode->nodeName == X(ATTRIBUTE_NODE))
-				{		
+				{
 					NamedNodeMap attrs = attrNode->attributes;
 					Node data = (Node)attrs->getNamedItem(X("id"));
 
@@ -248,7 +248,7 @@ wstring	ROMTree::GetAttribute(Node currentObject, wstring id, wstring name, bool
 							Node attr_data = (Node)attrs->getNamedItem(name.c_str());
 							if (attr_data)
 							{
-								retval = ToWString(attr_data->nodeValue);	
+								retval = ToWString(attr_data->nodeValue);
 								break;
 							}
 						}
@@ -257,7 +257,7 @@ wstring	ROMTree::GetAttribute(Node currentObject, wstring id, wstring name, bool
 							Node attr_data = (Node)attrs->getNamedItem("value");
 							if (attr_data)
 							{
-								retval = ToWString(attr_data->nodeValue);	
+								retval = ToWString(attr_data->nodeValue);
 								break;
 							}
 						}
@@ -267,7 +267,7 @@ wstring	ROMTree::GetAttribute(Node currentObject, wstring id, wstring name, bool
 		}
 
 		if (recurs && retval == L"")
-		{		
+		{
 			Element curEle = (Element)currentObject;
 			Element rootEle = (Element)this->GetRoot();
 			if (ToWString(curEle->getAttribute(X("guid"))) != ToWString(rootEle->getAttribute(X("guid"))))
@@ -381,7 +381,7 @@ bool ROMTree::SetAttribute(Node currentObject, wstring id, wstring name, wstring
 			{
 				Node attrNode = nodes->item[i];
 				if (attrNode->nodeName == X(ATTRIBUTE_NODE))
-				{		
+				{
 					NamedNodeMap attrs = attrNode->attributes;
 					if (attrs)
 					{
@@ -403,7 +403,7 @@ bool ROMTree::SetAttribute(Node currentObject, wstring id, wstring name, wstring
 								break;
 							}
 						}
-					}				
+					}
 				}
 			}
 		}
@@ -427,7 +427,7 @@ bool ROMTree::SetAttribute(Node currentObject, wstring id, wstring name, wstring
 				wstring currentID = MBCStrToWStr(xmlGetProp(childNode, (xmlChar*)"id"));
 				if (currentID == id)
 				{
-					if (name.length() > 0) 
+					if (name.length() > 0)
 					{
 						if (xmlHasProp(childNode, (xmlChar*)WStrToMBCStr(name).c_str()))
 						{
@@ -469,7 +469,7 @@ bool ROMTree::SetAttribute(Node currentObject, wstring id, wstring name, wstring
 
 bool ROMTree::RemoveAttribute(Node currentObject, wstring id)
 {
-	bool retval = false;	
+	bool retval = false;
 
 	if (!currentObject)
 		return retval;
@@ -482,7 +482,7 @@ bool ROMTree::RemoveAttribute(Node currentObject, wstring id)
 			{
 				Node attrNode = nodes->item[i];
 				if (attrNode->nodeName == X(ATTRIBUTE_NODE))
-				{		
+				{
 					NamedNodeMap attrs = attrNode->attributes;
 					Node data = (Node)attrs->getNamedItem(id.c_str());
 
@@ -494,7 +494,7 @@ bool ROMTree::RemoveAttribute(Node currentObject, wstring id)
 					}
 				}
 			}
-		}	
+		}
 	#endif
 
 	#ifdef USE_LIBXML
@@ -526,7 +526,7 @@ bool ROMTree::DestroyROMObject(Node currentObject)
 		Node parent = currentObject->parentNode;
 		parent->removeChild(currentObject);
 	#endif
-		
+
 	#ifdef USE_LIBXML
 		xmlUnlinkNode(currentObject);
 		xmlFreeNode(currentObject);
@@ -582,7 +582,7 @@ vector<wstring> ROMTree::EvaluateTable(Node currentObject, wstring evalTable, ws
 	return m_KnowledgeBase.EvaluateTable(evalTable, output, bGetAll);
 }
 
-map<wstring, vector<wstring>> ROMTree::EvaluateTable(Node currentObject, wstring evalTable, bool bGetAll)
+map<wstring, vector<wstring> > ROMTree::EvaluateTable(Node currentObject, wstring evalTable, bool bGetAll)
 {
 	LoadInputs(currentObject, evalTable);
 	return m_KnowledgeBase.EvaluateTable(evalTable, bGetAll);
@@ -630,8 +630,8 @@ wstring ROMTree::EvaluateXPATH(Node currentObject, wstring xpath)
 	wstring xslt_text = XSLT_TOP + match + xpath + XSLT_BOTTOM;
 
 	Document xsltDoc = NULL;
-#ifdef USE_MSXML		
-	xsltDoc.CreateInstance(__uuidof(MSXML2::DOMDocument));		
+#ifdef USE_MSXML
+	xsltDoc.CreateInstance(__uuidof(MSXML2::DOMDocument));
 	xsltDoc->loadXML(xslt_text.c_str());
 	retval = ToWString(xmlDoc->transformNode(xsltDoc));
 #endif
@@ -721,7 +721,7 @@ vector<string> ROMTree::EvaluateTable(Node currentObject, string evalTable, stri
 	return m_KnowledgeBase.EvaluateTable(evalTable, output, bGetAll);
 }
 
-map<string, vector<string>> ROMTree::EvaluateTable(Node currentObject, string evalTable, bool bGetAll)
+map<string, vector<string> > ROMTree::EvaluateTable(Node currentObject, string evalTable, bool bGetAll)
 {
 	LoadInputs(currentObject, MBCStrToWStr(evalTable));
 	return m_KnowledgeBase.EvaluateTable(evalTable, bGetAll);
