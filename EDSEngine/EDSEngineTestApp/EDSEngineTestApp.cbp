@@ -15,7 +15,7 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="../EDSEngine/bin/Debug/libEDSEngine.a" />
+					<Add directory="../bin/Debug" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -28,7 +28,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="../EDSEngine/bin/Release/libEDSEngine.a" />
+					<Add directory="../bin/Release" />
 				</Linker>
 			</Target>
 		</Build>
@@ -41,7 +41,6 @@
 			<Add directory="C:/msys/1.0/local/include" />
 			<Add directory="/usr/include/libxml2" />
 			<Add directory="/usr/include/python2.6" />
-			<Add directory="../GoogleV8/trunk/include" />
 		</Compiler>
 		<Linker>
 			<Add library="libz" />
@@ -50,10 +49,10 @@
 			<Add library="libboost_system-mt" />
 			<Add library="libboost_python-mt" />
 			<Add library="libmozjs" />
+			<Add library="libEDSEngine" />
 			<Add directory="C:/msys/1.0/local/lib" />
 			<Add directory="C:/boost_1_39_0/lib" />
 			<Add directory="C:/Python26/libs" />
-			<Add directory="../GoogleV8/trunk" />
 			<Add directory="/usr/lib" />
 		</Linker>
 		<Unit filename="EDSEngineTestApp.cpp" />

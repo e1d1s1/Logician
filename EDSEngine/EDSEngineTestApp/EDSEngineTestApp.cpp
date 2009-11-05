@@ -8,7 +8,7 @@
 #include <vector>
 #include <map>
 #include <limits>
-#include "../EDSEngine/KnowledgeBase.h"
+#include "../KnowledgeBase.h"
 
 
 using namespace std;
