@@ -7,9 +7,9 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="libROM" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/libROM" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="obj\Debug\" />
+				<Option object_output="obj/Debug/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -18,13 +18,13 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add directory='&quot;..\..\EDSEngine\bin\Debug&quot;' />
+					<Add directory="../../EDSEngine/bin/Debug" />
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="libROM" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/libROM" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="obj\Release\" />
+				<Option object_output="obj/Release/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -34,16 +34,25 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add directory='&quot;..\..\EDSEngine\bin\Release&quot;' />
+					<Add directory="../../EDSEngine/bin/Release" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-DUSE_LIBXML" />
-			<Add directory="C:\msys\1.0\local\include\libxml2" />
-			<Add directory="C:\msys\1.0\local\include\libxslt" />
-			<Add directory='&quot;..\..\EDSEngine&quot;' />
+			<Add option="-DPOSIX" />
+			<Add option="-DUSE_PYTHON" />
+			<Add option="-DUSE_JAVASCRIPT" />
+			<Add option="-DCROSS_COMPILE" />
+			<Add directory="C:/msys/1.0/local/include/libxml2" />
+			<Add directory="C:/msys/1.0/local/include/libxslt" />
+			<Add directory="../EDSEngine" />
+			<Add directory="/usr/include/libxml2" />
+			<Add directory="/usr/include/libxslt" />
 		</Compiler>
+		<Linker>
+			<Add library="libEDSEngine" />
+		</Linker>
 		<Unit filename="ROM.cpp" />
 		<Unit filename="ROMTree.cpp" />
 		<Unit filename="ROMTree.h" />
@@ -55,6 +64,7 @@
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
