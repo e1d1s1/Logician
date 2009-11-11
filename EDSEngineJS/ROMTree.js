@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the Relational Object Model 2 JS Library.
 Copyright (C) 2009 Eric D. Schmidt
 
@@ -18,8 +18,8 @@ along with Relational Object Model 2 JS.  If not, see <http://www.gnu.org/licens
 function ReportError(err) {
     if (IsIE())
         alert("Error:\n" + err.description + "\n" + err.message + "\nline:" + err.number);
-    else if (IsMoz())
-        alert("Error:\n" + err + " line:" + err.lineNumber);
+    //else if (IsMoz())
+    //    alert("Error:\n" + err + " line:" + err.lineNumber);
     else 
         alert("Error:\n" + err);
 }
@@ -36,6 +36,7 @@ function IsMoz() {
     //alert("Moz=" + moz);
     return moz;
 }
+
 
 function MakeGUID() 
 {
@@ -613,7 +614,8 @@ ROMTree.prototype.EvaluateXPATH = function(currentObject, xpath)
             xsltDoc = parser.parseFromString(xslt_text, "text/xml");
             var xsltProcessor = new XSLTProcessor();
             xsltProcessor.importStylesheet(xsltDoc);
-            var solnNode = xsltProcessor.transformToDocument(this.xmlDoc);
+            var ownerDocument = document.implementation.createDocument("", "xsltDoc", null);
+            var solnNode = xsltProcessor.transformToFragment(this.xmlDoc, ownerDocument);
             retval = solnNode.firstChild.textContent;
         }
     }

@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the EDSEngineJS Library.
 Copyright (C) 2009 Eric D. Schmidt
 
@@ -37,8 +37,8 @@ function ReportError(err)
 {
     if (IsIE())
         alert("Error:\n" + err.description + "\n" + err.message + "\nline:" + err.number);
-    else if (IsMoz())
-        alert("Error:\n" + err + " line:" + err.lineNumber);
+    //else if (IsMoz())
+    //    alert("Error:\n" + err + " line:" + err.lineNumber);
     else 
         alert("Error:\n" + err);
 }
