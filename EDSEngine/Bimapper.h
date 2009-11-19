@@ -17,7 +17,7 @@ Copyright (C) 2009 Eric D. Schmidt
 */
 #pragma once
 
-#ifndef __GNUC__
+#ifdef _MSC_VER
 #include <hash_map>
 #else
 #include <ext/hash_map>

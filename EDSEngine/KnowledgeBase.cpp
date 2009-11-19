@@ -808,14 +808,14 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
                                     pair<wstring, wstring> kvp;
                                     kvp.first = langType;
                                     kvp.second = langValue;
-                                    #ifndef __GNUC__
+                                    #ifdef _MSC_VER
                                     stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
                                     #else
                                     __gnu_cxx::hash_map<size_t, __gnu_cxx::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
                                     #endif
                                     if (itFind != mapBaseIDtoTranslations.end())
                                     {
-                                        #ifndef __GNUC__
+                                        #ifdef _MSC_VER
                                         stdext::hash_map<wstring, wstring> *newTranlation = &itFind->second;
                                         #else
                                         __gnu_cxx::hash_map<wstring, wstring> *newTranlation = &itFind->second;
@@ -824,13 +824,13 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
                                     }
                                     else
                                     {
-                                        #ifndef __GNUC__
+                                        #ifdef _MSC_VER
                                         stdext::hash_map<wstring, wstring> newTranslation;
                                         #else
                                         __gnu_cxx::hash_map<wstring, wstring> newTranslation;
                                         #endif
                                         newTranslation.insert(kvp);
-                                        #ifndef __GNUC__
+                                        #ifdef _MSC_VER
                                         pair<size_t, stdext::hash_map<wstring, wstring> > idTrans_kvp;
                                         #else
                                         pair<size_t, __gnu_cxx::hash_map<wstring, wstring> > idTrans_kvp;

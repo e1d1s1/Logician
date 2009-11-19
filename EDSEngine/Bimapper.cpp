@@ -50,7 +50,7 @@ size_t CBimapper::AddUserString(wstring s)
 wstring CBimapper::GetStringByID(size_t id)
 {
 	wstring retval;
-#ifndef __GNUC__
+#ifdef _MSC_VER
 	stdext::hash_map<size_t, wstring>::iterator it = m_IndexToStringsMap.find(id);
 #else
 	__gnu_cxx::hash_map<size_t, wstring>::iterator it = m_IndexToStringsMap.find(id);
@@ -65,7 +65,7 @@ wstring CBimapper::GetStringByID(size_t id)
 size_t CBimapper::GetIDByString(std::wstring s)
 {
 	size_t retval = INVALID_STRING;
-#ifndef __GNUC__
+#ifdef _MSC_VER
 	stdext::hash_map<wstring, size_t>::iterator it = m_StringsToIndexMap.find(s);
 #else
 

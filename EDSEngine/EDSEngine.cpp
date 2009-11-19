@@ -25,7 +25,7 @@ Copyright (C) 2009 Eric D. Schmidt
 #pragma managed(push, off)
 #endif
 
-#ifndef __GNUC__
+#ifdef _MSC_VER
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved

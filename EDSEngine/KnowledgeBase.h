@@ -42,7 +42,7 @@ namespace EDS
 		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll = true);
 		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, bool bGetAll = true);
 		wstring GetEvalParameter() {return m_StateParameter;}
-	#ifndef __GNUC__
+	#ifdef _MSC_VER
 		void SetInputValues(stdext::hash_map<wstring, size_t> values) {m_GlobalInputAttrsValues = values;}
 	#else
 		void SetInputValues(__gnu_cxx::hash_map<wstring, size_t> values) {m_GlobalInputAttrsValues = values;}
@@ -69,7 +69,7 @@ namespace EDS
 		vector<string> EvaluateTable(string tableName, string outputAttr, bool bGetAll = true);
 		map<string, vector<string> > EvaluateTable(string tableName, bool bGetAll = true);
 		string GetEvalParameterA() {return WStrToMBCStr(m_StateParameter);}
-	#ifndef __GNUC__
+	#ifdef _MSC_VER
 		void SetInputValues(stdext::hash_map<string, size_t> values);
 	#else
 		void SetInputValues(__gnu_cxx::hash_map<string, size_t> values);
@@ -87,7 +87,7 @@ namespace EDS
 		vector<pair<wstring, vector<CRuleCell> > > GetTableRowFromXML(NodeList nodes, Document xmlDocument);
 		void SendToDebugServer(wstring msg);
 		wstring XMLSafe(wstring str);
-	#ifndef __GNUC__
+	#ifdef _MSC_VER
 		stdext::hash_map<wstring, size_t> m_GlobalInputAttrsValues;
 	#else
 		__gnu_cxx::hash_map<wstring, size_t> m_GlobalInputAttrsValues;
@@ -100,7 +100,7 @@ namespace EDS
 		bool m_IsOpen;
 		wstring m_jsCode, m_pyCode;
 
-	#ifndef __GNUC__
+	#ifdef _MSC_VER
 		stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> > mapBaseIDtoTranslations;
 	#else
 		__gnu_cxx::hash_map<size_t, __gnu_cxx::hash_map<wstring, wstring> > mapBaseIDtoTranslations;
