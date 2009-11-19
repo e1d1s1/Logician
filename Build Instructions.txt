@@ -1,0 +1,65 @@
+Build Instrucutions for client-based tools:
+
+Logician relys upon open source and freely available cross-platform tools, so you shouldn't have too much trouble putting it together no matter your OS.  Visual Studio and Code::Blocks project files are provided for your compiling convienience on your platform of choice.
+
+Prerequisites:
+Rules Engine: EDSEngine
+All platforms: 
+- zlib compression library v1.2.3
+- boost C++ libraries v1.37+
+- iconv v1.9.2
+- libxml2 v2.7.3 
+- libxslt v1.1.24 
+- Python 2.6 (optional compile-time switch)
+- Mozilla Spidermonkey Javascript engine (optional compile-time switch)
+Windows:
+- MSXML v6.0 (optional in lieu of libxml, libxslt, and iconv)
+
+Rule Table Builder GUI: DecisionLogic
+All platforms:
+- wxWidgets GUI toolkit v2.8.10+
+- zlib compression library v1.2.3
+- iconv v1.9.2
+- libxml2 v2.7.3
+
+C++ Dynamic application modeler: Relational Object Model
+All platforms:
+- zlib compression library v1.2.3
+- iconv v1.9.2
+- libxml2 v2.7.3 
+- libxslt v1.1.24 
+- EDSEngine v1.0
+Windows:
+- MSXML v6.0 (optional in lieu of libxml, libxslt, and iconv)
+Linux (Ubuntu 9.10+):
+- uuid-dev 1.2+
+
+Windows .NET tools:
+.NET EDSEngine Wrapper: ROM2NET (C++/CLI implementation)
+- .NET 3.5+
+- EDSEngine v1.0
+
+C# Dynamic application modeler: ROM2NET
+- .NET 3.5+
+
+Build Instructions
+Important pre-processor defines for EDSEngine/Relational Object Model:
+USE_MSXML: on widows platform, enables use of MSXML 6.0
+USE_LIBXML: optional on windows, required on all other platforms to enable use of libxml2 and libxslt.
+USE_PYTHON: enables python runtime scripting support in rules
+USE_JAVASCRIPT: enables javascript runtime scripting support in rules
+USE_WINDOWS_SCRIPTING: on windows when javascript support is enabled, uses the windows scripting host for processing instead of spidermonkey.
+POSIX: compliant (Linux) enviroments should enable this define
+
+Windows:
+Visual Studio 2008 project files are included.  Configurations for both MSXML and libxml2 based builds are included.  You will have to download the prerequsites and build them as well.  Binaries are available for development as well via an installer.
+
+Linux: (Ubuntu 9.10)
+All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu has been tested.  A makefile and Code::Blocks project files are provided.
+
+Apple OSX:
+Coming soon...should work since all the same *nix tools are available.  Need to test.
+
+Notes for web tools:
+
+The Javascript components have been testing against IE6 and up, Firefox 3.5 (Gecko), and Safari 4.0.3 (Webkit).  A sample test page with Logician scripting tools is available in the source repository.
