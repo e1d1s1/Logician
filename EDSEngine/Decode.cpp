@@ -124,7 +124,7 @@ bool CDecode::EvaluateInputCell()
 			{
 				try
 				{
-#ifndef __GNUC__
+#ifdef _MSC_VER
 					dCurrentValue = _wtof(currentValue.c_str());
 					dTestValue = _wtof(testValue.c_str());
 #else
@@ -200,7 +200,7 @@ bool CDecode::EvaluateInputCell()
 			{
 				try
 				{
-#ifndef __GNUC__
+#ifdef _MSC_VER
 					min = _wtof(parts[0].c_str());
 					max = _wtof(parts[1].c_str());
 					dCurrentValue = _wtof(currentValue.c_str());

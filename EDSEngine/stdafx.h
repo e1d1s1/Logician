@@ -53,7 +53,7 @@ Copyright (C) 2009 Eric D. Schmidt
 
 using namespace std;
 
-#ifndef __GNUC__
+#ifdef _MSC_VER
 using namespace std;
 using namespace stdext;
 #else

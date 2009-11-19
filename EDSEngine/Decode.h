@@ -22,7 +22,7 @@ Copyright (C) 2009 Eric D. Schmidt
 #include "RuleCell.h"
 
 using namespace std;
-#ifndef __GNUC__
+#ifdef _MSC_VER
 using namespace stdext;
 #else
 using namespace __gnu_cxx;
