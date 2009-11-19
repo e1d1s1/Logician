@@ -52,6 +52,7 @@
 		</Compiler>
 		<Linker>
 			<Add library="libEDSEngine" />
+			<Add library="libuuid" />
 		</Linker>
 		<Unit filename="ROM.cpp" />
 		<Unit filename="ROMTree.cpp" />

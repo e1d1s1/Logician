@@ -26,7 +26,7 @@ CFLAGS = -DUSE_LIBXML -DPOSIX -DUSE_PYTHON -DUSE_JAVASCRIPT -DCROSS_COMPILE
 INCLUDES = -IC:/msys/1.0/local/include/libxml2 -IC:/msys/1.0/local/include/libxslt -I../EDSEngine -I/usr/include/libxml2 -I/usr/include/libxslt 
 LDFLAGS =  -s
 RCFLAGS = 
-LDLIBS = $(T_LDLIBS) -llibEDSEngine  -lstdc++
+LDLIBS = $(T_LDLIBS) -llibEDSEngine -llibuuid  -lstdc++
 
 LINK_exe = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)
 LINK_con = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)

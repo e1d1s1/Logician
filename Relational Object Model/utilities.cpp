@@ -177,7 +177,7 @@ string ROMUTIL::MakeGUID()
 {
 	string guid;
 	//guid for each ObjectNode
-	#ifdef WIN32
+	#ifdef _MSC_VER
 		GUID UIDObj;
 		unsigned char* pUIDStr;
 		CoCreateGuid(&UIDObj);
@@ -189,7 +189,9 @@ string ROMUTIL::MakeGUID()
 		#ifdef POSIX
 				uuid_t uid;
 				uuid_generate(uid);
-				guid = (const char*)uid;
+				char cGUID[128] = "";
+				uuid_unparse(uid, cGUID);
+				guid = cGUID;
 		#else
 			char* pGuidStr = new char[32];
 			int i;
