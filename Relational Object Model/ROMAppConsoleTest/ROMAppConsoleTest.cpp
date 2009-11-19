@@ -63,7 +63,13 @@ int main(int argc, char* argv[])
 		Log(s2);
 
 		Log("loading rules");
-		if (myBaseObject.LoadRules(L"..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.xml"))
+		wstring path;
+		#ifdef WIN32
+		path = L"..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.xml";
+		#else
+		path = L"../../EDSEngine/EDSEngineTestApp/test_project.xml";
+		#endif
+		if (myBaseObject.LoadRules(path))
 		{
 			Log("...loaded");
 			Log("Evaluating table testtable1");

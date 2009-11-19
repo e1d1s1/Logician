@@ -9,7 +9,7 @@
 	<sstream>
 	<stdexcept>
 
-1257402616 source:/home/eric/Documents/Development/Relational Object Model/ROMTree.cpp
+1257407121 source:/home/eric/Documents/Development/Relational Object Model/ROMTree.cpp
 	"stdafx.h"
 	"utilities.h"
 	"ROMTree.h"
@@ -168,4 +168,52 @@
 	<uuid/uuid.h>
 	"Objbase.h"
 	<cstdlib>
+
+1258603962 /home/eric/Documents/Development/EDSEngine/KnowledgeBase.h
+	"stdafx.h"
+	<string>
+	"RuleTable.h"
+	"TableSet.h"
+	"XMLWrapper.h"
+
+1258603495 /home/eric/Documents/Development/EDSEngine/stdafx.h
+	<windows.h>
+	<string>
+	<iostream>
+	<sstream>
+	<stdexcept>
+
+1257253643 /home/eric/Documents/Development/EDSEngine/RuleTable.h
+	<vector>
+	<string>
+	<map>
+	<set>
+	"Bimapper.h"
+	"RuleCell.h"
+
+1258604332 /home/eric/Documents/Development/EDSEngine/Bimapper.h
+	<hash_map>
+	<ext/hash_map>
+	<tr1/functional>
+
+1257253643 /home/eric/Documents/Development/EDSEngine/RuleCell.h
+
+1257253643 /home/eric/Documents/Development/EDSEngine/TableSet.h
+	<string>
+	<map>
+	"RuleTable.h"
+
+1257253643 /home/eric/Documents/Development/EDSEngine/XMLWrapper.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<assert.h>
+	<libxml/tree.h>
+	<libxml/parser.h>
+	<libxml/xpath.h>
+	<libxml/xpathInternals.h>
+
+1250006504 /usr/include/libxml2/libxml/xpathInternals.h
+	<libxml/xmlversion.h>
+	<libxml/xpath.h>
 
