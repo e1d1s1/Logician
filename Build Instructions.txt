@@ -1,6 +1,6 @@
 Build Instrucutions for client-based tools:
 
-Logician relys upon open source and freely available cross-platform tools, so you shouldn't have too much trouble putting it together no matter your OS.  Visual Studio and Code::Blocks project files are provided for your compiling convienience on your platform of choice.
+Logician relys upon open source and freely available cross-platform tools, so you shouldn't have too much trouble putting it together no matter your OS.  Visual Studio and Code::Blocks project files are provided for your compiling convienience on your platform of choice, as well as GNU C Makefiles.
 
 Prerequisites:
 Rules Engine: EDSEngine
