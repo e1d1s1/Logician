@@ -29,6 +29,11 @@
 #include "DecisionLogic.h"
 #include <wx/fdrepdlg.h>
 
+//Icon
+#if !defined(__WXMSW__) && !defined(__WXPM__)
+    #include "DecisionLogicIcon.xpm"
+#endif
+
 const int DEFAULT_ORIENTATION = wxVERTICAL;
 
 // ----------------------------------------------------------------------------
@@ -173,6 +178,8 @@ bool DecisionLogicApp::OnInit(void)
 DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
        : wxMDIParentFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE | wxHSCROLL | wxVSCROLL)
 {
+	SetIcon(wxICON(DecisionLogicIcon));
+
 	SetSize(800, 600);
 
     // create a menu bar
