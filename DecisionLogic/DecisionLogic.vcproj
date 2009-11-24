@@ -328,6 +328,18 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath=".\DecisionLogic.rc"
+			>
+		</File>
+		<File
+			RelativePath=".\DecisionLogicIcon.ico"
+			>
+		</File>
+		<File
+			RelativePath=".\resource.h"
+			>
+		</File>
+		<File
 			RelativePath=".\TODO.txt"
 			>
 		</File>
