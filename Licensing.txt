@@ -1,0 +1,34 @@
+Logician Suite Commercial Licensing Information
+
+eLogician LLC provides its DecisionLogic rules editor and EDSEngine client libraries under a dual license model designed to meet the development and distribution needs of both commercial distributors and open source projects.  The Relational Object Modeler is LGPL, therefore there are no restrictions on linking to that component as part of a proprietary application.  All 3 tools and their variants are packaged and distributed as the "Logician Suite".
+
+For Distributors of Commercial Applications:
+Users that combine and distribute commercially licensed software with EDSEngine client libraries and do not wish to distribute the source code for the commercially licensed software under version 3 of the GNU General Public License (the "GPL") must enter into a commercial license agreement with eLogician LLC.
+
+For Open Source Projects and Other Developers of Open Source Applications:
+For developers of Free Open Source Software ("FOSS") applications under the GPL that want to combine and distribute those FOSS applications with Logician Suite software, eLogician LLC's open source software licensed under the GPL is the best option.
+
+For developers and distributors of open source software under a FOSS license other than the GPL, eLogician LLC makes its GPL-licensed EDSEngine client libraries available under a FOSS Exception that enables use of the those EDSEngine client libraries under certain conditions without causing the entire derivative work to be subject to the GPL.
+
+FAQ
+Q1: As a commercial user, I have basic questions about the GPL. Where can I find more information?
+A: Go to the Free Software Foundation’s website to read the GPL. The Free Software Foundation also provides a detailed FAQ on the GPL. 
+
+Q2: As a commercial user, I have questions about how to comply with the terms of the GPL. Where can I find more information?
+A: Reading the GPL itself is the best place to start. Go to the Free Software Foundation's website to read the GPL. The Software Freedom Law Center has also created "A Practical Guide to GPL Compliance" with its explanation of the GPL's requirements. 
+
+Q3: As a commercial user, when should I purchase a commercial license for Logician Suite software?
+A: OEMs, ISVs and VARs that want the benefits of embedding commercial binaries of Logician Suite software in their commercial applications but do not want to be subject to the GPL and do not want to release the source code for their proprietary applications should purchase a commercial license from eLogician LLC. Purchasing a commercial license means that the GPL does not apply, and a commercial license includes the assurances that distributors typically find in commercial distribution agreements.
+
+Q4: What is eLogician LLC’s dual license model for Logician Suite software?
+A: eLogician LLC makes its DecisionLogic rules editor and EDSEngine client libraries available under both the GPL and a commercial license. As a result, developers who use or distribute open source applications under the GPL can use the GPL-licensed Logician Suite software, and commercial users that do not want to combine or distribute the Logician Suite software with their own commercial software under a GPL license can purchase a commercial license. 
+
+Q5: What open source licensing options does eLogician LLC offer for its Logician Suite software?
+A: eLogician LLC makes its DecisionLogic rules editor and EDSEngine client libraries available under the GPL for use with other GPL-licensed software and FOSS applications licensed under GPL-compatible FOSS licenses.
+In addition, for open source projects and developers creating and distributing open source software under certain FOSS licenses other than the GPL, eLogician LLC makes its GPL-licensed EDSEngine client libraries available under a FOSS Exception that allows distribution of the FOSS application with the EDSEngine client libraries without causing the entire derivative work to be subject to the GPL. 
+
+Q6: What is eLogician LLC's commercial license for Logician Suite software?
+A: eLogician LLC offers a commercial license for all of its applicable Logician Suite software that is embedded in or bundled with another application. The commercial license allows commercial users to distribute commercial binaries of Logician Suite software with their own commercial software without subjecting that software to the GPL and its requirement to distribute source code. 
+
+Q7: If I have more questions, who should I contact?
+A: For more information, please contact an eLogician LLC sales representative.
