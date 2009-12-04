@@ -49,6 +49,8 @@ BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
 	EVT_MENU(DecisionLogic_NewProject,  DecisionLogicFrame::OnNewProject)
 	EVT_MENU(DecisionLogic_OpenProject,  DecisionLogicFrame::OnOpenProject)
 	EVT_MENU(DecisionLogic_SaveProject,  DecisionLogicFrame::OnSaveProject)
+	EVT_MENU(DecisionLogic_Undo, DecisionLogicFrame::OnUndo)
+	EVT_MENU(DecisionLogic_Redo, DecisionLogicFrame::OnRedo)
 	EVT_MENU(DecisionLogic_Quit,  DecisionLogicFrame::OnQuit)
 	EVT_MENU(DecisionLogic_Cut,  DecisionLogicFrame::OnCut)
 	EVT_MENU(DecisionLogic_Copy,  DecisionLogicFrame::OnCopy)
@@ -197,6 +199,9 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	fileMenu->Enable(DecisionLogic_SaveProject, false);
 
 	wxMenu *editMenu = new wxMenu();
+	editMenu->Append(DecisionLogic_Undo, _T("&Undo\tCtrl-Z"), _T("Undo"));
+	editMenu->Append(DecisionLogic_Redo, _T("&Redo\tCtrl-Y"), _T("Redo"));
+	editMenu->AppendSeparator();
 	editMenu->Append(DecisionLogic_Cut, _T("Cu&t\tCtrl-X"), _T("Cut"));
 	editMenu->Append(DecisionLogic_Copy, _T("&Copy\tCtrl-C"), _T("Copy"));
 	editMenu->Append(DecisionLogic_Paste, _T("&Paste\tCtrl-V"), _T("Paste"));
@@ -331,6 +336,16 @@ void DecisionLogicFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 	if (m_worker) delete m_worker;
     // true is to force the frame to close
     Close(true);
+}
+
+void DecisionLogicFrame::OnUndo(wxCommandEvent& event)
+{
+	m_worker->Undo(event);
+}
+
+void DecisionLogicFrame::OnRedo(wxCommandEvent& event)
+{
+	m_worker->Redo(event);
 }
 
 void DecisionLogicFrame::OnCut(wxCommandEvent& event)

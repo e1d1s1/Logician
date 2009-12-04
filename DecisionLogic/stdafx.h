@@ -79,3 +79,6 @@ inline void ReportError(std::string functionName, std::string errorMsg = "")
 	function.assign(functionName.begin(), functionName.end());
 	ReportErrorW(function, err);
 }
+
+const wstring GLOBALORS_TABLE_NAME = L"GlobalORs";
+const wstring TRANSLATIONS_TABLE_NAME = L"Translations";

@@ -60,8 +60,8 @@ clean :
 # Debug_target
 
 Debug_target.BIN = bin/Debug/DecisionLogic.exe
-Debug_target.OBJ = DecisionLogic.o FindReplaceDialog.o LogicTable.o ProjectManager.o WorkerClass.o stdafx.o utilities.o 
-DEP_FILES += DecisionLogic.d FindReplaceDialog.d LogicTable.d ProjectManager.d WorkerClass.d stdafx.d utilities.d 
+Debug_target.OBJ = DecisionLogic.o FindReplaceDialog.o LogicTable.o MDIChild.o ProjectManager.o WorkerClass.o stdafx.o utilities.o 
+DEP_FILES += DecisionLogic.d FindReplaceDialog.d LogicTable.d MDIChild.d ProjectManager.d WorkerClass.d stdafx.d utilities.d 
 clean.OBJ += $(Debug_target.BIN) $(Debug_target.OBJ)
 
 Debug_target : Debug_target.before $(Debug_target.BIN) Debug_target.after_always
@@ -87,8 +87,8 @@ $(Debug_target.BIN) : $(Debug_target.OBJ)
 # Release_target
 
 Release_target.BIN = bin/Release/DecisionLogic.exe
-Release_target.OBJ = DecisionLogic.o FindReplaceDialog.o LogicTable.o ProjectManager.o WorkerClass.o stdafx.o utilities.o 
-DEP_FILES += DecisionLogic.d FindReplaceDialog.d LogicTable.d ProjectManager.d WorkerClass.d stdafx.d utilities.d 
+Release_target.OBJ = DecisionLogic.o FindReplaceDialog.o LogicTable.o MDIChild.o ProjectManager.o WorkerClass.o stdafx.o utilities.o 
+DEP_FILES += DecisionLogic.d FindReplaceDialog.d LogicTable.d MDIChild.d ProjectManager.d WorkerClass.d stdafx.d utilities.d 
 clean.OBJ += $(Release_target.BIN) $(Release_target.OBJ)
 
 Release_target : Release_target.before $(Release_target.BIN) Release_target.after_always

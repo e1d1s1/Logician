@@ -251,6 +251,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MDIChild.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ProjectManager.cpp"
 				>
 			</File>
