@@ -27,6 +27,7 @@
 #ifndef MDICHILD
 #define MDICHILD
 
+#include "stdafx.h"
 #include <wx/mdi.h>
 #include <wx/splitter.h>
 #include <wx/grid.h>
@@ -35,6 +36,7 @@
 #include <wx/sizer.h>
 #include <wx/clipbrd.h>
 #include <set>
+#include <stack>
 #include "ProjectManager.h"
 #include "LogicTable.h"
 #include "OpenLogicTable.h"
@@ -61,9 +63,6 @@ const long VERYLIGHTGREEN = 15204319;
 const long LIGHTBLUE = 16766906;
 const long LIGHTYELLOW = 11337470;
 
-const wstring GLOBALORS_TABLE_NAME = L"GlobalORs";
-const wstring TRANSLATIONS_TABLE_NAME = L"Translations";
-
 const wxString strChoices[2] = {_T("Input"), _T("Output")};
 const wxString strChoicesRule[2] = {_T("Enabled"), _T("Disabled")};
 
@@ -72,6 +71,8 @@ enum
 	CUT = wxID_CUT,
 	COPY = wxID_COPY,
 	PASTE = wxID_PASTE,
+	UNDO = wxID_UNDO,
+	REDO = wxID_REDO,
 	INSERT_COL = 1000,
 	INSERT_ROW,
 	DELETE_COL,
@@ -83,7 +84,8 @@ enum
 class LogicGrid: public wxGrid
 {
 public:
-	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, const wxPoint& pos = wxDefaultPosition,
+	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void),
+		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = wxWANTS_CHARS,
 		const wxString& name = wxPanelNameStr):
 	wxGrid(parent, id, pos, size, style, name)
@@ -91,6 +93,7 @@ public:
 		m_orientation = orient;
 		HasChanged = false;
 		m_type = type;
+		m_updateCallback = updateCallback;
 	}
 
 	enum
@@ -586,7 +589,7 @@ public:
 				this->FormatCell(j, i);
 			}
 		}
-		HasChanged = true;
+		m_updateCallback();
 	}
 
 	inline void OnInsertRow(wxCommandEvent& event)
@@ -622,7 +625,7 @@ public:
 				this->FormatCell(j, i);
 			}
 		}
-		HasChanged = true;
+		m_updateCallback();
 	}
 
 	inline void OnAppendRow()
@@ -644,7 +647,7 @@ public:
 		{
 			this->FormatCell(j, i);
 		}
-		HasChanged = true;
+		m_updateCallback();
 	}
 
 	inline void OnAppendColumn()
@@ -668,7 +671,7 @@ public:
 		{
 			this->FormatCell(j, this->GetNumberCols() - 1);
 		}
-		HasChanged = true;
+		m_updateCallback();
 	}
 
 	inline void OnDeleteCol(wxCommandEvent& event)
@@ -711,6 +714,7 @@ public:
 					this->SetCellValue(j, i, wxEmptyString);
 				}
 			}
+			m_updateCallback();
 		}
 	}
 
@@ -865,8 +869,8 @@ private:
 
 		UpdateCellFormat(event.GetRow(), event.GetCol());
 
-		HasChanged = true;
 		this->Refresh();
+		m_updateCallback();
 	}
 
 	inline void UpdateCellFormat(int row, int col)
@@ -981,9 +985,9 @@ private:
 						{
 							this->SetCellValue(j + j_offset, i + i_offset, cells[i]);
 							UpdateCellFormat(j + j_offset, i + i_offset);
-							HasChanged = true;
 						}
 					}
+					m_updateCallback();
 				}
 			}
 			clip.Close();
@@ -993,6 +997,7 @@ private:
 	int			m_orientation;
 	int			m_type;
 	wxRect		m_sel_range;
+	void		(*m_updateCallback)(void);
 
 	DECLARE_EVENT_TABLE()
 };
@@ -1002,394 +1007,46 @@ class MDIChild: public wxMDIChildFrame
 public:
 	MDIChild(wxMDIParentFrame *parent, int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
 		ProjectManager *pm, const wxString& title, const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize, const long style = 0):
-		  wxMDIChildFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
-                         wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
-	{
-		m_pm = pm;
-		m_type = type;
-		m_orientation = orient;
-		if (m_orientation == wxVERTICAL)
-			m_orientation_opposite = wxHORIZONTAL;
-		else
-			m_orientation_opposite = wxVERTICAL;
+		const wxSize& size = wxDefaultSize, const long style = 0);
+	~MDIChild(void);
 
-		m_opened_window_tracker = open_tables;
-		OpenLogicTable table;
-		table.child_window_ptr = (void**)this;
-		table.logic_table = logic;
-		m_opened_window_tracker->push_back(table);
+	void RotateOrientation();
+	void DisplayTableData(LogicTable table);
+	void RepopulateTranslationsTable(set<wstring> *strings);
+	
+	void InsertCol(wxCommandEvent& event);
+	void InsertRow(wxCommandEvent& event);
+	void AppendRow();
+	void AppendColumn();
+	void DeleteCol(wxCommandEvent& event);
+	void DeleteRow(wxCommandEvent& event);
+	void ClearCells(wxCommandEvent& event);
+	void Undo(wxCommandEvent& event);	
+	void Redo(wxCommandEvent& event);
+	void Cut(wxCommandEvent& event);
+	void Copy(wxCommandEvent& event);
+	void Paste(wxCommandEvent& event);
+	void EditCode(wxCommandEvent& event);
 
-		sizer = new wxBoxSizer(wxHORIZONTAL);
-		m_table = new LogicGrid(this, m_orientation, -1, type, wxDefaultPosition, wxDefaultSize);
-		sizer->Add(m_table, wxEXPAND);
+	void HighlightRule(int rule);
+	bool HasChanged();
+	OpenLogicTable Save();
 
-		DisplayTableData(logic);
+	wxPoint FindText(wstring textToFind, wxPoint startPos, bool bMatchCase, bool bMatchWholeWord);
+	wxPoint FindAndReplaceText(wstring textToFind, wxPoint startPos, bool bMatchCase, bool bMatchWholeWord, wstring textToReplace = L"");
+	wxPoint GetNextCellPosition(wxPoint pos);
+	wxPoint GetPreviousCellPosition(wxPoint pos);	
 
-		//be consistent with window maximizing or smaller windows
-		if (m_opened_window_tracker->size() > 1)
-		{
-			MDIChild *sibling = (MDIChild*)m_opened_window_tracker->at(0).child_window_ptr;
-			if (sibling->IsMaximized())
-				this->Maximize(true);
-		}
-		else
-			this->Maximize(true);
-	}
-	~MDIChild(void)
-	{
-	}
-
-	inline void RotateOrientation()
-	{
-		StringTable<wstring> tempInput = m_table->GatherValues(INPUTS);
-		StringTable<wstring> tempOutput = m_table->GatherValues(OUTPUTS);
-		StringTable<wstring> tempStatus = m_table->GatherValues(STATUS);
-
-		int temp = m_orientation_opposite;
-		m_orientation_opposite = m_orientation;
-		m_orientation = temp;
-		m_table->SetOrientation(m_orientation);
-
-		this->Show(false);
-		m_table->FillGrid(&tempInput, &tempOutput, &tempStatus);
-		this->Show(true);
-		this->Refresh();
-	}
-
-	inline void DisplayTableData(LogicTable table)
-	{
-		try
-		{
-			m_table->ClearGrid();
-
-			DataSet<wstring> *ds = table.GetDataSet();
-
-			//this fills grids with the xml table data
-			StringTable<wstring> *inputTable = ds->GetTable(_INPUT_TABLE);
-			StringTable<wstring> *outputTable = ds->GetTable(_OUTPUT_TABLE);
-			StringTable<wstring> *statusTable = ds->GetTable(_STATUS_TABLE);
-
-			//should have equal number of columns
-			if (m_type == 0 && inputTable->Columns() != outputTable->Columns())
-				throw "Tables do not have the same number of columns";
-
-			m_table->FillGrid(inputTable, outputTable, statusTable);
-		}
-		catch(...)
-		{
-			ReportError("MDIChild::DisplayTableData");
-		}
-	}
-
-	inline void RepopulateTranslationsTable(set<wstring> *strings)
-	{
-		//the strings go in the base language column (0).
-		//we want to add new strings, but leave the existing rows untouched
-		set<wstring> *tableStrings = new set<wstring>(strings->begin(), strings->end());
-		StringTable<wstring> existingData = m_table->GatherValues();
-		for (size_t i = 1; i < existingData.Columns(); i++)
-		{
-			wstring val = existingData.GetItem(0, i);
-			if (val.length() > 0)
-				tableStrings->insert(val);
-		}
-
-		//remove any special commands/operations
-		vector<wstring> removeItems;
-		for (set<wstring>::iterator it = tableStrings->begin(); it != tableStrings->end(); it++)
-		{
-			if (UTILS::StringContains(*it, L"get(") == true ||
-				UTILS::StringContains(*it, L"eval(") == true ||
-				UTILS::StringIsNumeric(*it) == true)
-			{
-				removeItems.push_back(*it);
-			}
-		}
-
-		for (vector<wstring>::iterator it = removeItems.begin(); it != removeItems.end(); it++)
-			tableStrings->erase(*it);
-
-		size_t last_found_location = 1;
-		for (set<wstring>::iterator it = tableStrings->begin(); it != tableStrings->end(); it++)
-		{
-			bool bFoundExistingEntry = false;
-			for (size_t i = 1; i < existingData.Columns(); i++)
-			{
-				if (existingData.GetItem(0, i) == *it)
-				{
-					bFoundExistingEntry = true;
-					last_found_location = i + 1;
-					break;
-				}
-			}
-
-			if (!bFoundExistingEntry)
-			{
-				existingData.InsertColumn(*it, last_found_location);
-				existingData.SetItem(0, last_found_location, *it);
-				last_found_location++;
-			}
-		}
-
-		m_table->FillGrid(&existingData, NULL, NULL);
-
-		//highlight dead values
-		tableStrings = new set<wstring>(strings->begin(), strings->end());
-		for (size_t i = 1; i < existingData.Columns(); i++)
-		{
-			wstring val = existingData.GetItem(0, i);
-			if (val.length() > 0)
-			{
-				set<wstring>::iterator itFind = tableStrings->find(val);
-				if (itFind == tableStrings->end())
-				{
-					m_table->HighlightRule(i);
-				}
-			}
-		}
-		delete tableStrings;
-	}
-
-	inline void InsertCol(wxCommandEvent& event) {m_table->OnInsertCol(event);}
-	inline void InsertRow(wxCommandEvent& event) {m_table->OnInsertRow(event);}
-	inline void AppendRow() {m_table->OnAppendRow();}
-	inline void AppendColumn() {m_table->OnAppendColumn();}
-	inline void DeleteCol(wxCommandEvent& event) {m_table->OnDeleteCol(event);}
-	inline void DeleteRow(wxCommandEvent& event) {m_table->OnDeleteRow(event);}
-	inline void ClearCells(wxCommandEvent& event) {m_table->OnClearCells(event);}
-	inline void Cut(wxCommandEvent& event) {return m_table->OnCut(event);}
-	inline void Copy(wxCommandEvent& event) {return m_table->OnCopy(event);}
-	inline void Paste(wxCommandEvent& event) {return m_table->OnPaste(event);}
-	inline void EditCode(wxCommandEvent& event) {return m_table->OnEditCode(event);}
-
-	inline void HighlightRule(int rule) {m_table->HighlightRule(rule);}
-	inline bool HasChanged() {return m_table->HasChanged;}
-	inline OpenLogicTable Save()
-	{
-		StringTable<wstring> inputTable = m_table->GatherValues(INPUTS);
-		StringTable<wstring> outputTable = m_table->GatherValues(OUTPUTS);
-		StringTable<wstring> statusTable = m_table->GatherValues(STATUS);
-		OpenLogicTable table;
-
-		for (vector<OpenLogicTable>::iterator it = m_opened_window_tracker->begin(); it != m_opened_window_tracker->end(); it++)
-		{
-			if (it->child_window_ptr == (void*)this)
-			{
-				table = (*it);
-				break;
-			}
-		}
-
-		DataSet<wstring> *ds = table.logic_table.GetDataSet();
-		ds->Clear();
-		ds->AddTable(inputTable);
-		ds->AddTable(outputTable);
-		ds->AddTable(statusTable);
-		m_table->HasChanged = false;
-
-		return table;
-	}
-
-	inline wxPoint FindText(wstring textToFind, wxPoint startPos, bool bMatchCase, bool bMatchWholeWord)
-	{
-		wxPoint retval(-1, -1);
-		if (startPos.x < 0 || startPos.y < 0)
-			return retval;
-
-		for (int j = startPos.y; j < m_table->GetNumberRows(); j++)
-		{
-			for (int i = startPos.x; i < m_table->GetNumberCols(); i++)
-			{
-				if (TestCellTextMatch(j, i, textToFind, bMatchCase, bMatchWholeWord))
-				{
-					retval.x = i;
-					retval.y = j;
-					m_table->SelectBlock(j, i, j, i);
-					return retval;
-				}
-			}
-			startPos.x = 0;
-		}
-		return retval;
-	}
-
-	inline wxPoint FindAndReplaceText(wstring textToFind, wxPoint startPos, bool bMatchCase, bool bMatchWholeWord, wstring textToReplace = L"")
-	{
-		wxPoint curLocCheck = GetPreviousCellPosition(startPos);
-		wxString find = textToFind;
-		wxString replace = textToReplace;
-		if (TestCellTextMatch(curLocCheck.y, curLocCheck.x, textToFind, bMatchCase, bMatchWholeWord))
-		{
-			m_table->SelectBlock(curLocCheck.y, curLocCheck.x, curLocCheck.y, curLocCheck.x);
-			if (bMatchWholeWord)
-				m_table->SetCellValue(curLocCheck.y, curLocCheck.x, textToReplace);
-			else
-			{
-				wxString cellvalue = m_table->GetCellValue(curLocCheck.y, curLocCheck.x);
-				int pos = cellvalue.Lower().Find(find.Lower());
-				cellvalue.Remove(pos, find.Length());
-				cellvalue = cellvalue.insert(pos, textToReplace);
-				m_table->SetCellValue(curLocCheck.y, curLocCheck.x, cellvalue);
-			}
-			m_table->HasChanged = true;
-			return curLocCheck;
-		}
-
-		wxPoint retval = FindText(textToFind, startPos, bMatchCase, bMatchWholeWord);
-		if (retval.x != -1 && retval.y != -1)
-		{
-			if (bMatchWholeWord)
-				m_table->SetCellValue(retval.y, retval.x, textToReplace);
-			else
-			{
-				wxString cellvalue = m_table->GetCellValue(retval.y, retval.x);
-				int pos = cellvalue.Lower().Find(find.Lower());
-				cellvalue.Remove(pos, find.Length());
-				cellvalue = cellvalue.insert(pos, textToReplace);
-				m_table->SetCellValue(retval.y, retval.x, cellvalue);
-			}
-			m_table->HasChanged = true;
-		}
-
-		return retval;
-	}
-
-	inline wxPoint GetNextCellPosition(wxPoint pos)
-	{
-		wxPoint retval = pos;
-		if (pos.x < m_table->GetNumberCols())
-			retval.x++;
-		else if (pos.y < m_table->GetNumberRows())
-			retval.y++;
-		else
-		{
-			retval.x = 0;
-			retval.y = 0;
-		}
-		return retval;
-	}
-
-	inline wxPoint GetPreviousCellPosition(wxPoint pos)
-	{
-		wxPoint retval = pos;
-		if (pos.x > 0)
-			retval.x--;
-		else if (pos.y > 0)
-			retval.y--;
-		else
-		{
-			retval.x = 0;
-			retval.y = 0;
-		}
-		return retval;
-	}
-
-	inline vector<size_t> GetDisabledRules()
-	{
-		vector<size_t> retval;
-		wstring value;
-		size_t cnt = 0;
-
-
-		if (m_orientation == wxHORIZONTAL)
-		{
-			for (int i = 2; i < m_table->GetNumberCols(); i++)
-			{
-				value = m_table->GetCellValue(0, i);
-
-				if (value == L"Disabled")
-					retval.push_back(cnt);
-				cnt++;
-			}
-		}
-		else
-		{
-			for (int j = 2; j < m_table->GetNumberRows(); j++)
-			{
-				value = m_table->GetCellValue(j, 0);
-				if (value == L"Disabled")
-					retval.push_back(cnt);
-				cnt++;
-			}
-		}
-
-
-
-
-		return retval;
-	}
+	vector<size_t> GetDisabledRules();
+	void SignalTableChangedCallback();
 
 private:
-
-
-	inline void OnActivate(wxActivateEvent& event) {}
-	inline void OnChildClose(wxCloseEvent& event)
-	{
-		vector<OpenLogicTable>::iterator it;
-		for (it = m_opened_window_tracker->begin(); it != m_opened_window_tracker->end(); it++)
-		{
-			if (it->child_window_ptr == (void*)this)
-			{
-				break;
-			}
-		}
-		if (HasChanged())
-		{
-			wxMessageDialog saveNow(this, _T("Do you want to save the current table changes?"),
-				_T("Save Changes"), wxYES_NO | wxCANCEL);
-			int res = saveNow.ShowModal();
-			if (res == wxID_YES)
-			{
-				OpenLogicTable newData = Save();
-				if (!m_pm->SaveDataSet(newData.logic_table.Name, newData.logic_table.Path, newData.logic_table.GetDataSet()))
-				{
-					wxMessageBox(_T("Save failed"));
-					return;
-				}
-				else
-				{
-					m_table->HasChanged = false;
-					m_opened_window_tracker->erase(it);
-				}
-			}
-			else if (res == wxID_CANCEL)
-				return;
-			else if (res == wxID_NO)
-			{
-				m_opened_window_tracker->erase(it);
-			}
-
-		}
-		else
-			m_opened_window_tracker->erase(it);
-		event.Skip();
-	}
-
-	inline bool TestCellTextMatch(int row, int col, wxString find, bool bMatchCase, bool bMatchWholeWord)
-	{
-		bool bTest = false;
-
-		if (bMatchCase == true && bMatchWholeWord == true)
-		{
-			bTest = m_table->GetCellValue(row, col) == find;
-		}
-		else if (bMatchCase == true && bMatchWholeWord == false)
-		{
-			bTest = m_table->GetCellValue(row, col).Contains(find);
-		}
-		else if (bMatchCase == false && bMatchWholeWord == true)
-		{
-			bTest = m_table->GetCellValue(row, col).Lower() == find.Lower();
-		}
-		else if (bMatchCase == false && bMatchWholeWord == false)
-		{
-			bTest = m_table->GetCellValue(row, col).Lower().Contains(find.Lower());
-		}
-
-		return bTest;
-	}
-
+	void OnActivate(wxActivateEvent& event);
+	void OnChildClose(wxCloseEvent& event);
+	bool TestCellTextMatch(int row, int col, wxString find, bool bMatchCase, bool bMatchWholeWord);
+	OpenLogicTable GetCurrentTable();
+	
+	
 
 	LogicGrid				*m_table;
 	ProjectManager			*m_pm;
@@ -1398,6 +1055,8 @@ private:
 	vector<OpenLogicTable>	*m_opened_window_tracker;
 	int						m_orientation, m_orientation_opposite;
 	int						m_type;
+	stack<LogicTable>		stUndo;
+	stack<LogicTable>		stRedo;
 
 	DECLARE_EVENT_TABLE()
 };

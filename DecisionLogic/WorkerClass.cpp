@@ -1082,6 +1082,24 @@ void WorkerClass::ClearCells(wxCommandEvent& event)
 	}
 }
 
+void WorkerClass::Redo(wxCommandEvent& event)
+{
+	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	if (active != NULL)
+	{
+		active->Redo(event);
+	}
+}
+
+void WorkerClass::Undo(wxCommandEvent& event)
+{
+	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	if (active != NULL)
+	{
+		active->Undo(event);
+	}
+}
+
 void WorkerClass::Copy(wxCommandEvent& event)
 {
 	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();

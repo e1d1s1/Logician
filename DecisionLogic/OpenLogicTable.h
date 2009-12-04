@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "MDIChild.h"
 #include "LogicTable.h"
 
 struct OpenLogicTable

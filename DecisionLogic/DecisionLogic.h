@@ -86,6 +86,8 @@ public:
 	void OnOpenRecentFile (wxCommandEvent& event);
 
 	//edit menu
+	void OnUndo(wxCommandEvent& event);
+	void OnRedo(wxCommandEvent& event);
 	void OnCut(wxCommandEvent& event);
 	void OnCopy(wxCommandEvent& event);
 	void OnPaste(wxCommandEvent& event);
@@ -163,6 +165,8 @@ enum
 	DecisionLogic_Copy = wxID_COPY,
 	DecisionLogic_Paste = wxID_PASTE,
 	DecisionLogic_Find = wxID_FIND,
+	DecisionLogic_Undo = wxID_UNDO,
+	DecisionLogic_Redo = wxID_REDO,
 	DecisionLogic_NewTable = 0,
 	DecisionLogic_DeleteTable,
 	DecisionLogic_NewGroup,

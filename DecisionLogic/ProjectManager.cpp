@@ -33,7 +33,6 @@
 #include <wx/ffile.h>
 
 #include "ProjectManager.h"
-#include "MDIChild.h"
 #include "utilities.h"
 
 const long EQUALS = 1;

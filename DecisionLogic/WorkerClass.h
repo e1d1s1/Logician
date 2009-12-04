@@ -93,6 +93,8 @@ public:
 	void AppendRow(wxCommandEvent& event);
 	void AppendColumn(wxCommandEvent& event);
 	void ClearCells(wxCommandEvent& event);
+	void Redo(wxCommandEvent& event);
+	void Undo(wxCommandEvent& event);
 	void Copy(wxCommandEvent& event);
 	void Cut(wxCommandEvent& event);
 	void Paste(wxCommandEvent& event);
