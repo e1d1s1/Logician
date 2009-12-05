@@ -149,6 +149,12 @@ bool EDS::CKnowledgeBase::TableHasScript(wstring tableName)
 	return (table->HasJS() || table->HasPython());
 }
 
+bool EDS::CKnowledgeBase::TableIsGetAll(wstring tableName)
+{
+	CRuleTable *table = m_TableSet.GetTable(tableName);
+	return table->IsGetAll();
+}
+
 //public functions
 vector<wstring> EDS::CKnowledgeBase::EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll)
 {
@@ -186,14 +192,10 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 				vector<wstring> args = Split(cmd, L",");
 				vector<wstring> chainedResults;
 				wstring debugVals;
-				if (args.size() == 3)
+				if (args.size() == 2)
 				{
 					wstring chainTableName = TrimString(args[0]);
 					wstring chainAttrName = TrimString(args[1]);
-					wstring getAll = TrimString(args[2]);
-					bool bGetAll = false;
-					if (getAll[0] == 't')
-						bGetAll = true;
 
 					chainedResults = EvaluateTableWithParam(chainTableName, chainAttrName, param, bGetAll);
 					for (vector<wstring>::iterator itRes = chainedResults.begin(); itRes != chainedResults.end(); itRes++)
@@ -649,6 +651,10 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 						OutputAttrsValues = GetTableRowFromXML(outputList, xmlDocument);
 
 						wstring name = VariantToWStr(TableNode->attributes->getNamedItem("name")->nodeValue);
+						wstring sGetAll = VariantToWStr(TableNode->attributes->getNamedItem("getall")->nodeValue);
+						bool bGetAll = false;
+						if (sGetAll.length() > 0 && sGetAll[0] == L't')
+							bGetAll = true;
 
 						NodeList formulaInputNodes = TableNode->selectNodes("FormulaInput");
 						if (formulaInputNodes != NULL)
@@ -660,7 +666,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 							}
 						}
 
-						m_TableSet.AddTable(InputAttrsTests, OutputAttrsValues, FormulaInputs, &m_stringsMap, name);
+						m_TableSet.AddTable(InputAttrsTests, OutputAttrsValues, FormulaInputs, &m_stringsMap, name, bGetAll);
 						retval = true;
 					}
 
@@ -763,6 +769,10 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 						NodeList outputList = xpathObjOutputs->nodesetval;
 
 						wstring name = MBCStrToWStr(xmlGetProp(TableNode, (xmlChar*)"name"));
+						wstring sGetAll = MBCStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
+						bool bGetAll = false;
+						if (sGetAll.length() > 0 && sGetAll[0] == L't')
+							bGetAll = true;
 
 						xmlXPathObjectPtr xpathObjFormulas = xmlXPathEvalExpression((xmlChar*)"FormulaInput", xpathCtx);
 						NodeList formulaInputNodes = xpathObjFormulas->nodesetval;
@@ -775,7 +785,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 						vector<pair<wstring, vector<CRuleCell> > > InputAttrsTests = GetTableRowFromXML(inputList, xmlDocument);
 						vector<pair<wstring, vector<CRuleCell> > > OutputAttrsValues = GetTableRowFromXML(outputList, xmlDocument);
 
-						m_TableSet.AddTable(InputAttrsTests, OutputAttrsValues, FormulaInputs, &m_stringsMap, name);
+						m_TableSet.AddTable(InputAttrsTests, OutputAttrsValues, FormulaInputs, &m_stringsMap, name, bGetAll);
 						retval = true;
 
 						xmlXPathFreeObject(xpathObjInputs);
@@ -856,6 +866,9 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 				xmlXPathFreeObject(xpathTables);
 				xmlXPathFreeObject(xpathTable);
 				xmlXPathFreeContext(xpathCtx);
+
+				if (xmlDocument)
+					xmlFreeDoc(xmlDocument);
 			}
 			xmlCleanupParser();
 		#endif
@@ -1011,6 +1024,11 @@ vector<pair<wstring, vector<CRuleCell> > > EDS::CKnowledgeBase::GetTableRowFromX
 bool EDS::CKnowledgeBase::TableHasScript(std::string tableName)
 {
 	return TableHasScript(MBCStrToWStr(tableName));
+}
+
+bool EDS::CKnowledgeBase::TableIsGetAll(std::string tableName)
+{
+	return TableIsGetAll(MBCStrToWStr(tableName));
 }
 
 vector<string> EDS::CKnowledgeBase::EvaluateTable(string tableName, string outputAttr, bool bGetAll)

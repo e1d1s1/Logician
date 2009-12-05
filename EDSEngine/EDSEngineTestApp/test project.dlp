@@ -37,7 +37,7 @@ from xml import *</Python>
     <Token id="5">C</Token>
     <Token id="19">XPATH Worked</Token>
     <Token id="4">Z</Token>
-    <Token id="18">eval(testtable1, outputAttr1, true)</Token>
+    <Token id="18">eval(testtable1, outputAttr1)</Token>
     <Token id="11">get(outsideAttr1) with concat</Token>
     <Token id="20">get(someAttr)</Token>
     <Token id="21">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Token>

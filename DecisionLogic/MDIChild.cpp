@@ -84,9 +84,12 @@ void MDIChild::RotateOrientation()
 	m_orientation_opposite = m_orientation;
 	m_orientation = temp;
 	m_table->SetOrientation(m_orientation);
+	bool bGetAll = false;
+	if (m_table->GetCellValue(0, 0).length() > 0)
+		bGetAll = true;
 
 	this->Show(false);
-	m_table->FillGrid(&tempInput, &tempOutput, &tempStatus);
+	m_table->FillGrid(&tempInput, &tempOutput, &tempStatus, bGetAll);
 	this->Show(true);
 	this->Refresh();
 }
@@ -108,7 +111,7 @@ void MDIChild::DisplayTableData(LogicTable table)
 		if (m_type == 0 && inputTable->Columns() != outputTable->Columns())
 			throw "Tables do not have the same number of columns";
 
-		m_table->FillGrid(inputTable, outputTable, statusTable);
+		m_table->FillGrid(inputTable, outputTable, statusTable, table.bGetAll);
 	}
 	catch(...)
 	{
@@ -166,7 +169,7 @@ void MDIChild::RepopulateTranslationsTable(set<wstring> *strings)
 		}
 	}
 
-	m_table->FillGrid(&existingData, NULL, NULL);
+	m_table->FillGrid(&existingData, NULL, NULL, false);
 
 	//highlight dead values
 	tableStrings = new set<wstring>(strings->begin(), strings->end());
@@ -201,7 +204,7 @@ void MDIChild::Undo(wxCommandEvent& event)
 		{
 			stUndo.pop();
 			stRedo.push(tableData);
-		}		
+		}
 		tableData = stUndo.top();
 		
 		DisplayTableData(tableData);
@@ -377,7 +380,7 @@ void MDIChild::OnChildClose(wxCloseEvent& event)
 		if (res == wxID_YES)
 		{
 			OpenLogicTable newData = Save();
-			if (!m_pm->SaveDataSet(newData.logic_table.Name, newData.logic_table.Path, newData.logic_table.GetDataSet()))
+			if (!m_pm->SaveDataSet(newData.logic_table.Name, newData.logic_table.Path, newData.logic_table.GetDataSet(), newData.logic_table.bGetAll))
 			{
 				wxMessageBox(_T("Save failed"));
 				return;
@@ -440,6 +443,11 @@ OpenLogicTable MDIChild::GetCurrentTable()
 			break;
 		}
 	}
+
+	if (m_table->GetCellValue(0, 0).length() > 0)
+		table.logic_table.bGetAll = true;
+	else
+		table.logic_table.bGetAll = false;
 
 	DataSet<wstring> *ds = table.logic_table.GetDataSet();
 	ds->Clear();

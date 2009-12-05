@@ -327,7 +327,7 @@ xmlDocPtr ProjectManager::GetProjectFileXML()
 	return xmlDoc;
 }
 
-xmlDocPtr ProjectManager::GetDataSetXML(DataSet<wstring>* ds)
+xmlDocPtr ProjectManager::GetDataSetXML(DataSet<wstring>* ds, bool GetAll)
 {
 	xmlDocPtr xmlDoc = xmlNewDoc((xmlChar*)"1.0");
 
@@ -338,6 +338,10 @@ xmlDocPtr ProjectManager::GetDataSetXML(DataSet<wstring>* ds)
 		xmlDocSetRootElement(xmlDoc, tablesRootNode);
 		xmlNodePtr tableDataNode = xmlNewNode(NULL, (xmlChar*)"Table");
 		xmlSetProp(tableDataNode, (xmlChar*)"name", (xmlChar*)UTILS::WStrToMBCStr(ds->DataSetName).c_str());
+		if (GetAll)
+			xmlSetProp(tableDataNode, (xmlChar*)"getall", (xmlChar*)"true");
+		else
+			xmlSetProp(tableDataNode, (xmlChar*)"getall", (xmlChar*)"false");
 		xmlAddChild(tablesRootNode, tableDataNode);
 
 		if (ds->DataSetName == GLOBALORS_TABLE_NAME)
@@ -774,7 +778,7 @@ StringTable<wstring>* ProjectManager::ReadProjectFile(wstring path)
 	return retval;
 }
 
-bool ProjectManager::SaveDataSet(wstring name, wstring full_path, DataSet<wstring>* ds)
+bool ProjectManager::SaveDataSet(wstring name, wstring full_path, DataSet<wstring>* ds, bool GetAll)
 {
     bool retval = false;
     if (name.length() == 0)
@@ -809,7 +813,7 @@ bool ProjectManager::SaveDataSet(wstring name, wstring full_path, DataSet<wstrin
 
         ds->DataSetName = name;
 
-		xmlDocPtr doc = GetDataSetXML(ds);
+		xmlDocPtr doc = GetDataSetXML(ds, GetAll);
 		if (doc != NULL)
 		{
 			retval = xmlSaveFormatFileEnc(UTILS::WStrToMBCStr(full_path).c_str(), doc, "UTF-8", 1) > 0;
@@ -865,6 +869,52 @@ DataSet<wstring> ProjectManager::LoadDataSet(wstring name)
     }
 
     return retval;
+}
+
+bool ProjectManager::TableIsGetAll(wstring name)
+{
+	bool retval = false;
+	try
+	{
+		wstring filename = GetFilePathForTableName(name);
+		wfstream fin;
+		#ifdef WIN32
+		fin.open(filename.c_str(),ios::in);
+		#else
+		fin.open(UTILS::WStrToMBCStr(path).c_str(), ios::in);
+		#endif
+		if(fin.is_open())
+		{
+			xmlDocPtr doc = xmlParseFile(UTILS::WStrToMBCStr(filename).c_str());
+			wstring srcStr = L"//Tables/Table[@name='";
+			srcStr += name;
+			srcStr += L"']";
+
+			xmlXPathContextPtr xpathCtx = xmlXPathNewContext(doc);
+			string xpathExpression = UTILS::WStrToMBCStr(srcStr);
+			xmlChar* tableXPath = (xmlChar*)xpathExpression.c_str();
+			xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression(tableXPath, xpathCtx);
+			xmlNodeSetPtr allRes= xpathObj->nodesetval;
+
+			if (allRes != NULL && allRes->nodeNr == 1)
+			{
+				xmlNodePtr TableNode = allRes->nodeTab[0];
+				wstring sGetAll = UTILS::MBCStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
+				if (sGetAll.length() > 0 && sGetAll[0] == 't')
+					retval = true;
+			}
+
+			xmlXPathFreeObject(xpathObj);
+			xmlXPathFreeContext(xpathCtx);
+			if (doc)
+				xmlFreeDoc(doc);
+		}
+	}
+	catch (...)
+	{
+		 ReportError("ProjectManager::TableIsGetAll");
+	}
+	return retval;
 }
 
 wstring ProjectManager::GetFilePathForTableName(wstring name)
@@ -950,6 +1000,9 @@ DataSet<wstring> ProjectManager::ReadXML(wstring path)
 			retval.AddTable(dtInputs);
 			retval.AddTable(dtOutputs);
 			retval.AddTable(dtStatus);
+
+			if (doc)
+				xmlFreeDoc(doc);
 		}
 		fin.close();
 	}
@@ -1122,9 +1175,14 @@ void ProjectManager::WriteAllDataSetsToXMLFile(wstring savePath)
 			if (name.length() > 0 && name != GLOBALORS_TABLE_NAME && name != TRANSLATIONS_TABLE_NAME)
 			{
 				DataSet<wstring> ds = LoadDataSet(name);
+				bool GetAll = TableIsGetAll(name);
 
 				xmlNodePtr tableDataNode = xmlNewNode(NULL, (xmlChar*)"Table");
 				xmlSetProp(tableDataNode, (xmlChar*)"name", (xmlChar*)UTILS::WStrToMBCStr(ds.DataSetName).c_str());
+				if (GetAll)
+					xmlSetProp(tableDataNode, (xmlChar*)"getall", (xmlChar*)"true");
+				else
+					xmlSetProp(tableDataNode, (xmlChar*)"getall", (xmlChar*)"false");
 				xmlAddChild(tablesRootNode, tableDataNode);
 
 				//input table

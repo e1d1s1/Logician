@@ -107,18 +107,30 @@
 		        return false;
 	        }
 	        
+	        write_result("checking the table type for testtable1...");
+	        var isGetAll = knowledge.TableIsGetAll(tableName);
+	        if (isGetAll)
+	            write_result(tableName + " is GetAll as expected");
+	        else
+	        {
+	            write_result("FAILURE: table was not GetAll as expected");
+	            return false;
+	        }
+	        
 	        //testing table evaluation
 	        write_result("testing evaluation of testtable1 with inputAttr1 = 'C', get first only");
 	        knowledge.SetInputValue("inputAttr1", "C");
 	        var results2 = knowledge.EvaluateTable(tableName, false);
-	        if (ArraySize(results2) == 2 && results2["outputAttr1"].length == 1 &&
-	            results2["outputAttr1"][0] == "2")
+	        if (ArraySize(results2) == 2 && results2["outputAttr1"][0] == "2")
 	        {
 	            write_result("OK: " + results2["outputAttr1"][0]);
 	        }
 	        else
 	        {
 	            write_result("FAILURE: Did not get proper eval result");
+	            alert(results2["outputAttr1"].length);	            
+	            alert(ArraySize(results2));
+	            alert("'" + results2["outputAttr1"][0] + "'");
 		        return false;
 	        }
 	        

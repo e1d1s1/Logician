@@ -44,6 +44,7 @@ public:
 	bool HasChain() {return bHasChain;}
 	bool HasJS() {return bHasJavascript;}
 	bool HasPython() {return bHasPython;}
+	bool IsGetAll() {return bGetAll;}
 
 	vector<wstring> GetAllOutputAttrNames();
 	vector<wstring> GetAllInputAttrNames();
@@ -55,11 +56,11 @@ public:
 	void CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
 		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
 		vector<wstring> formulaInputs, CBimapper *stringMap,
-		wstring name = L"defualt");
+		wstring name = L"defualt", bool GetAll = false);
 	CRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
 		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
 		vector<wstring> formulaInputs, CBimapper *stringMap,
-		wstring name = L"defualt");
+		wstring name = L"defualt", bool GetAll = false);
 	void EnbleDebugging(bool enable) { m_DEBUGGING = enable; }
 
 	wstring DebugMessage;
@@ -77,6 +78,7 @@ private:
 	bool bHasChain;
 	bool bHasPython;
 	bool bHasJavascript;
+	bool bGetAll;
 	bool bNullSet;
 	bool m_DEBUGGING;
 };

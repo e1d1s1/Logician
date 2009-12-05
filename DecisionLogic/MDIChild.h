@@ -117,10 +117,17 @@ public:
 				if (col == 0)
 				{
 					formatIO = true;
+					if (row == 0)
+						return;
 				}
 				else if (col == 1)
 				{
 					formatAttr = true;
+					if (row == 0)
+					{
+						this->SetReadOnly(row, col, true);
+						return;
+					}
 				}
 			}
 			else
@@ -128,10 +135,17 @@ public:
 				if (row == 0)
 				{
 					formatIO = true;
+					if (col == 0)
+						return;
 				}
 				else if (row == 1)
 				{
 					formatAttr = true;
+					if (col == 0)
+					{
+						this->SetReadOnly(row, col, true);
+						return;
+					}
 				}
 			}
 
@@ -178,7 +192,7 @@ public:
 			}
 			else
 			{
-
+				
 			}
 		}
 		else
@@ -192,6 +206,9 @@ public:
 				this->SetCellBackgroundColour(row, 0, wxColour(LIGHTPINK));
 			}
 		}
+
+		if (row == 0 && col == 0)
+			this->SetReadOnly(row, col, false);
 	}
 
 	inline void HighlightRule(int index)
@@ -210,7 +227,7 @@ public:
 		}
 	}
 
-	inline void FillGrid(StringTable<wstring> *inputtable, StringTable<wstring> *outputtable, StringTable<wstring> *statustable)
+	inline void FillGrid(StringTable<wstring> *inputtable, StringTable<wstring> *outputtable, StringTable<wstring> *statustable, bool bGetAll)
 	{
 		int io_item_offset = 0;
 		int status_offset = 0;
@@ -282,12 +299,23 @@ public:
 			}
 		}
 
-
 		if (m_type == RULES_TABLE)
-		{	//IO lables
+		{	
+			this->SetCellRenderer(0, 0, new wxGridCellBoolRenderer());
+			this->SetCellEditor(0, 0, new wxGridCellBoolEditor());		
+			if (bGetAll)
+				this->SetCellValue(0,0,_T("1"));
+			else
+				this->SetCellValue(0,0,_T(""));
+
+			//IO lables
 			wxString strChoices[2] = {_T("Input"), _T("Output")};
 			if (m_orientation == wxHORIZONTAL)
 			{
+				this->SetRowLabelValue(0, _T("Get All? / Status"));
+				this->SetColLabelValue(0, _T("IO"));
+				this->SetColLabelValue(1, _T("Attr"));
+				this->SetRowLabelValue(1, _T("2"));
 				for (size_t labelIndex = status_offset; labelIndex < inputtable->Rows() + status_offset; labelIndex++)
 				{
 					this->SetCellEditor(labelIndex, 0, new wxGridCellChoiceEditor(WXSIZEOF(strChoices), strChoices));
@@ -301,6 +329,10 @@ public:
 			}
 			else
 			{
+				this->SetRowLabelValue(0, _T("Get All? / IO"));
+				this->SetRowLabelValue(1, _T("Attr"));
+				this->SetColLabelValue(0, _T("Status"));
+				this->SetColLabelValue(1, _T("B"));
 				for (size_t labelIndex = status_offset; labelIndex < inputtable->Rows() + status_offset; labelIndex++)
 				{
 					this->SetCellEditor(0, labelIndex, new wxGridCellChoiceEditor(WXSIZEOF(strChoices), strChoices));
@@ -365,6 +397,8 @@ public:
 			}
 		}
 
+		this->SetColLabelSize(wxGRID_AUTOSIZE);
+		this->SetRowLabelSize(wxGRID_AUTOSIZE);
 		this->AutoSizeColumns(false);
 
 		for (int j = 0; j < this->GetNumberRows(); j++)
@@ -460,11 +494,13 @@ public:
 						wstring value = this->GetCellValue(j, i).wc_str();
 						if (m_orientation == wxHORIZONTAL)
 						{
-							retval.SetItem(j, i, value);
+							if (i > 1)
+								retval.SetItem(j, i, value);
 						}
 						else
 						{
-							retval.SetItem(i, j, value);
+							if (j > 1)
+								retval.SetItem(i, j, value);
 						}
 					}
 				}
@@ -518,11 +554,13 @@ public:
 					{
 						if (m_orientation == wxHORIZONTAL)
 						{
-							test_io = this->GetCellValue(j, 0);
+							if (io_type != STATUS && j > 0)
+								test_io = this->GetCellValue(j, 0);
 						}
 						else
 						{
-							test_io = this->GetCellValue(0, i);
+							if (io_type != STATUS && i > 0)
+								test_io = this->GetCellValue(0, i);
 						}
 					}
 
@@ -735,6 +773,33 @@ public:
 			text = prefix + code + L")";
 			this->SetCellValue(selection.y, selection.x, text);
 		}
+	}
+
+	inline void OnEditorShown( wxGridEvent& event)
+	{
+		event.Skip();
+	}
+
+	inline void OnEditorHidden(wxGridEvent& event)
+	{		
+		event.Skip();
+	}
+
+	inline void OnLeftClick(wxGridEvent& event)
+	{
+		//event.Skip();
+		if (event.GetRow() == 0 && event.GetCol() == 0) // the GetAll checkbox
+		{			
+			if (this->GetCellValue(0, 0).length() == 0)
+				this->SetCellValue(0, 0, _T("1"));
+			else
+				this->SetCellValue(0, 0, _T(""));
+			event.Veto();
+			this->Refresh();
+			m_updateCallback();
+		}
+		else
+			event.Skip();
 	}
 
 	bool HasChanged;

@@ -45,11 +45,16 @@ namespace EDSNET {
 		size_t									TableCount();
 		bool									IsOpen();		
 		bool									TableHasScript(String^ tableName);
+		bool									TableIsGetAll(String^ tableName);
 
-		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param, bool bGetAll);
+		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param, bool bGetAll);		
+		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
+		Dictionary<String^,	array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^ param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
 		Dictionary<String^,	array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^ param, bool bGetAll);
+		array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr) {return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName));}
 		array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll);
-		Dictionary<String^,	array<String^>^>^	EvaluateTable(String^ tableName, bool bGetAll);
+		Dictionary<String^,	array<String^>^>^	EvaluateTable(String^ tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
+		Dictionary<String^,	array<String^>^>^	EvaluateTable(String^ tableName, bool bGetAll);		
 		String^									GetEvalParameter();
 		void									SetInputValues(Dictionary<String^, size_t>^ values);
 		void									SetInputValue(String^ name, String^ value);

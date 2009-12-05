@@ -10,7 +10,8 @@ namespace EDSEngineNETTestApp
     {
         static void Main(string[] args)
         {
-            string filename = "..\\..\\..\\EDSEngineTestApp\\test_project.xml";
+            string dir = System.IO.Directory.GetCurrentDirectory();
+            string filename = "..\\..\\..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.xml";
             EDSEngineNET knowledge = new EDSEngineNET(filename);
             if (knowledge.IsOpen() == false)
             {
@@ -100,6 +101,17 @@ namespace EDSEngineNETTestApp
             else
             {
                 write_result("FAILURE: Did not load all the possible output values");
+            }
+
+            write_result("getting table type of testtable1");
+            var isGetAll = knowledge.TableIsGetAll(tableName);
+            if (isGetAll)
+            {
+                write_result(tableName + " was of 'GetAll' type as expected");
+            }
+            else
+            {
+                write_result("FAILURE: " + tableName + " was not of 'GetAll' type as expected");
             }
 
             //testing table evaluation

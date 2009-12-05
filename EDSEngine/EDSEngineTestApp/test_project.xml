@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables debug="false" connection="localhost:3000">
-  <Table name="testtable1">
+  <Table name="testtable1" getall="true">
     <Inputs>
       <Attr>inputAttr1</Attr>
       <Value id="3,4" operation="1">A|Z</Value>
@@ -79,7 +79,7 @@
     </Outputs>
     <FormulaInput>outsideAttr1</FormulaInput>
   </Table>
-  <Table name="testtable2">
+  <Table name="testtable2" getall="true">
     <Inputs>
       <Attr>in1</Attr>
       <Value/>
@@ -94,12 +94,12 @@
     </Inputs>
     <Outputs>
       <Attr>out1</Attr>
-      <Value id="18" operation="4096">eval(testtable1, outputAttr1, true)</Value>
+      <Value id="18" operation="4096">eval(testtable1, outputAttr1)</Value>
       <Value id="19" operation="1">XPATH Worked</Value>
       <Value/>
     </Outputs>
   </Table>
-  <Table name="testtable3">
+  <Table name="testtable3" getall="true">
     <Inputs>
       <Attr>inputAttr2</Attr>
       <Value id="20" operation="2064">get(someAttr)</Value>

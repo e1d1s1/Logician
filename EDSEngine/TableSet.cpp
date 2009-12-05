@@ -30,9 +30,9 @@ CTableSet::~CTableSet(void)
 {
 }
 
-void CTableSet::AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests, vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues, vector<wstring> formulaInputs, CBimapper *stringMap, wstring name)
+void CTableSet::AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests, vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues, vector<wstring> formulaInputs, CBimapper *stringMap, wstring name, bool GetAll)
 {
-	CRuleTable table (inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name);
+	CRuleTable table (inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll);
 	m_tables[table.m_Name] = table;
 }
 

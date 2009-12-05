@@ -50,7 +50,7 @@ public:
 	bool SaveProjectFile();
 	bool SaveNewProjectFileAs(wstring path);
 	bool LoadProjectFile(wstring path);
-	bool SaveDataSet(wstring name, wstring path, DataSet<wstring>* ds);
+	bool SaveDataSet(wstring name, wstring path, DataSet<wstring>* ds, bool GetAll);
 	DataSet<wstring> LoadDataSet(wstring name);
 	bool DeleteDataSet(wstring name);
 	wstring GetProjectWorkingPath() {return m_project_working_path;}
@@ -68,7 +68,7 @@ public:
 	wstring GetProjectFilePath() {return m_project_full_path_name;}
 	set<wstring>* GetProjectStrings() {return &stringCollection;}
 	xmlDocPtr LoadTableRawXML(wstring name);
-
+	bool TableIsGetAll(wstring name);
 
 private:
 	xmlDocPtr GetProjectFileXML();
@@ -77,14 +77,14 @@ private:
 	vector<wstring> ParseValueForGets(wstring val);
 	void WriteXMLForTable(xmlNodePtr tableDataNode, StringTable<wstring>* table, string tableXMLID, bool bWriteIndexes);
 	wstring ReplaceAGet(wstring &newString);
-	xmlDocPtr GetDataSetXML(DataSet<wstring>* ds);
+	xmlDocPtr GetDataSetXML(DataSet<wstring>* ds, bool GetAll);
 	DataSet<wstring> ReadXML(wstring path);
 	StringTable<wstring> CreateDataTableFromNodes(string nodeName, xmlDocPtr doc);
 	wstring GetCellValueWithOperation(wstring text, long operation);
 	void WriteXML(DataSet<wstring> ds, xmlDocPtr doc);
 	void SaveStringDefs(xmlDocPtr doc);
 	vector<wstring> CheckForOrs(wstring text);
-	wstring GetFilePathForTableName(wstring name);
+	wstring GetFilePathForTableName(wstring name);	
 
 	wstring m_project_name;
 	wstring m_project_working_path;
