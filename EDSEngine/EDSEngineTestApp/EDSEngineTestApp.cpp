@@ -50,7 +50,10 @@ public:
 
 		if (bPassed)
 		{
-			Log("OK");
+			string finalMsg = "OK";
+			if (msg.length() > 0)
+				finalMsg += ", " + msg;
+			Log(finalMsg);
 		}
 		else
 		{
@@ -175,6 +178,14 @@ int main(int argc, char* argv[])
 		res.SetResult(false, "Did not load all the possible output values");
 	}
 
+	res.Reset();
+	Log("Checking the table type...");
+	bool bIsGetAll = knowledge.TableIsGetAll(tableName);
+	if (bIsGetAll)
+		res.SetResult(true, "testtable1 is of type: GetAll");
+	else
+		res.SetResult(false, "testtable1 is not of type \"GetAll\" as expected");
+
 	//testing table evaluation
 	res.Reset();
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', get first only");
@@ -195,7 +206,7 @@ int main(int argc, char* argv[])
 	res.Reset();
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', get all");
 	knowledge.SetInputValue(L"inputAttr1", L"C");
-	map<wstring, vector<wstring> > results = knowledge.EvaluateTable(tableName, true);
+	map<wstring, vector<wstring> > results = knowledge.EvaluateTable(tableName, bIsGetAll);
 	if (results.size() == 2 && results[L"outputAttr1"].size() == 3 &&
 		results[L"outputAttr1"].at(0) == L"2" &&
 		results[L"outputAttr1"].at(1) == L"4" &&
@@ -215,7 +226,7 @@ int main(int argc, char* argv[])
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 10, get all");
 	knowledge.SetInputValue(L"inputAttr1", L"C");
 	knowledge.SetInputValue(L"inputAttr2", L"10");
-	map<wstring, vector<wstring> > results3 = knowledge.EvaluateTable(tableName, true);
+	map<wstring, vector<wstring> > results3 = knowledge.EvaluateTable(tableName, bIsGetAll);
 	if (results3.size() == 2 && results3[L"outputAttr1"].size() == 4 &&
 		results3[L"outputAttr1"].at(0) == L"2" &&
 		results3[L"outputAttr1"].at(1) == L" with concat" && //empty becuase we never fed it outsideAttr1
@@ -238,7 +249,7 @@ int main(int argc, char* argv[])
 	knowledge.SetInputValue(L"inputAttr1", L"C");
 	knowledge.SetInputValue(L"inputAttr2", L"78");
 	knowledge.SetInputValue(L"outsideAttr1", L"28");
-	map<wstring, vector<wstring> > results4 = knowledge.EvaluateTable(tableName, true);
+	map<wstring, vector<wstring> > results4 = knowledge.EvaluateTable(tableName, bIsGetAll);
 	if (results4.size() == 2 && results4[L"outputAttr1"].size() == 5 &&
 		results4[L"outputAttr1"].at(0) == L"2" &&
 		results4[L"outputAttr1"].at(1) == L"28 with concat" &&

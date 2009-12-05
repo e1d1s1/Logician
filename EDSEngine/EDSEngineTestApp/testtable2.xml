@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="testtable2">
+  <Table name="testtable2" getall="true">
     <Inputs>
       <Attr>in1</Attr>
       <Value operation="1">this is a comment</Value>
@@ -18,7 +18,7 @@
     <Outputs>
       <Attr>out1</Attr>
       <Value/>
-      <Value operation="4096">eval(testtable1, outputAttr1, true)</Value>
+      <Value operation="4096">eval(testtable1, outputAttr1)</Value>
       <Value operation="1">XPATH Worked</Value>
       <Value/>
     </Outputs>

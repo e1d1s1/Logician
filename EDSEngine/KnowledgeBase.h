@@ -37,10 +37,15 @@ namespace EDS
 		bool IsOpen() {return m_IsOpen;}
 
 		bool TableHasScript(wstring tableName);
-		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param, bool bGetAll = true);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param, bool bGetAll = true);
-		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll = true);
-		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, bool bGetAll = true);
+		bool TableIsGetAll(wstring tableName);
+		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
+		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param, bool bGetAll);
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param, bool bGetAll);
+		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr) {return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName));}
+		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll);
+		map<wstring, vector<wstring> > EvaluateTable(wstring tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
+		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, bool bGetAll);
 		wstring GetEvalParameter() {return m_StateParameter;}
 	#ifdef _MSC_VER
 		void SetInputValues(stdext::hash_map<wstring, size_t> values) {m_GlobalInputAttrsValues = values;}
@@ -64,10 +69,15 @@ namespace EDS
 		CKnowledgeBase(string knowledge_file);
 		void CreateKnowledgeBase(string knowledge_file);
 		bool TableHasScript(string tableName);
-		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string param, bool bGetAll = true);
-		map<string, vector<string> > EvaluateTableWithParam(string tableName, string param, bool bGetAll = true);
-		vector<string> EvaluateTable(string tableName, string outputAttr, bool bGetAll = true);
-		map<string, vector<string> > EvaluateTable(string tableName, bool bGetAll = true);
+		bool TableIsGetAll(string tableName);
+		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
+		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string param, bool bGetAll);
+		map<string, vector<string> > EvaluateTableWithParam(string tableName, string param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
+		map<string, vector<string> > EvaluateTableWithParam(string tableName, string param, bool bGetAll);
+		vector<string> EvaluateTable(string tableName, string outputAttr) {return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName));}
+		vector<string> EvaluateTable(string tableName, string outputAttr, bool bGetAll);
+		map<string, vector<string> > EvaluateTable(string tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
+		map<string, vector<string> > EvaluateTable(string tableName, bool bGetAll);
 		string GetEvalParameterA() {return WStrToMBCStr(m_StateParameter);}
 	#ifdef _MSC_VER
 		void SetInputValues(stdext::hash_map<string, size_t> values);

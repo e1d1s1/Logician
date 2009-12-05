@@ -259,7 +259,7 @@ bool WorkerClass::Save()
 					}
 				}
 
-				if (!m_pm.SaveDataSet(current_table.logic_table.Name, current_table.logic_table.Path, current_table.logic_table.GetDataSet()))
+				if (!m_pm.SaveDataSet(current_table.logic_table.Name, current_table.logic_table.Path, current_table.logic_table.GetDataSet(), current_table.logic_table.bGetAll))
 					bTablesSaved = false;
 			}
 		}
@@ -308,6 +308,7 @@ bool WorkerClass::LoadTable(wstring name)
 
 				LogicTable table;
 				table.LoadDataSet(ds, name, path);
+				table.bGetAll = m_pm.TableIsGetAll(name);
 				MDIChild *childForm = new MDIChild(m_parentFrame, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
 				childForm->Show();
 				retval = true;

@@ -43,6 +43,7 @@ void CRuleTable::ResetTable()
 	bHasChain = false;
 	bHasPython = false;
 	bHasJavascript = false;
+	bGetAll = false;
 	bNullSet = false;
 
 
@@ -56,7 +57,7 @@ void CRuleTable::ResetTable()
 void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
 								vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
 								vector<wstring> formulaInputs, CBimapper *stringMap,
-								wstring name)
+								wstring name, bool GetAll)
 {
 	ResetTable();
 
@@ -72,14 +73,16 @@ void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inpu
 	bHasChain = false;
 	bHasPython = false;
 	bHasJavascript = false;
+
+	bGetAll = GetAll;
 }
 
 CRuleTable::CRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
 					   vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
 					   vector<wstring> formulaInputs, CBimapper *stringMap,
-					   wstring name)
+					   wstring name, bool GetAll)
 {
-	CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name);
+	CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll);
 }
 
 map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll)

@@ -71,6 +71,18 @@ namespace EDSNET
 			return false;
 	}
 
+	bool EDSEngineNET::TableIsGetAll(String^ tableName)
+	{
+		if (m_KnowledgeBase)
+		{
+			wstring table;
+			MarshalString(tableName, table);
+			return m_KnowledgeBase->TableIsGetAll(table);
+		}
+		else
+			return false;
+	}
+
 	array<String^>^ EDSEngineNET::EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param, bool bGetAll)
 	{
 		array<String^>^ retval = nullptr;

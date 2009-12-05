@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="testtable3">
+  <Table name="testtable3" getall="true">
     <Inputs>
       <Attr>inputAttr2</Attr>
       <Value operation="2064">get(someAttr)</Value>

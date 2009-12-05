@@ -631,6 +631,7 @@ function RuleTable()
         this.m_Name = "";
         this.m_Tests = 0;
         this.m_stringsMap = new Bimapper();
+        this.m_bGetAll = false;
         this.bHasChain = false;
         this.bHasJS = false; //eval(.....
         this.bNullSet = false;
@@ -642,7 +643,7 @@ function RuleTable()
     }
 }
 
-RuleTable.prototype.CreateRuleTable = function(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name)
+RuleTable.prototype.CreateRuleTable = function(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll)
 {
     try
     {
@@ -657,6 +658,7 @@ RuleTable.prototype.CreateRuleTable = function(inputAttrsTests, outputAttrsValue
         
         this.bHasJS = false;
         this.bHasChain = false;
+        this.m_bGetAll = GetAll;
     }
     catch (err)
     {
@@ -1093,12 +1095,12 @@ function TableSet()
     }
 }
 
-TableSet.prototype.AddTable = function(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, tableName)
+TableSet.prototype.AddTable = function(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, tableName, GetAll)
 {
     try
     {
         var table = new RuleTable();        
-        table.CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, tableName);
+        table.CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, tableName, GetAll);
         this.m_tables[tableName] = table;
     }
     catch (err)
@@ -1318,6 +1320,7 @@ function KnowledgeBase(xmlPath)
         var formulaInputNodes;          
         var allTranslaions;
         var nodeJS;
+        var bGetAll = false;
         
         if (IsIE() == false)
         {            
@@ -1328,6 +1331,10 @@ function KnowledgeBase(xmlPath)
             {
                 var TableNode = allTables.snapshotItem(i);
                 var tableName = TableNode.getAttribute("name");
+                bGetAll = false;
+                var getAll = TableNode.getAttribute("getall");
+                if (getAll.toLowerCase().charAt(0) == 't')
+                    bGetAll = true;
                 var formulaInputs = new Array(); 
                 inputList = xmlDoc.evaluate("Inputs", TableNode, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
                 outputList = xmlDoc.evaluate("Outputs", TableNode, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -1342,7 +1349,7 @@ function KnowledgeBase(xmlPath)
                 }
                 inputAttrsTests = this.GetTableRowFromXML(inputList, xmlDoc);
                 outputAttrsValues = this.GetTableRowFromXML(outputList, xmlDoc);
-                this.m_TableSet.AddTable(inputAttrsTests, outputAttrsValues, formulaInputs, this.m_stringsMap, tableName);    
+                this.m_TableSet.AddTable(inputAttrsTests, outputAttrsValues, formulaInputs, this.m_stringsMap, tableName, bGetAll);    
                 this.m_IsOpen = true;
             }
             
@@ -1391,6 +1398,10 @@ function KnowledgeBase(xmlPath)
             {
                 var TableNode = allTables[i];
                 var tableName = TableNode.attributes.getNamedItem("name").nodeValue;
+                bGetAll = false;
+                var getAll = TableNode.attributes.getNamedItem("getall").nodeValue;
+                if (getAll.toLowerCase().charAt(0) == 't')
+                    bGetAll = true;
                 var formulaInputs = new Array(); 
                 inputList = TableNode.selectNodes("Inputs");     
                 outputList = TableNode.selectNodes("Outputs");             
@@ -1406,7 +1417,7 @@ function KnowledgeBase(xmlPath)
                 
                 inputAttrsTests = this.GetTableRowFromXML(inputList, xmlDoc);
                 outputAttrsValues = this.GetTableRowFromXML(outputList, xmlDoc);                       
-                this.m_TableSet.AddTable(inputAttrsTests, outputAttrsValues, formulaInputs, this.m_stringsMap, tableName);
+                this.m_TableSet.AddTable(inputAttrsTests, outputAttrsValues, formulaInputs, this.m_stringsMap, tableName, bGetAll);
                 this.m_IsOpen = true;
             }
             
@@ -1597,7 +1608,25 @@ KnowledgeBase.prototype.TableCount = function()
     }
 }
 
-KnowledgeBase.prototype.EvaluateTableForAttr = function(tableName, outputAttr, bGetAll)
+KnowledgeBase.prototype.TableIsGetAll = function(tableName)
+{
+    var table = this.m_TableSet.GetTable(tableName);
+    return table.m_bGetAll;
+}
+
+KnowledgeBase.prototype.EvaluateTableForAttr = function(tableName, outputAttr)
+{
+    try
+    {
+        return this.EvaluateTableForAttrWithParam(tableName, outputAttr, "", this.TableIsGetAll(tableName));
+    }
+    catch (Error)
+    {
+        ReportError(err);
+    }
+}
+
+KnowledgeBase.prototype.EvaluateTableForAttrGet = function(tableName, outputAttr, bGetAll)
 {    
     try
     {
@@ -1609,7 +1638,19 @@ KnowledgeBase.prototype.EvaluateTableForAttr = function(tableName, outputAttr, b
     }
 }
 
-KnowledgeBase.prototype.EvaluateTable = function(tableName, bGetAll)
+KnowledgeBase.prototype.EvaluateTable = function(tableName)
+{    
+    try
+    {
+        return this.EvaluateTableWithParam(tableName, "", this.TableIsGetAll(tableName));
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+}
+
+KnowledgeBase.prototype.EvaluateTableGet = function(tableName, bGetAll)
 {    
     try
     {
@@ -1621,7 +1662,19 @@ KnowledgeBase.prototype.EvaluateTable = function(tableName, bGetAll)
     }
 }
 
-KnowledgeBase.prototype.EvaluateTableForAttrWithParam = function(tableName, outputAttr, param, bGetAll) 
+KnowledgeBase.prototype.EvaluateTableForAttrWithParam = function(tableName, outputAttr, param)
+{
+    try
+    {
+        return this.EvaluateTableForAttrWithParamGet(tableName, outputAttr, param, this.TableIsGetAll(tableName));
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+}
+
+KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, outputAttr, param, bGetAll) 
 {
     var retval = new Array();
     try
@@ -1650,15 +1703,11 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParam = function(tableName, outp
 				    var cmd = text.substr(evalIndex + 5, text.length - evalIndex - 6);
 				    var args = cmd.split(",");
 				    var chainedResults = new Array();
-				    if (args.length == 3)
+				    if (args.length == 2)
 				    {				        
 					    var chainTableName = args[0].trim();
 					    var chainAttrName = args[1].trim();
-					    var getAll = args[2].trim();
-					    var bGetAll = false;
 					    var debugVals = "";
-					    if (getAll.toLowerCase().charAt(0) == 't')
-						    bGetAll = true;
 
 					    chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, param, bGetAll);
 					    for (var j = 0; j < chainedResults.length; j++)
@@ -1680,7 +1729,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParam = function(tableName, outp
 				    if (this.m_DEBUGGING_MSGS && chainedResults.length > 0)
 				    {   //replace the eval( string with the actual value
 					    table.DebugMessage = table.DebugMessage.replace(text, text + debugVals);					
-				    }				    
+				    }
 			    }
 			    else
 			    {
@@ -1771,7 +1820,19 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParam = function(tableName, outp
     return retval;
 }
 
-KnowledgeBase.prototype.EvaluateTableWithParam = function(tableName, param, bGetAll) 
+KnowledgeBase.prototype.EvaluateTableWithParam = function(tableName, param, bGetAll)
+{
+    try
+    {
+        return this.EvaluateTableWithParamGet(tableName, param, this.TableIsGetAll(tableName));
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+}
+
+KnowledgeBase.prototype.EvaluateTableWithParamGet = function(tableName, param, bGetAll) 
 {
     var retval = new Array();
     try

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="testtable1">
+  <Table name="testtable1" getall="true">
     <Inputs>
       <Attr>inputAttr1</Attr>
       <Value operation="1">OR:Test1</Value>

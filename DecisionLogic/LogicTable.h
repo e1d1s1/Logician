@@ -39,12 +39,13 @@ public:
 	bool CreateLogicTable(wstring name, vector<wstring> inputs, vector<wstring> outputs);
 	bool CreateLogicTable(wstring name, StringTable<wstring> inputTable, StringTable<wstring> outputTable);
 	void LoadDataSet(DataSet<wstring> ds, wstring name, wstring path) {m_ds = ds; Name = name; Path = path;}
-	void Clear() {m_ds.Clear(); Name.empty(); Path.empty();}
+	void Clear() {m_ds.Clear(); Name.empty(); Path.empty(); bGetAll = false;}
 	bool HasData();
 
 	wstring Name;
 	wstring Path;
 	bool bIsSaved;
+	bool bGetAll;
 
 private:
 	void BuildDataSet(wstring name);

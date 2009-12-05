@@ -33,7 +33,7 @@ public:
 
 	void AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests, 
 		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues, 
-		vector<wstring> formulaInputs, CBimapper *stringMap, wstring name = L"defualt");
+		vector<wstring> formulaInputs, CBimapper *stringMap, wstring name = L"defualt", bool GetAll = false);
 	void Initialize();
 	CRuleTable* GetTable(wstring tableName);
 	vector<wstring> GetInputAttrs(wstring tableName);

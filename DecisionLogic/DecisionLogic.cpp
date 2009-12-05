@@ -126,6 +126,10 @@ BEGIN_EVENT_TABLE(LogicGrid, wxGrid)
 	EVT_MENU(PASTE, LogicGrid::OnPaste)
 	EVT_MENU(EDIT_CODE, LogicGrid::OnEditCode)
 	EVT_GRID_CELL_CHANGE(LogicGrid::OnCellChange)
+
+	EVT_GRID_EDITOR_SHOWN(LogicGrid::OnEditorShown)
+    EVT_GRID_EDITOR_HIDDEN(LogicGrid::OnEditorHidden)
+	EVT_GRID_CELL_LEFT_CLICK(LogicGrid::OnLeftClick)
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(DebugOptionsDialog, wxPropertySheetDialog)
