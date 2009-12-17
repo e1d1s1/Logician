@@ -62,6 +62,8 @@ const long LIGHTGREEN = 12779440;
 const long VERYLIGHTGREEN = 15204319;
 const long LIGHTBLUE = 16766906;
 const long LIGHTYELLOW = 11337470;
+const long DARKRED = 460702;
+const long _BLACK = 000000;
 
 const wxString strChoices[2] = {_T("Input"), _T("Output")};
 const wxString strChoicesRule[2] = {_T("Enabled"), _T("Disabled")};
@@ -84,7 +86,7 @@ enum
 class LogicGrid: public wxGrid
 {
 public:
-	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void),
+	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void), map<wstring, vector<wstring> > gORs, 
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = wxWANTS_CHARS,
 		const wxString& name = wxPanelNameStr):
@@ -94,6 +96,7 @@ public:
 		HasChanged = false;
 		m_type = type;
 		m_updateCallback = updateCallback;
+		m_ors = gORs;
 	}
 
 	enum
@@ -192,7 +195,20 @@ public:
 			}
 			else
 			{
-				
+				//check for or
+				wxFont cellFont = this->GetDefaultCellFont();
+				wstring value = this->GetCellValue(row, col);
+				if (m_ors.find(value) != m_ors.end())
+				{					
+					cellFont.SetWeight(wxBOLD);
+					this->SetCellTextColour(row, col, wxColour(DARKRED));
+				}
+				else
+				{
+					cellFont.SetWeight(wxNORMAL);
+					this->SetCellTextColour(row, col, wxColour(_T("BLACK")));
+				}
+				this->SetCellFont(row, col, cellFont);
 			}
 		}
 		else
@@ -285,22 +301,22 @@ public:
 
 		int startIndex = inputtable->Rows() + status_offset;
 
-		if (outputtable != NULL)
-		{
-			for (size_t j = 0; j < outputtable->Rows(); j++)
-			{
-				for (size_t i = 0; i < outputtable->Columns(); i++)
-				{
-					if (m_orientation == wxHORIZONTAL)
-						this->SetCellValue(j + startIndex, i + io_item_offset, outputtable->GetItem(j, i));
-					else
-						this->SetCellValue(i + io_item_offset, j + startIndex, outputtable->GetItem(j, i));
-				}
-			}
-		}
-
 		if (m_type == RULES_TABLE)
 		{	
+			if (outputtable != NULL)
+			{
+				for (size_t j = 0; j < outputtable->Rows(); j++)
+				{
+					for (size_t i = 0; i < outputtable->Columns(); i++)
+					{
+						if (m_orientation == wxHORIZONTAL)
+							this->SetCellValue(j + startIndex, i + io_item_offset, outputtable->GetItem(j, i));
+						else
+							this->SetCellValue(i + io_item_offset, j + startIndex, outputtable->GetItem(j, i));
+					}
+				}
+			}
+		
 			this->SetCellRenderer(0, 0, new wxGridCellBoolRenderer());
 			this->SetCellEditor(0, 0, new wxGridCellBoolEditor());		
 			if (bGetAll)
@@ -381,17 +397,16 @@ public:
 			if (m_type == TRANSLATIONS_TABLE)
 				label = L"Language";
 			if (m_orientation == wxVERTICAL)
-			{
-				for (int j = 1; j < this->GetNumberRows(); j++)
-					this->SetRowLabelValue(j, UTILS::ToWString(UTILS::stringify((long)j)));
-				for (int i = 0; i < this->GetNumberCols(); i++)
-					this->SetColMinimalWidth(i, 100);
+			{		
 				this->SetRowLabelValue(0, label);
+				this->SetColLabelValue(0, _T("A"));
+				for (int i = 0; i < this->GetNumberCols(); i++)
+					this->SetColMinimalWidth(i, 100);				
 			}
 			else
 			{
-				for (int i = 1; i < this->GetNumberCols(); i++)
-					this->SetColLabelValue(i, UTILS::ToWString(UTILS::stringify((long)i)));
+				
+				this->SetRowLabelValue(0, _T("1"));
 				this->SetColLabelValue(0, label);
 				this->SetColMinimalWidth(0, 100);
 			}
@@ -442,11 +457,17 @@ public:
 			}
 			else if (m_type == GLOBAL_ORS_TABLE)
 			{
+				if (io_type == STATUS)
+					return retval;
 				retval.TableName = GLOBALORS_TABLE_NAME;
+				rule_offset = 1;
 			}
 			else if (m_type == TRANSLATIONS_TABLE)
 			{
+				if (io_type == STATUS)
+					return retval;
 				retval.TableName = TRANSLATIONS_TABLE_NAME;
+				rule_offset = 1;
 			}
 
 			if (io_type != STATUS) retval.AddColumn(_ATTR_NAME);
@@ -475,7 +496,7 @@ public:
 					retval.AddRow();
 			}
 
-			if (io_type == STATUS)
+			if (m_type == RULES_TABLE && io_type == STATUS)
 			{
 				int max_row = 1; int max_col = 1;
 				if (m_orientation == wxHORIZONTAL)
@@ -542,12 +563,12 @@ public:
 			set<size_t> rowIndexesToRemove;
 			for (j = 0; j < this->GetNumberRows(); j++)
 			{
+				wstring attrName, test_io;
+				if (m_orientation == wxHORIZONTAL)
+					attrName = this->GetCellValue(j, name_idx);
 				for (i = 0; i < this->GetNumberCols(); i++)
-				{
-					wstring attrName, test_io;
-					if (m_orientation == wxHORIZONTAL)
-						attrName = this->GetCellValue(j, name_idx);
-					else
+				{					
+					if (m_orientation == wxVERTICAL)
 						attrName = this->GetCellValue(name_idx, i);
 
 					if (m_type == RULES_TABLE)
@@ -1059,10 +1080,11 @@ private:
 		}
 	}
 
-	int			m_orientation;
-	int			m_type;
-	wxRect		m_sel_range;
-	void		(*m_updateCallback)(void);
+	int								m_orientation;
+	int								m_type;
+	wxRect							m_sel_range;
+	void							(*m_updateCallback)(void);
+	map<wstring, vector<wstring> >	m_ors;
 
 	DECLARE_EVENT_TABLE()
 };
@@ -1121,7 +1143,7 @@ private:
 	int						m_orientation, m_orientation_opposite;
 	int						m_type;
 	stack<LogicTable>		stUndo;
-	stack<LogicTable>		stRedo;
+	stack<LogicTable>		stRedo;	
 
 	DECLARE_EVENT_TABLE()
 };

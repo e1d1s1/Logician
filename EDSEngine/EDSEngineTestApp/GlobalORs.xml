@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="GlobalORs">
+  <Table name="GlobalORs" getall="true">
     <Inputs>
       <Attr>OR:Test1</Attr>
-      <Value operation="0">A</Value>
-      <Value operation="0">Z</Value>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Value operation="1">A</Value>
+      <Value operation="1">Z</Value>
       <Value/>
     </Inputs>
   </Table>

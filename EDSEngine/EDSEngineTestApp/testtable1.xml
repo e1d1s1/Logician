@@ -12,13 +12,6 @@
       <Value/>
       <Value/>
       <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
     </Inputs>
     <Inputs>
       <Attr>inputAttr2</Attr>
@@ -31,23 +24,9 @@
       <Value operation="64">70,80</Value>
       <Value/>
       <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
     </Inputs>
     <Outputs>
       <Attr>anotherOutput</Attr>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
       <Value/>
       <Value/>
       <Value/>
@@ -69,23 +48,9 @@
       <Value operation="10241">js(get(outsideAttr1) + 2)</Value>
       <Value/>
       <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
     </Outputs>
     <FormulaInput>outsideAttr1</FormulaInput>
     <Status>
-      <RuleStatus enabled="true"/>
-      <RuleStatus enabled="true"/>
-      <RuleStatus enabled="true"/>
-      <RuleStatus enabled="true"/>
-      <RuleStatus enabled="true"/>
-      <RuleStatus enabled="true"/>
-      <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
