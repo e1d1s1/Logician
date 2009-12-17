@@ -70,6 +70,8 @@ public:
 	xmlDocPtr LoadTableRawXML(wstring name);
 	bool TableIsGetAll(wstring name);
 
+	map<wstring, vector<wstring> > GlobalORs;
+
 private:
 	xmlDocPtr GetProjectFileXML();
 	StringTable<wstring>* ReadProjectFile(wstring path);
@@ -92,7 +94,6 @@ private:
 	StringTable<wstring> *m_project_files;
 	set<wstring> stringCollection;
 	map<wstring, size_t> stringDictionary;
-	map<wstring, vector<wstring> > globalORs;
 
 	bool m_deubgStaus;
 	wstring m_DebugConnection;

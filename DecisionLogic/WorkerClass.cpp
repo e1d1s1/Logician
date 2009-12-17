@@ -164,6 +164,7 @@ bool WorkerClass::OpenProject(wstring fileName)
 			bIsSaved = false;
 			retval = true;
 			AddAllProjectNodes();
+			UpdateGlobalORs();
 			GetSettings();
 			SaveApplicationSettings();
 		}
@@ -173,6 +174,37 @@ bool WorkerClass::OpenProject(wstring fileName)
 		ReportError("WorkerClass::OpenProject");
 	}
 	return retval;
+}
+
+void WorkerClass::UpdateGlobalORs()
+{
+	map<wstring, vector<wstring>> mapGlobalORs;
+
+	wstring path = m_pm.GetProjectWorkingPath();
+	path += PATHSEP + GLOBALORS_TABLE_NAME + L".xml";;
+	if (UTILS::FileExists(path))
+	{
+		DataSet<wstring> ds = m_pm.LoadDataSet(GLOBALORS_TABLE_NAME);
+		StringTable<wstring> *table = ds.GetTable(INPUT_TABLE);
+		
+		for (size_t j = 0; j < table->Rows(); j++)
+		{
+			wstring ORName = table->GetItem(j, 0);
+			if (ORName.length() > 0)
+			{
+				vector<wstring> vValues;
+				for (size_t i = 1; i < table->Columns(); i++)
+				{
+					wstring ORValue = table->GetItem(j, i);
+					if (ORValue.length() > 0)
+						vValues.push_back(ORValue);
+				}
+				mapGlobalORs[ORName] = vValues;
+			}
+		}		
+	}
+
+	m_pm.GlobalORs = mapGlobalORs;
 }
 
 void WorkerClass::GetSettings()

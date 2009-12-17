@@ -158,7 +158,7 @@ void ProjectManager::SaveStringDefs(xmlDocPtr doc)
 	stringDictionary.clear();
 
 	//start by building the OR list
-	globalORs.clear();
+	GlobalORs.clear();
 	wstring ors_path = m_project_working_path + PATHSEP + GLOBALORS_TABLE_NAME + L".xml";
 	if (UTILS::FileExists(ors_path))
 	{
@@ -186,7 +186,7 @@ void ProjectManager::SaveStringDefs(xmlDocPtr doc)
 							values.push_back(ORValue);
 					}
 				}
-				globalORs[ORName] = values;
+				GlobalORs[ORName] = values;
 			}
 		}
 
@@ -259,8 +259,8 @@ vector<wstring> ProjectManager::CheckForOrs(wstring text)
 	if (retval.size() == 1)
 	{
 		//check for "OR "definition
-		map<wstring, vector<wstring> >::iterator itFind = globalORs.find(text);
-		if (itFind != globalORs.end())
+		map<wstring, vector<wstring> >::iterator itFind = GlobalORs.find(text);
+		if (itFind != GlobalORs.end())
 		{
 			retval = (*itFind).second;
 		}
