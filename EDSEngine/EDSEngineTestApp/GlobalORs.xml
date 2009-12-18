@@ -7,5 +7,11 @@
       <Value operation="1">Z</Value>
       <Value/>
     </Inputs>
+    <Inputs>
+      <Attr>OR:Test3</Attr>
+      <Value operation="1">X</Value>
+      <Value operation="1">Y</Value>
+      <Value/>
+    </Inputs>
   </Table>
 </Tables>
