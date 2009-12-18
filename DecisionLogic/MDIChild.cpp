@@ -54,7 +54,7 @@ MDIChild::MDIChild(wxMDIParentFrame *parent, int orient, int type, vector<OpenLo
 
 	sizer = new wxBoxSizer(wxHORIZONTAL);
 	pt2Object = (void*)this;
-	m_table = new LogicGrid(this, m_orientation, -1, type, SignalTableChanged, pm->GlobalORs, wxDefaultPosition, wxDefaultSize);
+	m_table = new LogicGrid(this, m_orientation, -1, type, SignalTableChanged, &pm->GlobalORs, wxDefaultPosition, wxDefaultSize);
 	sizer->Add(m_table, wxEXPAND);
 
 	DisplayTableData(logic);
