@@ -651,28 +651,6 @@ wstring ProjectManager::ReplaceAGet(wstring &newString)
     }
 
     return retval;
-
-
-	//wstring attrName;
-	//try
-	//{
-	//	int startPos = newString.find_first_of(L"get(", 0);
-	//	if (startPos >= 0)
-	//	{
-	//		int endPos = newString.find_first_of(L")", startPos);
-	//		if (endPos > startPos)
-	//		{
-	//			attrName = newString.substr(startPos + 4, endPos - startPos - 4);
-	//			newString = newString.substr(0, startPos) + newString.substr(endPos);
-	//		}
-	//	}
-	//}
-	//catch (...)
- //   {
- //       ReportError("ProjectManager::ReplaceAGet");
- //   }
-
- //   return attrName;
 }
 
 bool ProjectManager::LoadProjectFile(wstring path)
@@ -690,6 +668,8 @@ bool ProjectManager::LoadProjectFile(wstring path)
 		m_project_working_path = path.substr(0, pos);
 		m_project_name = path.substr(pos + 1);
 		m_project_full_path_name = path;
+
+		UpdateGlobalORs();
 	}
 	catch(...)
 	{
@@ -819,6 +799,11 @@ bool ProjectManager::SaveDataSet(wstring name, wstring full_path, DataSet<wstrin
 			retval = xmlSaveFormatFileEnc(UTILS::WStrToMBCStr(full_path).c_str(), doc, "UTF-8", 1) > 0;
 			xmlFreeDoc(doc);
 		}
+
+		if (name == GLOBALORS_TABLE_NAME)
+		{
+			UpdateGlobalORs();
+		}
     }
     catch (...)
     {
@@ -826,6 +811,35 @@ bool ProjectManager::SaveDataSet(wstring name, wstring full_path, DataSet<wstrin
     }
 
     return retval;
+}
+
+void ProjectManager::UpdateGlobalORs()
+{
+	GlobalORs.clear();
+
+	wstring path = GetProjectWorkingPath();
+	path += PATHSEP + GLOBALORS_TABLE_NAME + L".xml";;
+	if (UTILS::FileExists(path))
+	{
+		DataSet<wstring> ds = LoadDataSet(GLOBALORS_TABLE_NAME);
+		StringTable<wstring> *table = ds.GetTable(UTILS::ToWString(INPUT_TABLE));
+		
+		for (size_t j = 0; j < table->Rows(); j++)
+		{
+			wstring ORName = table->GetItem(j, 0);
+			if (ORName.length() > 0)
+			{
+				vector<wstring> vValues;
+				for (size_t i = 1; i < table->Columns(); i++)
+				{
+					wstring ORValue = table->GetItem(j, i);
+					if (ORValue.length() > 0)
+						vValues.push_back(ORValue);
+				}
+				GlobalORs[ORName] = vValues;
+			}
+		}		
+	}
 }
 
 xmlDocPtr ProjectManager::LoadTableRawXML(wstring name)

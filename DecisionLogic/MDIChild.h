@@ -86,7 +86,7 @@ enum
 class LogicGrid: public wxGrid
 {
 public:
-	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void), map<wstring, vector<wstring> > gORs, 
+	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void), map<wstring, vector<wstring> > *gORs, 
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = wxWANTS_CHARS,
 		const wxString& name = wxPanelNameStr):
@@ -198,7 +198,7 @@ public:
 				//check for or
 				wxFont cellFont = this->GetDefaultCellFont();
 				wstring value = this->GetCellValue(row, col);
-				if (m_ors.find(value) != m_ors.end())
+				if (m_ors != NULL && m_ors->size() > 0 && m_ors->find(value) != m_ors->end())
 				{					
 					cellFont.SetWeight(wxBOLD);
 					this->SetCellTextColour(row, col, wxColour(DARKRED));
@@ -1084,7 +1084,7 @@ private:
 	int								m_type;
 	wxRect							m_sel_range;
 	void							(*m_updateCallback)(void);
-	map<wstring, vector<wstring> >	m_ors;
+	map<wstring, vector<wstring> >	*m_ors;
 
 	DECLARE_EVENT_TABLE()
 };

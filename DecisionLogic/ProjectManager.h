@@ -86,7 +86,8 @@ private:
 	void WriteXML(DataSet<wstring> ds, xmlDocPtr doc);
 	void SaveStringDefs(xmlDocPtr doc);
 	vector<wstring> CheckForOrs(wstring text);
-	wstring GetFilePathForTableName(wstring name);	
+	wstring GetFilePathForTableName(wstring name);
+	void UpdateGlobalORs();
 
 	wstring m_project_name;
 	wstring m_project_working_path;

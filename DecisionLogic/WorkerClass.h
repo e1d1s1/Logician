@@ -120,7 +120,6 @@ private:
 	wxTreeItemId* FindItemNamed(wxTreeCtrl *tree, const std::wstring &name);
 	void AddAllProjectNodes();
 	void GetSettings();
-	void UpdateGlobalORs();
 	void SaveApplicationSettings();
 	void DebugInfoReceived(wstring buff);
 	void HighlightTableAndRule(wstring tableName, size_t iSolnIdx);
