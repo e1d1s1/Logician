@@ -52,6 +52,13 @@ enum
     TRANSLATIONS_TABLE
 };
 
+void* pt2WorkerObject;
+void SignalTableClosed()
+{
+	WorkerClass *mySelf = (WorkerClass*)pt2WorkerObject;
+	mySelf->ChildWindowHasClosed();
+}
+
 WorkerClass::WorkerClass(wxMDIParentFrame *parentFrame, wxTreeCtrl *tree, wxTextCtrl *log, int orient)
 {
 	m_tree = tree;
@@ -63,6 +70,7 @@ WorkerClass::WorkerClass(wxMDIParentFrame *parentFrame, wxTreeCtrl *tree, wxText
 	config = new wxConfig(_T("DecisionLogic"));
 	m_MaxRecentFiles = 5;
 	wxtid_active_group = m_tree->GetRootItem();
+	pt2WorkerObject = (void*)this;
 
 	bIsSaved = false;
 }
@@ -159,7 +167,7 @@ bool WorkerClass::OpenProject(wstring fileName)
 			openPath = fileName;
 		}
 
-		if (m_pm.LoadProjectFile(openPath) == true)
+		if (openPath.length() > 0 && m_pm.LoadProjectFile(openPath) == true)
 		{
 			bIsSaved = false;
 			retval = true;
@@ -309,13 +317,9 @@ bool WorkerClass::LoadTable(wstring name)
 				LogicTable table;
 				table.LoadDataSet(ds, name, path);
 				table.bGetAll = m_pm.TableIsGetAll(name);
-				MDIChild *childForm = new MDIChild(m_parentFrame, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
+				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
 				childForm->Show();
 				retval = true;
-			}
-			else
-			{
-				wxtid_active_group = m_tree->GetSelection();
 			}
 		}
 		else
@@ -326,7 +330,7 @@ bool WorkerClass::LoadTable(wstring name)
 				DataSet<wstring> ds = m_pm.LoadDataSet(name);
 				LogicTable table;
 				table.LoadDataSet(ds, name, path);
-				MDIChild *childForm = new MDIChild(m_parentFrame, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
+				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
 				childForm->Show();
 				retval = true;
 			}
@@ -349,9 +353,13 @@ void WorkerClass::NewTable(wstring name)
 {
 	try
 	{
-		if (!bIsSaved)
+		if (!bIsSaved && m_tree->GetCount() > 1)
 		{
-			CheckSave();
+			if (!CheckSave())
+			{
+				wxMessageBox(L"You must save any existing changes before creating a new table.");
+				return;
+			}
 		}
 
 		bool bUserEnteredName = name.length() == 0;
@@ -370,22 +378,32 @@ void WorkerClass::NewTable(wstring name)
 
 		if (name.length() > 0)
 		{
-			LogicTable table;
-			table.CreateLogicTable(name);
-			if (!bSystemTable)
+			vector<wstring> existing_names = m_pm.GetProjectTableNames();
+			vector<wstring>::iterator itFind = find(existing_names.begin(), existing_names.end(), name);
+			if (itFind == existing_names.end())
 			{
-				wxTreeItemId newItem = AddTreeNode(wxtid_active_group, name);
-				m_tree->SelectItem(newItem);
+				LogicTable table;
+				table.CreateLogicTable(name);
+				if (!bSystemTable)
+				{
+					wxTreeItemId newItem = AddTreeNode(wxtid_active_group, name);
+					m_tree->SelectItem(newItem);
+				}
+
+				int table_type = RULES_TABLE;
+				if (name == GLOBALORS_TABLE_NAME)
+					table_type = GLOBAL_ORS_TABLE;
+				else if (name == TRANSLATIONS_TABLE_NAME)
+					table_type = TRANSLATIONS_TABLE;
+
+				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
+				childForm->Show();
+				bIsSaved = false;
 			}
-
-			int table_type = RULES_TABLE;
-			if (name == GLOBALORS_TABLE_NAME)
-				table_type = GLOBAL_ORS_TABLE;
-			else if (name == TRANSLATIONS_TABLE_NAME)
-				table_type = TRANSLATIONS_TABLE;
-
-			MDIChild *childForm = new MDIChild(m_parentFrame, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
-			childForm->Show();
+			else
+			{
+				wxMessageBox(L"This table name already exists.");
+			}
 		}
 	}
 	catch(...)
@@ -1365,4 +1383,12 @@ void WorkerClass::HighlightTableAndRule(wstring tableName, size_t iSolnIdx)
 			childForm->HighlightRule(actualRowIndex);
 		}
 	}
+}
+
+
+void WorkerClass::ChildWindowHasClosed()
+{
+	//deselect all items of tree
+	m_tree->Unselect();
+	wxtid_active_group = m_tree->GetRootItem();
 }

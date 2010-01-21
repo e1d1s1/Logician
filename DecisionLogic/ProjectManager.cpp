@@ -449,6 +449,11 @@ void ProjectManager::WriteXMLForTable(xmlNodePtr tableDataNode, StringTable<wstr
 								for(vector<wstring>::iterator itFormula = attrs.begin(); itFormula != attrs.end(); itFormula++)
 									formulaInputs.insert(*itFormula);
 							}
+							else if (tableXMLID == OUTPUT_TABLE && !(operation & CHAIN))
+							{
+								val = currentRow[colIndex];
+								operation = EQUALS;
+							}
 						}
 						xmlNodePtr innerText = xmlNewText((xmlChar*)UTILS::WStrToMBCStr(val).c_str());
 						xmlAddChild(attrElement, innerText);

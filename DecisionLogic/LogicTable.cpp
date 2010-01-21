@@ -27,13 +27,15 @@
 
 const wstring INPUT_TABLE = L"Inputs";
 const wstring OUTPUT_TABLE = L"Outputs";
+const wstring STATUS_TABLE = L"Status";
 const wstring VALUE_NAME = L"Value";
 const wstring ATTR_NAME = L"Attr";
 const wstring INPUT_COL = L"Input";
 const wstring OUTPUT_COL = L"Output";
+const wstring RULE_STATUS = L"RuleStatus";
 const string NAMESPACE = "http://filer.cwru.edu/~eds6/DecisionLogic";
 const int DEFAULT_COL_CNT = 10;
-const int DEFAULT_ROW_CNT = 10;
+const int DEFAULT_ROW_CNT = 4;
 
 LogicTable::LogicTable(void)
 {
@@ -133,7 +135,7 @@ void LogicTable::BuildDataSet(wstring name)
 	{
 		dtInputs.AddColumn(VALUE_NAME);
 	}
-    for (int i = 0; i < start_row_cnt; i++)
+    for (int j = 0; j < start_row_cnt; j++)
 	{
 		vector<wstring> newRow;
         dtInputs.AddRow(dtInputs.NewRow());
@@ -145,8 +147,19 @@ void LogicTable::BuildDataSet(wstring name)
 	{
         dtOutputs.AddColumn(VALUE_NAME);
 	}
-    for (int i = 0; i < start_row_cnt/2; i++)
+    for (int j = 0; j < start_row_cnt/2; j++)
         dtOutputs.AddRow(dtOutputs.NewRow());
+
+	StringTable<wstring> dtStatus(STATUS_TABLE);    
+    for (int i = 0; i < start_col_cnt; i++)
+	{
+        dtStatus.AddColumn(RULE_STATUS);		
+	}
+	dtStatus.AddRow(dtStatus.NewRow());
+	for (int i = 0; i < start_col_cnt; i++)
+	{
+		dtStatus.SetItem(0, i, L"Enabled");
+	}
 
     if (name.length() > 0)
     {
@@ -154,6 +167,7 @@ void LogicTable::BuildDataSet(wstring name)
 		m_ds.DataSetName = name;
         m_ds.AddTable(dtInputs);
         m_ds.AddTable(dtOutputs);
+		m_ds.AddTable(dtStatus);
     }
 }
 

@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 
 	string s = stringifyDouble(knowledge.TableCount());
 	Log("# of Tables loaded: " + s);
-	if (s == "3")
+	if (s == "9")
 	{
 		res.SetResult(true, "");
 	}

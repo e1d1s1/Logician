@@ -12,13 +12,6 @@
       <Value/>
       <Value/>
       <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
     </Inputs>
     <Inputs>
       <Attr>inputAttr2</Attr>
@@ -31,23 +24,9 @@
       <Value id="9" operation="64">70,80</Value>
       <Value/>
       <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
     </Inputs>
     <Outputs>
       <Attr>anotherOutput</Attr>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
       <Value/>
       <Value/>
       <Value/>
@@ -67,13 +46,6 @@
       <Value id="13" operation="1">5</Value>
       <Value id="14" operation="3073">py(get(outsideAttr1) + 2)</Value>
       <Value id="15" operation="10241">js(get(outsideAttr1) + 2)</Value>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
       <Value/>
       <Value/>
     </Outputs>
@@ -107,9 +79,6 @@
       <Value/>
       <Value/>
       <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
     </Inputs>
     <FormulaInput>someAttr</FormulaInput>
     <Outputs>
@@ -119,12 +88,229 @@
       <Value/>
       <Value/>
       <Value/>
+    </Outputs>
+    <FormulaInput>inputAttr2</FormulaInput>
+    <FormulaInput>someAttr</FormulaInput>
+  </Table>
+  <Table name="Dictionary" getall="true">
+    <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>Name</Attr>
+      <Value id="23" operation="1">aDictAttr3</Value>
+      <Value id="24" operation="1">bDictAttr4</Value>
+      <Value id="25" operation="1">cDictAttr1</Value>
+      <Value id="26" operation="1">dDictAttr2</Value>
+      <Value id="27" operation="1">eDictAttr5</Value>
+      <Value/>
+      <Value/>
       <Value/>
       <Value/>
       <Value/>
     </Outputs>
-    <FormulaInput>inputAttr2</FormulaInput>
-    <FormulaInput>someAttr</FormulaInput>
+    <Outputs>
+      <Attr>Description</Attr>
+      <Value id="28" operation="1">A Boolean Attribute</Value>
+      <Value id="29" operation="1">A Multi-Select Attribute</Value>
+      <Value id="30" operation="1">A Single Selection Attribute</Value>
+      <Value id="31" operation="1">Another Single Selection</Value>
+      <Value id="32" operation="1">An Edit Attribute</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>DefaultValue</Attr>
+      <Value id="33" operation="1">~</Value>
+      <Value id="33" operation="1">~</Value>
+      <Value id="33" operation="1">~</Value>
+      <Value id="33" operation="1">~</Value>
+      <Value id="34" operation="1">0</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>AttributeType</Attr>
+      <Value id="35" operation="1">BOOLEAN</Value>
+      <Value id="36" operation="1">MULTISELECT</Value>
+      <Value id="37" operation="1">SINGLESELECT</Value>
+      <Value id="37" operation="1">SINGLESELECT</Value>
+      <Value id="38" operation="1">EDIT</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>RuleTable</Attr>
+      <Value id="39" operation="1">DictAttr3</Value>
+      <Value id="40" operation="1">DictAttr4</Value>
+      <Value id="41" operation="1">DictAttr1</Value>
+      <Value id="42" operation="1">DictAttr2</Value>
+      <Value id="43" operation="1">DictAttr5</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+  </Table>
+  <Table name="DictAttr1" getall="false">
+    <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>cDictAttr1</Attr>
+      <Value id="44,45,46,47" operation="1">Option1|Option2|Option3|Option4</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+  </Table>
+  <Table name="DictAttr2" getall="false">
+    <Inputs>
+      <Attr>cDictAttr1</Attr>
+      <Value id="44" operation="1">Option1</Value>
+      <Value id="45" operation="1">Option2</Value>
+      <Value id="46" operation="1">Option3</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>dDictAttr2</Attr>
+      <Value id="48,49,50" operation="1">@ResultByOption1|Result2|Result3</Value>
+      <Value id="49" operation="1">Result2</Value>
+      <Value id="50" operation="1">Result3</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+  </Table>
+  <Table name="DictAttr3" getall="false">
+    <Inputs>
+      <Attr>dDictAttr2</Attr>
+      <Value id="51" operation="1">ResultByOption1</Value>
+      <Value id="49" operation="1">Result2</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>aDictAttr3</Attr>
+      <Value id="52" operation="1">YY</Value>
+      <Value id="53" operation="1">YN</Value>
+      <Value id="54" operation="1">N</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+  </Table>
+  <Table name="DictAttr4" getall="false">
+    <Inputs>
+      <Attr>aDictAttr3</Attr>
+      <Value id="55" operation="1">Y</Value>
+      <Value id="54" operation="1">N</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>bDictAttr4</Attr>
+      <Value id="56,57,58" operation="1">Selection1|@Selection2|@Selection3</Value>
+      <Value id="56,59" operation="1">Selection1|Selection2</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+  </Table>
+  <Table name="DictAttr5" getall="false">
+    <Inputs>
+      <Attr>aDictAttr3</Attr>
+      <Value id="55" operation="1">Y</Value>
+      <Value id="54" operation="1">N</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>eDictAttr5</Attr>
+      <Value id="60" operation="1">[0,35]</Value>
+      <Value id="61" operation="1">[10,50]</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
   </Table>
   <Translations>
     <String id="3" en-US="A trans"/>

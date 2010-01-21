@@ -65,8 +65,8 @@ void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inpu
 	m_InputAttrsTests = inputAttrsTests;
 	m_OutputAttrsValues = outputAttrsValues;
 
-	if (inputAttrsTests.size() > 0)
-		m_Tests = inputAttrsTests[0].second.size();
+	if (m_OutputAttrsValues.size() > 0)
+		m_Tests = m_OutputAttrsValues[0].second.size();
 
 	m_Name = name;
 	m_stringsMap = stringMap;
@@ -106,7 +106,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll)
 	map<size_t, set<wstring> > solutions;
 
 	SetInvalidAttrs();
-
+	vector<bool> colResults (m_Tests, true); //a table need not have any inputs
 	if (m_InputAttrsValues.size() > 0 && m_InputAttrsTests.size() > 0)
 	{
 		//get the current values of all input attrs
@@ -122,7 +122,8 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll)
 
 		//sweep down the table for all inputs and do test(s)
 		bool bHaveSolution = true;
-		vector<bool> colResults (m_Tests, false);
+		vector<bool> colResultsDefault (m_Tests, false);
+		colResults = colResultsDefault;
 		for (size_t testCnt = 0; testCnt < m_Tests; testCnt++)
 		{
 			//sweep through the inputs
@@ -142,52 +143,53 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll)
 			if (bHaveSolution && !bGetAll)
 				break;
 		} //done column
+	} //done inputs
 
-		//for the give output, the reuslts are
-		vector<CRuleCell> results;
-		for (size_t result = 0; result < m_Tests; result++)
+	//for the give output, the reuslts are
+	vector<CRuleCell> results;
+	for (size_t result = 0; result < m_Tests; result++)
+	{
+		if (result >= m_OutputAttrsValues.size())
+			break;
+		if (m_OutputAttrsValues[result].first == outputAttr)
 		{
-			if (result >= m_OutputAttrsValues.size())
-				break;
-			if (m_OutputAttrsValues[result].first == outputAttr)
-			{
-				results = m_OutputAttrsValues[result].second;
-			}
+			results = m_OutputAttrsValues[result].second;
 		}
+	}
 
-		//for each true result, add to the solution vector
-		for (size_t result = 0; result < m_Tests; result++)
+	//for each true result, add to the solution vector
+	for (size_t result = 0; result < m_Tests; result++)
+	{
+		if (colResults[result] && result < results.size())
 		{
-			if (colResults[result] && result < results.size())
+			CRuleCell outputCell = results[result];
+			CDecode decoder(outputCell, &m_InputAttrsValues, m_stringsMap);				
+			if (outputCell.Operation & CHAIN)
+				bHasChain = true;
+			if (outputCell.Operation & PYTHON)
+				bHasPython = true;
+			if (outputCell.Operation & JAVASCRIPT)
+				bHasJavascript = true;
+			vector<wstring> cellOutputs = decoder.EvaluateOutputCell();
+			for (vector<wstring>::iterator itOutputs = cellOutputs.begin(); itOutputs != cellOutputs.end(); itOutputs++)
 			{
-				CRuleCell outputCell = results[result];
-				CDecode decoder(outputCell, &m_InputAttrsValues, m_stringsMap);				
-				if (outputCell.Operation & CHAIN)
-					bHasChain = true;
-				if (outputCell.Operation & PYTHON)
-					bHasPython = true;
-				if (outputCell.Operation & JAVASCRIPT)
-					bHasJavascript = true;
-				vector<wstring> cellOutputs = decoder.EvaluateOutputCell();
-				for (vector<wstring>::iterator itOutputs = cellOutputs.begin(); itOutputs != cellOutputs.end(); itOutputs++)
+				retval.push_back(*itOutputs);
+				if (m_DEBUGGING)
 				{
-					retval.push_back(*itOutputs);
-					if (m_DEBUGGING)
+					map<size_t, set<wstring> >::iterator itFind = solutions.find(result);
+					if (itFind != solutions.end())
 					{
-						map<size_t, set<wstring> >::iterator itFind = solutions.find(result);
-						if (itFind != solutions.end())
-						{
-							itFind->second.insert(*itOutputs);
-						}
-						else
-						{
-							solutions[result].insert(*itOutputs);
-						}
+						itFind->second.insert(*itOutputs);
+					}
+					else
+					{
+						solutions[result].insert(*itOutputs);
 					}
 				}
 			}
 		}
 	}
+	
 
 	//report the eval results over a tcp socket connection
 	if (m_DEBUGGING)

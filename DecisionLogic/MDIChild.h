@@ -736,14 +736,14 @@ public:
 	inline void OnDeleteCol(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition;
-		if(GetSelectionRange(lowInsertPosition, highInsertPosition, true, true))
+		if(GetSelectionRange(lowInsertPosition, highInsertPosition, true, false))
 			this->DeleteCols(lowInsertPosition, highInsertPosition - lowInsertPosition + 1);
 	}
 
 	inline void OnDeleteRow(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition;
-		if(GetSelectionRange(lowInsertPosition, highInsertPosition, false, true))
+		if(GetSelectionRange(lowInsertPosition, highInsertPosition, false, false))
 			this->DeleteRows(lowInsertPosition, highInsertPosition - lowInsertPosition + 1);
 	}
 
@@ -852,14 +852,14 @@ private:
 		PopupMenu(&popupMenu);
 	}
 
-	inline bool GetSelectionRange(int &min, int &max, bool isCol, bool forInsertOrDelete)
+	inline bool GetSelectionRange(int &min, int &max, bool isCol, bool forInsert)
 	{
 		bool bHasSelection = false;
 
 		int lowestPos = 0;
 		if (m_type == RULES_TABLE)
 		{
-			if (forInsertOrDelete)
+			if (forInsert)
 				lowestPos = 2;
 			else
 				lowestPos = 1;
@@ -870,9 +870,27 @@ private:
 			lowInsertPosition = this->GetNumberCols();
 		else
 			lowInsertPosition = this->GetNumberRows();
-
+		
+		wxArrayInt grpSelection;
+		if (isCol)
+			grpSelection = this->GetSelectedCols();
+		else 
+			grpSelection = this->GetSelectedRows();
 		wxGridCellCoordsArray cells = this->GetSelectedCells();
-		if (cells.size() > 0)
+		if (grpSelection.size() > 0)
+		{
+			for (size_t i = 0; i < grpSelection.size(); i++)
+			{
+				int cellPos = grpSelection[i];
+
+				if (cellPos >= lowestPos && cellPos < lowInsertPosition)
+					lowInsertPosition = cellPos;
+				if (cellPos > highInsertPosition)
+					highInsertPosition = cellPos;
+			}
+			bHasSelection = true;
+		}
+		else if (cells.size() > 0)
 		{
 			for (size_t i = 0; i < cells.size(); i++)
 			{
@@ -882,7 +900,7 @@ private:
 				else
 					cellPos = cells[i].GetRow();
 
-				if (cellPos > lowestPos && cellPos < lowInsertPosition)
+				if (cellPos >= lowestPos && cellPos < lowInsertPosition)
 					lowInsertPosition = cellPos;
 				if (cellPos > highInsertPosition)
 					highInsertPosition = cellPos;
@@ -898,7 +916,7 @@ private:
 			else
 				cellPos = m_sel_range.GetY();
 
-			if (cellPos > lowestPos && cellPos < lowInsertPosition)
+			if (cellPos >= lowestPos && cellPos < lowInsertPosition)
 				lowInsertPosition = cellPos;
 			else if (cellPos <= lowestPos)
 				lowInsertPosition = lowestPos;
@@ -1092,7 +1110,7 @@ private:
 class MDIChild: public wxMDIChildFrame
 {
 public:
-	MDIChild(wxMDIParentFrame *parent, int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
+	MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
 		ProjectManager *pm, const wxString& title, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, const long style = 0);
 	~MDIChild(void);
@@ -1143,7 +1161,8 @@ private:
 	int						m_orientation, m_orientation_opposite;
 	int						m_type;
 	stack<LogicTable>		stUndo;
-	stack<LogicTable>		stRedo;	
+	stack<LogicTable>		stRedo;
+	void (*m_ChildClosedCallback)(void);
 
 	DECLARE_EVENT_TABLE()
 };

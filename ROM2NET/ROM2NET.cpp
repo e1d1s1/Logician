@@ -55,7 +55,7 @@ System::Xml::XmlNode^ ROM2NET::ROMNode::GetNode()
 }
 
 //ROMTreeNET methods
-ROM2NET::ROMTreeNET::ROMTreeNET(System::String^ name)
+ROM2NET::ROMTreeNET::ROMTreeNET(String^ name)
 {
 	m_DOC = gcnew System::Xml::XmlDataDocument();
 	System::Xml::XmlProcessingInstruction^ pI = m_DOC->CreateProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
@@ -81,24 +81,30 @@ ROM2NET::ROMNode^ ROM2NET::ROMTreeNET::Parent(ROMNode^ current)
 	return retval;
 }
 
-System::Collections::Generic::List<ROM2NET::ROMNode^>^ ROM2NET::ROMTreeNET::Find(ROMNode^ current, System::String^ searchStr)
+array<ROM2NET::ROMNode^>^ ROM2NET::ROMTreeNET::Find(ROMNode^ current, String^ searchStr)
 {
 	if (current == nullptr)
 		return nullptr;
 	System::Xml::XmlNodeList^ list = current->GetNode()->SelectNodes(searchStr);
-	System::Collections::Generic::List<ROM2NET::ROMNode^>^ retval = gcnew System::Collections::Generic::List<ROM2NET::ROMNode^>();
+	array<ROM2NET::ROMNode^>^ retval = gcnew array<ROM2NET::ROMNode^>(list->Count);
 	for (size_t i = 0; i < list->Count; i++)
-		retval->Add(gcnew ROM2NET::ROMNode(list->Item(i)));
+		retval[i] = gcnew ROM2NET::ROMNode(list->Item(i));
 	return retval;
 }
 
-ROM2NET::ROMNode^ ROM2NET::ROMTreeNET::CreateROMObject(System::String^ name)
+ROM2NET::ROMNode^ ROM2NET::ROMTreeNET::CreateROMObject(String^ name)
 {
 	System::Xml::XmlElement^ newEle = (System::Xml::XmlElement^)m_DOC->CreateNode(System::Xml::XmlNodeType::Element, "", OBJECT_NODE, "");
 	newEle->SetAttribute("id", name);
 	newEle->SetAttribute("guid", System::Guid::NewGuid().ToString());
 	ROMNode^ retval = gcnew ROMNode(newEle);
 	return retval;
+}
+
+ROM2NET::ROMNode^ ROM2NET::ROMTreeNET::GetROMObject(Guid^ guid)
+{	
+	System::Xml::XmlNode^ node = m_DOC->SelectSingleNode("//Object[@guid='" + guid->ToString() + "']");
+	return gcnew ROMNode(node);
 }
 
 ROM2NET::ROMNode^ ROM2NET::ROMTreeNET::AddChildROMObject(ROMNode^ current, ROMNode^ child)
@@ -113,9 +119,9 @@ ROM2NET::ROMNode^ ROM2NET::ROMTreeNET::AddChildROMObject(ROMNode^ current, ROMNo
 
 //attribute interface
 //<current><Attribute id = "some_id" value = "val" some_other_name = "something"/></current>
-System::String^ ROM2NET::ROMTreeNET::GetAttribute(ROM2NET::ROMNode ^currentObject, System::String ^id, System::String ^name, System::Boolean ^recurs)
+String^ ROM2NET::ROMTreeNET::GetAttribute(ROM2NET::ROMNode ^currentObject, String ^id, String ^name, bool recurs)
 {
-	System::String^ retval = gcnew System::String("");
+	String^ retval = gcnew String("");
 
 	if (currentObject == nullptr)
 		return retval;
@@ -172,12 +178,12 @@ System::String^ ROM2NET::ROMTreeNET::GetAttribute(ROM2NET::ROMNode ^currentObjec
 	return retval;
 }
 
-System::String^ ROM2NET::ROMTreeNET::GetAttribute(ROM2NET::ROMNode ^currentObject, System::String ^id)
+String^ ROM2NET::ROMTreeNET::GetAttribute(ROM2NET::ROMNode ^currentObject, String ^id)
 {
 	return ROM2NET::ROMTreeNET::GetAttribute(currentObject, id, "value", true);
 }
 
-bool ROM2NET::ROMTreeNET::SetAttribute(ROM2NET::ROMNode ^currentObject, System::String ^id, System::String ^name, System::String ^value)
+bool ROM2NET::ROMTreeNET::SetAttribute(ROM2NET::ROMNode ^currentObject, String ^id, String ^name, String ^value)
 {
 	bool retval = false;
 
@@ -232,12 +238,12 @@ bool ROM2NET::ROMTreeNET::SetAttribute(ROM2NET::ROMNode ^currentObject, System::
 	return retval;
 }
 
-bool ROM2NET::ROMTreeNET::SetAttribute(ROM2NET::ROMNode^ currentObject, System::String ^id, System::String ^value)
+bool ROM2NET::ROMTreeNET::SetAttribute(ROM2NET::ROMNode^ currentObject, String ^id, String ^value)
 {
 	return ROM2NET::ROMTreeNET::SetAttribute(currentObject, id, "value", value);
 }
 
-bool ROM2NET::ROMTreeNET::SetROMObjectValue(ROM2NET::ROMNode ^currentObject, System::String ^name, System::String ^value)
+bool ROM2NET::ROMTreeNET::SetROMObjectValue(ROM2NET::ROMNode ^currentObject, String ^name, String ^value)
 {
 	short retval = false;
 
@@ -250,9 +256,9 @@ bool ROM2NET::ROMTreeNET::SetROMObjectValue(ROM2NET::ROMNode ^currentObject, Sys
 	retval = true;
 }
 
-System::String^ ROM2NET::ROMTreeNET::GetROMObjectValue(ROM2NET::ROMNode ^currentObject, System::String ^name)
+String^ ROM2NET::ROMTreeNET::GetROMObjectValue(ROM2NET::ROMNode ^currentObject, String ^name)
 {
-	System::String^ retval = gcnew System::String("");
+	String^ retval = gcnew String("");
 
 	if (currentObject == nullptr)
 		return retval;
@@ -270,7 +276,7 @@ System::String^ ROM2NET::ROMTreeNET::GetROMObjectValue(ROM2NET::ROMNode ^current
 	return retval;
 }
 
-bool ROM2NET::ROMTreeNET::RemoveAttribute(ROM2NET::ROMNode ^currentObject, System::String ^id)
+bool ROM2NET::ROMTreeNET::RemoveAttribute(ROM2NET::ROMNode ^currentObject, String ^id)
 {
 	bool retval = false;	
 
@@ -300,9 +306,9 @@ bool ROM2NET::ROMTreeNET::RemoveAttribute(ROM2NET::ROMNode ^currentObject, Syste
 	return retval;
 }
 
-System::String^ ROM2NET::ROMTreeNET::GetROMObjectName(ROM2NET::ROMNode ^currentObject)
+String^ ROM2NET::ROMTreeNET::GetROMObjectName(ROM2NET::ROMNode ^currentObject)
 {
-	System::String^ retval = gcnew System::String("");
+	String^ retval = gcnew String("");
 
 	if (currentObject == nullptr)
 		return retval;
@@ -316,7 +322,7 @@ System::String^ ROM2NET::ROMTreeNET::GetROMObjectName(ROM2NET::ROMNode ^currentO
 	return retval;
 }
 
-void ROM2NET::ROMTreeNET::SetROMObjectName(ROM2NET::ROMNode ^currentObject, System::String^ name)
+void ROM2NET::ROMTreeNET::SetROMObjectName(ROM2NET::ROMNode ^currentObject, String^ name)
 {
 	if (currentObject == nullptr)
 		return;
@@ -338,83 +344,86 @@ bool ROM2NET::ROMTreeNET::DestoryROMObject(ROMNode^ current)
 }
 
 //Rules
-bool ROM2NET::ROMTreeNET::LoadRules(System::String ^knowledge_file)
+bool ROM2NET::ROMTreeNET::LoadRules(String ^knowledge_file)
 {
 	wstring file;
 	MarshalString(knowledge_file, file);
 	m_KnowledgeBase = new EDS::CKnowledgeBase(file);
 	if (m_KnowledgeBase)
-		return true;
+		return m_KnowledgeBase->IsOpen();
 	else
 		return false;
 }
 
-System::Collections::Generic::List<System::String^>^ ROM2NET::ROMTreeNET::EvaluateTable(ROM2NET::ROMNode ^currentObject, System::String ^evalTable, System::String ^output, bool bGetAll)
+array<String^>^ ROM2NET::ROMTreeNET::EvaluateTable(ROM2NET::ROMNode ^currentObject, String ^evalTable, String ^output, bool bGetAll)
 {
 	wstring table, out;
 	MarshalString(evalTable, table);
 	MarshalString(output, out);
 	LoadInputs(currentObject, evalTable);
 	vector<wstring> res = m_KnowledgeBase->EvaluateTable(table, out, bGetAll);
-	System::Collections::Generic::List<System::String^>^ retval = gcnew System::Collections::Generic::List<System::String^>(res.size());
-	for (vector<wstring>::iterator it = res.begin(); it != res.end(); it++)
+	array<String^>^ retval = gcnew array<String^>(res.size());
+	for (size_t i = 0; i < res.size(); i++)
 	{
-		System::String^ str = gcnew System::String((*it).c_str());
-		retval->Add(str);
+		String^ str = gcnew String(res[i].c_str());
+		retval[i] = str;
 	}
 	return retval;
 }
 
-System::Collections::Generic::Dictionary<System::String^, System::Collections::Generic::List<System::String^>^>^ ROM2NET::ROMTreeNET::EvaluateTable(ROM2NET::ROMNode ^currentObject, System::String ^evalTable, bool bGetAll)
+System::Collections::Generic::Dictionary<String^, array<String^>^>^ ROM2NET::ROMTreeNET::EvaluateTable(ROM2NET::ROMNode ^currentObject, String ^evalTable, bool bGetAll)
 {
 	LoadInputs(currentObject, evalTable);
 	wstring table;
 	MarshalString(evalTable, table);
 	map<wstring, vector<wstring>> res = m_KnowledgeBase->EvaluateTable(table, bGetAll);
-	System::Collections::Generic::Dictionary<System::String^, System::Collections::Generic::List<System::String^>^>^ retval = gcnew System::Collections::Generic::Dictionary<System::String^, System::Collections::Generic::List<System::String^>^>();
+	System::Collections::Generic::Dictionary<String^, array<String^>^>^ retval = gcnew System::Collections::Generic::Dictionary<String^, array<String^>^>();
 	for (map<wstring, vector<wstring>>::iterator it = res.begin(); it != res.end(); it++)
 	{
 		pair<wstring, vector<wstring>> kvp = *it;
-		System::String^ key = gcnew System::String(kvp.first.c_str());
-		System::Collections::Generic::List<System::String^>^ value;
+		String^ key = gcnew String(kvp.first.c_str());
+		array<String^>^ value;
 		if (!retval->ContainsKey(key))
 		{
-			value = gcnew System::Collections::Generic::List<System::String^>(kvp.second.size());
+			value = gcnew array<String^>(kvp.second.size());
 		}
 		else
 			value = retval[key];
 
+		int cnt = 0;
 		for (vector<wstring>::iterator valIt = kvp.second.begin(); valIt != kvp.second.end(); valIt++)
 		{
-			System::String^ curStr = gcnew System::String((*valIt).c_str());
-			value->Add(curStr);
-		}		
+			String^ curStr = gcnew String((*valIt).c_str());
+			value[cnt] = curStr;
+			cnt++;
+		}
+		retval[key] = value;
 	}
 	return retval;
 }
 
-void ROM2NET::ROMTreeNET::LoadInputs(ROMNode^ currentObject, System::String^ evalTable)
+void ROM2NET::ROMTreeNET::LoadInputs(ROMNode^ currentObject, String^ evalTable)
 {
 	wstring table;
 	MarshalString(evalTable, table);
 	vector<wstring> inputs = m_KnowledgeBase->GetInputDependencies(table);
 	for (vector<wstring>::iterator it = inputs.begin(); it != inputs.end(); it++)
 	{
-		System::String^ curStr = gcnew System::String((*it).c_str());
-		System::String^ value = GetATableInputValue(currentObject, curStr);
+		String^ curStr = gcnew String((*it).c_str());
+		String^ value = GetATableInputValue(currentObject, curStr);
 		wstring sVal;
 		MarshalString(value, sVal);
 		m_KnowledgeBase->SetInputValue(*it, sVal);
 	}
 }
 
-System::String^ ROM2NET::ROMTreeNET::EvaluateXPATH(ROM2NET::ROMNode ^currentObject, System::String ^xpath)
+String^ ROM2NET::ROMTreeNET::EvaluateXPATH(ROM2NET::ROMNode ^currentObject, String ^xpath)
 {
-	System::String^ retval = gcnew System::String("");
+	String^ retval = gcnew String("");
 	System::Xml::XmlNode^ guidNode = currentObject->GetNode()->Attributes->GetNamedItem("guid");
-	System::String^ match = gcnew System::String("<xsl:template match=\"/\"><xsl:for-each select=\"//Object[@guid=\'");
+	String^ match = gcnew String("<xsl:template match=\"/\"><xsl:for-each select=\"//Object[@guid=\'");
 	match += guidNode->Value + "\']\"><xsl:value-of select=\"";
-	System::String^ xslt_text = gcnew System::String(XSLT_TOP + match + xpath + XSLT_BOTTOM);
+	String^ xslt_text = gcnew String(XSLT_TOP + match + xpath + XSLT_BOTTOM);
 
 	System::Xml::Xsl::XslTransform^ xslt = gcnew System::Xml::Xsl::XslTransform();
 	System::IO::StringReader^ sr = gcnew System::IO::StringReader(xslt_text);
@@ -430,14 +439,14 @@ System::String^ ROM2NET::ROMTreeNET::EvaluateXPATH(ROM2NET::ROMNode ^currentObje
 	return retval;
 }
 
-System::String^ ROM2NET::ROMTreeNET::GetATableInputValue(ROMNode^ currentObject, System::String^ input)
+String^ ROM2NET::ROMTreeNET::GetATableInputValue(ROMNode^ currentObject, String^ input)
 {
-	System::String^ retval = gcnew System::String("");
+	String^ retval = gcnew String("");
 	//parse out any XPATH Queries here and return values
 	if (input->Contains("xpath("))
 	{
-		System::String^ sCMD = input->Substring(6, input->Length - 7);
-		retval = EvaluateXPATH(currentObject, input);
+		String^ sCMD = input->Substring(6, input->Length - 7);
+		retval = EvaluateXPATH(currentObject, sCMD);
 	}
 	else
 	{
@@ -448,7 +457,7 @@ System::String^ ROM2NET::ROMTreeNET::GetATableInputValue(ROMNode^ currentObject,
 }
 
 //IO
-bool ROM2NET::ROMTreeNET::LoadTree(System::String^ xmlStr)
+bool ROM2NET::ROMTreeNET::LoadTree(String^ xmlStr)
 {
 	if (m_DOC != nullptr)
 	{		
@@ -460,14 +469,31 @@ bool ROM2NET::ROMTreeNET::LoadTree(System::String^ xmlStr)
 	return true;
 }
 
-System::String^	ROM2NET::ROMTreeNET::DumpTree()
+String^	ROM2NET::ROMTreeNET::DumpTree()
 {
-	System::String^ retval = gcnew String("");
+	String^ retval = gcnew String("");
 	if (m_DOC != nullptr)
 	{
 		System::IO::StringWriter^ sr = gcnew System::IO::StringWriter();
 		retval = m_DOC->InnerXml;
 	}
 
+	return retval;
+}
+
+array<String^>^ ROM2NET::ROMTreeNET::GetPossibleValues(ROMNode^ currentObject, String^ evalTable, String^ outputName)
+{
+	wstring strOutputName,  strEvalTable;
+	MarshalString(evalTable, strEvalTable);
+	MarshalString(outputName, strOutputName);
+	vector<wstring> res = m_KnowledgeBase->GetAllPossibleOutputs(strEvalTable, strOutputName);
+
+	array<String^>^ retval = gcnew array<String^>(res.size());
+	int cnt = 0;
+	for (vector<wstring>::iterator it = res.begin(); it != res.end(); it++)
+	{
+		retval[cnt] = gcnew String((*it).c_str());
+		cnt++;
+	}
 	return retval;
 }

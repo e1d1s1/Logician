@@ -190,11 +190,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LinearEngineNET.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Marshal.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\ROM2NET.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ROMDictionaryNET.cpp"
 				>
 			</File>
 			<File
@@ -224,6 +232,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\LinearEngineNET.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Marshal.h"
 				>
 			</File>
@@ -233,6 +245,14 @@
 			</File>
 			<File
 				RelativePath=".\ROM2NET.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ROMDictionaryAttributeNET.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ROMDictionaryNET.h"
 				>
 			</File>
 			<File

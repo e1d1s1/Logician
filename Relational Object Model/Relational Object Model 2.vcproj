@@ -282,6 +282,18 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\LinearEngine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ROMDictionary.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ROMDictionaryAttribute.h"
+				>
+			</File>
+			<File
 				RelativePath="ROMTree.h"
 				>
 			</File>
@@ -306,7 +318,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\LinearEngine.cpp"
+				>
+			</File>
+			<File
 				RelativePath="ROM.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ROMDictionary.cpp"
 				>
 			</File>
 			<File
