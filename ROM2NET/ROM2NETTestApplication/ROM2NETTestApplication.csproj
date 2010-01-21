@@ -32,9 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ROM2NET, Version=1.0.3456.23866, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="ROM2NET, Version=1.0.3657.20896, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ROM2NET\Debug\ROM2NET.dll</HintPath>
+      <HintPath>..\Release\ROM2NET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

@@ -35,6 +35,8 @@ namespace ROM
 {
 	class ROMTree
 	{
+	friend class ROMDictionary;
+	friend class LinearEngine;
 	public:
 		ROMTree(wstring name);
 		virtual ~ROMTree(void);
@@ -45,7 +47,9 @@ namespace ROM
 		vector<Node> Find(Node current, wstring searchStr);
 		Node AddChildROMObject(Node current, Node child);
 		Node CreateROMObject(wstring name);
+		Node GetROMObject(string guid);
 		bool DestroyROMObject(Node current);
+		vector<Node> GetAllChildren(Node current) {return Find(current, L"Object");}
 
 		//attribute interface
 		wstring				GetAttribute(Node currentObject, wstring id, wstring name = L"value", bool recurs = true);
@@ -57,11 +61,12 @@ namespace ROM
 		bool				RemoveAttribute(Node current, wstring id);	
 		wstring				GetROMObjectName(Node current);
 		void				SetROMObjectName(Node current, wstring name);
+		map<wstring, map<wstring, wstring> > GetAllAttributes(Node current);
 
 		//rules
 		bool				LoadRules(wstring knowledge_file);
 		vector<wstring>		EvaluateTable(Node currentObject, wstring evalTable, wstring output, bool bGetAll = true);
-		vector<wstring>		EvaluateTableForAttr(Node currentObject, wstring evalTable, wstring output, bool bGetAll = true) {EvaluateTable(currentObject, evalTable, output, bGetAll);}
+		vector<wstring>		EvaluateTableForAttr(Node currentObject, wstring evalTable, wstring output, bool bGetAll = true) {return EvaluateTable(currentObject, evalTable, output, bGetAll);}
 		map<wstring, vector<wstring> > EvaluateTable(Node currentObject, wstring evalTable, bool bGetAll = true);
 
 		//IO
@@ -74,7 +79,7 @@ namespace ROM
 		//ASCII Overloads
 		ROMTree(string name);
 		vector<Node>		Find(Node current, string searchStr);
-		Node				CreateROMObject(string name);
+		Node				CreateROMObject(string name);		
 		string				GetAttribute(Node currentObject, string id, string name = "value", bool recurs = true);
 		bool				SetAttribute(Node currentObject, string id, string name, string value);
 		bool				SetAttribute(Node currentObject, string id, string value);
@@ -90,24 +95,6 @@ namespace ROM
 		bool				LoadTree(string xmlStr);
 		string				EvaluateXPATH(Node currentObject, string xpath);
 
-	private:
-		void				LoadInputs(Node currentObject, wstring evalTable);
-		wstring				GetATableInputValue(Node currentObject, wstring input);
-		Document			xmlDoc;
-#ifdef USE_MSXML
-		Element				m_tree;
-#endif
-#ifdef USE_LIBXML			
-		Node				m_tree;
-#endif
-		EDS::CKnowledgeBase		m_KnowledgeBase;
-
-#ifdef USE_MSXML	
-		wstring ToWString(_variant_t str)
-		{
-			return (wstring)str.bstrVal;
-		}
-#endif
 #ifdef USE_LIBXML
 		wstring MBCStrToWStr(xmlChar* mbStr)
 		{
@@ -135,53 +122,21 @@ namespace ROM
 			delete [] wStr;
 			return retval;
 		}
-
-		string getLastError()
-		{
-		xmlErrorPtr err = xmlGetLastError();
-
-		if (!err)
-		return "";
-
-		std::stringstream ss;
-		ss << "Error at line ";
-		ss << err->line;
-		if (err->int2)
-		{
-		ss << ", column ";
-		ss << err->int2;
-		}
-		ss << ": ";
-		ss << err->message;
-		return ss.str();
-		}
 #endif
 
-		wstring MBCStrToWStr(string mbStr)
-		{
-			if (mbStr.size() == 0)
-				return L"";
-
-			size_t requiredSize = mbstowcs(NULL, mbStr.c_str(), 0) + 1;
-			wchar_t *wStr = new wchar_t[requiredSize];
-			mbstowcs(wStr, mbStr.c_str(), requiredSize);
-			wstring retval = wStr;
-			delete [] wStr;
-			return retval;
-		}
-
-		string WStrToMBCStr(wstring wstr)
-		{
-			mbstate_t *ps = NULL;
-			const size_t MAX_SIZE = 4*wstr.length() + 1; //should handle UTF-8 largest char????
-			char *mbcstr = new char[MAX_SIZE];
-			const wchar_t   *wcsIndirectString = wstr.c_str();
-			size_t finalSize = wcstombs(mbcstr, wstr.c_str(), MAX_SIZE);
-			string retval = mbcstr;
-			delete [] mbcstr;
-			return retval;
-		}
-	};
+	private:
+		vector<wstring>		LoadInputs(Node currentObject, wstring evalTable);
+		vector<wstring>		GetPossibleValues(Node currentObject, wstring evalTable, wstring outputName);
+		wstring				GetATableInputValue(Node currentObject, wstring input);
+		Document			xmlDoc;
+#ifdef USE_MSXML
+		Element				m_tree;
+#endif
+#ifdef USE_LIBXML			
+		Node				m_tree;	
+#endif
+		EDS::CKnowledgeBase		m_KnowledgeBase;	
+	};	
 }
 #define ATTRIBUTE_NODE L"Attribute"
 #define OBJECT_NODE L"Object"

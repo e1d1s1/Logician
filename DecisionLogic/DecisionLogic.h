@@ -80,6 +80,7 @@ public:
     // event handlers
 	//file menu
     void OnQuit(wxCommandEvent& event);
+	void OnClose(wxCloseEvent& event);
 	void OnNewProject(wxCommandEvent& event);
 	void OnOpenProject(wxCommandEvent& event);
 	void OnSaveProject(wxCommandEvent& event);
@@ -135,6 +136,7 @@ private:
 	void EnableAllMenus();
 	void ShowReplaceDialog(wxCommandEvent& WXUNUSED(event));
 	void OnFindDialog(wxFindDialogEvent& event);
+	void SaveAndQuit();
 
 	WorkerClass *m_worker;
 	wxTreeCtrl *m_tree;

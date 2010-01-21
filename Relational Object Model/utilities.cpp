@@ -25,7 +25,7 @@ Copyright (C) 2009 Eric D. Schmidt
 	#include "Objbase.h"
 	#else
 	#include <cstdlib>
-	#endif
+	#endif	
 #endif
 
 using namespace std;
@@ -156,6 +156,17 @@ vector<string> ROMUTIL::ToASCIIStringVector(vector<wstring> vectWS)
 	return retval;
 }
 
+vector<wstring> ROMUTIL::ToWStringVector(vector<string> vStr)
+{
+	vector<wstring> retval;
+	for (vector<string>::iterator it = vStr.begin(); it != vStr.end(); it++)
+	{
+		wstring wStr = ROMUTIL::MBCStrToWStr(*it);
+		retval.push_back(wStr);
+	}
+	return retval;
+}
+
 string ROMUTIL::stringify(double x)
 {
    std::ostringstream o;
@@ -232,3 +243,34 @@ string ROMUTIL::MakeGUID()
 	#endif
 	return guid;
 }
+
+#ifdef USE_MSXML	
+		wstring ROMUTIL::ToWString(_variant_t str)
+		{
+			return (wstring)str.bstrVal;
+		}
+#endif
+		wstring ROMUTIL::MBCStrToWStr(string mbStr)
+		{
+			if (mbStr.size() == 0)
+				return L"";
+
+			size_t requiredSize = mbstowcs(NULL, mbStr.c_str(), 0) + 1;
+			wchar_t *wStr = new wchar_t[requiredSize];
+			mbstowcs(wStr, mbStr.c_str(), requiredSize);
+			wstring retval = wStr;
+			delete [] wStr;
+			return retval;
+		}
+
+		string ROMUTIL::WStrToMBCStr(wstring wstr)
+		{
+			mbstate_t *ps = NULL;
+			const size_t MAX_SIZE = 4*wstr.length() + 1; //should handle UTF-8 largest char????
+			char *mbcstr = new char[MAX_SIZE];
+			const wchar_t   *wcsIndirectString = wstr.c_str();
+			size_t finalSize = wcstombs(mbcstr, wstr.c_str(), MAX_SIZE);
+			string retval = mbcstr;
+			delete [] mbcstr;
+			return retval;
+		}

@@ -32,7 +32,7 @@ void SignalTableChanged()
 	mySelf->SignalTableChangedCallback();
 }
 
-MDIChild::MDIChild(wxMDIParentFrame *parent, int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
+MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
 		ProjectManager *pm, const wxString& title, const wxPoint& pos,
 		const wxSize& size, const long style):
 		  wxMDIChildFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
@@ -51,6 +51,7 @@ MDIChild::MDIChild(wxMDIParentFrame *parent, int orient, int type, vector<OpenLo
 	table.child_window_ptr = (void**)this;
 	table.logic_table = logic;
 	m_opened_window_tracker->push_back(table);
+	m_ChildClosedCallback = ChildCloseCallback;
 
 	sizer = new wxBoxSizer(wxHORIZONTAL);
 	pt2Object = (void*)this;
@@ -401,6 +402,8 @@ void MDIChild::OnChildClose(wxCloseEvent& event)
 	}
 	else
 		m_opened_window_tracker->erase(it);
+
+	m_ChildClosedCallback();
 	event.Skip();
 }
 

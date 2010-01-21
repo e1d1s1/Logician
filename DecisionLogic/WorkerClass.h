@@ -106,13 +106,15 @@ public:
 	bool FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring *last_found_name,
 		bool bMatchCase, bool bMatchWholeWord, bool bDoReplace = false, wstring strReplace = L"");
 
+	bool CheckSave();
+	void ChildWindowHasClosed();
+
 	bool bIsSaved;
 	vector<OpenLogicTable> open_tables;
 	wxGrid *grid_input_table, *grid_output_table;
 
 
-private:
-	bool CheckSave();
+private:	
 	wxTreeItemId AddTreeNode(wxTreeItemId parent, wstring name);
 	wstring GetTreeNodePath(wxTreeCtrl *tree, wstring nodeName);
 	void DeleteTreeNode(wstring name);
@@ -123,7 +125,7 @@ private:
 	void SaveApplicationSettings();
 	void DebugInfoReceived(wstring buff);
 	void HighlightTableAndRule(wstring tableName, size_t iSolnIdx);
-	bool TestStringTextMatch(wxString test, wxString find, bool bMatchCase, bool bMatchWholeWord);
+	bool TestStringTextMatch(wxString test, wxString find, bool bMatchCase, bool bMatchWholeWord);	
 
 	ProjectManager m_pm;
 	vector<OpenLogicTable> m_opened_windows;	

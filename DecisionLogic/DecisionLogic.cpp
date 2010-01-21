@@ -92,6 +92,7 @@ BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
 	//FRAME EVENTS//////////////////////////////////////////////////////////////////
 	EVT_SIZE(DecisionLogicFrame::OnSize)
 	EVT_SASH_DRAGGED_RANGE(DecisionLogic_TreeWindow, DecisionLogic_LogWindow, DecisionLogicFrame::OnSashDrag)
+	EVT_CLOSE(DecisionLogicFrame::OnClose)
 
 	//TREE EVENTS///////////////////////////////////////////////////////////////////
 	EVT_TREE_SEL_CHANGED(DecisionLogic_TreeConrol, DecisionLogicFrame::TreeItemSelected)
@@ -209,7 +210,7 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	editMenu->Append(DecisionLogic_Cut, _T("Cu&t\tCtrl-X"), _T("Cut"));
 	editMenu->Append(DecisionLogic_Copy, _T("&Copy\tCtrl-C"), _T("Copy"));
 	editMenu->Append(DecisionLogic_Paste, _T("&Paste\tCtrl-V"), _T("Paste"));
-	editMenu->Append(DecisionLogic_Find, _T("&Find\tCtrl-F"), _T("Find"));
+	editMenu->Append(DecisionLogic_Find, _T("&Find/Replace\tCtrl-F"), _T("Find"));
 
 	tableMenu = new wxMenu();
 	tableMenu->Append(DecisionLogic_NewTable, _T("New &Table"), _T("Create a new logic table"));
@@ -337,14 +338,36 @@ void DecisionLogicFrame::OnSaveProject(wxCommandEvent& WXUNUSED(event))
 
 void DecisionLogicFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
-	if (m_worker) delete m_worker;
+	if (m_worker)
+	{
+		SaveAndQuit();
+		delete m_worker;
+		m_worker = NULL;
+	}
     // true is to force the frame to close
     Close(true);
+}
+
+void DecisionLogicFrame::OnClose(wxCloseEvent& event)
+{
+	if (m_worker)
+	{
+		SaveAndQuit();
+		delete m_worker;
+		m_worker = NULL;
+	}
+	event.Skip();
 }
 
 void DecisionLogicFrame::OnUndo(wxCommandEvent& event)
 {
 	m_worker->Undo(event);
+}
+
+void DecisionLogicFrame::SaveAndQuit()
+{
+	if (!m_worker->bIsSaved)
+		m_worker->CheckSave();
 }
 
 void DecisionLogicFrame::OnRedo(wxCommandEvent& event)
@@ -468,7 +491,9 @@ void DecisionLogicFrame::OnOpenRecentFile (wxCommandEvent& event)
 //Tree Events
 void DecisionLogicFrame::TreeItemSelected(wxTreeEvent& event)
 {
-	m_worker->LoadTable((wstring)m_tree->GetItemText(m_tree->GetSelection()));
+	wxTreeItemId item = m_tree->GetSelection();
+	if (item.IsOk())
+		m_worker->LoadTable((wstring)m_tree->GetItemText(m_tree->GetSelection()));
 }
 
 //Frame Events

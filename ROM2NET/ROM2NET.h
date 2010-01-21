@@ -28,7 +28,8 @@ using namespace std;
 #using <mscorlib.dll>
 #using <System.dll>
 #include <vcclr.h>
-using namespace System; 
+using namespace System;
+using namespace System::Collections::Generic;
 
 namespace ROM2NET 
 {
@@ -61,42 +62,44 @@ namespace ROM2NET
 	public ref class ROMTreeNET
 	{
 	public:
-		ROMTreeNET(System::String^ name);
+		ROMTreeNET(String^ name);
 		~ROMTreeNET() {this->!ROMTreeNET();}		
 		!ROMTreeNET() {if (m_KnowledgeBase) delete m_KnowledgeBase;}
-		ROMNode^ GetRoot();
-		ROMNode^ Parent(ROMNode^ current);
-		System::Collections::Generic::List<ROMNode^>^ Find(ROMNode^ current, System::String^ searchStr);
-		ROMNode^ AddChildROMObject(ROMNode^ current, ROMNode^ child);
-		ROMNode^ CreateROMObject(System::String^ name);
-		bool DestoryROMObject(ROMNode^ current);
+		ROMNode^	GetRoot();
+		ROMNode^	Parent(ROMNode^ current);
+		array<ROMNode^>^ Find(ROMNode^ current, String^ searchStr);
+		ROMNode^	AddChildROMObject(ROMNode^ current, ROMNode^ child);
+		ROMNode^	CreateROMObject(String^ name);
+		ROMNode^	GetROMObject(Guid^ guid);
+		bool		DestoryROMObject(ROMNode^ current);
 
 		//attribute interface
-		System::String^		GetAttribute(ROMNode^ currentObject, System::String^ id, System::String^ name, System::Boolean^ recurs);
-		System::String^		GetAttribute(ROMNode^ currentObject, System::String^ id);
-		bool				SetAttribute(ROMNode^ currentObject, System::String^ id, System::String^ name, System::String^ value);
-		bool				SetAttribute(ROMNode^ currentObject, System::String^ id, System::String^ value);
-		bool				SetROMObjectValue(ROMNode^ currentObject, System::String^ name, System::String^ value);
-		System::String^		GetROMObjectValue(ROMNode ^currentObject, System::String ^name);
-		bool				RemoveAttribute(ROMNode^ currentObject, System::String^ id);	
-		System::String^		GetROMObjectName(ROMNode^ currentObject);
-		void				SetROMObjectName(ROMNode^ currentObject, System::String^ name);
+		String^		GetAttribute(ROMNode^ currentObject, String^ id, String^ name, bool recurs);
+		String^		GetAttribute(ROMNode^ currentObject, String^ id);
+		bool		SetAttribute(ROMNode^ currentObject, String^ id, String^ name, String^ value);
+		bool		SetAttribute(ROMNode^ currentObject, String^ id, String^ value);
+		bool		SetROMObjectValue(ROMNode^ currentObject, String^ name, String^ value);
+		String^		GetROMObjectValue(ROMNode ^currentObject, String ^name);
+		bool		RemoveAttribute(ROMNode^ currentObject, String^ id);	
+		String^		GetROMObjectName(ROMNode^ currentObject);
+		void		SetROMObjectName(ROMNode^ currentObject, String^ name);
 
 		//rules
-		bool				LoadRules(System::String^ knowledge_file);
-		System::Collections::Generic::List<System::String^>^	EvaluateTable(ROMNode^ currentObject, System::String^ evalTable, System::String^ output, bool bGetAll);
-		System::Collections::Generic::Dictionary<System::String^, System::Collections::Generic::List<System::String^>^>^ EvaluateTable(ROMNode^ currentObject, System::String^ evalTable, bool bGetAll);
+		bool		LoadRules(String^ knowledge_file);
+		array<String^>^	EvaluateTable(ROMNode^ currentObject, String^ evalTable, String^ output, bool bGetAll);
+		System::Collections::Generic::Dictionary<String^, array<String^>^>^ EvaluateTable(ROMNode^ currentObject, String^ evalTable, bool bGetAll);
 
 		//IO
-		System::String^		DumpTree();
-		bool	LoadTree(System::String^ xmlStr);
+		String^		DumpTree();
+		bool		LoadTree(String^ xmlStr);
 
 		//Xpath
-		System::String^		EvaluateXPATH(ROMNode ^currentObject, System::String^ xpath);
+		String^		EvaluateXPATH(ROMNode ^currentObject, String^ xpath);		
 
-	private:
-		void				LoadInputs(ROMNode^ currentObject, System::String^ evalTable);
-		System::String^ 	GetATableInputValue(ROMNode^ currentObject, System::String^ input);
+	internal:
+		array<String^>^	GetPossibleValues(ROMNode^ currentObject, String^ evalTable, String^ outputName);
+		void		LoadInputs(ROMNode^ currentObject, String^ evalTable);
+		String^ 	GetATableInputValue(ROMNode^ currentObject, String^ input);
 		System::Xml::XmlElement^				m_DOM;
 		System::Xml::XmlDataDocument^			m_DOC;
 		EDS::CKnowledgeBase						*m_KnowledgeBase;

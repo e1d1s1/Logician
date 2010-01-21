@@ -22,6 +22,14 @@ Copyright (C) 2009 Eric D. Schmidt
 
 #include <string>
 #include <vector>
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+#ifdef _MSC_VER
+#include <comdef.h>
+#else
+#include <time.h>
+#endif
 
 using namespace std;
 namespace ROMUTIL
@@ -31,12 +39,19 @@ namespace ROMUTIL
 	bool StringContains(wstring source, wstring target);
 	vector<string> Split(string text, string separators);
 	vector<wstring> Split(wstring text, wstring separators);
-	bool StringIsNumeric(wstring s);
+		bool StringIsNumeric(wstring s);
 	wstring TrimString(wstring s);
 	string ToASCIIString(wstring s);
 	vector<string> ToASCIIStringVector(vector<wstring> vectWS);
+	vector<wstring> ToWStringVector(vector<string> vStr);
 	string stringify(double x);
 	string stringify(long x);
 	string MakeGUID();
+#if USE_MSXML
+	wstring ToWString(_variant_t str);
+#endif
+	wstring MBCStrToWStr(string mbStr);
+	string WStrToMBCStr(wstring wstr);
+	
 }
 #endif

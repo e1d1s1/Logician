@@ -169,6 +169,30 @@ Node ROMTree::CreateROMObject(wstring name)
 	return retval;
 }
 
+Node ROMTree::GetROMObject(string guid)
+{
+	string src = "//Object[@guid='";
+	src += guid.c_str();
+	src += "']";
+	Node retval = NULL;
+#ifdef USE_MSXML
+	retval = xmlDoc->selectSingleNode(src.c_str());
+#endif
+
+#ifdef USE_LIBXML
+	xmlXPathContextPtr xpathCtx = xmlXPathNewContext(xmlDoc);
+	xmlXPathObjectPtr xpathObjSearch = xmlXPathEvalExpression((xmlChar*)src.c_str(), xpathCtx);
+	NodeList res = xpathObjSearch->nodesetval;
+	if (res != NULL && res->nodeNr == 1)
+	{
+		retval = res->nodeTab[0];
+	}
+	xmlXPathFreeObject(xpathObjSearch);
+	xmlXPathFreeContext(xpathCtx);
+#endif
+	return retval;
+}
+
 Node ROMTree::AddChildROMObject(Node current, Node child)
 {
 	Node retval = NULL;
@@ -535,6 +559,60 @@ bool ROMTree::DestroyROMObject(Node currentObject)
 	return retval;
 }
 
+map<wstring, map<wstring, wstring> > ROMTree::GetAllAttributes(Node currentObject)
+{
+	map<wstring, map<wstring, wstring> > retval;
+
+#ifdef USE_MSXML
+	NodeList res = currentObject->selectNodes("Attribute");
+	if (res != NULL)
+	{
+		for (long i = 0; i < res->length; i++)
+		{
+			wstring name = ToWString(res->item[i]->attributes->getNamedItem("id")->nodeValue);
+			map<wstring, wstring> keysAndValues;
+			for (long j = 0; j < res->item[i]->attributes->length; j++)
+			{
+				NamedNodeMap attrNodeMap = res->item[i]->attributes;
+				wstring key = attrNodeMap->item[j]->nodeName;
+				wstring value = ToWString(attrNodeMap->item[j]->nodeValue);		
+				keysAndValues[key] = value;
+			}
+			retval[name] = keysAndValues;
+		}
+	}
+#endif
+
+#ifdef USE_LIBXML
+	xmlXPathContextPtr xpathCtx = xmlXPathNewContext(xmlDoc);
+	xpathCtx->node = currentObject;
+	xmlXPathObjectPtr xpathObjSearch = xmlXPathEvalExpression((xmlChar*)"Attribute", xpathCtx);
+	NodeList res = xpathObjSearch->nodesetval;
+	if (res != NULL)
+	{
+		for (long i = 0; i < res->nodeNr; i++)
+		{
+			Node ROMAttrNode = res->nodeTab[i];
+			wstring name = MBCStrToWStr(xmlGetProp(ROMAttrNode, (xmlChar*)"id"));
+			map<wstring, wstring> keysAndValues;
+			for (Node attrNode = ROMAttrNode->children; attrNode != NULL; attrNode = attrNode->next)
+			{
+				if (attrNode->type == XML_ATTRIBUTE_NODE)
+				{
+					wstring key = MBCStrToWStr(attrNode->name);
+					wstring value = MBCStrToWStr(xmlGetProp(ROMAttrNode, attrNode->name));
+					keysAndValues[key] = value;
+				}
+				retval[name] = keysAndValues;
+			}
+		}
+	}
+	xmlXPathFreeObject(xpathObjSearch);
+	xmlXPathFreeContext(xpathCtx);
+#endif
+	return retval;
+}
+
 //IO
 wstring ROMTree::DumpTree(int format)
 {
@@ -588,7 +666,7 @@ map<wstring, vector<wstring> > ROMTree::EvaluateTable(Node currentObject, wstrin
 	return m_KnowledgeBase.EvaluateTable(evalTable, bGetAll);
 }
 
-void ROMTree::LoadInputs(Node currentObject, wstring evalTable)
+vector<wstring> ROMTree::LoadInputs(Node currentObject, wstring evalTable)
 {
 	vector<wstring> inputs = m_KnowledgeBase.GetInputDependencies(evalTable);
 	for (vector<wstring>::iterator it = inputs.begin(); it != inputs.end(); it++)
@@ -596,6 +674,13 @@ void ROMTree::LoadInputs(Node currentObject, wstring evalTable)
 		wstring value = GetATableInputValue(currentObject, *it);
 		m_KnowledgeBase.SetInputValue(*it, value);
 	}
+	return inputs;
+}
+
+vector<wstring> ROMTree::GetPossibleValues(Node currentObject, wstring evalTable, wstring outputName)
+{
+	vector<wstring> outputs = m_KnowledgeBase.GetAllPossibleOutputs(evalTable, outputName);
+	return outputs;
 }
 
 wstring ROMTree::GetATableInputValue(Node currentObject, wstring input)
@@ -657,47 +742,47 @@ wstring ROMTree::EvaluateXPATH(Node currentObject, wstring xpath)
 //ASCII Overloads
 ROMTree::ROMTree(string name)
 {
-	ROMTree(MBCStrToWStr(name));
+	ROMTree(ROMUTIL::MBCStrToWStr(name));
 }
 
 vector<Node> ROMTree::Find(Node current, string searchStr)
 {
-	return Find(current, MBCStrToWStr(searchStr));
+	return Find(current, ROMUTIL::MBCStrToWStr(searchStr));
 }
 
 Node ROMTree::CreateROMObject(string name)
 {
-	return CreateROMObject(MBCStrToWStr(name));
+	return CreateROMObject(ROMUTIL::MBCStrToWStr(name));
 }
 
 string ROMTree::GetAttribute(Node currentObject, string id, string name, bool recurs)
 {
-	return ToASCIIString(GetAttribute(currentObject, MBCStrToWStr(id), MBCStrToWStr(name), recurs));
+	return ToASCIIString(GetAttribute(currentObject, ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), recurs));
 }
 
 bool ROMTree::SetAttribute(Node currentObject, string id, string name, string value)
 {
-	return SetAttribute(currentObject, MBCStrToWStr(id), MBCStrToWStr(name), MBCStrToWStr(value));
+	return SetAttribute(currentObject, ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), ROMUTIL::MBCStrToWStr(value));
 }
 
 bool ROMTree::SetAttribute(Node currentObject, string id, string value)
 {
-	return SetAttribute(currentObject, MBCStrToWStr(id), MBCStrToWStr(value));
+	return SetAttribute(currentObject, ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(value));
 }
 
 bool ROMTree::SetROMObjectValue(Node currentObject, string name, string value)
 {
-	return SetROMObjectValue(currentObject, MBCStrToWStr(name), MBCStrToWStr(value));
+	return SetROMObjectValue(currentObject, ROMUTIL::MBCStrToWStr(name), ROMUTIL::MBCStrToWStr(value));
 }
 
 string ROMTree::GetROMObjectValue(Node currentObject, string name)
 {
-	return ToASCIIString(GetROMObjectValue(currentObject, MBCStrToWStr(name)));
+	return ToASCIIString(GetROMObjectValue(currentObject, ROMUTIL::MBCStrToWStr(name)));
 }
 
 bool ROMTree::RemoveAttribute(Node current, string id)
 {
-	return RemoveAttribute(current, MBCStrToWStr(id));
+	return RemoveAttribute(current, ROMUTIL::MBCStrToWStr(id));
 }
 
 string ROMTree::GetROMObjectNameA(Node current)
@@ -707,23 +792,23 @@ string ROMTree::GetROMObjectNameA(Node current)
 
 void ROMTree::SetROMObjectName(Node current, string name)
 {
-	SetROMObjectName(current, MBCStrToWStr(name));
+	SetROMObjectName(current, ROMUTIL::MBCStrToWStr(name));
 }
 
 bool ROMTree::LoadRules(string knowledge_file)
 {
-	return LoadRules(MBCStrToWStr(knowledge_file));
+	return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file));
 }
 
 vector<string> ROMTree::EvaluateTable(Node currentObject, string evalTable, string output, bool bGetAll)
 {
-	LoadInputs(currentObject, MBCStrToWStr(evalTable));
+	LoadInputs(currentObject, ROMUTIL::MBCStrToWStr(evalTable));
 	return m_KnowledgeBase.EvaluateTable(evalTable, output, bGetAll);
 }
 
 map<string, vector<string> > ROMTree::EvaluateTable(Node currentObject, string evalTable, bool bGetAll)
 {
-	LoadInputs(currentObject, MBCStrToWStr(evalTable));
+	LoadInputs(currentObject, ROMUTIL::MBCStrToWStr(evalTable));
 	return m_KnowledgeBase.EvaluateTable(evalTable, bGetAll);
 }
 
@@ -734,10 +819,10 @@ string ROMTree::DumpTreeA(int format)
 
 bool ROMTree::LoadTree(string xmlStr)
 {
-	return LoadTree(MBCStrToWStr(xmlStr));
+	return LoadTree(ROMUTIL::MBCStrToWStr(xmlStr));
 }
 
 string ROMTree::EvaluateXPATH(Node current, string xpath)
 {
-	return ToASCIIString(EvaluateXPATH(current, MBCStrToWStr(xpath)));
+	return ToASCIIString(EvaluateXPATH(current, ROMUTIL::MBCStrToWStr(xpath)));
 }
