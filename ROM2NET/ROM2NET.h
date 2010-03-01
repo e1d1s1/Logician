@@ -75,6 +75,7 @@ namespace ROM2NET
 
 		//attribute interface
 		String^		GetAttribute(ROMNode^ currentObject, String^ id, String^ name, bool recurs);
+		String^		GetAttribute(ROMNode^ currentObject, String^ id, bool recurs);
 		String^		GetAttribute(ROMNode^ currentObject, String^ id);
 		bool		SetAttribute(ROMNode^ currentObject, String^ id, String^ name, String^ value);
 		bool		SetAttribute(ROMNode^ currentObject, String^ id, String^ value);

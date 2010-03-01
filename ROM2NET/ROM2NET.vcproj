@@ -62,7 +62,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="EDSEngine.lib $(NOINHERIT)"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML&quot;;C:\boost_1_39_0\lib;C:\Python26\libs"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML&quot;"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
@@ -135,7 +135,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="EDSEngine.lib $(NOINHERIT)"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML&quot;;C:\boost_1_39_0\lib;C:\Python26\libs"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>

@@ -35,12 +35,14 @@ var EMPTY_STRING = 1;
 var EXPLICIT_NULL_STRING = 2;
 function ReportError(err) 
 {
-    if (IsIE())
-        alert("Error:\n" + err.description + "\n" + err.message + "\nline:" + err.number);
-    //else if (IsMoz())
-    //    alert("Error:\n" + err + " line:" + err.lineNumber);
-    else 
-        alert("Error:\n" + err);
+    var vDebug = "";
+    for (var prop in err)
+    { 
+       vDebug += "property: "+ prop+ " value: ["+ err[prop]+ "]\n";
+    }
+    vDebug += "toString(): " + " value: [" + err.toString() + "]";
+    status.rawValue = vDebug; 
+    alert(vDebug);
 }
 
 function IsIE() 
@@ -653,8 +655,8 @@ RuleTable.prototype.CreateRuleTable = function(inputAttrsTests, outputAttrsValue
         this.m_OutputAttrsValues = outputAttrsValues;
         this.m_FormulaInputs = formulaInputs;
         
-        if (inputAttrsTests.length > 0)
-            this.m_Tests = inputAttrsTests[0].second.length;
+        if (this.m_OutputAttrsValues.length > 0)
+            this.m_Tests = this.m_OutputAttrsValues[0].second.length;
         
         this.bHasJS = false;
         this.bHasChain = false;
@@ -693,6 +695,9 @@ RuleTable.prototype.EvaluateTableForAttr = function(outputAttr, bGetAll)
     {        
 	    var values = new Array();
 	    var solutions = new Array()
+	    var colResults = new Array(this.m_Tests);
+	    for (var j = 0; j < colResults.length; j++)
+	        colResults[j] = true;
 	    
 	    this.SetInvalidAttrs();
 	    
@@ -712,10 +717,10 @@ RuleTable.prototype.EvaluateTableForAttr = function(outputAttr, bGetAll)
 
 		    //sweep down the table for all inputs and do test(s)
 		    var bHaveSolution = true;
-		    var colResults = new Array(this.m_Tests);
-		    for (var j = 0; j < colResults.length; j++)
-		        colResults[j] = false;
-		        
+		    var colResultsDefault = new Array(this.m_Tests);
+		    for (var j = 0; j < colResultsDefault.length; j++)
+		        colResultsDefault[j] = false;
+		    colResults = colResultsDefault;
 		    for (var testCnt = 0; testCnt < this.m_Tests; testCnt++)
 		    {
 			    //sweep through the inputs			    
@@ -737,51 +742,51 @@ RuleTable.prototype.EvaluateTableForAttr = function(outputAttr, bGetAll)
 			    if (bHaveSolution && !bGetAll)
 				    break;
 		    } //done column
+		} //done inputs
 
-		    //for the give output, the reuslts are
-		    var results = new Array();
-		    for (var result = 0; result < this.m_Tests; result++)
+	    //for the give output, the reuslts are
+	    var results = new Array();
+	    for (var result = 0; result < this.m_Tests; result++)
+	    {
+		    if (result >= ArraySize(this.m_OutputAttrsValues))
+			    break;
+		    if (this.m_OutputAttrsValues[result].first == outputAttr)
 		    {
-			    if (result >= ArraySize(this.m_OutputAttrsValues))
-				    break;
-			    if (this.m_OutputAttrsValues[result].first == outputAttr)
-			    {
-				    results = this.m_OutputAttrsValues[result].second;
-			    }
-		    }
-
-		    //for each true result, add to the solution array
-		    for (var result = 0; result < this.m_Tests; result++)
-		    {
-			    if (colResults[result] && result < ArraySize(results))
-			    {
-			        var outputCell = results[result];
-				    var decoder = new Decode();
-				    decoder.CreateOutputDecoder(outputCell, this.m_InputAttrsValues, this.m_stringsMap);
-				    if (outputCell.Operation & CHAIN)
-					    this.bHasChain = true;
-				    if (outputCell.Operation & JAVASCRIPT)
-				    {
-	    			    this.bHasJS = true;
-					}
-				    var cellOutputs = decoder.EvaluateOutputCell();
-				    for (var i = 0; i < cellOutputs.length; i++)
-				    {
-				        var cellOuputValue = cellOutputs[i];
-					    retval.push(cellOuputValue);	
-					    if (this.m_DEBUGGING)
-					    {
-						    var solnVals = solutions[result];
-						    if (solnVals == null)
-						    {
-							    solutions[result] = new Array();				    
-						    }
-						    solutions[result].push(cellOuputValue);
-					    }				    
-				    }
-			    }
+			    results = this.m_OutputAttrsValues[result].second;
 		    }
 	    }
+
+	    //for each true result, add to the solution array
+	    for (var result = 0; result < this.m_Tests; result++)
+	    {
+		    if (colResults[result] && result < ArraySize(results))
+		    {
+		        var outputCell = results[result];
+			    var decoder = new Decode();
+			    decoder.CreateOutputDecoder(outputCell, this.m_InputAttrsValues, this.m_stringsMap);
+			    if (outputCell.Operation & CHAIN)
+				    this.bHasChain = true;
+			    if (outputCell.Operation & JAVASCRIPT)
+			    {
+    			    this.bHasJS = true;
+				}
+			    var cellOutputs = decoder.EvaluateOutputCell();
+			    for (var i = 0; i < cellOutputs.length; i++)
+			    {
+			        var cellOuputValue = cellOutputs[i];
+				    retval.push(cellOuputValue);	
+				    if (this.m_DEBUGGING)
+				    {
+					    var solnVals = solutions[result];
+					    if (solnVals == null)
+					    {
+						    solutions[result] = new Array();				    
+					    }
+					    solutions[result].push(cellOuputValue);
+				    }				    
+			    }
+		    }
+	    }	    
 	    
 	    if (this.m_DEBUGGING)
 	    {

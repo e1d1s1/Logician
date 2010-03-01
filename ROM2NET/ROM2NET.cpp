@@ -178,6 +178,11 @@ String^ ROM2NET::ROMTreeNET::GetAttribute(ROM2NET::ROMNode ^currentObject, Strin
 	return retval;
 }
 
+String^ ROM2NET::ROMTreeNET::GetAttribute(ROMNode^ currentObject, String^ id, bool recurs)
+{
+	return ROM2NET::ROMTreeNET::GetAttribute(currentObject, id, "value", recurs);
+}
+
 String^ ROM2NET::ROMTreeNET::GetAttribute(ROM2NET::ROMNode ^currentObject, String ^id)
 {
 	return ROM2NET::ROMTreeNET::GetAttribute(currentObject, id, "value", true);
