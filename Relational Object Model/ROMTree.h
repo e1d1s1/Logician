@@ -52,7 +52,8 @@ namespace ROM
 		vector<Node> GetAllChildren(Node current) {return Find(current, L"Object");}
 
 		//attribute interface
-		wstring				GetAttribute(Node currentObject, wstring id, wstring name = L"value", bool recurs = true);
+		wstring				GetAttribute(Node currentObject, wstring id, wstring name, bool recurs = true);
+		wstring				GetAttribute(Node currentObject, wstring id, bool recurs = true) {return GetAttribute(currentObject, id, L"value", recurs);}
 		bool				SetAttribute(Node currentObject, wstring id, wstring name, wstring value);
 		bool				SetAttribute(Node currentObject, wstring id, wstring value);
 		bool				SetAttributeValue(Node currentObject, wstring id, wstring value) {SetAttribute(currentObject, id, value);}
@@ -80,7 +81,8 @@ namespace ROM
 		ROMTree(string name);
 		vector<Node>		Find(Node current, string searchStr);
 		Node				CreateROMObject(string name);		
-		string				GetAttribute(Node currentObject, string id, string name = "value", bool recurs = true);
+		string				GetAttribute(Node currentObject, string id, string name, bool recurs = true);
+		string				GetAttribute(Node currentObject, string id, bool recurs = true) {return GetAttribute(currentObject, id, "value", recurs);}
 		bool				SetAttribute(Node currentObject, string id, string name, string value);
 		bool				SetAttribute(Node currentObject, string id, string value);
 		bool				SetROMObjectValue(Node currentObject, string name, string value);

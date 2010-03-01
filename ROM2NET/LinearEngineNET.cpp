@@ -155,7 +155,7 @@ void LinearEngineNET::EvaluateAll()
 void LinearEngineNET::EvalBoolean(String^ dictAttrName, String^ newValue)
 {
 	array<String^>^ res = m_tree->EvaluateTable(m_context, m_dict[dictAttrName]->RuleTable, dictAttrName, false);
-	array<String^>^ availableValues = nullptr;
+	array<String^>^ availableValues;
 
 	array<String^>^ prefixes = ParseOutPrefixes(res, availableValues);
 	m_dict[dictAttrName]->AvailableValues = availableValues;
@@ -165,7 +165,7 @@ void LinearEngineNET::EvalBoolean(String^ dictAttrName, String^ newValue)
 	else
 		m_dict[dictAttrName]->Visible = true;
 
-	String^ currentValue = m_tree->GetAttribute(m_context, dictAttrName);
+	String^ currentValue = m_tree->GetAttribute(m_context, dictAttrName, false);
 	m_dict[dictAttrName]->Valid = true;
 	m_dict[dictAttrName]->Enabled = true;
 
@@ -226,8 +226,6 @@ void LinearEngineNET::EvalEdit(String^ dictAttrName, String^newValue)
 	m_dict[dictAttrName]->AvailableValues = availableValues;
 	m_dict[dictAttrName]->Enabled = true;
 
-	String^ currentValue = m_tree->GetAttribute(m_context, dictAttrName);
-
 	//set the dictionary default on load
 	if (newValue->Length == 0)
 	{
@@ -259,7 +257,7 @@ void LinearEngineNET::EvalEdit(String^ dictAttrName, String^newValue)
 		//check table result for range
 		if (availableValues[0][0] == L'[')
 		{
-			m_dict[dictAttrName]->ChangedByUser = (newValue != L"N");;
+			m_dict[dictAttrName]->ChangedByUser = true;
 			double dNewValue = 0, dMin = 0, dMax = 0;
 			String^ val = availableValues[0];
 			val = val->Replace(L"[", L"");
@@ -316,7 +314,7 @@ void LinearEngineNET::EvalMultiSelect(String^ dictAttrName, array<String^>^ newV
 	array<String^>^ prefixes = ParseOutPrefixes(res, availableValues);
 	m_dict[dictAttrName]->AvailableValues = availableValues;
 
-	String^ currentValue = m_tree->GetAttribute(m_context, dictAttrName);
+	String^ currentValue = m_tree->GetAttribute(m_context, dictAttrName, false);
 	array<String^>^ currentValues = currentValue->Split(L'|');
 	List<String^>^ selectedValues = gcnew List<String^>();
 
@@ -387,7 +385,7 @@ void LinearEngineNET::EvalSingleSelect(String^ dictAttrName, String^ newValue)
 	array<String^>^ prefixes = ParseOutPrefixes(res, availableValues);
 	m_dict[dictAttrName]->AvailableValues = availableValues;
 	
-	String^ currentValue = m_tree->GetAttribute(m_context, dictAttrName);
+	String^ currentValue = m_tree->GetAttribute(m_context, dictAttrName, false);
 
 	//set the dictionary default on load
 	if (newValue->Length == 0)
@@ -487,7 +485,7 @@ void LinearEngineNET::EvaluateDependencies(String^ dictAttrName)
 	if (m_mapTriggers->ContainsKey(dictAttrName))
 	{
 		List<String^>^ attrsToEval = m_mapTriggers[dictAttrName];
-		for each (String^ s in  attrsToEval)
+		for each (String^ s in attrsToEval)
 		{	
 			if (m_dict->ContainsKey(s))
 			{					
