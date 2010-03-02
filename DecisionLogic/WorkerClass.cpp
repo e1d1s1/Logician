@@ -236,11 +236,23 @@ void WorkerClass::SaveApplicationSettings()
 	}
 }
 
+void WorkerClass::EnableAllChildWindows(bool enable)
+{
+	for (vector<OpenLogicTable>::iterator it = m_opened_windows.begin(); it != m_opened_windows.end(); it++)
+	{
+		OpenLogicTable current_table = *it;
+		MDIChild *childForm = (MDIChild*)current_table.child_window_ptr;
+		childForm->Enable(enable);
+	}
+}
+
 bool WorkerClass::Save()
 {
 	try
 	{
 		bool bTablesSaved = true;
+
+		EnableAllChildWindows(false);
 
 		for (vector<OpenLogicTable>::iterator it = m_opened_windows.begin(); it != m_opened_windows.end(); it++)
 		{
@@ -275,6 +287,8 @@ bool WorkerClass::Save()
 
 		if (bProjectSaved == true && bTablesSaved == true)
 			bIsSaved = true;
+
+		EnableAllChildWindows(true);
 	}
 	catch(...)
 	{

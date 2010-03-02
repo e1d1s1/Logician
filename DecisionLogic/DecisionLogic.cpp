@@ -28,6 +28,7 @@
 #include "stdafx.h"
 #include "DecisionLogic.h"
 #include <wx/fdrepdlg.h>
+#include <wx/utils.h>
 
 //Icon
 #if !defined(__WXMSW__) && !defined(__WXPM__)
@@ -332,8 +333,12 @@ void DecisionLogicFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event))
 
 void DecisionLogicFrame::OnSaveProject(wxCommandEvent& WXUNUSED(event))
 {
+	wxBeginBusyCursor();
+	this->m_tree->Enable(false);
 	if (m_worker->Save())
 		EnableAllMenus();
+	this->m_tree->Enable(true);
+	wxEndBusyCursor();
 }
 
 void DecisionLogicFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
