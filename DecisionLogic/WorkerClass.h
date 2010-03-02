@@ -126,6 +126,7 @@ private:
 	void DebugInfoReceived(wstring buff);
 	void HighlightTableAndRule(wstring tableName, size_t iSolnIdx);
 	bool TestStringTextMatch(wxString test, wxString find, bool bMatchCase, bool bMatchWholeWord);	
+	void EnableAllChildWindows(bool enable);
 
 	ProjectManager m_pm;
 	vector<OpenLogicTable> m_opened_windows;	

@@ -43,7 +43,7 @@ Section "DecisionLogic (required)"
   ; VS2008 Redist
   SetOutPath $TEMP
   File "vcredist_x86.exe"
-  Exec "vcredist_x86.exe /q"
+  Exec '/q:a /c:"vcredist_x86.exe /q"'
   Delete /REBOOTOK "vcredist_x86.exe"
 
   ; Set output path to the installation directory.
