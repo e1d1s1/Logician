@@ -109,7 +109,7 @@ void MDIChild::DisplayTableData(LogicTable table)
 		StringTable<wstring> *statusTable = ds->GetTable(_STATUS_TABLE);
 
 		//should have equal number of columns
-		if (m_type == 0 && inputTable->Columns() != outputTable->Columns())
+		if (m_type == 0 && (inputTable->Columns() > 0 && inputTable->Columns() != outputTable->Columns()))
 			throw "Tables do not have the same number of columns";
 
 		m_table->FillGrid(inputTable, outputTable, statusTable, table.bGetAll);
@@ -191,8 +191,8 @@ void MDIChild::RepopulateTranslationsTable(set<wstring> *strings)
 
 void MDIChild::InsertCol(wxCommandEvent& event) {m_table->OnInsertCol(event);}
 void MDIChild::InsertRow(wxCommandEvent& event) {m_table->OnInsertRow(event);}
-void MDIChild::AppendRow() {m_table->OnAppendRow();}
-void MDIChild::AppendColumn() {m_table->OnAppendColumn();}
+void MDIChild::AppendRow() {m_table->OnAppendRow(true);}
+void MDIChild::AppendColumn() {m_table->OnAppendColumn(true);}
 void MDIChild::DeleteCol(wxCommandEvent& event) {m_table->OnDeleteCol(event);}
 void MDIChild::DeleteRow(wxCommandEvent& event) {m_table->OnDeleteRow(event);}
 void MDIChild::ClearCells(wxCommandEvent& event) {m_table->OnClearCells(event);}

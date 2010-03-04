@@ -93,19 +93,6 @@
     <FormulaInput>someAttr</FormulaInput>
   </Table>
   <Table name="Dictionary" getall="true">
-    <Inputs>
-      <Attr/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-    </Inputs>
     <Outputs>
       <Attr>Name</Attr>
       <Value id="23" operation="1">aDictAttr3</Value>
