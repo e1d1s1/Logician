@@ -253,16 +253,17 @@ public:
 			status_offset = 1;
 		}
 
-		int rows = 0;
+		int rows = 0, cols = 0;
 		if (outputtable != NULL && statustable != NULL)
 		{
 			rows = inputtable->Rows() + outputtable->Rows() + statustable->Rows();
+			cols = outputtable->Columns();
 		}
 		else
 		{
 			rows = inputtable->Rows();
+			cols = inputtable->Columns();
 		}
-		int cols = inputtable->Columns();
 
 		if (this->GetNumberCols() > 0 || this->GetNumberRows() > 0)
 		{
@@ -687,7 +688,7 @@ public:
 		m_updateCallback();
 	}
 
-	inline void OnAppendRow()
+	inline void OnAppendRow(bool allowUndo)
 	{
 		this->AppendRows(1);
 		int j = this->GetNumberRows() - 1;
@@ -706,31 +707,31 @@ public:
 		{
 			this->FormatCell(j, i);
 		}
-		m_updateCallback();
+		if (allowUndo)
+			m_updateCallback();
 	}
 
-	inline void OnAppendColumn()
+	inline void OnAppendColumn(bool allowUndo)
 	{
 		this->AppendCols(1);
+		int i = this->GetNumberCols() - 1;
 		if (m_orientation == wxHORIZONTAL)
 		{
-			this->SetCellEditor(this->GetNumberRows() - 1, 0, new wxGridCellChoiceEditor(WXSIZEOF(strChoices), strChoices));
-			this->SetCellValue(this->GetNumberRows() - 1, 0, strChoices[0]);
+			this->SetCellEditor(0, i, new wxGridCellChoiceEditor(WXSIZEOF(strChoicesRule), strChoicesRule));
+			this->SetCellValue(0, i, strChoicesRule[0]);
 		}
 		else if	(m_orientation == wxVERTICAL)
 		{
-			this->SetCellEditor(0, this->GetNumberCols() - 1, new wxGridCellChoiceEditor(WXSIZEOF(strChoices), strChoices));
-			this->SetCellValue(0, this->GetNumberCols() - 1, strChoices[0]);
-
-			this->SetCellEditor(0, this->GetNumberCols() - 1, new wxGridCellChoiceEditor(WXSIZEOF(strChoicesRule), strChoicesRule));
-			this->SetCellValue(0, this->GetNumberCols() - 1, strChoicesRule[0]);
+			this->SetCellEditor(0, i, new wxGridCellChoiceEditor(WXSIZEOF(strChoices), strChoices));
+			this->SetCellValue(0, i, strChoices[1]);
 		}
 
 		for (int j = 0; j < this->GetNumberRows(); j++)
 		{
 			this->FormatCell(j, this->GetNumberCols() - 1);
 		}
-		m_updateCallback();
+		if (allowUndo)
+			m_updateCallback();
 	}
 
 	inline void OnDeleteCol(wxCommandEvent& event)
@@ -1017,7 +1018,7 @@ private:
 				for (int i = min_i; i <= m_sel_range.GetRight(); i++)
 				{
 					if (rowText.length() > 0)
-						retval += L"\v";
+						rowText += L"\t";
 					rowText += this->GetCellValue(j, i);
 				}
 				retval += rowText;
@@ -1078,13 +1079,13 @@ private:
 					vector<wstring> rows = UTILS::Split(val, L"\n");
 					//expand table if rows too wide
 					while (rows.size() > (size_t)GetNumberRows() - j_offset)
-						OnAppendRow();
+						OnAppendRow(false);
 					for (size_t j = 0; j < rows.size(); j++)
 					{
-						vector<wstring> cells = UTILS::Split(rows[j], L"\v");
+						vector<wstring> cells = UTILS::Split(rows[j], L"\t");
 						//expand table if cols too wide
 						while (cells.size() > (size_t)GetNumberCols() - i_offset)
-							OnAppendColumn();
+							OnAppendColumn(false);
 						for (size_t i = 0; i < cells.size(); i++)
 						{
 							this->SetCellValue(j + j_offset, i + i_offset, cells[i]);
