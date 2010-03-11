@@ -45,7 +45,8 @@ namespace ROM
 		SINGLESELECT = 0,
 		MULTISELECT = 1,
 		BOOLEANSELECT = 2,
-		EDIT = 3
+		EDIT = 3,
+		STATIC = 4
 	};
 }
 

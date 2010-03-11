@@ -55,11 +55,15 @@ void ROMDictionary::LoadDictionary(wstring dictionaryTable)
 		{
 			dictAttr.AttributeType = EDIT;
 		}
+		else if (strAttrType == "STATIC")
+		{
+			dictAttr.AttributeType = STATIC;
+		}
 
 		//on load, just set default values and possibilities
 		//only set a default if there is no rules table and no current value
 		wstring value = m_tree->GetAttribute(m_context, dictAttr.Name);
-		if (value.length() == 0 && dictAttr.RuleTable.length() == 0 && dictAttr.DefaultValue.length() > 0)
+		if (((value.length() == 0 && dictAttr.RuleTable.length() == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length() > 0)
 		{
 			m_tree->SetAttribute(m_context, dictAttr.Name, dictAttr.DefaultValue);
 		}
