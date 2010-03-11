@@ -16,28 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Relational Object Model 2 JS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// namespace placeholder
-//Extender = {};
-
-///**
-// * A function used to extend one class with another
-// * 
-// * @param {Object} subClass
-// * 		The inheriting class, or subclass
-// * @param {Object} baseClass
-// * 		The class from which to inherit
-// */
-//Extender.extend = function(subClass, baseClass) {
-//   function inheritance() {}
-//   inheritance.prototype = baseClass.prototype;
-
-//   subClass.prototype = new inheritance();
-//   subClass.prototype.constructor = subClass;
-//   subClass.baseConstructor = baseClass;
-//   subClass.superClass = baseClass.prototype;
-//}
-
-
 function ReportError(err) {
     var vDebug = "";
     for (var prop in err)
@@ -679,6 +657,7 @@ var SINGLESELECT = 0;
 var MULTISELECT = 1;
 var BOOLEANSELECT = 2;
 var EDIT = 3;
+var STATIC = 4;
 // ROMDictionaryAttribute class////////////////////////////////////////////////////////////////
 function ROMDictionaryAttribute() 
 {
@@ -741,11 +720,15 @@ ROMDictionary.prototype.LoadDictionary = function(dictionaryTable)
 		    {
 			    dictAttr.AttributeType = EDIT;
 			}
+			else if (strAttrType == "STATIC")
+		    {
+			    dictAttr.AttributeType = STATIC;
+		    }
 		    
 		    //on load, just set default values and possibilities
 		    //only set a default if there is no rules table and no current value
 		    var value = this.m_tree.GetAttributeValue(this.m_context, dictAttr.Name, false);
-		    if (value.length == 0 && dictAttr.RuleTable.length == 0 && dictAttr.DefaultValue.length > 0)
+		    if (((value.length == 0 && dictAttr.RuleTable.length == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length > 0)
 		    {
 			    this.m_tree.SetAttribute(this.m_context, dictAttr.Name, dictAttr.DefaultValue);
 		    }

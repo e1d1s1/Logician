@@ -143,6 +143,16 @@ bool WorkerClass::OpenProject(wstring fileName)
 	bool retval = false;
 	try
 	{
+		if (m_opened_windows.size() > 0)
+			CheckSave();
+		for (int i = 0; i < m_opened_windows.size(); i++)
+		{
+			OpenLogicTable current_table = m_opened_windows[i];
+			MDIChild *childForm = (MDIChild*)current_table.child_window_ptr;
+			childForm->Close();
+		}
+		m_opened_windows.clear();
+
 		wstring openPath;
 		if (fileName.length() == 0)
 		{

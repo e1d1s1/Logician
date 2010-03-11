@@ -70,6 +70,8 @@ const wxString strChoicesRule[2] = {_T("Enabled"), _T("Disabled")};
 
 enum
 {
+	COPYPASTE = 0,
+	INSERTORDEL = 2,
 	CUT = wxID_CUT,
 	COPY = wxID_COPY,
 	PASTE = wxID_PASTE,
@@ -619,7 +621,7 @@ public:
 	inline void OnInsertCol(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition, min_i = 0;
-		GetSelectionRange(lowInsertPosition, highInsertPosition, true, true);
+		GetSelectionRange(lowInsertPosition, highInsertPosition, true, INSERTORDEL);
 		if (m_orientation == wxHORIZONTAL)
 		{
 			min_i = lowInsertPosition;
@@ -655,7 +657,7 @@ public:
 	inline void OnInsertRow(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition, min_j = 0;
-		GetSelectionRange(lowInsertPosition, highInsertPosition, false, true);
+		GetSelectionRange(lowInsertPosition, highInsertPosition, false, INSERTORDEL);
 		if (m_orientation == wxHORIZONTAL)
 		{
 			min_j = m_sel_range.GetTop();
@@ -737,14 +739,14 @@ public:
 	inline void OnDeleteCol(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition;
-		if(GetSelectionRange(lowInsertPosition, highInsertPosition, true, false))
+		if(GetSelectionRange(lowInsertPosition, highInsertPosition, true, INSERTORDEL))
 			this->DeleteCols(lowInsertPosition, highInsertPosition - lowInsertPosition + 1);
 	}
 
 	inline void OnDeleteRow(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition;
-		if(GetSelectionRange(lowInsertPosition, highInsertPosition, false, false))
+		if(GetSelectionRange(lowInsertPosition, highInsertPosition, false, INSERTORDEL))
 			this->DeleteRows(lowInsertPosition, highInsertPosition - lowInsertPosition + 1);
 	}
 
@@ -754,13 +756,13 @@ public:
 		int lowInsertPosition, highInsertPosition, min_j = 0, min_i = 0;
 		if (m_orientation == wxHORIZONTAL)
 		{
-			GetSelectionRange(lowInsertPosition, highInsertPosition, true, false);
+			GetSelectionRange(lowInsertPosition, highInsertPosition, true, INSERTORDEL);
 			min_i = lowInsertPosition;
 			min_j = m_sel_range.GetTop();
 		}
 		else if	(m_orientation == wxVERTICAL)
 		{
-			GetSelectionRange(lowInsertPosition, highInsertPosition, false, false);
+			GetSelectionRange(lowInsertPosition, highInsertPosition, false, INSERTORDEL);
 			min_j = lowInsertPosition;
 			min_i = m_sel_range.GetLeft();
 		}
@@ -853,17 +855,14 @@ private:
 		PopupMenu(&popupMenu);
 	}
 
-	inline bool GetSelectionRange(int &min, int &max, bool isCol, bool forInsert)
+	inline bool GetSelectionRange(int &min, int &max, bool isCol, int type)
 	{
 		bool bHasSelection = false;
 
 		int lowestPos = 0;
 		if (m_type == RULES_TABLE)
 		{
-			if (forInsert)
-				lowestPos = 2;
-			else
-				lowestPos = 1;
+			lowestPos = type;
 		}
 
 		int lowInsertPosition, highInsertPosition = lowestPos;
@@ -997,13 +996,13 @@ private:
 		int lowInsertPosition, highInsertPosition, min_j = 0, min_i = 0;
 		if (m_orientation == wxHORIZONTAL)
 		{
-			GetSelectionRange(lowInsertPosition, highInsertPosition, true, false);
+			GetSelectionRange(lowInsertPosition, highInsertPosition, true, COPYPASTE);
 			min_i = lowInsertPosition;
 			min_j = m_sel_range.GetTop();
 		}
 		else if	(m_orientation == wxVERTICAL)
 		{
-			GetSelectionRange(lowInsertPosition, highInsertPosition, false, false);
+			GetSelectionRange(lowInsertPosition, highInsertPosition, false, COPYPASTE);
 			min_j = lowInsertPosition;
 			min_i = m_sel_range.GetLeft();
 		}
@@ -1053,11 +1052,11 @@ private:
 		int lowInsertPosition, highInsertPosition;
 		if (m_orientation == wxHORIZONTAL)
 		{
-			GetSelectionRange(lowInsertPosition, highInsertPosition, true, false);
+			GetSelectionRange(lowInsertPosition, highInsertPosition, true, COPYPASTE);
 		}
 		else if	(m_orientation == wxVERTICAL)
 		{
-			GetSelectionRange(lowInsertPosition, highInsertPosition, false, false);
+			GetSelectionRange(lowInsertPosition, highInsertPosition, false, COPYPASTE);
 		}
 
 		if (m_sel_range.GetWidth() == 0)
