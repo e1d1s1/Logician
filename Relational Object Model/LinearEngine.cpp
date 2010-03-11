@@ -3,7 +3,7 @@
 #include "utilities.h"
 
 namespace ROM
-{	
+{
 	LinearEngine::LinearEngine(ROMTree* tree, Node context, wstring dictionaryTable):ROMDictionary(tree, context)
 	{
 		InitializeEngine(tree, context, dictionaryTable);
@@ -44,7 +44,7 @@ namespace ROM
 
 		//based on the triggers, re-order the dictionary
 		m_CurrentRecursion = 0;
-		OrderDictionary();		
+		OrderDictionary();
 	}
 
 	void LinearEngine::OrderDictionary()
@@ -54,14 +54,14 @@ namespace ROM
 		vector<ROMDictionaryAttribute*> evalOrderCopy = m_vEvalList;
 
 		//check for circular logic, outputs that are also inputs must go above the attrs that are dependent on them
-		for (map<wstring, vector<wstring>>::iterator it = m_mapTriggers.begin(); it != m_mapTriggers.end(); it++)
+		for (map<wstring, vector<wstring> >::iterator it = m_mapTriggers.begin(); it != m_mapTriggers.end(); it++)
 		{
 			for (vector<wstring>::iterator itDeps = it->second.begin(); itDeps != it->second.end(); itDeps++)
 			{
 				size_t lowestIndex = 0;
 				bool bFoundInputAttr = false;
 				for (lowestIndex = 0; lowestIndex < m_vEvalList.size(); lowestIndex++)
-				{					
+				{
 					if (m_vEvalList[lowestIndex]->Name == it->first)
 					{
 						bFoundInputAttr = true;
@@ -77,16 +77,16 @@ namespace ROM
 						{
 							size_t currentIndex = 0;
 							for (currentIndex = 0; currentIndex < m_vEvalList.size(); currentIndex++)
-							{					
-								if (m_vEvalList[currentIndex]->Name == *itDeps2)								
-									break;								
+							{
+								if (m_vEvalList[currentIndex]->Name == *itDeps2)
+									break;
 							}
 							if (currentIndex < lowestIndex)
 								lowestIndex = currentIndex;
-						}						
+						}
 					}
 
-					//make the current input index lower than lowest output 
+					//make the current input index lower than lowest output
 					if (origIndex != lowestIndex)
 					{
 						ROMDictionaryAttribute* attr = m_vEvalList[origIndex];
@@ -124,7 +124,7 @@ namespace ROM
 			switch (m_dict[dictAttrName].AttributeType)
 			{
 			case SINGLESELECT:
-				EvalSingleSelect(dictAttrName, newValues[0]);				
+				EvalSingleSelect(dictAttrName, newValues[0]);
 				break;
 
 			case MULTISELECT:
@@ -150,7 +150,7 @@ namespace ROM
 		for (vector<ROMDictionaryAttribute*>::iterator it = m_vEvalList.begin(); it != m_vEvalList.end(); it++)
 		{
 			vector<wstring> selectedValues = GetSelectedValues(*it);
-			EvaluateForAttribute((*it)->Name, selectedValues, false);		
+			EvaluateForAttribute((*it)->Name, selectedValues, false);
 		}
 	}
 
@@ -185,7 +185,7 @@ namespace ROM
 			return;
 		}
 		else if (availableValues.size() == 1) //you should only have one value
-		{			
+		{
 			if (availableValues[0].length() == 0 || availableValues[0] == L"N")
 			{
 				m_tree->SetAttribute(m_context, dictAttrName, L"N");
@@ -196,7 +196,7 @@ namespace ROM
 			{
 				if (currentValue.length() == 0)
 				{
-					m_tree->SetAttribute(m_context, dictAttrName, L"Y");					
+					m_tree->SetAttribute(m_context, dictAttrName, L"Y");
 				}
 			}
 			else if (availableValues[0] == L"YY") //force Yes, no other choice
@@ -215,7 +215,7 @@ namespace ROM
 			{
 				m_tree->SetAttribute(m_context, dictAttrName, newValue);
 				m_dict[dictAttrName].ChangedByUser = (availableValues[0] == newValue);
-			}		
+			}
 		}
 	}
 
@@ -234,7 +234,7 @@ namespace ROM
 			if (m_dict[dictAttrName].DefaultValue.length() > 0)
 				newValue = m_dict[dictAttrName].DefaultValue;
 		}
-		
+
 		if (availableValues.size() == 1)
 		{
 			if (ROMUTIL::StringContains(prefixes[0], INVISPREFIX))
@@ -274,7 +274,7 @@ namespace ROM
 #endif
 				if (dNewValue <= dMax && dNewValue >= dMin)
 				{
-					m_tree->SetAttribute(m_context, dictAttrName, newValue);	
+					m_tree->SetAttribute(m_context, dictAttrName, newValue);
 				}
 				else if (dNewValue > dMax)
 				{
@@ -289,7 +289,7 @@ namespace ROM
 			}
 		}
 		else if (availableValues.size() == 0 || (availableValues.size() == 1 && availableValues[0].length() == 1 && availableValues[0][0] == L'Y'))
-		{			
+		{
 			m_tree->SetAttribute(m_context, dictAttrName, newValue);
 			m_dict[dictAttrName].ChangedByUser = true;
 			if (prefixes.size() > 0 && prefixes[0].length() > 0 && ROMUTIL::StringContains(prefixes[0], INVISPREFIX))
@@ -351,7 +351,7 @@ namespace ROM
 				}
 			}
 		}
-		
+
 		if (selectedValues.size() == 0 && currentValues.size() > 0) //compare the new values to what is really available
 		{
 			for (size_t i = 0; i < newValues.size(); i++)
@@ -370,7 +370,7 @@ namespace ROM
 			if (finalValue.length() > 0)
 				finalValue+= L"|";
 			finalValue+=*it;
-		}		
+		}
 		if (finalValue != currentValue)
 			m_tree->SetAttribute(m_context, dictAttrName, finalValue);
 	}
@@ -384,7 +384,7 @@ namespace ROM
 		//the list of results is what is available for selection in the control
 		vector<wstring> prefixes = ParseOutPrefixes(res, availableValues);
 		m_dict[dictAttrName].AvailableValues = availableValues;
-		
+
 		wstring currentValue = m_tree->GetAttribute(m_context, dictAttrName);
 
 		//set the dictionary default on load
@@ -424,12 +424,12 @@ namespace ROM
 
 		if (newValue.length() > 0 && find(availableValues.begin(), availableValues.end(), newValue) != availableValues.end())
 		{
-			m_dict[dictAttrName].Valid = true;		
+			m_dict[dictAttrName].Valid = true;
 			if (currentValue != newValue)
 			{
 				m_tree->SetAttribute(m_context, dictAttrName, newValue);
 				m_dict[dictAttrName].ChangedByUser = true;
-			}			
+			}
 		}
 		else
 		{
@@ -449,7 +449,7 @@ namespace ROM
 		{
 			wstring val = *it;
 			wstring fullPrefix;
-			
+
 			//check for leadoff ^ indicating an invisible control
 			if (ROMUTIL::StringContains(val, INVISPREFIX))
 			{
@@ -484,10 +484,10 @@ namespace ROM
 		{
 			vector<wstring> attrsToEval = m_mapTriggers[dictAttrName];
 			for (vector<wstring>::iterator it = attrsToEval.begin(); it != attrsToEval.end(); it++)
-			{	
+			{
 				map<wstring, ROMDictionaryAttribute>::iterator itFind = m_dict.find(*it);
 				if (itFind != m_dict.end())
-				{					
+				{
 					vector<wstring> selectedValues = GetSelectedValues(&itFind->second);
 					EvaluateForAttribute(*it, selectedValues);
 				}
@@ -498,7 +498,7 @@ namespace ROM
 	vector<wstring> LinearEngine::GetSelectedValues(ROMDictionaryAttribute* attr)
 	{
 		vector<wstring> retval;
-		wstring currentValue = m_tree->GetAttribute(m_context, attr->Name); 
+		wstring currentValue = m_tree->GetAttribute(m_context, attr->Name);
 
 		switch (attr->AttributeType)
 		{
