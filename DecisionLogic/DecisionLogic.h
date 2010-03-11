@@ -105,7 +105,9 @@ public:
 	void OnDeleteCol(wxCommandEvent& event);
 	void OnDeleteRow(wxCommandEvent& event);
 	void OnAppendColumn(wxCommandEvent& event);
+	void OnAppendColumns(wxCommandEvent& event);
 	void OnAppendRow(wxCommandEvent& event);
+	void OnAppendRows(wxCommandEvent& event);
 	void OnClearCells(wxCommandEvent& event);
 	void OnEditCode(wxCommandEvent& event);
 	void OnGlobalORs(wxCommandEvent& event);
@@ -198,6 +200,8 @@ enum
 	DecisionLogic_Server,
 	APPEND_COL,
 	APPEND_ROW,
+	APPEND_COLS,
+	APPEND_ROWS,
 	// it is important for the id corresponding to the "About" command to have
     // this standard value as otherwise it won't be handled properly under Mac
     // (where it is special and put into the "Apple" menu)

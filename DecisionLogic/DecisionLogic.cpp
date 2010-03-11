@@ -80,7 +80,9 @@ BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
 	EVT_MENU(DELETE_COL, DecisionLogicFrame::OnDeleteCol)
 	EVT_MENU(DELETE_ROW, DecisionLogicFrame::OnDeleteRow)
 	EVT_MENU(APPEND_COL, DecisionLogicFrame::OnAppendColumn)
+	EVT_MENU(APPEND_COLS, DecisionLogicFrame::OnAppendColumns)
 	EVT_MENU(APPEND_ROW, DecisionLogicFrame::OnAppendRow)
+	EVT_MENU(APPEND_ROWS, DecisionLogicFrame::OnAppendRows)
 	EVT_MENU(CLEAR_CELLS, DecisionLogicFrame::OnClearCells)
 	EVT_MENU(EDIT_CODE, DecisionLogicFrame::OnEditCode)
 
@@ -238,7 +240,9 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	tableMenu->Append(INSERT_COL, _T("Insert &Column(s)"));
 	tableMenu->Append(INSERT_ROW, _T("Insert &Row(s)"));
 	tableMenu->Append(APPEND_COL, _T("Append C&olumn"));
+	tableMenu->Append(APPEND_COLS, _T("Append Colum&ns"));
 	tableMenu->Append(APPEND_ROW, _T("Append Ro&w"));
+	tableMenu->Append(APPEND_ROWS, _T("Append R&ows"));
 	tableMenu->AppendSeparator();
 	tableMenu->Append(DELETE_COL, _T("&Delete Column(s)"));
 	tableMenu->Append(DELETE_ROW, _T("D&elete Row(s)"));
@@ -568,9 +572,47 @@ void DecisionLogicFrame::OnAppendRow(wxCommandEvent& event)
 	m_worker->AppendRow(event);
 }
 
+void DecisionLogicFrame::OnAppendRows(wxCommandEvent& event)
+{
+	wxTextEntryDialog dlg(this, _T("Rows:"), _T("Enter number of rows"), _T("10"));
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		int cnt = 0;
+		wstring val = dlg.GetValue();
+
+#ifdef _MSC_VER
+		cnt = _wtoi(val.c_str());
+#else
+		string strCurrent(val.begin(), val.end());
+		cnt = atoi(strCurrent.c_str());
+#endif
+		for (int i = 0; i < cnt; i++)
+			m_worker->AppendRow(event);
+	}	
+}
+
 void DecisionLogicFrame::OnAppendColumn(wxCommandEvent& event)
 {
 	m_worker->AppendColumn(event);
+}
+
+void DecisionLogicFrame::OnAppendColumns(wxCommandEvent& event)
+{
+	wxTextEntryDialog dlg(this, _T("Columns:"), _T("Enter number of columns"), _T("10"));
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		int cnt = 0;
+		wstring val = dlg.GetValue();
+
+#ifdef _MSC_VER
+		cnt = _wtoi(val.c_str());
+#else
+		string strCurrent(val.begin(), val.end());
+		cnt = atoi(strCurrent.c_str());
+#endif
+		for (int i = 0; i < cnt; i++)
+			m_worker->AppendColumn(event);
+	}
 }
 
 void DecisionLogicFrame::OnClearCells(wxCommandEvent& event)

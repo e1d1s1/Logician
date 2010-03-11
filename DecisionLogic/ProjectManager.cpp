@@ -31,6 +31,7 @@
 #include <set>
 #include <assert.h>
 #include <wx/ffile.h>
+#include <wx/textdlg.h>
 
 #include "ProjectManager.h"
 #include "utilities.h"
