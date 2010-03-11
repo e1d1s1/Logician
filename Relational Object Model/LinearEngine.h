@@ -22,7 +22,7 @@ namespace ROM
 		LinearEngine(ROMTree* tree, Node context, string dictionaryTable);
 		void EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents = true);
 		void EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents = true);
-		
+
 
 	private:
 		void InitializeEngine(ROMTree* tree, Node context, wstring dictionaryTable);
@@ -36,7 +36,7 @@ namespace ROM
 		vector<wstring> GetSelectedValues(ROMDictionaryAttribute* attr);
 
 		vector<ROMDictionaryAttribute*> m_vEvalList;
-		map<wstring, vector<wstring>> m_mapTriggers;
+		map<wstring, vector<wstring> > m_mapTriggers;
 		int m_CurrentRecursion;
 
 		wstring INVISPREFIX;
