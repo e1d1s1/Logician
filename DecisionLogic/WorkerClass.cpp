@@ -469,7 +469,7 @@ void WorkerClass::DeleteTable()
 			{
 				wstring name = opened.logic_table.Name;
 				wstring path = opened.logic_table.Path;
-				if (m_pm.DeleteDataSet(name))
+				if (m_pm.DeleteDataSet(name + L".xml"))
 				{
 					DeleteTreeNode(name);
 					active->Close();
@@ -481,6 +481,8 @@ void WorkerClass::DeleteTable()
 						#else
 						remove(UTILS::WStrToMBCStr(path).c_str());
 						#endif
+						//if file is gone, force a save of the project
+						Save();
 					}
 				}
 				break;
@@ -506,7 +508,7 @@ void WorkerClass::NewGroup()
 		if (name.length() > 0)
 		{
 			AddTreeNode(wxtid_active_group, name);
-			wxTreeItemId *id = FindItemNamed(m_tree, name);
+			wxTreeItemId id = FindItemNamed(m_tree->GetRootItem(), name);
 			m_tree->SelectItem(id, true);
 			wxtid_active_group = m_tree->GetSelection();
 		}
@@ -546,24 +548,28 @@ void WorkerClass::DeleteGroup()
 					paths.push_back(path);
 				}
 			}
-			m_tree->Delete(m_tree->GetSelection());
 
-			int ans = wxMessageBox(_T("Group removed from project.\nDo you wnat to delete the associated files as well?"), _T("Remove Files?"), wxYES_NO );
-			if (ans == wxYES)
+			if (list.size() > 0)
 			{
-				for (vector<wstring>::iterator it = paths.begin(); it != paths.end(); it++)
+				m_tree->Delete(m_tree->GetSelection());
+
+				int ans = wxMessageBox(_T("Group removed from project.\nDo you wnat to delete the associated files as well?"), _T("Remove Files?"), wxYES_NO );
+				if (ans == wxYES)
 				{
-				    #ifdef WIN32
-					_wremove(it->c_str());
+					for (vector<wstring>::iterator it = paths.begin(); it != paths.end(); it++)
+					{
+						#ifdef WIN32
+						_wremove(it->c_str());
+						#else
+						remove(UTILS::WStrToMBCStr(*it).c_str());
+						#endif
+					}
+					#ifdef WIN32
+					_wrmdir(dirPath.c_str());
 					#else
-					remove(UTILS::WStrToMBCStr(*it).c_str());
+					rmdir(UTILS::WStrToMBCStr(dirPath).c_str());
 					#endif
 				}
-				#ifdef WIN32
-				_wrmdir(dirPath.c_str());
-				#else
-				rmdir(UTILS::WStrToMBCStr(dirPath).c_str());
-				#endif
 			}
 		}
 	}
@@ -914,8 +920,10 @@ void WorkerClass::DeleteTreeNode(wstring name)
 {
 	try
 	{
-		wxTreeItemId item = FindItemNamed(m_tree, name);
+		//wxTreeItemId item = m_tree->GetSelection();
+		wxTreeItemId item = FindItemNamed(m_tree->GetRootItem(), name);
 		m_tree->Delete(item);
+		m_tree->Unselect();
 	}
 	catch(...)
 	{
@@ -923,30 +931,37 @@ void WorkerClass::DeleteTreeNode(wstring name)
 	}
 }
 
-wxTreeItemId* WorkerClass::FindItemNamed(wxTreeCtrl *tree, const wstring &name)
+wxTreeItemId WorkerClass::FindItemNamed(wxTreeItemId root, const wxString& sSearchFor)
 {
 	try
 	{
-		stack<wxTreeItemId> items;
-		if (tree->GetRootItem().IsOk())
-			items.push(tree->GetRootItem());
-
-		while (!items.empty())
+		wxTreeItemIdValue cookie;
+		wxTreeItemId search;
+		wxTreeItemId item = m_tree->GetFirstChild( root, cookie );
+		wxTreeItemId child;
+	 
+		while( item.IsOk() )
 		{
-			wxTreeItemId next = items.top();
-			items.pop();
-
-			if (next != tree->GetRootItem() && tree->GetItemText(next) == name)
-				return &next;
-
-			wxTreeItemIdValue cookie;
-			wxTreeItemId nextChild = tree->GetFirstChild(next, cookie);
-			while (nextChild.IsOk())
+			wxString sData = m_tree->GetItemText(item);
+			if( sSearchFor.CompareTo(sData) == 0 )
 			{
-				items.push(nextChild);
-				nextChild = tree->GetNextSibling(nextChild);
+				return item;
 			}
+			if( m_tree->ItemHasChildren( item ) )
+			{
+				wxTreeItemId search = FindItemNamed( item, sSearchFor );
+				if( search.IsOk() )
+				{
+					return search;
+				}
+			}
+			item = m_tree->GetNextChild( root, cookie);
 		}
+ 
+		/* Not found */
+		wxTreeItemId dummy;
+		return dummy;
+
 	}
 	catch(...)
 	{
@@ -986,14 +1001,14 @@ void WorkerClass::AddAllProjectNodes()
 				}
 				else //recursive children
 				{
-					wxTreeItemId *parent_id_ptr = FindItemNamed(m_tree, parent_group);
+					wxTreeItemId parent_id_ptr = FindItemNamed(m_tree->GetRootItem(), parent_group);
 					wxTreeItemId parentNode;
-					if (parent_id_ptr == NULL) //need to create a folder node
+					if (parent_id_ptr.IsOk()) //need to create a folder node
 					{
 						for (size_t i = 0; i < parts.size(); i++)
 						{
 							if (i > 0)
-								parent_id_ptr = FindItemNamed(m_tree, parts[i - 1]);
+								parent_id_ptr = FindItemNamed(m_tree->GetRootItem(), parts[i - 1]);
 							else
 								parent_id_ptr = &m_tree->GetRootItem();
 
@@ -1026,7 +1041,7 @@ wstring WorkerClass::GetTreeNodePath(wxTreeCtrl *tree, wstring name)
 
 	try
 	{
-		wxTreeItemId next = FindItemNamed(tree, name);
+		wxTreeItemId next = FindItemNamed(m_tree->GetRootItem(), name);
 		if (next.IsOk())
 		{
 			while (next != tree->GetRootItem())

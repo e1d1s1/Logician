@@ -71,7 +71,8 @@ const wxString strChoicesRule[2] = {_T("Enabled"), _T("Disabled")};
 enum
 {
 	COPYPASTE = 0,
-	INSERTORDEL = 2,
+	DEL = 1,
+	INSERT = 2,
 	CUT = wxID_CUT,
 	COPY = wxID_COPY,
 	PASTE = wxID_PASTE,
@@ -621,7 +622,7 @@ public:
 	inline void OnInsertCol(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition, min_i = 0;
-		GetSelectionRange(lowInsertPosition, highInsertPosition, true, INSERTORDEL);
+		GetSelectionRange(lowInsertPosition, highInsertPosition, true, INSERT);
 		if (m_orientation == wxHORIZONTAL)
 		{
 			min_i = lowInsertPosition;
@@ -629,6 +630,11 @@ public:
 		else if	(m_orientation == wxVERTICAL)
 		{
 			min_i = m_sel_range.GetLeft();
+			if (min_i == 0)
+			{
+				min_i = 1;
+				highInsertPosition = 1;
+			}
 		}
 		lowInsertPosition = min_i;
 
@@ -657,10 +663,15 @@ public:
 	inline void OnInsertRow(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition, min_j = 0;
-		GetSelectionRange(lowInsertPosition, highInsertPosition, false, INSERTORDEL);
+		GetSelectionRange(lowInsertPosition, highInsertPosition, false, INSERT);
 		if (m_orientation == wxHORIZONTAL)
 		{
 			min_j = m_sel_range.GetTop();
+			if (min_j == 0 && highInsertPosition == 0)
+			{
+				min_j = 1;
+				highInsertPosition = 1;
+			}
 		}
 		else if	(m_orientation == wxVERTICAL)
 		{
@@ -739,14 +750,14 @@ public:
 	inline void OnDeleteCol(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition;
-		if(GetSelectionRange(lowInsertPosition, highInsertPosition, true, INSERTORDEL))
+		if(GetSelectionRange(lowInsertPosition, highInsertPosition, true, DEL))
 			this->DeleteCols(lowInsertPosition, highInsertPosition - lowInsertPosition + 1);
 	}
 
 	inline void OnDeleteRow(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition;
-		if(GetSelectionRange(lowInsertPosition, highInsertPosition, false, INSERTORDEL))
+		if(GetSelectionRange(lowInsertPosition, highInsertPosition, false, DEL))
 			this->DeleteRows(lowInsertPosition, highInsertPosition - lowInsertPosition + 1);
 	}
 
@@ -756,13 +767,13 @@ public:
 		int lowInsertPosition, highInsertPosition, min_j = 0, min_i = 0;
 		if (m_orientation == wxHORIZONTAL)
 		{
-			GetSelectionRange(lowInsertPosition, highInsertPosition, true, INSERTORDEL);
+			GetSelectionRange(lowInsertPosition, highInsertPosition, true, DEL);
 			min_i = lowInsertPosition;
 			min_j = m_sel_range.GetTop();
 		}
 		else if	(m_orientation == wxVERTICAL)
 		{
-			GetSelectionRange(lowInsertPosition, highInsertPosition, false, INSERTORDEL);
+			GetSelectionRange(lowInsertPosition, highInsertPosition, false, DEL);
 			min_j = lowInsertPosition;
 			min_i = m_sel_range.GetLeft();
 		}
