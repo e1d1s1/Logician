@@ -978,18 +978,8 @@ bool ProjectManager::DeleteDataSet(wstring name)
     {
         if (m_project_files->GetItem(rowIndex, L"DataSetName") == name)
         {
-            path = m_project_files->GetItem(rowIndex, L"RelativePath");
-            filename = m_project_working_path + PATHSEP + path;
-
-			if (filename.length() > 0)
-			{
-			    #ifdef WIN32
-				_wremove(filename.c_str());
-				#else
-                remove(UTILS::WStrToMBCStr(filename).c_str());
-				#endif
-				m_project_files->DeleteRow(rowIndex);
-			}
+			m_project_files->DeleteRow(rowIndex);
+			retval = true;
             break;
         }
     }

@@ -119,7 +119,7 @@ private:
 	wstring GetTreeNodePath(wxTreeCtrl *tree, wstring nodeName);
 	void DeleteTreeNode(wstring name);
 	void FillDataTable(StringTable<wstring> *table, wxGrid *grid);
-	wxTreeItemId* FindItemNamed(wxTreeCtrl *tree, const std::wstring &name);
+	wxTreeItemId FindItemNamed(wxTreeItemId root, const wxString& sSearchFor);
 	void AddAllProjectNodes();
 	void GetSettings();
 	void SaveApplicationSettings();
