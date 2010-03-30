@@ -485,7 +485,11 @@ public:
 						retval.AddColumn(_RULESTATUS_NAME);
 				}
 				for (int row_cnt = 0; row_cnt < this->GetNumberRows(); row_cnt++)
+				{
 					retval.AddRow();
+					if (io_type == STATUS)
+						break;
+				}
 			}
 			else
 			{
@@ -497,7 +501,11 @@ public:
 						retval.AddColumn(_RULESTATUS_NAME);
 				}
 				for (int row_cnt = 0; row_cnt < this->GetNumberCols(); row_cnt++)
+				{
 					retval.AddRow();
+					if (io_type == STATUS)
+						break;
+				}
 			}
 
 			if (m_type == RULES_TABLE && io_type == STATUS)
@@ -1093,13 +1101,27 @@ private:
 					for (size_t j = 0; j < rows.size(); j++)
 					{
 						vector<wstring> cells = UTILS::Split(rows[j], L"\t");
-						//expand table if cols too wide
-						while (cells.size() > (size_t)GetNumberCols() - i_offset)
-							OnAppendColumn(false);
-						for (size_t i = 0; i < cells.size(); i++)
+						if (cells.size() == 1)
 						{
-							this->SetCellValue(j + j_offset, i + i_offset, cells[i]);
-							UpdateCellFormat(j + j_offset, i + i_offset);
+							for (size_t x = i_offset; x <= m_sel_range.GetRight(); x++)
+							{
+								for (size_t y = j_offset; y <= m_sel_range.GetBottom(); y++)
+								{
+									this->SetCellValue(y, x, cells[0]);
+									UpdateCellFormat(y, x);
+								}
+							}
+						}
+						else
+						{
+							//expand table if cols too wide
+							while (cells.size() > (size_t)GetNumberCols() - i_offset)
+								OnAppendColumn(false);
+							for (size_t i = 0; i < cells.size(); i++)
+							{
+								this->SetCellValue(j + j_offset, i + i_offset, cells[i]);
+								UpdateCellFormat(j + j_offset, i + i_offset);
+							}
 						}
 					}
 					m_updateCallback();
