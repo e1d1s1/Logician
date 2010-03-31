@@ -32,6 +32,19 @@
 using namespace std;
 
 template <class T>
+class SortByColumn
+{
+public:
+	SortByColumn::SortByColumn(int colIndex) {m_colIndex = colIndex;}
+	int operator() (const vector<T> lhs, const vector<T> rhs)
+	{
+		return lhs.at(m_colIndex) < rhs.at(m_colIndex);
+	}
+private:
+	size_t m_colIndex;
+};
+
+template <class T>
 class StringTable
 {
 public:
@@ -57,6 +70,8 @@ public:
 	T GetItem(size_t row, T colName);
 	void SetItem(size_t row, T colName, T value);
 	void SetItem(size_t row, size_t col, T value);
+	void SortByCol(T colName);
+	void SortByCol(size_t colIndex);
 
     T TableName;
 private:
@@ -205,3 +220,15 @@ void StringTable<T>::SetItem(size_t row, T colName, T value)
     m_table.at(row).at(pos) = value;
 }
 
+template <class T>
+void StringTable<T>::SortByCol(size_t colIndex)
+{
+	std::sort(m_table.begin(), m_table.end(), SortByColumn<T>(colIndex));
+}
+
+template <class T>
+void StringTable<T>::SortByCol(T colName)
+{
+	size_t pos = std::find(m_colNames.begin(), m_colNames.end(), colName) - m_colNames.begin();
+	this->SortByCol(pos);
+}

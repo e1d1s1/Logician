@@ -410,7 +410,7 @@ void ProjectManager::WriteXMLForTable(xmlNodePtr tableDataNode, StringTable<wstr
 		{
 			set<wstring> formulaInputs;
 			
-			for(size_t rowIndex = 0; rowIndex < table->Rows(); rowIndex++)
+			for(size_t rowIndex = 0; rowIndex <= table->Rows(); rowIndex++)
 			{
 				xmlNodePtr rowNode = xmlNewNode(NULL, (xmlChar*)tableXMLID.c_str());
 
