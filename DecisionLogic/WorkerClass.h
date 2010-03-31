@@ -115,7 +115,7 @@ public:
 
 
 private:	
-	wxTreeItemId AddTreeNode(wxTreeItemId parent, wstring name);
+	wxTreeItemId AddTreeNode(wxTreeItemId parent, wxTreeItemId previous, wstring name);
 	wstring GetTreeNodePath(wxTreeCtrl *tree, wstring nodeName);
 	void DeleteTreeNode(wstring name);
 	void FillDataTable(StringTable<wstring> *table, wxGrid *grid);

@@ -402,15 +402,25 @@ void WorkerClass::NewTable(wstring name)
 
 		if (name.length() > 0)
 		{
-			vector<wstring> existing_names = m_pm.GetProjectTableNames();
+			vector<wstring> existing_names = m_pm.GetProjectTableNames();			
 			vector<wstring>::iterator itFind = find(existing_names.begin(), existing_names.end(), name);
 			if (itFind == existing_names.end())
 			{
+				existing_names.push_back(name);
+				sort(existing_names.begin(), existing_names.end());
 				LogicTable table;
 				table.CreateLogicTable(name);
 				if (!bSystemTable)
 				{
-					wxTreeItemId newItem = AddTreeNode(wxtid_active_group, name);
+					size_t pos = find(existing_names.begin(), existing_names.end(), name) - existing_names.begin();
+					
+					wxTreeItemId locItem = NULL;					
+					if (existing_names.size() > 1)
+					{
+						wstring preValue = existing_names[pos - 1];
+						locItem = FindItemNamed(wxtid_active_group, preValue);
+					}
+					wxTreeItemId newItem = AddTreeNode(wxtid_active_group, locItem, name);
 					m_tree->SelectItem(newItem);
 				}
 
@@ -507,7 +517,7 @@ void WorkerClass::NewGroup()
 		wstring name = wxGetTextFromUser(_T("Enter new group name:"), _T("Group Name")).wc_str();
 		if (name.length() > 0)
 		{
-			AddTreeNode(wxtid_active_group, name);
+			AddTreeNode(wxtid_active_group, NULL, name);
 			wxTreeItemId id = FindItemNamed(m_tree->GetRootItem(), name);
 			m_tree->SelectItem(id, true);
 			wxtid_active_group = m_tree->GetSelection();
@@ -902,12 +912,15 @@ void WorkerClass::FillDataTable(StringTable<wstring> *table, wxGrid *grid)
 	}
 }
 
-wxTreeItemId WorkerClass::AddTreeNode(wxTreeItemId parent, wstring name)
+wxTreeItemId WorkerClass::AddTreeNode(wxTreeItemId parent, wxTreeItemId previous, wstring name)
 {
 	wxTreeItemId retval;
 	try
 	{
-		retval = m_tree->AppendItem(parent, name, NULL, NULL, NULL);
+		if (previous.IsOk() == false)
+			retval = m_tree->AppendItem(parent, name, NULL, NULL, NULL);
+		else
+			retval = m_tree->InsertItem(parent, previous, name, NULL, NULL);
 	}
 	catch(...)
 	{
@@ -979,6 +992,7 @@ void WorkerClass::AddAllProjectNodes()
 		m_tree->AddRoot(wxT("Root"), NULL, NULL, NULL);
 
 		StringTable<wstring> *project = m_pm.GetProjectTable();
+		project->SortByCol(L"DataSetName");
 		if (project != NULL)
 		{
 			for (size_t j = 0; j < project->Rows(); j++)
@@ -997,7 +1011,7 @@ void WorkerClass::AddAllProjectNodes()
 				//root nodes
 				if (parent_group.length() == 0)
 				{
-					AddTreeNode(m_tree->GetRootItem(), name);
+					AddTreeNode(m_tree->GetRootItem(), NULL, name);
 				}
 				else //recursive children
 				{
@@ -1013,14 +1027,14 @@ void WorkerClass::AddAllProjectNodes()
 								parent_id_ptr = &m_tree->GetRootItem();
 
 							parentNode = parent_id_ptr;
-							AddTreeNode(parentNode, parts[i]);
+							AddTreeNode(parentNode, NULL, parts[i]);
 						}
-						AddTreeNode(parentNode, name);
+						AddTreeNode(parentNode, NULL, name);
 					}
 					else
 					{
 						parentNode = parent_id_ptr;
-						AddTreeNode(parentNode, name);
+						AddTreeNode(parentNode, NULL, name);
 					}
 				}
 			}
