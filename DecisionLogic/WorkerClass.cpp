@@ -59,6 +59,12 @@ void SignalTableClosed()
 	mySelf->ChildWindowHasClosed();
 }
 
+void OpenTableCallback(wstring tableName)
+{
+	WorkerClass *mySelf = (WorkerClass*)pt2WorkerObject;
+	mySelf->LoadTable(tableName);
+}
+
 WorkerClass::WorkerClass(wxMDIParentFrame *parentFrame, wxTreeCtrl *tree, wxTextCtrl *log, int orient)
 {
 	m_tree = tree;
@@ -341,7 +347,7 @@ bool WorkerClass::LoadTable(wstring name)
 				LogicTable table;
 				table.LoadDataSet(ds, name, path);
 				table.bGetAll = m_pm.TableIsGetAll(name);
-				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
+				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, OpenTableCallback, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
 				childForm->Show();
 				retval = true;
 			}
@@ -354,7 +360,7 @@ bool WorkerClass::LoadTable(wstring name)
 				DataSet<wstring> ds = m_pm.LoadDataSet(name);
 				LogicTable table;
 				table.LoadDataSet(ds, name, path);
-				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
+				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, OpenTableCallback, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
 				childForm->Show();
 				retval = true;
 			}
@@ -430,7 +436,7 @@ void WorkerClass::NewTable(wstring name)
 				else if (name == TRANSLATIONS_TABLE_NAME)
 					table_type = TRANSLATIONS_TABLE;
 
-				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
+				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, OpenTableCallback, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
 				childForm->Show();
 				bIsSaved = false;
 			}

@@ -32,7 +32,7 @@ void SignalTableChanged()
 	mySelf->SignalTableChangedCallback();
 }
 
-MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
+MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), void(*ChildOpenTableCallback)(wstring), int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
 		ProjectManager *pm, const wxString& title, const wxPoint& pos,
 		const wxSize& size, const long style):
 		  wxMDIChildFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
@@ -52,10 +52,11 @@ MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), in
 	table.logic_table = logic;
 	m_opened_window_tracker->push_back(table);
 	m_ChildClosedCallback = ChildCloseCallback;
+	m_OpenTableCallback = ChildOpenTableCallback;
 
 	sizer = new wxBoxSizer(wxHORIZONTAL);
 	pt2Object = (void*)this;
-	m_table = new LogicGrid(this, m_orientation, -1, type, SignalTableChanged, &pm->GlobalORs, wxDefaultPosition, wxDefaultSize);
+	m_table = new LogicGrid(this, m_orientation, -1, type, SignalTableChanged, m_OpenTableCallback, &pm->GlobalORs, wxDefaultPosition, wxDefaultSize);
 	sizer->Add(m_table, wxEXPAND);
 
 	DisplayTableData(logic);
