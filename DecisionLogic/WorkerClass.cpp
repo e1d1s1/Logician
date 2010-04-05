@@ -318,6 +318,16 @@ bool WorkerClass::LoadTable(wstring name)
 	bool retval = false;
 	try
 	{
+		//see if the tree node is already selected
+		wxTreeItemId sel_item = m_tree->GetSelection();
+		if (sel_item.IsOk() && m_tree->GetItemText(sel_item).c_str() != name)
+		{
+			m_tree->Unselect();
+			wxTreeItemId locItem = FindItemNamed(m_tree->GetRootItem(), name);
+			if (locItem.IsOk())
+				m_tree->SelectItem(locItem);
+		}
+
 		//see if the window is already open, if so activate it
 		for (vector<OpenLogicTable>::iterator it = m_opened_windows.begin(); it != m_opened_windows.end(); it++)
 		{
