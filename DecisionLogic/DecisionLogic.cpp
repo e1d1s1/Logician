@@ -128,6 +128,7 @@ BEGIN_EVENT_TABLE(LogicGrid, wxGrid)
 	EVT_MENU(CUT, LogicGrid::OnCut)
 	EVT_MENU(COPY, LogicGrid::OnCopy)
 	EVT_MENU(PASTE, LogicGrid::OnPaste)
+	EVT_MENU(JUMP, LogicGrid::OnJump)
 	EVT_MENU(EDIT_CODE, LogicGrid::OnEditCode)
 	EVT_GRID_CELL_CHANGE(LogicGrid::OnCellChange)
 

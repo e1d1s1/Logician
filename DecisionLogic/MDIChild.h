@@ -83,13 +83,14 @@ enum
 	DELETE_COL,
 	DELETE_ROW,
 	CLEAR_CELLS,
-	EDIT_CODE
+	EDIT_CODE,
+	JUMP
 };
 
 class LogicGrid: public wxGrid
 {
 public:
-	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void), map<wstring, vector<wstring> > *gORs, 
+	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void), void(*ChildOpenTableCallback)(wstring), map<wstring, vector<wstring> > *gORs, 
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = wxWANTS_CHARS,
 		const wxString& name = wxPanelNameStr):
@@ -99,6 +100,7 @@ public:
 		HasChanged = false;
 		m_type = type;
 		m_updateCallback = updateCallback;
+		m_OpenTableCallback = ChildOpenTableCallback;
 		m_ors = gORs;
 	}
 
@@ -802,6 +804,15 @@ public:
 	inline void OnCut(wxCommandEvent& event) {PlaceSelectionOnClipboard(true);}
 	inline void OnCopy(wxCommandEvent& event) {PlaceSelectionOnClipboard(false);}
 	inline void OnPaste(wxCommandEvent& event) {GetSelectionFromClipboard();}
+	inline void OnJump(wxCommandEvent& event)
+	{
+		wstring text = GetSelectionText();
+		if (text.length() > 0)
+		{
+			m_OpenTableCallback(text);
+		}
+	}
+
 	inline void OnEditCode(wxCommandEvent& event)
 	{
 		wstring text = GetSelectionText();
@@ -862,6 +873,8 @@ private:
 		popupMenu.AppendSeparator();
 		popupMenu.Append(DELETE_COL, _T("Delete Column(s)"));
 		popupMenu.Append(DELETE_ROW, _T("Delete Row(s)"));
+		popupMenu.AppendSeparator();
+		popupMenu.Append(JUMP, _T("Jump to Table"));
 
 		wstring text = GetSelectionText();
 		if (text.substr(0, 3) == L"py(" ||
@@ -1135,6 +1148,7 @@ private:
 	int								m_type;
 	wxRect							m_sel_range;
 	void							(*m_updateCallback)(void);
+	void							(*m_OpenTableCallback)(wstring tableName);
 	map<wstring, vector<wstring> >	*m_ors;
 
 	DECLARE_EVENT_TABLE()
@@ -1143,7 +1157,7 @@ private:
 class MDIChild: public wxMDIChildFrame
 {
 public:
-	MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
+	MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), void(*ChildOpenTableCallback)(wstring), int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
 		ProjectManager *pm, const wxString& title, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, const long style = 0);
 	~MDIChild(void);
@@ -1196,6 +1210,7 @@ private:
 	stack<LogicTable>		stUndo;
 	stack<LogicTable>		stRedo;
 	void (*m_ChildClosedCallback)(void);
+	void (*m_OpenTableCallback)(wstring tableName);
 
 	DECLARE_EVENT_TABLE()
 };
