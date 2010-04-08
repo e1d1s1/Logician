@@ -259,7 +259,7 @@ public:
 		}
 
 		int rows = 0, cols = 0;
-		if (outputtable != NULL && statustable != NULL)
+		if (m_type == RULES_TABLE && outputtable != NULL && statustable != NULL)
 		{
 			rows = inputtable->Rows() + outputtable->Rows() + statustable->Rows();
 			cols = outputtable->Columns();

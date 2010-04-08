@@ -292,9 +292,9 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 
 	//contents
 	winTree = new wxSashLayoutWindow(this, DecisionLogic_TreeWindow,
-                             wxDefaultPosition, wxSize(120, 600),
+                             wxDefaultPosition, wxSize(160, 600),
                              wxNO_BORDER | wxSW_3D | wxCLIP_CHILDREN);
-	winTree->SetDefaultSize(wxSize(120, 600));
+	winTree->SetDefaultSize(wxSize(160, 600));
 	winTree->SetOrientation(wxLAYOUT_VERTICAL);
 	winTree->SetAlignment(wxLAYOUT_LEFT);
 	winTree->SetSashVisible(wxSASH_RIGHT, true);
