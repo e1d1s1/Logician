@@ -483,7 +483,7 @@ void DecisionLogicFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     wxMessageBox(wxString::Format(
         _T("This is DecisionLogic ")
-        _T("running under %s."),
+        _T("running under %s.\nCoded by Eric D. Schmidt\n(c) eLogician LLC"),
         wxGetOsDescription().c_str()
      ),
      _T("About DecisionLogic"),
