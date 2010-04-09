@@ -16,6 +16,7 @@ namespace ROM2NET
 		void EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents);
 		void EvaluateAll();
 		List<ROMDictionaryAttributeNET^>^ GetEvalList() {return m_vEvalList;}
+		bool DictionaryIsValid();
 		
 
 	private:
@@ -25,12 +26,14 @@ namespace ROM2NET
 		void EvalBoolean(String^ dictAttrName, String^ newValue);
 		void EvalEdit(String^ dictAttrName, String^ newValue);
 		void EvaluateDependencies(String^ dictAttrName);
+		void ResetValueChanged();
 		array<String^>^ ParseOutPrefixes(array<String^>^ values, array<String^>^% valuesWithoutPrefixes); //remove the special character flags from the values
 		array<String^>^ GetSelectedValues(ROMDictionaryAttributeNET^ attr);
 
 		List<ROMDictionaryAttributeNET^>^ m_vEvalList;
 		Dictionary<String^, List<String^>^>^ m_mapTriggers;
 		int m_CurrentRecursion;
+		bool m_EvalInternal;
 
 		static String^ INVISPREFIX = "^";
 		static String^ DEFAULTPREFIX = "@";

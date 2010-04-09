@@ -39,6 +39,8 @@ LinearEngineNET::LinearEngineNET(ROMTreeNET^ tree, ROMNode^ context, String^ dic
 	//based on the triggers, re-order the dictionary
 	m_CurrentRecursion = 0;
 	OrderDictionary();
+	
+	m_EvalInternal = false;
 }
 
 void LinearEngineNET::OrderDictionary()
@@ -116,9 +118,11 @@ void LinearEngineNET::EvaluateForAttribute(String^ dictAttrName, String^ newValu
 
 void LinearEngineNET::EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents)
 {
+	ResetValueChanged();
 	if (m_dict->ContainsKey(dictAttrName))
 	{
-		m_dict[dictAttrName]->ChangedByUser = true;
+		m_dict[dictAttrName]->ValueChanged = true;
+		m_dict[dictAttrName]->ChangedByUser = !m_EvalInternal;
 		switch (m_dict[dictAttrName]->AttributeType)
 		{
 		case SINGLESELECT:
@@ -140,16 +144,41 @@ void LinearEngineNET::EvaluateForAttribute(String^ dictAttrName, array<String^>^
 
 		if (bEvalDependents)
 			EvaluateDependencies(dictAttrName);
+	}	
+}
+
+void LinearEngineNET::ResetValueChanged()
+{
+	for each (ROMDictionaryAttributeNET^ attr in m_vEvalList)
+	{
+		attr->ValueChanged = false;
 	}
 }
 
 void LinearEngineNET::EvaluateAll()
 {
+	m_EvalInternal = true;
+	ResetValueChanged();
 	for each (ROMDictionaryAttributeNET^ attr in m_vEvalList)
 	{
 		array<String^>^ selectedValues = GetSelectedValues(attr);
 		EvaluateForAttribute(attr->Name, selectedValues, false);		
 	}
+	m_EvalInternal = false;
+}
+
+bool LinearEngineNET::DictionaryIsValid()
+{
+	bool retval = true;	
+	for each (ROMDictionaryAttributeNET^ attr in m_vEvalList)
+	{
+		if (!attr->Valid)
+		{
+			retval = false;
+			break;
+		}
+	}
+	return retval;
 }
 
 void LinearEngineNET::EvalBoolean(String^ dictAttrName, String^ newValue)
@@ -187,7 +216,6 @@ void LinearEngineNET::EvalBoolean(String^ dictAttrName, String^ newValue)
 		if (availableValues[0]->Length == 0 || availableValues[0] == L"N")
 		{
 			m_tree->SetAttribute(m_context, dictAttrName, L"N");
-			m_dict[dictAttrName]->ChangedByUser = (newValue->Length > 0 && newValue != L"N");
 			return;
 		}
 		else if (availableValues[0] == L"YN") //allow Yes or No with a default of Y
@@ -212,12 +240,11 @@ void LinearEngineNET::EvalBoolean(String^ dictAttrName, String^ newValue)
 		else if (newValue->Length == 1) //Y or N
 		{
 			m_tree->SetAttribute(m_context, dictAttrName, newValue);
-			m_dict[dictAttrName]->ChangedByUser = (availableValues[0] == newValue);
 		}		
 	}
 }
 
-void LinearEngineNET::EvalEdit(String^ dictAttrName, String^newValue)
+void LinearEngineNET::EvalEdit(String^ dictAttrName, String^ newValue)
 {
 	array<String^>^ res = m_tree->EvaluateTable(m_context, m_dict[dictAttrName]->RuleTable, dictAttrName, true);
 	array<String^>^ availableValues;
@@ -225,6 +252,7 @@ void LinearEngineNET::EvalEdit(String^ dictAttrName, String^newValue)
 	array<String^>^ prefixes = ParseOutPrefixes(res, availableValues);
 	m_dict[dictAttrName]->AvailableValues = availableValues;
 	m_dict[dictAttrName]->Enabled = true;
+	m_dict[dictAttrName]->Valid = true;
 
 	//set the dictionary default on load
 	if (newValue->Length == 0)
@@ -235,15 +263,6 @@ void LinearEngineNET::EvalEdit(String^ dictAttrName, String^newValue)
 
 	if (availableValues->Length == 1)
 	{
-		if (prefixes[0]->Contains(INVISPREFIX))
-		{
-			m_dict[dictAttrName]->Visible = false;	
-		}
-		else
-		{
-			m_dict[dictAttrName]->Visible = true;
-		}
-
 		if (prefixes[0]->Contains(DISABLEPREFIX))
 		{
 			m_dict[dictAttrName]->Enabled = false;
@@ -257,7 +276,6 @@ void LinearEngineNET::EvalEdit(String^ dictAttrName, String^newValue)
 		//check table result for range
 		if (availableValues[0][0] == L'[')
 		{
-			m_dict[dictAttrName]->ChangedByUser = true;
 			double dNewValue = 0, dMin = 0, dMax = 0;
 			String^ val = availableValues[0];
 			val = val->Replace(L"[", L"");
@@ -283,26 +301,56 @@ void LinearEngineNET::EvalEdit(String^ dictAttrName, String^newValue)
 				m_tree->SetAttribute(m_context, dictAttrName, wstrMin);
 			}
 		}
-	}
-	else if (availableValues->Length == 0 || (availableValues->Length == 1 && availableValues[0]->Length == 1 && availableValues[0][0] == L'Y'))
-	{		
-		m_tree->SetAttribute(m_context, dictAttrName, newValue);
-		m_dict[dictAttrName]->ChangedByUser = true;
-		if (prefixes->Length > 0 && prefixes[0]->Length > 0 && prefixes[0]->Contains(INVISPREFIX))
-			m_dict[dictAttrName]->Visible = false;
+		else if (availableValues[0]->Length == 1 && availableValues[0][0] == L'Y')
+		{
+			m_tree->SetAttribute(m_context, dictAttrName, newValue);
+		}
+		else if (availableValues[0]->Length == 1 && availableValues[0][0] == L'YY') //user must enter something
+		{
+			m_tree->SetAttribute(m_context, dictAttrName, newValue);
+			m_dict[dictAttrName]->Valid = newValue->Length > 0;
+		}
+		else if (availableValues[0]->Length == 1 && availableValues[0][0] == L'N')
+		{
+			m_tree->SetAttribute(m_context, dictAttrName, "");
+			m_dict[dictAttrName]->ChangedByUser = false;
+			m_dict[dictAttrName]->Enabled = false;
+		}
 		else
-			m_dict[dictAttrName]->Visible = true;;
-
+		{
+			m_tree->SetAttribute(m_context, dictAttrName, availableValues[0]);
+			m_dict[dictAttrName]->ChangedByUser = false;
+		}
+	}
+	else if (availableValues->Length == 0)
+	{		
+		m_tree->SetAttribute(m_context, dictAttrName, "");
+		m_dict[dictAttrName]->ChangedByUser = false;
+		m_dict[dictAttrName]->Enabled = false;
 	}
 	else if (availableValues->Length == 1 && availableValues[0]->Length > 0)
 	{
 		m_tree->SetAttribute(m_context, dictAttrName, availableValues[0]);
 		m_dict[dictAttrName]->ChangedByUser = false;
-		if (prefixes[0]->Length > 0 && prefixes[0]->Contains(INVISPREFIX))
-			m_dict[dictAttrName]->Visible = false;
-		else
-			m_dict[dictAttrName]->Visible = true;;
 	}
+	else if (availableValues->Length > 0)
+	{
+		List<String^>^ available = gcnew List<String^>(availableValues);
+		if (available->Contains(newValue))
+		{
+			m_tree->SetAttribute(m_context, dictAttrName, newValue);
+		}
+		else 
+		{
+			m_tree->SetAttribute(m_context, dictAttrName, "");
+			m_dict[dictAttrName]->ChangedByUser = false;
+		}
+	}
+
+	if (prefixes->Length > 0 && prefixes[0]->Length > 0 && prefixes[0]->Contains(INVISPREFIX))
+		m_dict[dictAttrName]->Visible = false;
+	else
+		m_dict[dictAttrName]->Visible = true;;
 }
 
 void LinearEngineNET::EvalMultiSelect(String^ dictAttrName, array<String^>^ newValues)
@@ -310,6 +358,8 @@ void LinearEngineNET::EvalMultiSelect(String^ dictAttrName, array<String^>^ newV
 	//multi-select lists, checkbox lists
 	array<String^>^ res = m_tree->EvaluateTable(m_context, m_dict[dictAttrName]->RuleTable, dictAttrName, true);
 	array<String^>^ availableValues;
+	m_dict[dictAttrName]->Enabled = true;
+	m_dict[dictAttrName]->Valid = true;
 
 	array<String^>^ prefixes = ParseOutPrefixes(res, availableValues);
 	m_dict[dictAttrName]->AvailableValues = availableValues;
@@ -317,8 +367,6 @@ void LinearEngineNET::EvalMultiSelect(String^ dictAttrName, array<String^>^ newV
 	String^ currentValue = m_tree->GetAttribute(m_context, dictAttrName, false);
 	array<String^>^ currentValues = currentValue->Split(L'|');
 	List<String^>^ selectedValues = gcnew List<String^>();
-
-	m_dict[dictAttrName]->ChangedByUser = true;
 
 	//set the dictionary default on load
 	if (newValues->Length == 0)
@@ -332,13 +380,14 @@ void LinearEngineNET::EvalMultiSelect(String^ dictAttrName, array<String^>^ newV
 	}
 
 	//if only one is available, force that selection now
+	List<String^>^ srcAvail = gcnew List<String^>(availableValues);
 	if (availableValues->Length == 1)
 	{
 		selectedValues->Add(availableValues[0]);
 		m_dict[dictAttrName]->ChangedByUser = false;
 	}
-	//if the current value is "", and an available value is prefixed with a "@" default, set it now
-	else if (currentValues != nullptr && currentValues->Length == 1 && currentValues[0]->Length == 0 && prefixes->Length > 0)
+	//if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
+	else if (currentValues != nullptr && (currentValues->Length == 1 && (currentValues[0]->Length == 0 || !srcAvail->Contains(currentValues[0]))) && prefixes->Length > 0)
 	{
 		for (size_t i = 0; i < prefixes->Length; i++)
 		{
@@ -349,11 +398,14 @@ void LinearEngineNET::EvalMultiSelect(String^ dictAttrName, array<String^>^ newV
 			}
 		}
 	}
+	else if (availableValues->Length == 0)
+	{
+		m_dict[dictAttrName]->Enabled = false;
+	}
 	
 	
 	if (selectedValues->Count == 0 && currentValues->Length > 0) //compare the new values to what is really available
-	{
-		List<String^>^ srcAvail = gcnew List<String^>(availableValues);
+	{		
 		for (size_t i = 0; i < newValues->Length; i++)
 		{	
 			if (srcAvail->Contains(newValues[i]))
@@ -380,6 +432,8 @@ void LinearEngineNET::EvalSingleSelect(String^ dictAttrName, String^ newValue)
 {
 	array<String^>^ res = m_tree->EvaluateTable(m_context, m_dict[dictAttrName]->RuleTable, dictAttrName, true);
 	array<String^>^ availableValues;
+	m_dict[dictAttrName]->Enabled = true;
+	m_dict[dictAttrName]->Valid = true;
 
 	//the list of results is what is available for selection in the control
 	array<String^>^ prefixes = ParseOutPrefixes(res, availableValues);
@@ -403,8 +457,9 @@ void LinearEngineNET::EvalSingleSelect(String^ dictAttrName, String^ newValue)
 		m_dict[dictAttrName]->ChangedByUser = false;
 	}
 
-	//if the current value is "", and an available value is prefixed with a "@" default, set it now
-	if (currentValue->Length == 0)
+	List<String^>^ srcAvail = gcnew List<String^>(availableValues);
+	//if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
+	if ((currentValue->Length == 0 || !srcAvail->Contains(currentValue)) && prefixes->Length > 0)
 	{
 		for (size_t i = 0; i < prefixes->Length; i++)
 		{
@@ -416,25 +471,27 @@ void LinearEngineNET::EvalSingleSelect(String^ dictAttrName, String^ newValue)
 			}
 		}
 	}
+	else if (availableValues->Length == 0)
+	{
+		m_dict[dictAttrName]->Enabled = false;
+	}
 
 	if (prefixes->Length > 0 && prefixes[0]->Length> 0 && prefixes[0]->Contains(INVISPREFIX))
 		m_dict[dictAttrName]->Visible = false;
 	else
 		m_dict[dictAttrName]->Visible = true;
-
-	List<String^>^ srcAvail = gcnew List<String^>(availableValues);
+	
 	if (newValue->Length > 0 && srcAvail->Contains(newValue))
-	{
-		m_dict[dictAttrName]->Valid = true;
+	{		
 		if (currentValue != newValue)
 		{
 			m_tree->SetAttribute(m_context, dictAttrName, newValue);
-			m_dict[dictAttrName]->ChangedByUser = true;
 		}
 	}
 	else
 	{
-		m_dict[dictAttrName]->Valid = false;
+		if (m_dict[dictAttrName]->Enabled == true)
+			m_dict[dictAttrName]->Valid = false;
 		m_tree->SetAttribute(m_context, dictAttrName, L"");
 		m_dict[dictAttrName]->ChangedByUser = false;
 	}
@@ -491,6 +548,23 @@ void LinearEngineNET::EvaluateDependencies(String^ dictAttrName)
 			{					
 				array<String^>^ selectedValues = GetSelectedValues(m_dict[s]);
 				EvaluateForAttribute(s, selectedValues, true);
+				if (m_dict[s]->ChangedByUser)
+				{
+					bool bValuesRemainSame = true;
+					List<String^>^ newSelectedValues = gcnew List<String^>(GetSelectedValues(m_dict[s]));
+					if (newSelectedValues->Count != selectedValues->Length)
+						bValuesRemainSame = false;
+					else for (int i = 0; i < selectedValues->Length; i++)
+					{
+						if (!newSelectedValues->Contains(selectedValues[i]))
+						{
+							bValuesRemainSame = false;
+							break;
+						}
+					}
+
+					m_dict[s]->ChangedByUser = bValuesRemainSame;
+				}
 			}
 		}
 	}
