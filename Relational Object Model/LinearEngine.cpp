@@ -16,7 +16,6 @@ namespace ROM
 		DISABLEPREFIX = L"#";
 
 		m_vEvalList.clear();
-		m_vEvalListRecursChecker.clear();
 		m_mapTriggers.clear();
 		LoadDictionary(dictionaryTable);
 
@@ -47,6 +46,7 @@ namespace ROM
 		m_CurrentRecursion = 0;
 		m_EvalInternal = false;
 		OrderDictionary();
+		m_vEvalListRecursChecker.clear();
 	}
 
 	void LinearEngine::OrderDictionary()
@@ -328,15 +328,20 @@ namespace ROM
 					m_tree->SetAttribute(m_context, dictAttrName, wstrMin);
 				}
 			}
-			else if (availableValues[0].size() == 1 && availableValues[0][0] == L'Y')
+			else if (availableValues[0].length() == 1 && availableValues[0][0] == L'Y')
 			{
 				m_tree->SetAttribute(m_context, dictAttrName, newValue);
 			}			
-			else if (availableValues[0].size() == 1 && availableValues[0][0] == L'N')
+			else if (availableValues[0].length() == 1 && availableValues[0][0] == L'N')
 			{
 				m_tree->SetAttribute(m_context, dictAttrName, L"");
 				m_dict[dictAttrName].ChangedByUser = false;
 				m_dict[dictAttrName].Enabled = false;
+			}
+			else if (availableValues[0].length() == 2 && availableValues[0] == L"YY") //user must enter something
+			{
+				m_tree->SetAttribute(m_context, dictAttrName, newValue);
+				m_dict[dictAttrName].Valid = newValue.length() > 0;
 			}
 			else
 			{
@@ -344,11 +349,6 @@ namespace ROM
 				m_dict[dictAttrName].ChangedByUser = false;
 			}
 		}		
-		else if (availableValues[0].size() == 2 && availableValues[0] == L"YY") //user must enter something
-		{
-			m_tree->SetAttribute(m_context, dictAttrName, newValue);
-			m_dict[dictAttrName].Valid = newValue.length() > 0;
-		}
 		else if (availableValues.size() == 0)
 		{
 			m_tree->SetAttribute(m_context, dictAttrName, newValue);
@@ -561,6 +561,7 @@ namespace ROM
 
 	void LinearEngine::EvaluateDependencies(wstring dictAttrName)
 	{
+		m_EvalInternal = true;
 		if (m_mapTriggers.find(dictAttrName) != m_mapTriggers.end())
 		{
 			vector<wstring> attrsToEval = m_mapTriggers[dictAttrName];
@@ -570,8 +571,9 @@ namespace ROM
 				if (itFind != m_dict.end())
 				{
 					vector<wstring> selectedValues = GetSelectedValues(&itFind->second);
+					bool bWasChangedByUser = itFind->second.ChangedByUser;
 					EvaluateForAttribute(*it, selectedValues);
-					if (itFind->second.ChangedByUser)
+					if (bWasChangedByUser)
 					{
 						bool bValuesRemainSame = true;
 						vector<wstring> newSelectedValues = GetSelectedValues(&itFind->second);
@@ -592,6 +594,7 @@ namespace ROM
 				}
 			}
 		}
+		m_EvalInternal = false;
 	}
 
 	vector<wstring> LinearEngine::GetSelectedValues(ROMDictionaryAttribute* attr)

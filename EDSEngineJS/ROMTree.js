@@ -825,6 +825,7 @@ function LinearEngine(tree, context, dictionaryTable)
     //based on the triggers, re-order the dictionary
 	m_CurrentRecursion = 0;
 	this.OrderDictionary();	
+	this.m_EvalListRecursChecker = null;
 }
 
 LinearEngine.prototype.GetAllDictionaryAttrs = function(){return this.base.GetAllDictionaryAttrs();}
@@ -892,9 +893,9 @@ LinearEngine.prototype.EvaluateForAttribute = function(dictAttrName, newValues, 
 
 LinearEngine.prototype.EvaluateAll = function()
 {
+    this.m_EvalInternal = true;
     try
-    {
-        this.m_EvalInternal = true;
+    {        
         this.ResetValueChanged();
         for (var i = 0; i < this.m_EvalList.length; i++)
         {
@@ -906,7 +907,7 @@ LinearEngine.prototype.EvaluateAll = function()
     {
         ReportError(err);
     }
-    m_EvalInternal = false;
+    this.m_EvalInternal = false;
 }
 
 LinearEngine.prototype.GetEvalList = function()
@@ -1165,17 +1166,17 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
 			    this.base.m_dict[dictAttrName].Enabled = false;
 		    }
+		    else if (availableValues[0].length == 2 && availableValues[0] == "YY") //user must enter something
+	        {
+		        this.base.m_tree.SetAttribute(m_context, dictAttrName, newValue);
+		        this.base.m_dict[dictAttrName].Valid = newValue.length > 0;
+	        }
 		    else
 		    {
 			    this.base.m_tree.SetAttribute(m_context, dictAttrName, availableValues[0]);
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
 		    }
-	    }
-	    else if (availableValues[0].length == 2 && availableValues[0] == "YY") //user must enter something
-	    {
-		    this.base.m_tree.SetAttribute(m_context, dictAttrName, newValue);
-		    this.base.m_dict[dictAttrName].Valid = newValue.length > 0;
-	    }
+	    }	    
 	    else if (availableValues.length == 0)
 	    {		
 		    this.base.m_tree.SetAttribute(m_context, dictAttrName, "");
@@ -1377,9 +1378,10 @@ LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
 
 LinearEngine.prototype.EvaluateDependencies = function(dictAttrName)
 {
+    this.m_EvalInternal = true;
     try
-    {
-      if (dictAttrName in this.m_mapTriggers)
+    {        
+        if (dictAttrName in this.m_mapTriggers)
 	    {
 		    var attrsToEval = this.m_mapTriggers[dictAttrName];
 		    for (var i = 0; i < attrsToEval.length; i++)
@@ -1388,8 +1390,9 @@ LinearEngine.prototype.EvaluateDependencies = function(dictAttrName)
 			    if (attrName in this.base.m_dict)
 			    {					
 				    var selectedValues = this.GetSelectedValues(this.base.m_dict[attrName]);
+				    var bWasChangedByUser = this.base.m_dict[attrName].ChangedByUser;
 				    this.EvaluateForAttribute(attrName, selectedValues, true);
-				    if (this.base.m_dict[attrName].ChangedByUser)
+				    if (bWasChangedByUser)
 				    {
 					    var bValuesRemainSame = true;
 					    var newSelectedValues = this.GetSelectedValues(this.base.m_dict[attrName]);
@@ -1414,6 +1417,7 @@ LinearEngine.prototype.EvaluateDependencies = function(dictAttrName)
     {
         ReportError(err);
     }
+    this.m_EvalInternal = false;
 }
 
 //remove the special character flags from the values

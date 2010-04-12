@@ -38,8 +38,8 @@ LinearEngineNET::LinearEngineNET(ROMTreeNET^ tree, ROMNode^ context, String^ dic
 
 	//based on the triggers, re-order the dictionary
 	m_CurrentRecursion = 0;
-	m_vEvalListRecursChecker = nullptr;
 	OrderDictionary();
+	m_vEvalListRecursChecker = nullptr;
 	
 	m_EvalInternal = false;
 }
@@ -332,17 +332,17 @@ void LinearEngineNET::EvalEdit(String^ dictAttrName, String^ newValue)
 			m_dict[dictAttrName]->ChangedByUser = false;
 			m_dict[dictAttrName]->Enabled = false;
 		}
+		else if (availableValues[0]->Length == 2 && availableValues[0] == L"YY") //user must enter something
+		{
+			m_tree->SetAttribute(m_context, dictAttrName, newValue);
+			m_dict[dictAttrName]->Valid = newValue->Length > 0;
+		}
 		else
 		{
 			m_tree->SetAttribute(m_context, dictAttrName, availableValues[0]);
 			m_dict[dictAttrName]->ChangedByUser = false;
 		}
-	}
-	else if (availableValues[0]->Length == 2 && availableValues[0] == L"YY") //user must enter something
-	{
-		m_tree->SetAttribute(m_context, dictAttrName, newValue);
-		m_dict[dictAttrName]->Valid = newValue->Length > 0;
-	}
+	}	
 	else if (availableValues->Length == 0)
 	{		
 		m_tree->SetAttribute(m_context, dictAttrName, "");
@@ -560,6 +560,7 @@ array<String^>^ LinearEngineNET::ParseOutPrefixes(array<String^>^ values, array<
 
 void LinearEngineNET::EvaluateDependencies(String^ dictAttrName)
 {
+	m_EvalInternal = true;
 	if (m_mapTriggers->ContainsKey(dictAttrName))
 	{
 		List<String^>^ attrsToEval = m_mapTriggers[dictAttrName];
@@ -568,8 +569,9 @@ void LinearEngineNET::EvaluateDependencies(String^ dictAttrName)
 			if (m_dict->ContainsKey(s))
 			{					
 				array<String^>^ selectedValues = GetSelectedValues(m_dict[s]);
-				EvaluateForAttribute(s, selectedValues, true);
-				if (m_dict[s]->ChangedByUser)
+				bool bWasChangedByUser = m_dict[s]->ChangedByUser;				
+				EvaluateForAttribute(s, selectedValues, true);				
+				if (bWasChangedByUser)
 				{
 					bool bValuesRemainSame = true;
 					List<String^>^ newSelectedValues = gcnew List<String^>(GetSelectedValues(m_dict[s]));
@@ -589,6 +591,7 @@ void LinearEngineNET::EvaluateDependencies(String^ dictAttrName)
 			}
 		}
 	}
+	m_EvalInternal = false;
 }
 array<String^>^ LinearEngineNET::GetSelectedValues(ROMDictionaryAttributeNET^ attr)
 {
