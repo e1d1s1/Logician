@@ -33,6 +33,7 @@ namespace ROM2NET
 		List<ROMDictionaryAttributeNET^>^ m_vEvalList;
 		Dictionary<String^, List<String^>^>^ m_mapTriggers;
 		int m_CurrentRecursion;
+		array<ROMDictionaryAttributeNET^>^ m_vEvalListRecursChecker;
 		bool m_EvalInternal;
 
 		static String^ INVISPREFIX = "^";

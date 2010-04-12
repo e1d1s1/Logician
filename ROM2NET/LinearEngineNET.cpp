@@ -38,6 +38,7 @@ LinearEngineNET::LinearEngineNET(ROMTreeNET^ tree, ROMNode^ context, String^ dic
 
 	//based on the triggers, re-order the dictionary
 	m_CurrentRecursion = 0;
+	m_vEvalListRecursChecker = nullptr;
 	OrderDictionary();
 	
 	m_EvalInternal = false;
@@ -103,10 +104,30 @@ void LinearEngineNET::OrderDictionary()
         //if the lists differ, do another sort, otherwise we should be done
         if (evalOrderCopy[i] != m_vEvalList[i] && m_CurrentRecursion < MAX_RECURSION)
         {
-            OrderDictionary();
+			//does it match a previous result (are we flipping between a couple values, circular logic)
+			if (m_CurrentRecursion % 2 == 0 && m_vEvalListRecursChecker != nullptr && m_vEvalListRecursChecker->Length > 0)
+			{
+				for (int j = 0; j < m_vEvalListRecursChecker->Length; j++)
+				{
+					if (m_vEvalList[j] != m_vEvalListRecursChecker[j])
+					{
+						OrderDictionary();
+						break;
+					}
+				}
+			}
+			else
+				OrderDictionary();
+
             break;
         }
     }
+
+	if (m_CurrentRecursion % 2 == 0)
+	{
+		m_vEvalListRecursChecker = gcnew array<ROMDictionaryAttributeNET^>(m_vEvalList->Count);
+		m_vEvalList->CopyTo(m_vEvalListRecursChecker);
+	}
 }
 
 void LinearEngineNET::EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents)
@@ -304,12 +325,7 @@ void LinearEngineNET::EvalEdit(String^ dictAttrName, String^ newValue)
 		else if (availableValues[0]->Length == 1 && availableValues[0][0] == L'Y')
 		{
 			m_tree->SetAttribute(m_context, dictAttrName, newValue);
-		}
-		else if (availableValues[0]->Length == 1 && availableValues[0][0] == L'YY') //user must enter something
-		{
-			m_tree->SetAttribute(m_context, dictAttrName, newValue);
-			m_dict[dictAttrName]->Valid = newValue->Length > 0;
-		}
+		}		
 		else if (availableValues[0]->Length == 1 && availableValues[0][0] == L'N')
 		{
 			m_tree->SetAttribute(m_context, dictAttrName, "");
@@ -321,6 +337,11 @@ void LinearEngineNET::EvalEdit(String^ dictAttrName, String^ newValue)
 			m_tree->SetAttribute(m_context, dictAttrName, availableValues[0]);
 			m_dict[dictAttrName]->ChangedByUser = false;
 		}
+	}
+	else if (availableValues[0]->Length == 2 && availableValues[0] == L"YY") //user must enter something
+	{
+		m_tree->SetAttribute(m_context, dictAttrName, newValue);
+		m_dict[dictAttrName]->Valid = newValue->Length > 0;
 	}
 	else if (availableValues->Length == 0)
 	{		
