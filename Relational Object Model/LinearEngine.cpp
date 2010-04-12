@@ -125,7 +125,7 @@ namespace ROM
 
 		if (m_CurrentRecursion % 2 == 0)
 		{
-			m_vEvalListRecursChecker = m_vEvalList.slice(0);
+			m_vEvalListRecursChecker = m_vEvalList;
 		}
 	}
 
