@@ -17,6 +17,7 @@ namespace ROM
 		void EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents = true);
 		void EvaluateAll();
 		vector<ROMDictionaryAttribute*>* GetEvalList() {return &m_vEvalList;}
+		bool DictionaryIsValid();
 
 		//ASCII overloads
 		LinearEngine(ROMTree* tree, Node context, string dictionaryTable);
@@ -34,10 +35,13 @@ namespace ROM
 		void EvaluateDependencies(wstring dictAttrName);
 		vector<wstring> ParseOutPrefixes(vector<wstring> values, vector<wstring> &valuesWithoutPrefixes); //remove the special character flags from the values
 		vector<wstring> GetSelectedValues(ROMDictionaryAttribute* attr);
+		void ResetValueChanged();
 
 		vector<ROMDictionaryAttribute*> m_vEvalList;
 		map<wstring, vector<wstring> > m_mapTriggers;
 		int m_CurrentRecursion;
+		vector<ROMDictionaryAttribute*> m_vEvalListRecursChecker;
+		bool m_EvalInternal;
 
 		wstring INVISPREFIX;
 		wstring DEFAULTPREFIX;

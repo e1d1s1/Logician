@@ -787,6 +787,8 @@ function LinearEngine(tree, context, dictionaryTable)
     this.m_EvalList = new Array();
     this.m_mapTriggers = new Array();
     this.m_CurrentRecursion = 0;
+    this.m_EvalListRecursChecker = new Array();
+    this.m_EvalInternal = false;
 
     this.base.LoadDictionary(dictionaryTable);
     //open each attr in dict, load its dependency info to create m_EvalList, m_mapTriggers
@@ -822,17 +824,33 @@ function LinearEngine(tree, context, dictionaryTable)
     
     //based on the triggers, re-order the dictionary
 	m_CurrentRecursion = 0;
-	this.OrderDictionary();
+	this.OrderDictionary();	
 }
 
 LinearEngine.prototype.GetAllDictionaryAttrs = function(){return this.base.GetAllDictionaryAttrs();}
 LinearEngine.prototype.GetDictionaryAttr = function(attrName){return this.base.GetDictionaryAttr(attrName);}
+
+LinearEngine.prototype.ResetValueChanged = function()
+{
+    try
+    {
+        for (var i = 0; i < this.m_EvalList.length; i++)
+        {
+            this.m_EvalList[i].ValueChanged = false;
+        }
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+}
 
 LinearEngine.prototype.EvaluateForAttribute = function(dictAttrName, newValues, bEvalDependents)
 {
     //newValues could be a string or an array
     try
     {
+        this.ResetValueChanged();
         var newVals = new Array();
         if (typeof newValues == "string")
             newVals.push(newValues);
@@ -841,7 +859,8 @@ LinearEngine.prototype.EvaluateForAttribute = function(dictAttrName, newValues, 
         
         if (dictAttrName in this.base.m_dict)
         {
-            this.base.m_dict[dictAttrName].ChangedByUser = true;
+            this.base.m_dict[dictAttrName].ValueChanged = true;
+            this.base.m_dict[dictAttrName].ChangedByUser = !this.m_EvalInternal;         
             switch (this.base.m_dict[dictAttrName].AttributeType)
             {
             case SINGLESELECT:
@@ -875,16 +894,19 @@ LinearEngine.prototype.EvaluateAll = function()
 {
     try
     {
+        this.m_EvalInternal = true;
+        this.ResetValueChanged();
         for (var i = 0; i < this.m_EvalList.length; i++)
         {
             var selectedValues = this.GetSelectedValues(this.m_EvalList[i]);
             this.EvaluateForAttribute(this.m_EvalList[i].Name, selectedValues, false);
-        }
+        }        
     }
     catch (err)
     {
         ReportError(err);
     }
+    m_EvalInternal = false;
 }
 
 LinearEngine.prototype.GetEvalList = function()
@@ -899,12 +921,26 @@ LinearEngine.prototype.GetEvalList = function()
     }
 }
 
+LinearEngine.prototype.DictionaryIsValid = function()
+{
+    var retval = true;	
+	for (var i = 0; i < this.m_EvalList.length; i++)
+	{
+		if (!this.m_EvalList[i].Valid)
+		{
+			retval = false;
+			break;
+		}
+	}
+	return retval;
+}
+
 var MAX_RECURSION = 1000;
 LinearEngine.prototype.OrderDictionary = function()
 {
     try
     {
-        m_CurrentRecursion++;
+        this.m_CurrentRecursion++;
         var evalOrderCopy = this.m_EvalList.slice();
         
         for (var inputAttr in this.m_mapTriggers)
@@ -957,165 +993,29 @@ LinearEngine.prototype.OrderDictionary = function()
         for (var i = 0; i < evalOrderCopy.length; i++)
         {
             //if the lists differ, do another sort, otherwise we should be done
-            if (evalOrderCopy[i] != this.m_EvalList[i] && m_CurrentRecursion < MAX_RECURSION)
+            if (evalOrderCopy[i] != this.m_EvalList[i] && this.m_CurrentRecursion < MAX_RECURSION)
             {
-                this.OrderDictionary();
-                break;
+                //does it match a previous result (are we flipping between a couple values, circular logic)
+				if (this.m_CurrentRecursion % 2 == 0 && this.m_EvalListRecursChecker.length > 0)
+				{
+					for (var j = 0; j < this.m_EvalListRecursChecker.length; j++)
+					{
+						if (this.m_EvalList[j] != this.m_EvalListRecursChecker[j])
+						{
+							this.OrderDictionary();
+							break;
+						}
+					}
+				}
+				else				
+					this.OrderDictionary();
             }
         }
-    }
-    catch (err)
-    {
-        ReportError(err);
-    }
-}
-
-LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
-{
-    try
-    {
-      var res = this.base.m_tree.EvaluateTableForAttr(this.base.m_context, this.base.m_dict[dictAttrName].RuleTable, dictAttrName, true);
-      var availableValues = new Array();
-      
-      //the list of results is what is available for selection in the control
-      var prefixes = this.ParseOutPrefixes(res, availableValues);        
-      this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
-     
-      var currentValue = this.base.m_tree.GetAttributeValue(this.base.m_context, dictAttrName, false);
         
-        //set the dictionary default on load
-	    if (newValue.length == 0)
-	    {
-		    if (this.base.m_dict[dictAttrName].DefaultValue != null && this.base.m_dict[dictAttrName].DefaultValue.length > 0)
-		    {
-			    newValue = this.base.m_dict[dictAttrName].DefaultValue;
-		    }
-	    }
-	    
-	    //if only one is available, force that selection now
-	    if (availableValues.length == 1)
-	    {
-		    newValue = availableValues[0];
-		    this.base.m_dict[dictAttrName].ChangedByUser = false;
-	    }
-	    
-	    //if the current value is "", and an available value is prefixed with a "@" default, set it now
-	    if (currentValue.length == 0)
-	    {
-		    for (var i = 0; i < prefixes.length; i++)
-		    {
-			    if (prefixes[i].indexOf(this.DEFAULTPREFIX) >= 0)
-			    {
-				    newValue = availableValues[i];
-				    this.base.m_dict[dictAttrName].ChangedByUser = false;
-				    break;
-			    }
-		    }
-	    }
-	    
-	    if (prefixes.length > 0 && prefixes[0].length> 0 && prefixes[0].indexOf(this.INVISPREFIX) >= 0)
-		    this.base.m_dict[dictAttrName].Visible = false;
-	    else
-		    this.base.m_dict[dictAttrName].Visible = true;
-		    
-      var srcAvail = availableValues.splice(0);
-	    if (newValue.length > 0 && srcAvail.indexOf(newValue) >= 0)
-	    {
-		    this.base.m_dict[dictAttrName].Valid = true;
-		    if (currentValue != newValue)
-		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
-			    this.base.m_dict[dictAttrName].ChangedByUser = true;
-		    }
-	    }
-	    else
-	    {
-		    this.base.m_dict[dictAttrName].Valid = false;
-		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "");
-		    this.base.m_dict[dictAttrName].ChangedByUser = false;
-	    }
-    }
-    catch (err)
-    {
-        ReportError(err);
-    }
-}
-
-LinearEngine.prototype.EvalMultiSelect = function(dictAttrName, newValues)
-{
-    try
-    {
-        //multi-select lists, checkbox lists
-	    var res = this.base.m_tree.EvaluateTableForAttr(this.base.m_context, this.base.m_dict[dictAttrName].RuleTable, dictAttrName, true);
-	    var availableValues = new Array();	    
-
-	    var prefixes = this.ParseOutPrefixes(res, availableValues);
-	    this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);	    
-
-	    var currentValue = this.base.m_tree.GetAttributeValue(this.base.m_context, dictAttrName, false);
-	    var currentValues = currentValue.split("|");
-	    var selectedValues = new Array();
-	    
-	    this.base.m_dict[dictAttrName].ChangedByUser = true;
-	    
-	    //set the dictionary default on load
-	    if (newValues.length == 0)
-	    {
-		    if (this.base.m_dict[dictAttrName].DefaultValue != null && this.base.m_dict[dictAttrName].DefaultValue.length > 0)
-		    {
-			    newValues = new Array();
-			    newValues.push(this.base.m_dict[dictAttrName].DefaultValue);
-			    this.base.m_dict[dictAttrName].ChangedByUser = false;
-		    }
-	    }
-	    
-	    //if only one is available, force that selection now
-	    if (availableValues.length == 1)
-	    {
-		    selectedValues.push(availableValues[0]);
-		    this.base.m_dict[dictAttrName].ChangedByUser = false;
-	    }
-	    //if the current value is "", and an available value is prefixed with a "@" default, set it now
-	    else if (currentValues != null && currentValues.length == 1 && currentValues[0].length == 0 && prefixes.length > 0)
-	    {
-		    for (var i = 0; i < prefixes.length; i++)
-		    {
-			    if (prefixes[i].indexOf(this.DEFAULTPREFIX) >= 0)
-			    {
-				    selectedValues.push(availableValues[i]);
-				    this.base.m_dict[dictAttrName].ChangedByUser = false;
-			    }
-		    }
-	    }
-	    
-	    if (selectedValues.length == 0 && currentValues.length > 0) //compare the new values to what is really available
-	    {
-		    for (var i = 0; i < newValues.length; i++)
-		    {	
-          for (var j = 0; j < availableValues.length; j++)
-          {
-            if (newValues[i] == availableValues[j])
-            {
-              selectedValues.push(newValues[i]);
-              break;
-            }
-			    }
-		    }
-	    }
-
-	    var finalValue = "";
-	    for (var i = 0; i < selectedValues.length; i++)
-	    {
-        var val = selectedValues[i];
-		    if (finalValue.length > 0)
-			    finalValue+= "|";
-		    finalValue+=val;
-	    }		
-
-	    if (finalValue != currentValue)
-	    {
-		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, finalValue);
-		  }
+        if (this.m_CurrentRecursion % 2 == 0)
+		{
+			this.m_EvalListRecursChecker = this.m_EvalList.slice(0);
+		}
     }
     catch (err)
     {
@@ -1160,7 +1060,6 @@ LinearEngine.prototype.EvalBoolean = function(dictAttrName, newValue)
 		    if (availableValues[0].length == 0 || availableValues[0] == "N")
 		    {
 			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "N");
-			    this.base.m_dict[dictAttrName].ChangedByUser = (newValue.length > 0 && newValue != "N");
 			    return;
 		    }
 		    else if (availableValues[0] == "YN") //allow Yes or No with a default of Y
@@ -1185,7 +1084,6 @@ LinearEngine.prototype.EvalBoolean = function(dictAttrName, newValue)
 		    else if (newValue.length == 1) //Y or N
 		    {
 			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
-			    this.base.m_dict[dictAttrName].ChangedByUser = (availableValues[0] == newValue);
 		    }
 	    }
 	
@@ -1206,6 +1104,7 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 	    var prefixes = this.ParseOutPrefixes(res, availableValues);
 	    this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
 	    this.base.m_dict[dictAttrName].Enabled = true;
+	    this.base.m_dict[dictAttrName].Valid = true;
 
 	    var currentValue = this.base.m_tree.GetAttributeValue(this.base.m_context, dictAttrName, false);
 
@@ -1218,15 +1117,6 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 	    
 	    if (availableValues.length == 1)
 	    {
-		    if (prefixes[0].indexOf(this.INVISPREFIX) >= 0)
-		    {
-			    this.base.m_dict[dictAttrName].Visible = false;	
-		    }
-		    else
-		    {
-			    this.base.m_dict[dictAttrName].Visible = true;
-		    }
-
 		    if (prefixes[0].indexOf(this.DISABLEPREFIX) >= 0)
 		    {
 			    this.base.m_dict[dictAttrName].Enabled = false;
@@ -1240,7 +1130,6 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 		    //check table result for range
 		    if (availableValues[0].charAt(0) == '[')
 		    {
-			    this.base.m_dict[dictAttrName].ChangedByUser = true;
 			    var dNewValue = 0, dMin = 0, dMax = 0;
 			    var val = availableValues[0];
 			    val = val.replace("[", "");
@@ -1266,25 +1155,218 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 				    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, wstrMin);
 			    }
 		    }
-	    }
-	    else if (availableValues.length == 0 || (availableValues.length == 1 && availableValues[0].length == 1 && availableValues[0].charAt(0) == "Y"))
-	    {		
-		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
-		    this.base.m_dict[dictAttrName].ChangedByUser = true;
-		    if (prefixes.length > 0 && prefixes[0].length > 0 && prefixes[0].indexOf(this.INVISPREFIX) >= 0)
-			    this.base.m_dict[dictAttrName].Visible = false;
+		    else if (availableValues[0].length == 1 && availableValues[0][0] == 'Y')
+		    {
+			    this.base.m_tree.SetAttribute(m_context, dictAttrName, newValue);
+		    }		
+		    else if (availableValues[0].length == 1 && availableValues[0][0] == 'N')
+		    {
+			    this.base.m_tree.SetAttribute(m_context, dictAttrName, "");
+			    this.base.m_dict[dictAttrName].ChangedByUser = false;
+			    this.base.m_dict[dictAttrName].Enabled = false;
+		    }
 		    else
-			    this.base.m_dict[dictAttrName].Visible = true;;
-
+		    {
+			    this.base.m_tree.SetAttribute(m_context, dictAttrName, availableValues[0]);
+			    this.base.m_dict[dictAttrName].ChangedByUser = false;
+		    }
+	    }
+	    else if (availableValues[0].length == 2 && availableValues[0] == "YY") //user must enter something
+	    {
+		    this.base.m_tree.SetAttribute(m_context, dictAttrName, newValue);
+		    this.base.m_dict[dictAttrName].Valid = newValue.length > 0;
+	    }
+	    else if (availableValues.length == 0)
+	    {		
+		    this.base.m_tree.SetAttribute(m_context, dictAttrName, "");
+		    this.base.m_dict[dictAttrName].ChangedByUser = false;
+		    this.base.m_dict[dictAttrName].Enabled = false;
 	    }
 	    else if (availableValues.length == 1 && availableValues[0].length > 0)
 	    {
 		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, availableValues[0]);
 		    this.base.m_dict[dictAttrName].ChangedByUser = false;
-		    if (prefixes[0].length > 0 && prefixes[0].indexOf(this.INVISPREFIX) >= 0)
-			    this.base.m_dict[dictAttrName].Visible = false;
-		    else
-			    this.base.m_dict[dictAttrName].Visible = true;;
+	    }
+	    else if (availableValues.length > 0)
+	    {
+		    if (availableValues.indexOf(newValue) >= 0)
+		    {
+			    this.base.m_tree.SetAttribute(m_context, dictAttrName, newValue);
+		    }
+		    else 
+		    {
+			    this.base.m_tree.SetAttribute(m_context, dictAttrName, "");
+			    this.base.m_dict[dictAttrName].ChangedByUser = false;
+		    }
+	    }
+	    
+	    if (prefixes.length > 0 && prefixes[0].indexOf(this.INVISPREFIX) >= 0)
+	    {
+		    this.base.m_dict[dictAttrName].Visible = false;	
+	    }
+	    else
+	    {
+		    this.base.m_dict[dictAttrName].Visible = true;
+	    }
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+}
+
+LinearEngine.prototype.EvalMultiSelect = function(dictAttrName, newValues)
+{
+    try
+    {
+        //multi-select lists, checkbox lists
+	    var res = this.base.m_tree.EvaluateTableForAttr(this.base.m_context, this.base.m_dict[dictAttrName].RuleTable, dictAttrName, true);
+	    var availableValues = new Array();	    
+
+	    var prefixes = this.ParseOutPrefixes(res, availableValues);
+	    this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
+	    this.base.m_dict[dictAttrName].Enabled = true;
+	    this.base.m_dict[dictAttrName].Valid = true;
+
+	    var currentValue = this.base.m_tree.GetAttributeValue(this.base.m_context, dictAttrName, false);
+	    var currentValues = currentValue.split("|");
+	    var selectedValues = new Array();
+	    
+	    //set the dictionary default on load
+	    if (newValues.length == 0)
+	    {
+		    if (this.base.m_dict[dictAttrName].DefaultValue != null && this.base.m_dict[dictAttrName].DefaultValue.length > 0)
+		    {
+			    newValues = new Array();
+			    newValues.push(this.base.m_dict[dictAttrName].DefaultValue);
+			    this.base.m_dict[dictAttrName].ChangedByUser = false;
+		    }
+	    }
+	    
+	    //if only one is available, force that selection now
+	    if (availableValues.length == 1)
+	    {
+		    selectedValues.push(availableValues[0]);
+		    this.base.m_dict[dictAttrName].ChangedByUser = false;
+	    }
+	    //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
+	    else if (currentValues != null && (currentValues.length == 1 && (currentValues[0].length == 0 || availableValues.indexOf(currentValues[0]) >= 0)) && prefixes.length > 0)
+	    {
+		    for (var i = 0; i < prefixes.length; i++)
+		    {
+			    if (prefixes[i].indexOf(this.DEFAULTPREFIX) >= 0)
+			    {
+				    selectedValues.push(availableValues[i]);
+				    this.base.m_dict[dictAttrName].ChangedByUser = false;
+			    }
+		    }
+	    }
+	    else if (availableValues.length == 0)
+	    {
+		    this.base.m_dict[dictAttrName].Enabled = false;
+	    }
+	    
+	    if (selectedValues.length == 0 && currentValues.length > 0) //compare the new values to what is really available
+	    {
+		    for (var i = 0; i < newValues.length; i++)
+		    {	
+		        if (availableValues.indexOf(newValues[i]) >= 0)          
+		        {     
+                  selectedValues.push(newValues[i]);
+                  break;                    
+			    }
+		    }
+	    }
+
+	    var finalValue = "";
+	    for (var i = 0; i < selectedValues.length; i++)
+	    {
+            var val = selectedValues[i];
+		    if (finalValue.length > 0)
+			    finalValue+= "|";
+		    finalValue+=val;
+	    }		
+
+	    if (finalValue != currentValue)
+	    {
+		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, finalValue);
+		}
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+}
+
+LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
+{
+    try
+    {
+        var res = this.base.m_tree.EvaluateTableForAttr(this.base.m_context, this.base.m_dict[dictAttrName].RuleTable, dictAttrName, true);
+        var availableValues = new Array();
+        this.base.m_dict[dictAttrName].Enabled = true;
+        this.base.m_dict[dictAttrName].Valid = true;
+
+        //the list of results is what is available for selection in the control
+        var prefixes = this.ParseOutPrefixes(res, availableValues);        
+        this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
+
+        var currentValue = this.base.m_tree.GetAttributeValue(this.base.m_context, dictAttrName, false);
+        
+        //set the dictionary default on load
+	    if (newValue.length == 0)
+	    {
+		    if (this.base.m_dict[dictAttrName].DefaultValue != null && this.base.m_dict[dictAttrName].DefaultValue.length > 0)
+		    {
+			    newValue = this.base.m_dict[dictAttrName].DefaultValue;
+		    }
+	    }
+	    
+	    //if only one is available, force that selection now
+	    if (availableValues.length == 1)
+	    {
+		    newValue = availableValues[0];
+		    this.base.m_dict[dictAttrName].ChangedByUser = false;
+	    }
+	    
+	    //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
+	    if ((currentValue.length == 0 || availableValues.indexOf(currentValue) >= 0) && prefixes.length > 0)
+	    {
+		    for (var i = 0; i < prefixes.length; i++)
+		    {
+			    if (prefixes[i].indexOf(this.DEFAULTPREFIX) >= 0)
+			    {
+				    newValue = availableValues[i];
+				    this.base.m_dict[dictAttrName].ChangedByUser = false;
+				    break;
+			    }
+		    }
+	    }
+	    else if (availableValues.length == 0)
+	    {
+		    this.base.m_dict[dictAttrName].Enabled = false;
+	    }
+	    
+	    if (prefixes.length > 0 && prefixes[0].length> 0 && prefixes[0].indexOf(this.INVISPREFIX) >= 0)
+		    this.base.m_dict[dictAttrName].Visible = false;
+	    else
+		    this.base.m_dict[dictAttrName].Visible = true;
+		    
+	    if (newValue.length > 0 && availableValues.indexOf(newValue) >= 0)
+	    {
+		    this.base.m_dict[dictAttrName].Valid = true;
+		    if (currentValue != newValue)
+		    {
+			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
+			    this.base.m_dict[dictAttrName].ChangedByUser = true;
+		    }
+	    }
+	    else
+	    {
+	        if (this.base.m_dict[dictAttrName].Enabled == true)
+		        this.base.m_dict[dictAttrName].Valid = false;
+		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "");
+		    this.base.m_dict[dictAttrName].ChangedByUser = false;
 	    }
     }
     catch (err)
@@ -1302,11 +1384,28 @@ LinearEngine.prototype.EvaluateDependencies = function(dictAttrName)
 		    var attrsToEval = this.m_mapTriggers[dictAttrName];
 		    for (var i = 0; i < attrsToEval.length; i++)
 		    {	
-          var attrName = attrsToEval[i];
+                var attrName = attrsToEval[i];
 			    if (attrName in this.base.m_dict)
 			    {					
 				    var selectedValues = this.GetSelectedValues(this.base.m_dict[attrName]);
 				    this.EvaluateForAttribute(attrName, selectedValues, true);
+				    if (this.base.m_dict[attrName].ChangedByUser)
+				    {
+					    var bValuesRemainSame = true;
+					    var newSelectedValues = this.GetSelectedValues(this.base.m_dict[attrName]);
+					    if (newSelectedValues.length != selectedValues.length)
+						    bValuesRemainSame = false;
+					    else for (var i = 0; i < selectedValues.length; i++)
+					    {
+						    if (newSelectedValues.indexOf(selectedValues[i]) < 0)
+						    {
+							    bValuesRemainSame = false;
+							    break;
+						    }
+					    }
+
+					    this.base.m_dict[attrName].ChangedByUser = bValuesRemainSame;
+				    }
 			    }
 		    }
 	    }
