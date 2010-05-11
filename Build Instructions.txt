@@ -6,12 +6,12 @@ Prerequisites:
 Rules Engine: EDSEngine
 All platforms: 
 - zlib compression library v1.2.3
-- boost C++ libraries v1.37+
+- boost C++ libraries v1.4+
 - iconv v1.9.2
 - libxml2 v2.7.3 
 - libxslt v1.1.24 
 - Python 2.6 (optional compile-time switch)
-- Mozilla Spidermonkey Javascript engine (optional compile-time switch)
+- Mozilla Spidermonkey Javascript engine 1.8 (optional compile-time switch)
 Windows:
 - MSXML v6.0 (optional in lieu of libxml, libxslt, and iconv)
 

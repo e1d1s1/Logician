@@ -45,7 +45,7 @@
 			<Add directory="C:/Python26/include" />
 			<Add directory="/usr/include/libxml2" />
 			<Add directory="/usr/include/python2.6" />
-			<Add directory="/usr/include/mozjs" />
+			<Add directory="/usr/local/include/js" />
 		</Compiler>
 		<Linker>
 			<Add library="libz" />
