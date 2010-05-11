@@ -323,11 +323,14 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
                     jsval rval, funval;
                     JS_EvaluateScript(cx, global, JSCode.c_str(), JSCode.length(), "EDS_JScript", 1, &funval);
 
-                    void *mark;
-                    jsval *argv;
-                    argv = JS_PushArguments(cx, &mark, "s", WStrToMBCStr(m_StateParameter).c_str());
-                    JSBool ok = JS_CallFunctionName(cx, global, "myfunc", 1, argv, &rval);
-                    JS_PopArguments(cx, mark);
+                    jsval argv;
+                    string cStr = WStrToMBCStr(m_StateParameter).c_str();
+                    char* tempStr = (char*)JS_malloc(cx, cStr.length() + 1);
+                    strcpy(tempStr, cStr.c_str());
+                    JSString *jsStr = JS_NewString(cx, tempStr, strlen(tempStr));
+                    argv = STRING_TO_JSVAL(jsStr);
+                    JSBool ok = JS_CallFunctionName(cx, global, "myfunc", 1, &argv, &rval);
+
 
                     if (rval != NULL && ok)
                     {
@@ -335,12 +338,11 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
                         val = MBCStrToWStr(s);
                     }
 
-
-                    /* Cleanup. */
+                    //free(tempStr);
+                    // Cleanup.
                     JS_DestroyContext(cx);
                     JS_DestroyRuntime(rt);
                     JS_ShutDown();
-
 
                     #endif
                 }
@@ -432,7 +434,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 				}
 				catch (boost::python::error_already_set)
 				{
-					PyErr_Print();
+					//PyErr_Print();
 					val = L"ERROR";
 				}
 				newResults.push_back(val);
