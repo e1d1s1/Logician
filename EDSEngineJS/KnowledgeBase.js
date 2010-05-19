@@ -15,6 +15,16 @@ Copyright (C) 2009 Eric D. Schmidt
     You should have received a copy of the GNU General Public License
     along with EDSEngineJS.  If not, see <http://www.gnu.org/licenses/>.
 */
+//stupid IE doesnt do indexOf for array
+function GetIndexOfItem(arr, obj)
+{
+    for(var i=0; i<arr.length; i++){
+        if(arr[i]===obj){
+            return i;
+        }
+    }
+    return -1;   
+}
 
 var EQUALS = 0x1;
 var NOT_EQUAL = 0x2;
@@ -1553,40 +1563,45 @@ KnowledgeBase.prototype.GetTableRowFromXML = function(nodes, xmlDoc)
                 var currrentInputAttr = nodes[i];
                 var values = currrentInputAttr.selectNodes("Value");
                 var attrNode = currrentInputAttr.selectSingleNode("Attr");
-                var attrName = attrNode.childNodes(0).nodeValue;
-                currentAttrRow.first = attrName;
-                currentAttrRow.second = new Array();
-                
-                for (var j = 0; j < values.length; j++)
+                var attrName = "";
+                if (attrNode != null && attrNode.childNodes.length > 0)
+                    attrName = attrNode.childNodes(0).nodeValue;
+                if (attrName.length > 0)
                 {
-                    var currentValue = values[j];
-                    var idNode = currentValue.attributes.getNamedItem("id");
-                    var cell = new RuleCell();
-                    if (idNode)
-                    {
-                        var cellValues = currentValue.firstChild.text.split("|");
-                        var ids = idNode.nodeValue.toString().split(",");
-                        if (cellValues.length != ids.length)
-                            throw "Bad OR";
-                            
-                        for (var idCnt = 0; idCnt < ids.length; idCnt++)
-					    {
-					        var id = parseInt(ids[idCnt], 10);
-					        var value = cellValues[idCnt];
-					        this.m_stringsMap.AddString(id, value);
-					        cell.Values.push(id); 
-					    }
-                    }
+                    currentAttrRow.first = attrName;
+                    currentAttrRow.second = new Array();
                     
-                    var operNode = currentValue.attributes.getNamedItem("operation");
-                    var oper = 0;
-                    if (operNode)
+                    for (var j = 0; j < values.length; j++)
                     {
-                        oper = parseInt(operNode.nodeValue, 10);
+                        var currentValue = values[j];
+                        var idNode = currentValue.attributes.getNamedItem("id");
+                        var cell = new RuleCell();
+                        if (idNode)
+                        {
+                            var cellValues = currentValue.firstChild.text.split("|");
+                            var ids = idNode.nodeValue.toString().split(",");
+                            if (cellValues.length != ids.length)
+                                throw "Bad OR";
+                                
+                            for (var idCnt = 0; idCnt < ids.length; idCnt++)
+					        {
+					            var id = parseInt(ids[idCnt], 10);
+					            var value = cellValues[idCnt];
+					            this.m_stringsMap.AddString(id, value);
+					            cell.Values.push(id); 
+					        }
+                        }
+                        
+                        var operNode = currentValue.attributes.getNamedItem("operation");
+                        var oper = 0;
+                        if (operNode)
+                        {
+                            oper = parseInt(operNode.nodeValue, 10);
+                        }
+                        cell.Operation = oper;
+                        
+                        currentAttrRow.second.push(cell);     
                     }
-                    cell.Operation = oper;
-                    
-                    currentAttrRow.second.push(cell);     
                 }
                 if (attrName.length > 0)
                     retval.push(currentAttrRow);         

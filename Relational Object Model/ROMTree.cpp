@@ -36,6 +36,11 @@ using namespace ROMUTIL;
 
 ROMTree::ROMTree(wstring name)
 {
+	Initialize(name);
+}
+
+void ROMTree::Initialize(wstring name)
+{
 	string guid = MakeGUID();
 	name = FindAndReplace(name, L" ", L"_");
 	#ifdef USE_MSXML
@@ -742,7 +747,7 @@ wstring ROMTree::EvaluateXPATH(Node currentObject, wstring xpath)
 //ASCII Overloads
 ROMTree::ROMTree(string name)
 {
-	ROMTree(ROMUTIL::MBCStrToWStr(name));
+	Initialize(ROMUTIL::MBCStrToWStr(name));
 }
 
 vector<Node> ROMTree::Find(Node current, string searchStr)

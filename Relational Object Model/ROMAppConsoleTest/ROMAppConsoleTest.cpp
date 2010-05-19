@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 	try
 	{
 		Log("Creating application/doc object myBaseObject");
-		ROMTree myBaseObject(L"Test Application");
+		ROMTree myBaseObject("Test Application");
 		Log("yyBaseObject Created");
 
 		Log("Getting the root node");
