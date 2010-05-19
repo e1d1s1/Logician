@@ -15,6 +15,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Relational Object Model 2 JS.  If not, see <http://www.gnu.org/licenses/>.
 */
+//stupid IE doesnt do indexOf for array
+function GetIndexOfItem(arr, obj)
+{
+    for(var i=0; i<arr.length; i++){
+        if(arr[i]===obj){
+            return i;
+        }
+    }
+    return -1;   
+}
 
 function ReportError(err) {
     var vDebug = "";
@@ -1158,28 +1168,28 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 		    }
 		    else if (availableValues[0].length == 1 && availableValues[0][0] == 'Y')
 		    {
-			    this.base.m_tree.SetAttribute(m_context, dictAttrName, newValue);
+			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
 		    }		
 		    else if (availableValues[0].length == 1 && availableValues[0][0] == 'N')
 		    {
-			    this.base.m_tree.SetAttribute(m_context, dictAttrName, "");
+			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "");
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
 			    this.base.m_dict[dictAttrName].Enabled = false;
 		    }
 		    else if (availableValues[0].length == 2 && availableValues[0] == "YY") //user must enter something
 	        {
-		        this.base.m_tree.SetAttribute(m_context, dictAttrName, newValue);
+		        this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
 		        this.base.m_dict[dictAttrName].Valid = newValue.length > 0;
 	        }
 		    else
 		    {
-			    this.base.m_tree.SetAttribute(m_context, dictAttrName, availableValues[0]);
+			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, availableValues[0]);
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
 		    }
 	    }	    
 	    else if (availableValues.length == 0)
 	    {		
-		    this.base.m_tree.SetAttribute(m_context, dictAttrName, "");
+		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "");
 		    this.base.m_dict[dictAttrName].ChangedByUser = false;
 		    this.base.m_dict[dictAttrName].Enabled = false;
 	    }
@@ -1190,13 +1200,13 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 	    }
 	    else if (availableValues.length > 0)
 	    {
-		    if (availableValues.indexOf(newValue) >= 0)
+		    if (GetIndexOfItem(availableValues, newValue) >= 0)
 		    {
-			    this.base.m_tree.SetAttribute(m_context, dictAttrName, newValue);
+			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
 		    }
 		    else 
 		    {
-			    this.base.m_tree.SetAttribute(m_context, dictAttrName, "");
+			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "");
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
 		    }
 	    }
@@ -1251,7 +1261,7 @@ LinearEngine.prototype.EvalMultiSelect = function(dictAttrName, newValues)
 		    this.base.m_dict[dictAttrName].ChangedByUser = false;
 	    }
 	    //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
-	    else if (currentValues != null && (currentValues.length == 1 && (currentValues[0].length == 0 || availableValues.indexOf(currentValues[0]) >= 0)) && prefixes.length > 0)
+	    else if (currentValues != null && (currentValues.length == 1 && (currentValues[0].length == 0 || GetIndexOfItem(availableValues, currentValues[0]) >= 0)) && prefixes.length > 0)
 	    {
 		    for (var i = 0; i < prefixes.length; i++)
 		    {
@@ -1271,7 +1281,7 @@ LinearEngine.prototype.EvalMultiSelect = function(dictAttrName, newValues)
 	    {
 		    for (var i = 0; i < newValues.length; i++)
 		    {	
-		        if (availableValues.indexOf(newValues[i]) >= 0)          
+		        if (GetIndexOfItem(availableValues, newValues[i]) >= 0)          
 		        {     
                   selectedValues.push(newValues[i]);
                   break;                    
@@ -1331,7 +1341,7 @@ LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
 	    }
 	    
 	    //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
-	    if ((currentValue.length == 0 || availableValues.indexOf(currentValue) >= 0) && prefixes.length > 0)
+	    if ((currentValue.length == 0 || GetIndexOfItem(availableValues, currentValue) >= 0) && prefixes.length > 0)
 	    {
 		    for (var i = 0; i < prefixes.length; i++)
 		    {
@@ -1353,7 +1363,7 @@ LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
 	    else
 		    this.base.m_dict[dictAttrName].Visible = true;
 		    
-	    if (newValue.length > 0 && availableValues.indexOf(newValue) >= 0)
+	    if (newValue.length > 0 && GetIndexOfItem(availableValues, newValue) >= 0)
 	    {
 		    this.base.m_dict[dictAttrName].Valid = true;
 		    if (currentValue != newValue)
@@ -1400,7 +1410,7 @@ LinearEngine.prototype.EvaluateDependencies = function(dictAttrName)
 						    bValuesRemainSame = false;
 					    else for (var i = 0; i < selectedValues.length; i++)
 					    {
-						    if (newSelectedValues.indexOf(selectedValues[i]) < 0)
+						    if (GetIndexOfItem(newSelectedValues, selectedValues[i]) < 0)
 						    {
 							    bValuesRemainSame = false;
 							    break;

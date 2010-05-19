@@ -39,7 +39,7 @@ namespace ROM
 	friend class LinearEngine;
 	public:
 		ROMTree(wstring name);
-		virtual ~ROMTree(void);
+		virtual ~ROMTree(void);		
 
 		//relational interface
 		Node GetRoot();
@@ -127,6 +127,7 @@ namespace ROM
 #endif
 
 	private:
+		void				Initialize(wstring name);
 		vector<wstring>		LoadInputs(Node currentObject, wstring evalTable);
 		vector<wstring>		GetPossibleValues(Node currentObject, wstring evalTable, wstring outputName);
 		wstring				GetATableInputValue(Node currentObject, wstring input);

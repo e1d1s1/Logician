@@ -482,7 +482,7 @@ namespace ROM
 		}
 
 		//if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
-		if (currentValue.length() == 0 || find(availableValues.begin(), availableValues.end(), currentValue) == availableValues.end())
+		if ((currentValue.length() == 0 || find(availableValues.begin(), availableValues.end(), currentValue) == availableValues.end()) && prefixes.size() > 0)
 		{
 			for (size_t i = 0; i < prefixes.size(); i++)
 			{
