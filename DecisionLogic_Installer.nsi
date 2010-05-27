@@ -81,6 +81,7 @@ Section "Uninstall"
   ; Remove registry keys
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DecisionLogic"
   DeleteRegKey HKLM SOFTWARE\DecisionLogic
+  DeleteRegKey HKCU SOFTWARE\DecisionLogic
 
   ; Remove files and uninstaller
   Delete $INSTDIR\DecisionLogic.exe
