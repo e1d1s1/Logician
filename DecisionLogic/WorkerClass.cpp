@@ -803,11 +803,7 @@ wstring WorkerClass::CompileXML(wstring tempFilePath)
 	wstring retval;
 	try
 	{
-		if (!bIsSaved)
-		{
-			if (!CheckSave()) //have to rebuild all token ids
-				return retval;
-		}
+		Save();
 
 		if (tempFilePath.length() == 0)
 		{
