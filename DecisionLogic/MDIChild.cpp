@@ -60,7 +60,8 @@ MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), vo
 	sizer->Add(m_table, wxEXPAND);
 
 	DisplayTableData(logic);
-	stUndo.push(logic);
+	StringTable<wstring> rawData = m_table->GetRawTableData();
+	stUndo.push(rawData);
 
 	//be consistent with window maximizing or smaller windows
 	if (m_opened_window_tracker->size() > 1)
@@ -92,6 +93,12 @@ void MDIChild::RotateOrientation()
 
 	this->Show(false);
 	m_table->FillGrid(&tempInput, &tempOutput, &tempStatus, bGetAll);
+	//reset the undo (we could rotate the data in the future and avoid this)
+	StringTable<wstring> rawData = m_table->GetRawTableData();
+	stUndo.empty();
+	stRedo.empty();
+	stUndo.push(rawData);
+
 	this->Show(true);
 	this->Refresh();
 }
@@ -119,6 +126,11 @@ void MDIChild::DisplayTableData(LogicTable table)
 	{
 		ReportError("MDIChild::DisplayTableData");
 	}
+}
+
+void MDIChild::DisplayRawTableData(StringTable<wstring> table)
+{
+	m_table->FillGrid(table);
 }
 
 void MDIChild::RepopulateTranslationsTable(set<wstring> *strings)
@@ -201,7 +213,7 @@ void MDIChild::Undo(wxCommandEvent& event)
 {
 	if (stUndo.size() > 0)
 	{
-		LogicTable tableData = stUndo.top();
+		StringTable<wstring> tableData = stUndo.top();
 		if (stUndo.size() > 1) //don't lose the original
 		{
 			stUndo.pop();
@@ -209,7 +221,7 @@ void MDIChild::Undo(wxCommandEvent& event)
 		}
 		tableData = stUndo.top();
 		
-		DisplayTableData(tableData);
+		DisplayRawTableData(tableData);
 	}
 }
 
@@ -217,10 +229,10 @@ void MDIChild::Redo(wxCommandEvent& event)
 {
 	if (stRedo.size() > 0)
 	{
-		LogicTable tableData = stRedo.top();
+		StringTable<wstring> tableData = stRedo.top();
 		stRedo.pop();
 		stUndo.push(tableData);
-		DisplayTableData(tableData);
+		DisplayRawTableData(tableData);
 	}
 }
 
@@ -465,7 +477,7 @@ OpenLogicTable MDIChild::GetCurrentTable()
 void MDIChild::SignalTableChangedCallback()
 {
 	m_table->HasChanged = true;
-	LogicTable tableData = GetCurrentTable().logic_table;
+	StringTable<wstring> tableData = m_table->GetRawTableData();
 	stUndo.push(tableData);
 	while (!stRedo.empty())
 		stRedo.pop();

@@ -185,7 +185,7 @@ bool WorkerClass::OpenProject(wstring fileName)
 
 		if (openPath.length() > 0 && m_pm.LoadProjectFile(openPath) == true)
 		{
-			bIsSaved = false;
+			bIsSaved = true;
 			retval = true;
 			AddAllProjectNodes();
 			GetSettings();
@@ -430,11 +430,14 @@ void WorkerClass::NewTable(wstring name)
 				{
 					size_t pos = find(existing_names.begin(), existing_names.end(), name) - existing_names.begin();
 					
-					wxTreeItemId locItem = NULL;					
+					wxTreeItemId locItem;					
 					if (existing_names.size() > 1)
 					{
-						wstring preValue = existing_names[pos - 1];
-						locItem = FindItemNamed(wxtid_active_group, preValue);
+						if (pos > 0)
+						{
+							wstring preValue = existing_names[pos - 1];
+							locItem = FindItemNamed(wxtid_active_group, preValue);
+						}
 					}
 					wxTreeItemId newItem = AddTreeNode(wxtid_active_group, locItem, name);
 					m_tree->SelectItem(newItem);
@@ -960,36 +963,30 @@ void WorkerClass::DeleteTreeNode(wstring name)
 	}
 }
 
-wxTreeItemId WorkerClass::FindItemNamed(wxTreeItemId root, const wxString& sSearchFor)
+wxTreeItemId WorkerClass::FindItemNamed(wxTreeItemId root, const wxString& sSearchFor, bool bCaseSensitive, bool bExactMatch)
 {
 	try
 	{
+		wxTreeItemId item=root, child;
 		wxTreeItemIdValue cookie;
-		wxTreeItemId search;
-		wxTreeItemId item = m_tree->GetFirstChild( root, cookie );
-		wxTreeItemId child;
+		wxString findtext(sSearchFor), itemtext;
+		bool bFound;
+		if(!bCaseSensitive) findtext.MakeLower();
 	 
-		while( item.IsOk() )
+		while(item.IsOk())
 		{
-			wxString sData = m_tree->GetItemText(item);
-			if( sSearchFor.CompareTo(sData) == 0 )
-			{
-				return item;
-			}
-			if( m_tree->ItemHasChildren( item ) )
-			{
-				wxTreeItemId search = FindItemNamed( item, sSearchFor );
-				if( search.IsOk() )
-				{
-					return search;
-				}
-			}
-			item = m_tree->GetNextChild( root, cookie);
+			itemtext = m_tree->GetItemText(item);
+			if(!bCaseSensitive) itemtext.MakeLower();
+			bFound = bExactMatch ? (itemtext == findtext) : itemtext.Contains(findtext);
+			if(bFound) return item;
+			child = m_tree->GetFirstChild(item, cookie);
+			if(child.IsOk()) child = FindItemNamed(child, sSearchFor, bCaseSensitive, bExactMatch);
+			if(child.IsOk()) return child;
+			item = m_tree->GetNextSibling(item);
 		}
- 
-		/* Not found */
-		wxTreeItemId dummy;
-		return dummy;
+	 
+		return item;
+
 
 	}
 	catch(...)
@@ -1006,6 +1003,7 @@ void WorkerClass::AddAllProjectNodes()
 	{
 		m_tree->DeleteAllItems();
 		m_tree->AddRoot(wxT("Root"), NULL, NULL, NULL);
+		wxtid_active_group = m_tree->GetRootItem();
 
 		StringTable<wstring> *project = m_pm.GetProjectTable();
 		project->SortByCol(L"DataSetName");

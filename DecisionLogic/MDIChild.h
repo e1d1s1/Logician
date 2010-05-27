@@ -248,6 +248,62 @@ public:
 		}
 	}
 
+	inline void FillGrid(StringTable<wstring> table)
+	{
+		//grow or shrink the grid to match
+		while (this->GetNumberCols() < table.Columns())
+		{
+			this->AppendCols(1);
+		}
+		while (this->GetNumberCols() > table.Columns())
+		{
+			this->DeleteCols(this->GetNumberCols() - 1, 1);
+		}
+
+		while (this->GetNumberRows() < table.Rows())
+		{
+			this->AppendRows(1);
+		}
+		while (this->GetNumberRows() > table.Rows())
+		{
+			this->DeleteRows(this->GetNumberRows() - 1, 1);
+		}
+
+		for (size_t i = 0; i < table.Columns(); i++)
+		{
+			for (size_t j = 0; j < table.Rows(); j++)
+			{
+				this->SetCellValue(j, i, table.GetItem(j, i));
+				UpdateCellFormat(j, i);
+			}
+		}
+	}
+
+	inline StringTable<wstring> GetRawTableData()
+	{
+		StringTable<wstring> retval;
+
+		size_t col = 0;
+		while (retval.Columns() < this->GetNumberCols())
+		{
+			retval.AddColumn((wstring)this->GetColLabelValue(col));
+			col++;
+		}
+
+		while (retval.Rows() < this->GetNumberRows())
+			retval.AddRow();
+
+		for (size_t i = 0; i < this->GetNumberCols(); i++)
+		{
+			for (size_t j = 0; j < this->GetNumberRows(); j++)
+			{
+				retval.SetItem(j, i, (wstring)this->GetCellValue(j, i));
+			}
+		}
+
+		return retval;
+	}
+
 	inline void FillGrid(StringTable<wstring> *inputtable, StringTable<wstring> *outputtable, StringTable<wstring> *statustable, bool bGetAll)
 	{
 		int io_item_offset = 0;
@@ -599,7 +655,7 @@ public:
 						}
 					}
 
-					if ( (attrName.length() == 0 && io_type != STATUS) || (test_io != io && m_type == RULES_TABLE))
+					if ((attrName.length() == 0 && io_type != STATUS) || (test_io != io && m_type == RULES_TABLE))
 					{
 						if (m_orientation == wxHORIZONTAL)
 							rowIndexesToRemove.insert(j);
@@ -608,6 +664,7 @@ public:
 					}
 				}
 			}
+
 
 			for (set<size_t>::reverse_iterator it = rowIndexesToRemove.rbegin(); it != rowIndexesToRemove.rend(); it++)
 			{
@@ -667,7 +724,7 @@ public:
 				this->FormatCell(j, i);
 			}
 		}
-		m_updateCallback();
+		UpdateUndo();
 	}
 
 	inline void OnInsertRow(wxCommandEvent& event)
@@ -708,7 +765,7 @@ public:
 				this->FormatCell(j, i);
 			}
 		}
-		m_updateCallback();
+		UpdateUndo();
 	}
 
 	inline void OnAppendRow(bool allowUndo)
@@ -731,7 +788,7 @@ public:
 			this->FormatCell(j, i);
 		}
 		if (allowUndo)
-			m_updateCallback();
+			UpdateUndo();
 	}
 
 	inline void OnAppendColumn(bool allowUndo)
@@ -754,21 +811,27 @@ public:
 			this->FormatCell(j, this->GetNumberCols() - 1);
 		}
 		if (allowUndo)
-			m_updateCallback();
+			UpdateUndo();
 	}
 
 	inline void OnDeleteCol(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition;
 		if(GetSelectionRange(lowInsertPosition, highInsertPosition, true, DEL))
+		{
 			this->DeleteCols(lowInsertPosition, highInsertPosition - lowInsertPosition + 1);
+			UpdateUndo();
+		}
 	}
 
 	inline void OnDeleteRow(wxCommandEvent& event)
 	{
 		int lowInsertPosition, highInsertPosition;
 		if(GetSelectionRange(lowInsertPosition, highInsertPosition, false, DEL))
+		{
 			this->DeleteRows(lowInsertPosition, highInsertPosition - lowInsertPosition + 1);
+			UpdateUndo();
+		}
 	}
 
 	inline void OnClearCells(wxCommandEvent& event)
@@ -797,7 +860,7 @@ public:
 					this->SetCellValue(j, i, wxEmptyString);
 				}
 			}
-			m_updateCallback();
+			UpdateUndo();
 		}
 	}
 
@@ -809,7 +872,13 @@ public:
 		wstring text = GetSelectionText();
 		if (text.length() > 0)
 		{
-			m_OpenTableCallback(text);
+			if (text.substr(0, 5) == L"eval(")
+			{
+				wstring tableName = text.substr(5, text.find(L",", 0) - 5);
+				m_OpenTableCallback(tableName);
+			}
+			else
+				m_OpenTableCallback(text);
 		}
 	}
 
@@ -850,7 +919,7 @@ public:
 				this->SetCellValue(0, 0, _T(""));
 			event.Veto();
 			this->Refresh();
-			m_updateCallback();
+			UpdateUndo();
 		}
 		else
 			event.Skip();
@@ -1006,7 +1075,7 @@ private:
 		UpdateCellFormat(event.GetRow(), event.GetCol());
 
 		this->Refresh();
-		m_updateCallback();
+		UpdateUndo();
 	}
 
 	inline void UpdateCellFormat(int row, int col)
@@ -1108,25 +1177,25 @@ private:
 				if (val.length() > 0)
 				{
 					vector<wstring> rows = UTILS::Split(val, L"\n");
-					//expand table if rows too wide
-					while (rows.size() > (size_t)GetNumberRows() - j_offset)
-						OnAppendRow(false);
-					for (size_t j = 0; j < rows.size(); j++)
+					if (rows.size() == 1)
 					{
-						vector<wstring> cells = UTILS::Split(rows[j], L"\t");
-						if (cells.size() == 1)
+						for (size_t x = i_offset; x <= m_sel_range.GetRight(); x++)
 						{
-							for (size_t x = i_offset; x <= m_sel_range.GetRight(); x++)
+							for (size_t y = j_offset; y <= m_sel_range.GetBottom(); y++)
 							{
-								for (size_t y = j_offset; y <= m_sel_range.GetBottom(); y++)
-								{
-									this->SetCellValue(y, x, cells[0]);
-									UpdateCellFormat(y, x);
-								}
+								this->SetCellValue(y, x, rows[0]);
+								UpdateCellFormat(y, x);
 							}
 						}
-						else
+					}
+					else
+					{
+						//expand table if rows too wide
+						while (rows.size() > (size_t)GetNumberRows() - j_offset)
+							OnAppendRow(false);
+						for (size_t j = 0; j < rows.size(); j++)
 						{
+							vector<wstring> cells = UTILS::Split(rows[j], L"\t");							
 							//expand table if cols too wide
 							while (cells.size() > (size_t)GetNumberCols() - i_offset)
 								OnAppendColumn(false);
@@ -1134,14 +1203,19 @@ private:
 							{
 								this->SetCellValue(j + j_offset, i + i_offset, cells[i]);
 								UpdateCellFormat(j + j_offset, i + i_offset);
-							}
+							}							
 						}
 					}
-					m_updateCallback();
+					UpdateUndo();
 				}
 			}
 			clip.Close();
 		}
+	}
+
+	inline void UpdateUndo()
+	{
+		m_updateCallback();
 	}
 
 	int								m_orientation;
@@ -1164,6 +1238,7 @@ public:
 
 	void RotateOrientation();
 	void DisplayTableData(LogicTable table);
+	void DisplayRawTableData(StringTable<wstring> table);
 	void RepopulateTranslationsTable(set<wstring> *strings);
 	
 	void InsertCol(wxCommandEvent& event);
@@ -1207,8 +1282,8 @@ private:
 	vector<OpenLogicTable>	*m_opened_window_tracker;
 	int						m_orientation, m_orientation_opposite;
 	int						m_type;
-	stack<LogicTable>		stUndo;
-	stack<LogicTable>		stRedo;
+	stack<StringTable<wstring> >		stUndo;
+	stack<StringTable<wstring> >		stRedo;
 	void (*m_ChildClosedCallback)(void);
 	void (*m_OpenTableCallback)(wstring tableName);
 
