@@ -119,7 +119,7 @@ private:
 	wstring GetTreeNodePath(wxTreeCtrl *tree, wstring nodeName);
 	void DeleteTreeNode(wstring name);
 	void FillDataTable(StringTable<wstring> *table, wxGrid *grid);
-	wxTreeItemId FindItemNamed(wxTreeItemId root, const wxString& sSearchFor);
+	wxTreeItemId FindItemNamed(wxTreeItemId root, const wxString& sSearchFor, bool bCaseSensitive = true, bool bExactMatch = true);
 	void AddAllProjectNodes();
 	void GetSettings();
 	void SaveApplicationSettings();
