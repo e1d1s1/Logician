@@ -1261,7 +1261,11 @@ LinearEngine.prototype.EvalMultiSelect = function(dictAttrName, newValues)
 		    this.base.m_dict[dictAttrName].ChangedByUser = false;
 	    }
 	    //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
+<<<<<<< .mine
+	    else if (currentValues != null && (currentValues.length == 1 && (currentValues[0].length == 0 || GetIndexOfItem(availableValues, currentValues[0]) < 0)) && prefixes.length > 0)
+=======
 	    else if (currentValues != null && (currentValues.length == 1 && (currentValues[0].length == 0 || GetIndexOfItem(availableValues, currentValues[0]) >= 0)) && prefixes.length > 0)
+>>>>>>> .r61
 	    {
 		    for (var i = 0; i < prefixes.length; i++)
 		    {
@@ -1283,8 +1287,7 @@ LinearEngine.prototype.EvalMultiSelect = function(dictAttrName, newValues)
 		    {	
 		        if (GetIndexOfItem(availableValues, newValues[i]) >= 0)          
 		        {     
-                  selectedValues.push(newValues[i]);
-                  break;                    
+                  selectedValues.push(newValues[i]);          
 			    }
 		    }
 	    }
@@ -1341,7 +1344,11 @@ LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
 	    }
 	    
 	    //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
+<<<<<<< .mine
+	    if ((currentValue.length == 0 || GetIndexOfItem(availableValues, currentValue) < 0) && prefixes.length > 0)
+=======
 	    if ((currentValue.length == 0 || GetIndexOfItem(availableValues, currentValue) >= 0) && prefixes.length > 0)
+>>>>>>> .r61
 	    {
 		    for (var i = 0; i < prefixes.length; i++)
 		    {
@@ -1365,11 +1372,9 @@ LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
 		    
 	    if (newValue.length > 0 && GetIndexOfItem(availableValues, newValue) >= 0)
 	    {
-		    this.base.m_dict[dictAttrName].Valid = true;
 		    if (currentValue != newValue)
 		    {
 			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
-			    this.base.m_dict[dictAttrName].ChangedByUser = true;
 		    }
 	    }
 	    else
