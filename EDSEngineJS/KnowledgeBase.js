@@ -1514,43 +1514,45 @@ KnowledgeBase.prototype.GetTableRowFromXML = function(nodes, xmlDoc)
                 var currrentInputAttr = nodes.snapshotItem(i);
                 var values = xmlDoc.evaluate("Value", currrentInputAttr, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
                 var attrNode = xmlDoc.evaluate("Attr", currrentInputAttr, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                var attrName = attrNode.singleNodeValue.textContent;                
-                currentAttrRow.first = attrName;
-                currentAttrRow.second = new Array();
-                
-                for (var j = 0; j < values.snapshotLength; j++)
-                {                    
-                    var cell = new RuleCell();
-                    var currentValue = values.snapshotItem(j);
-                    var idValue = currentValue.getAttribute("id");
-                    if (idValue)
-                    {
-                        var cellValues = currentValue.textContent.split("|");
-                        var ids = idValue.split(",");
-                        if (cellValues.length != ids.length)
-                            throw "Bad OR";
-                            
-                        for (var idCnt = 0; idCnt < ids.length; idCnt++)
-                        {
-                            var id = parseInt(ids[idCnt], 10);
-                            var value = cellValues[idCnt];
-                            this.m_stringsMap.AddString(id, value);
-                            cell.Values.push(id); 
-                        }
-                    }
+                var attrName = "";
+                if (attrNode != null && attrNode.singleNodeValue != null)
+					attrName = attrNode.singleNodeValue.textContent;    
+				if (attrName.length > 0)
+				{            
+					currentAttrRow.first = attrName;
+					currentAttrRow.second = new Array();
+					
+					for (var j = 0; j < values.snapshotLength; j++)
+					{                    
+						var cell = new RuleCell();
+						var currentValue = values.snapshotItem(j);
+						var idValue = currentValue.getAttribute("id");
+						if (idValue)
+						{
+							var cellValues = currentValue.textContent.split("|");
+							var ids = idValue.split(",");
+							if (cellValues.length != ids.length)
+								throw "Bad OR";
+								
+							for (var idCnt = 0; idCnt < ids.length; idCnt++)
+							{
+								var id = parseInt(ids[idCnt], 10);
+								var value = cellValues[idCnt];
+								this.m_stringsMap.AddString(id, value);
+								cell.Values.push(id); 
+							}
+						}
 
-                    var operValue = currentValue.getAttribute("operation");
-                    var oper = 0;
-                    if (operValue)
-                    {
-                        oper = parseInt(operValue, 10);
-                    }
-                    cell.Operation = oper;
+						var operValue = currentValue.getAttribute("operation");
+						var oper = 0;
+						if (operValue)
+						{
+							oper = parseInt(operValue, 10);
+						}
+						cell.Operation = oper;
 
-                    currentAttrRow.second.push(cell);
-                }
-                if (attrName.length > 0)
-                {                    
+						currentAttrRow.second.push(cell);
+					}              
                     retval.push(currentAttrRow);        
                 }        
             }
@@ -1602,9 +1604,14 @@ KnowledgeBase.prototype.GetTableRowFromXML = function(nodes, xmlDoc)
                         
                         currentAttrRow.second.push(cell);     
                     }
+<<<<<<< .mine
+                    retval.push(currentAttrRow);     
+				}
+=======
                 }
                 if (attrName.length > 0)
                     retval.push(currentAttrRow);         
+>>>>>>> .r61
             }
         }
     }
