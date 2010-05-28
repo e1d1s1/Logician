@@ -1,30 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <DecisionLogicProject connection="localhost:3000">
   <DataSet debug="0">
-    <DataSetName>testtable1.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="1">
-    <DataSetName>testtable2.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="0">
-    <DataSetName>testtable3.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="0">
-    <DataSetName>GlobalORs.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="0">
-    <DataSetName>Translations.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="0">
-    <DataSetName>Dictionary.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="0">
     <DataSetName>DictAttr1.xml</DataSetName>
     <RelativePath></RelativePath>
   </DataSet>
@@ -44,70 +20,94 @@
     <DataSetName>DictAttr5.xml</DataSetName>
     <RelativePath></RelativePath>
   </DataSet>
+  <DataSet debug="0">
+    <DataSetName>Dictionary.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>GlobalORs.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>Translations.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>testtable1.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="1">
+    <DataSetName>testtable2.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>testtable3.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
   <Compiler>
     <Javascript></Javascript>
     <Python>from math import *
 from xml import *</Python>
   </Compiler>
   <Tokens>
-    <Token id="34">0</Token>
-    <Token id="6">1</Token>
-    <Token id="10">2</Token>
-    <Token id="12">4</Token>
-    <Token id="13">5</Token>
-    <Token id="8">50,60</Token>
-    <Token id="9">70,80</Token>
-    <Token id="7">9</Token>
-    <Token id="48">@ResultByOption1</Token>
-    <Token id="57">@Selection2</Token>
-    <Token id="58">@Selection3</Token>
-    <Token id="3">A</Token>
-    <Token id="28">A Boolean Attribute</Token>
-    <Token id="29">A Multi-Select Attribute</Token>
-    <Token id="30">A Single Selection Attribute</Token>
-    <Token id="32">An Edit Attribute</Token>
-    <Token id="31">Another Single Selection</Token>
-    <Token id="35">BOOLEAN</Token>
-    <Token id="5">C</Token>
-    <Token id="41">DictAttr1</Token>
-    <Token id="42">DictAttr2</Token>
-    <Token id="39">DictAttr3</Token>
-    <Token id="40">DictAttr4</Token>
-    <Token id="43">DictAttr5</Token>
-    <Token id="38">EDIT</Token>
-    <Token id="36">MULTISELECT</Token>
-    <Token id="54">N</Token>
-    <Token id="44">Option1</Token>
-    <Token id="45">Option2</Token>
-    <Token id="46">Option3</Token>
-    <Token id="47">Option4</Token>
-    <Token id="49">Result2</Token>
-    <Token id="50">Result3</Token>
-    <Token id="51">ResultByOption1</Token>
-    <Token id="37">SINGLESELECT</Token>
-    <Token id="56">Selection1</Token>
-    <Token id="59">Selection2</Token>
-    <Token id="19">XPATH Worked</Token>
-    <Token id="55">Y</Token>
-    <Token id="53">YN</Token>
-    <Token id="52">YY</Token>
-    <Token id="4">Z</Token>
-    <Token id="60">[0,35]</Token>
-    <Token id="61">[10,50]</Token>
-    <Token id="23">aDictAttr3</Token>
-    <Token id="24">bDictAttr4</Token>
-    <Token id="25">cDictAttr1</Token>
-    <Token id="26">dDictAttr2</Token>
-    <Token id="27">eDictAttr5</Token>
-    <Token id="18">eval(testtable1, outputAttr1)</Token>
-    <Token id="11">get(outsideAttr1) with concat</Token>
-    <Token id="20">get(someAttr)</Token>
-    <Token id="21">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Token>
-    <Token id="22">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Token>
-    <Token id="15">js(get(outsideAttr1) + 2)</Token>
-    <Token id="14">py(get(outsideAttr1) + 2)</Token>
-    <Token id="17">some value of value</Token>
-    <Token id="16">this is a comment</Token>
-    <Token id="33">~</Token>
+    <Token id="32">0</Token>
+    <Token id="45">1</Token>
+    <Token id="49">2</Token>
+    <Token id="51">4</Token>
+    <Token id="52">5</Token>
+    <Token id="47">50,60</Token>
+    <Token id="48">70,80</Token>
+    <Token id="46">9</Token>
+    <Token id="7">@ResultByOption1</Token>
+    <Token id="16">@Selection2</Token>
+    <Token id="17">@Selection3</Token>
+    <Token id="42">A</Token>
+    <Token id="26">A Boolean Attribute</Token>
+    <Token id="27">A Multi-Select Attribute</Token>
+    <Token id="28">A Single Selection Attribute</Token>
+    <Token id="30">An Edit Attribute</Token>
+    <Token id="29">Another Single Selection</Token>
+    <Token id="33">BOOLEAN</Token>
+    <Token id="44">C</Token>
+    <Token id="39">DictAttr1</Token>
+    <Token id="40">DictAttr2</Token>
+    <Token id="37">DictAttr3</Token>
+    <Token id="38">DictAttr4</Token>
+    <Token id="41">DictAttr5</Token>
+    <Token id="36">EDIT</Token>
+    <Token id="34">MULTISELECT</Token>
+    <Token id="13">N</Token>
+    <Token id="3">Option1</Token>
+    <Token id="4">Option2</Token>
+    <Token id="5">Option3</Token>
+    <Token id="6">Option4</Token>
+    <Token id="8">Result2</Token>
+    <Token id="9">Result3</Token>
+    <Token id="10">ResultByOption1</Token>
+    <Token id="35">SINGLESELECT</Token>
+    <Token id="15">Selection1</Token>
+    <Token id="18">Selection2</Token>
+    <Token id="58">XPATH Worked</Token>
+    <Token id="14">Y</Token>
+    <Token id="12">YN</Token>
+    <Token id="11">YY</Token>
+    <Token id="43">Z</Token>
+    <Token id="19">[0,35]</Token>
+    <Token id="20">[10,50]</Token>
+    <Token id="21">aDictAttr3</Token>
+    <Token id="22">bDictAttr4</Token>
+    <Token id="23">cDictAttr1</Token>
+    <Token id="24">dDictAttr2</Token>
+    <Token id="25">eDictAttr5</Token>
+    <Token id="57">eval(testtable1, outputAttr1)</Token>
+    <Token id="50">get(outsideAttr1) with concat</Token>
+    <Token id="59">get(someAttr)</Token>
+    <Token id="60">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Token>
+    <Token id="61">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Token>
+    <Token id="54">js(get(outsideAttr1) + 2)</Token>
+    <Token id="53">py(get(outsideAttr1) + 2)</Token>
+    <Token id="56">some value of value</Token>
+    <Token id="55">this is a comment</Token>
+    <Token id="31">~</Token>
   </Tokens>
 </DecisionLogicProject>

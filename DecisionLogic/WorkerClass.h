@@ -69,6 +69,7 @@ public:
 	bool LoadTable(wstring name);
 	void NewTable(wstring name = L"");
 	void DeleteTable();
+	void RenameTable();
 	void NewGroup();
 	void DeleteGroup();
 	wstring CompileXML(wstring tempFilePath = L"");

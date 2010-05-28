@@ -969,6 +969,24 @@ vector<wstring> ProjectManager::GetProjectTableNames()
 	return retval;
 }
 
+bool ProjectManager::RenameDataSet(wstring oldName, wstring newName)
+{
+	bool retval = false;
+
+	wstring path, filename;
+    for (size_t rowIndex = 0; rowIndex < m_project_files->Rows(); rowIndex++)
+    {
+        if (m_project_files->GetItem(rowIndex, L"DataSetName") == oldName)
+        {
+			m_project_files->SetItem(rowIndex, L"DataSetName", newName);
+			retval = true;
+            break;
+        }
+    }
+
+	return retval;
+}
+
 bool ProjectManager::DeleteDataSet(wstring name)
 {
 	bool retval = false;
@@ -1202,14 +1220,22 @@ void ProjectManager::WriteAllDataSetsToXMLFile(wstring savePath)
 				//status, we will skip these rules
 				StringTable<wstring> status = ds.GetTableCopy(UTILS::ToWString(STATUS_TABLE));
 
-				for (size_t ruleCnt = 0; ruleCnt < status.Columns(); ruleCnt++)
+				vector<size_t> indexesToRemove;
+				for (long ruleCnt = status.Columns() - 1; ruleCnt > 0 ; ruleCnt--)
 				{
 					if (status.GetItem(0, ruleCnt) == L"Disabled")
 					{
+						//indexesToRemove.push_back(ruleCnt + 1);		
 						inputs.RemoveColumn(ruleCnt + 1);
 						outputs.RemoveColumn(ruleCnt + 1);
 					}
 				}
+
+				//for (vector<size_t>::reverse_iterator itRemove = indexesToRemove.rbegin(); itRemove != indexesToRemove.rend(); itRemove++)
+				//{
+				//	inputs.RemoveColumn(*itRemove);
+				//	outputs.RemoveColumn(*itRemove);
+				//}
 
 				WriteXMLForTable(tableDataNode, &inputs, INPUT_TABLE, true);
 				WriteXMLForTable(tableDataNode, &outputs, OUTPUT_TABLE, true);

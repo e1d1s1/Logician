@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
   <Table name="Dictionary" getall="true">
+    <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
     <Outputs>
       <Attr>Name</Attr>
       <Value operation="1">aDictAttr3</Value>

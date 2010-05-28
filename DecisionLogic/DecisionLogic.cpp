@@ -46,19 +46,20 @@ const int DEFAULT_ORIENTATION = wxVERTICAL;
 // simple menu events like this the static method is much simpler.
 BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
 	//MENUS/////////////////////////////////////////////////////////////////////////
-    EVT_MENU(DecisionLogic_Quit,  DecisionLogicFrame::OnQuit)
-	EVT_MENU(DecisionLogic_NewProject,  DecisionLogicFrame::OnNewProject)
-	EVT_MENU(DecisionLogic_OpenProject,  DecisionLogicFrame::OnOpenProject)
-	EVT_MENU(DecisionLogic_SaveProject,  DecisionLogicFrame::OnSaveProject)
+    EVT_MENU(DecisionLogic_Quit, DecisionLogicFrame::OnQuit)
+	EVT_MENU(DecisionLogic_NewProject, DecisionLogicFrame::OnNewProject)
+	EVT_MENU(DecisionLogic_OpenProject, DecisionLogicFrame::OnOpenProject)
+	EVT_MENU(DecisionLogic_SaveProject, DecisionLogicFrame::OnSaveProject)
 	EVT_MENU(DecisionLogic_Undo, DecisionLogicFrame::OnUndo)
 	EVT_MENU(DecisionLogic_Redo, DecisionLogicFrame::OnRedo)
-	EVT_MENU(DecisionLogic_Quit,  DecisionLogicFrame::OnQuit)
-	EVT_MENU(DecisionLogic_Cut,  DecisionLogicFrame::OnCut)
-	EVT_MENU(DecisionLogic_Copy,  DecisionLogicFrame::OnCopy)
-	EVT_MENU(DecisionLogic_Paste,  DecisionLogicFrame::OnPaste)
-	EVT_MENU(DecisionLogic_Find,  DecisionLogicFrame::ShowFindReplaceDialog)
-	EVT_MENU(DecisionLogic_NewTable,  DecisionLogicFrame::OnNewTable)
-	EVT_MENU(DecisionLogic_DeleteTable,  DecisionLogicFrame::OnDeleteTable)
+	EVT_MENU(DecisionLogic_Quit, DecisionLogicFrame::OnQuit)
+	EVT_MENU(DecisionLogic_Cut, DecisionLogicFrame::OnCut)
+	EVT_MENU(DecisionLogic_Copy, DecisionLogicFrame::OnCopy)
+	EVT_MENU(DecisionLogic_Paste, DecisionLogicFrame::OnPaste)
+	EVT_MENU(DecisionLogic_Find, DecisionLogicFrame::ShowFindReplaceDialog)
+	EVT_MENU(DecisionLogic_NewTable, DecisionLogicFrame::OnNewTable)
+	EVT_MENU(DecisionLogic_DeleteTable, DecisionLogicFrame::OnDeleteTable)
+	EVT_MENU(DecisionLogic_RenameTable, DecisionLogicFrame::OnRenameTable)
 	EVT_MENU(DecisionLogic_NewGroup,  DecisionLogicFrame::OnNewGroup)
 	EVT_MENU(DecisionLogic_DeleteGroup, DecisionLogicFrame::OnDeleteGroup)
 	EVT_MENU(DecisionLogic_OrientationHorizontal, DecisionLogicFrame::OnOrientationChange)
@@ -114,6 +115,7 @@ END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(MDIChild, wxMDIChildFrame)
 	EVT_CLOSE(MDIChild::OnChildClose)
+	EVT_ACTIVATE(MDIChild::OnActivate)
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(LogicGrid, wxGrid)
@@ -218,6 +220,7 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 
 	tableMenu = new wxMenu();
 	tableMenu->Append(DecisionLogic_NewTable, _T("New &Table"), _T("Create a new logic table"));
+	tableMenu->Append(DecisionLogic_RenameTable, _T("&Rename Table"), _T("Rename current logic table"));
 	tableMenu->Append(DecisionLogic_DeleteTable, _T("&Delete Table"), _T("Delete logic table"));
 	tableMenu->Append(DecisionLogic_NewGroup, _T("New &Group"), _T("Create a new table group"));
 	tableMenu->Append(DecisionLogic_DeleteGroup, _T("D&elete Group"), _T("Delete a table group"));
@@ -250,6 +253,7 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	tableMenu->AppendSeparator();
 	tableMenu->Append(EDIT_CODE, _T("Edit &Code"));
 	tableMenu->Enable(DecisionLogic_NewTable, false);
+	tableMenu->Enable(DecisionLogic_RenameTable, false);
 	tableMenu->Enable(DecisionLogic_DeleteTable, false);
 	tableMenu->Enable(DecisionLogic_NewGroup, false);
 	tableMenu->Enable(DecisionLogic_DeleteGroup, false);
@@ -410,6 +414,11 @@ void DecisionLogicFrame::OnDeleteTable(wxCommandEvent& WXUNUSED(event))
 	m_worker->DeleteTable();
 }
 
+void DecisionLogicFrame::OnRenameTable(wxCommandEvent& WXUNUSED(event))
+{
+	m_worker->RenameTable();
+}
+
 void DecisionLogicFrame::OnNewGroup(wxCommandEvent& WXUNUSED(event))
 {
 	m_worker->NewGroup();
@@ -544,6 +553,7 @@ void DecisionLogicFrame::EnableAllMenus()
 	compilerMenu->Enable(DecisionLogic_CompileCompressed, true);
 	tableMenu->Enable(DecisionLogic_NewTable, true);
 	tableMenu->Enable(DecisionLogic_DeleteTable, true);
+	tableMenu->Enable(DecisionLogic_RenameTable, true);
 	tableMenu->Enable(DecisionLogic_NewGroup, true);
 	tableMenu->Enable(DecisionLogic_DeleteGroup, true);
 }

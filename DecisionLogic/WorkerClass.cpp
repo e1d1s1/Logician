@@ -389,6 +389,86 @@ bool WorkerClass::LoadTable(wstring name)
 	return retval;
 }
 
+void WorkerClass::RenameTable()
+{	
+	wstring existingName;
+	//get the existing table name from the active child
+	wxMDIChildFrame *active = m_parentFrame->GetActiveChild();
+	if (!active)
+		return;
+
+	OpenLogicTable opened;
+	for (vector<OpenLogicTable>::iterator it = m_opened_windows.begin(); it != m_opened_windows.end(); it++)
+	{
+		opened = *it;
+		if (opened.child_window_ptr == (void**)active)
+		{
+			existingName = opened.logic_table.Name;
+			break;
+		}
+	}
+
+	if (!opened.child_window_ptr)
+		return;
+
+	bool bSystemTable = false;
+	wstring newName = wxGetTextFromUser(_T("Rename Table:"), _T("Rename Table"));
+	if (newName == GLOBALORS_TABLE_NAME || newName == TRANSLATIONS_TABLE_NAME)
+	{
+		wxMessageBox(L"This name is a reserved system table, please try again");
+		return;
+	}
+
+	if (newName.length() > 0 && existingName.length() > 0) 
+	{		
+		//now add the table as a new item
+		vector<wstring> existing_names = m_pm.GetProjectTableNames();			
+		vector<wstring>::iterator itFind = find(existing_names.begin(), existing_names.end(), newName);
+		if (itFind == existing_names.end())
+		{
+			opened.logic_table.Name = newName;
+			wstring oldPath = opened.logic_table.Path;
+			opened.logic_table.Path = opened.logic_table.Path.replace(opened.logic_table.Path.find(existingName), existingName.length(), newName);
+			wstring path = opened.logic_table.Path;
+			if (m_pm.RenameDataSet(existingName + L".xml", newName + L".xml"))
+			{
+				DeleteTreeNode(existingName);
+				active->Close();
+			
+				existing_names.push_back(newName);
+				sort(existing_names.begin(), existing_names.end());
+
+				size_t pos = find(existing_names.begin(), existing_names.end(), newName) - existing_names.begin();					
+				wxTreeItemId locItem;					
+				if (existing_names.size() > 1)
+				{
+					if (pos > 0)
+					{
+						wstring preValue = existing_names[pos - 1];
+						locItem = FindItemNamed(wxtid_active_group, preValue);
+					}
+				}
+				wxTreeItemId newItem = AddTreeNode(wxtid_active_group, locItem, newName);
+				m_tree->SelectItem(newItem);	
+
+				//rename the file on disk
+				#ifdef WIN32
+				_wrename(oldPath.c_str(), path.c_str());
+				#else
+				rename(UTILS::WStrToMBCStr(oldPath).c_str(), UTILS::WStrToMBCStr(path).c_str());
+				#endif
+
+				LoadTable(newName);					
+				Save();
+			}
+		}
+		else
+		{
+			wxMessageBox(L"This table name already exists.");
+		}		
+	}
+}
+
 void WorkerClass::NewTable(wstring name)
 {
 	try
