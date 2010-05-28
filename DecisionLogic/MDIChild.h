@@ -59,6 +59,7 @@ const wstring _RULESTATUS_NAME = L"RuleStatus";
 const long PINK = 12173055;
 const long LIGHTPINK = 15264511;
 const long LIGHTGREEN = 12779440;
+const long DARKGREEN = 4227072;
 const long VERYLIGHTGREEN = 15204319;
 const long LIGHTBLUE = 16766906;
 const long LIGHTYELLOW = 11337470;
@@ -115,6 +116,7 @@ public:
 	{
 		bool formatIO = false;
 		bool formatAttr = false;
+		bool formatDisabled = false;
 
 		this->SetReadOnly(row, col, false);
 
@@ -137,6 +139,11 @@ public:
 						return;
 					}
 				}
+				else if (col > 1)
+				{
+					if (this->GetCellValue(0, col) == L"Disabled")
+						formatDisabled = true;
+				}
 			}
 			else
 			{
@@ -155,9 +162,61 @@ public:
 						return;
 					}
 				}
+				else if (row > 1)
+				{
+					if (this->GetCellValue(row, 0) == L"Disabled")
+						formatDisabled = true;
+				}
 			}
 
-			if (formatIO)
+			//default text color, style
+			wxFont cellFont = this->GetDefaultCellFont();
+			cellFont.SetWeight(wxNORMAL);
+			this->SetCellTextColour(row, col, wxColour(_T("BLACK")));
+
+			if (!formatDisabled)
+			{
+				if (m_orientation == wxHORIZONTAL && row == 0)
+				{
+					//default the whole col
+					for (int j = 1; j < this->GetNumberRows(); j++)
+					{
+						this->SetCellTextColour(j, col, wxColour(_T("BLACK")));
+					}
+				}
+				else if (m_orientation == wxVERTICAL && col == 0)
+				{
+					//default the whole row
+					for (int i = 1; i < this->GetNumberCols(); i++)
+					{
+						this->SetCellTextColour(row, i, wxColour(_T("BLACK")));
+					}
+				}
+			}
+						
+			if (formatDisabled)
+			{				
+				this->SetCellTextColour(row, col, wxColour(DARKGREEN));
+				if (m_orientation == wxHORIZONTAL && row == 0)
+				{
+					cellFont.SetWeight(wxBOLD);
+					//do the whole col
+					for (int j = 1; j < this->GetNumberRows(); j++)
+					{
+						this->SetCellTextColour(j, col, wxColour(DARKGREEN));
+					}
+				}
+				else if (m_orientation == wxVERTICAL && col == 0)
+				{
+					cellFont.SetWeight(wxBOLD);
+					//do the whole row
+					for (int i = 1; i < this->GetNumberCols(); i++)
+					{
+						this->SetCellTextColour(row, i, wxColour(DARKGREEN));
+					}
+				}
+			}
+			else if (formatIO)
 			{
 				wstring value = this->GetCellValue(row, col).wc_str();
 				if (value == INPUT_COL)
@@ -200,21 +259,16 @@ public:
 			}
 			else
 			{
-				//check for or
-				wxFont cellFont = this->GetDefaultCellFont();
+				//check for or				
 				wstring value = this->GetCellValue(row, col);
 				if (m_ors != NULL && m_ors->size() > 0 && m_ors->find(value) != m_ors->end())
 				{					
 					cellFont.SetWeight(wxBOLD);
 					this->SetCellTextColour(row, col, wxColour(DARKRED));
-				}
-				else
-				{
-					cellFont.SetWeight(wxNORMAL);
-					this->SetCellTextColour(row, col, wxColour(_T("BLACK")));
-				}
-				this->SetCellFont(row, col, cellFont);
+				}				
 			}
+
+			this->SetCellFont(row, col, cellFont);
 		}
 		else
 		{
@@ -441,7 +495,7 @@ public:
 			}
 
 			for (size_t ruleCnt = 0; ruleCnt < statustable->Columns(); ruleCnt++)
-			{
+			{				
 				wstring status = statustable->GetItem(0, ruleCnt);
 				if (m_orientation == wxVERTICAL)
 				{
@@ -466,8 +520,7 @@ public:
 					this->SetColMinimalWidth(i, 100);				
 			}
 			else
-			{
-				
+			{				
 				this->SetRowLabelValue(0, _T("1"));
 				this->SetColLabelValue(0, label);
 				this->SetColMinimalWidth(0, 100);
@@ -477,6 +530,16 @@ public:
 		this->SetColLabelSize(wxGRID_AUTOSIZE);
 		this->SetRowLabelSize(wxGRID_AUTOSIZE);
 		this->AutoSizeColumns(false);
+
+		if (m_type == RULES_TABLE)
+		{
+			for (int i = 1; i < this->GetNumberCols(); i++)
+			{
+				//if the autosize made the col real skinny, bump it up some
+				if (this->GetColWidth(i) < 50)
+					this->SetColSize(i, 50);
+			}
+		}
 
 		for (int j = 0; j < this->GetNumberRows(); j++)
 		{
@@ -1113,11 +1176,11 @@ private:
 			for (int j = min_j; j <= m_sel_range.GetBottom(); j++)
 			{
 				wstring rowText;
-				if (retval.length() > 0)
+				if (j - min_j > 0)
 					retval += L"\n";
 				for (int i = min_i; i <= m_sel_range.GetRight(); i++)
 				{
-					if (rowText.length() > 0)
+					if (i - min_i > 0)
 						rowText += L"\t";
 					rowText += this->GetCellValue(j, i);
 				}

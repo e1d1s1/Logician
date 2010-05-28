@@ -53,6 +53,7 @@ public:
 	bool SaveDataSet(wstring name, wstring path, DataSet<wstring>* ds, bool GetAll);
 	DataSet<wstring> LoadDataSet(wstring name);
 	bool DeleteDataSet(wstring name);
+	bool RenameDataSet(wstring oldName, wstring newName);
 	wstring GetProjectWorkingPath() {return m_project_working_path;}
 	void WriteAllDataSetsToXMLFile(wstring savePath);
 	StringTable<wstring>* GetProjectTable() {return m_project_files;}

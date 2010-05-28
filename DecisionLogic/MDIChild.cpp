@@ -53,10 +53,12 @@ MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), vo
 	m_opened_window_tracker->push_back(table);
 	m_ChildClosedCallback = ChildCloseCallback;
 	m_OpenTableCallback = ChildOpenTableCallback;
-
-	sizer = new wxBoxSizer(wxHORIZONTAL);
-	pt2Object = (void*)this;
+	m_table = NULL;
 	m_table = new LogicGrid(this, m_orientation, -1, type, SignalTableChanged, m_OpenTableCallback, &pm->GlobalORs, wxDefaultPosition, wxDefaultSize);
+	if (!m_table)
+		throw exception("Could not create LogicGrid object");
+
+	sizer = new wxBoxSizer(wxHORIZONTAL);	
 	sizer->Add(m_table, wxEXPAND);
 
 	DisplayTableData(logic);
@@ -72,8 +74,11 @@ MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), vo
 	}
 	else
 		this->Maximize(true);
+
+	pt2Object = (void*)this;
 }
-		  MDIChild::~MDIChild(void)
+		  
+MDIChild::~MDIChild(void)
 {
 }
 
@@ -375,7 +380,11 @@ vector<size_t> MDIChild::GetDisabledRules()
 	return retval;
 }
 
-void MDIChild::OnActivate(wxActivateEvent& event) {}
+void MDIChild::OnActivate(wxActivateEvent& event) 
+{
+	pt2Object = (void*)this;
+}
+
 void MDIChild::OnChildClose(wxCloseEvent& event)
 {
 	vector<OpenLogicTable>::iterator it;
