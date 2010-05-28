@@ -647,7 +647,6 @@ function RuleTable()
         this.bHasChain = false;
         this.bHasJS = false; //eval(.....
         this.bNullSet = false;
-        this.m_Debugging = false;
     }
     catch (err)
     {
@@ -1079,6 +1078,7 @@ RuleTable.prototype.DebugEval = function(outputAttr, inputValues, solutions)
 	    xmlBlob+= "</TableEval>";
 
 	    this.DebugMessage = xmlBlob;
+	    this.DebugMessage  += "\n\n";
     }
     catch (err)
     {
@@ -1604,14 +1604,8 @@ KnowledgeBase.prototype.GetTableRowFromXML = function(nodes, xmlDoc)
                         
                         currentAttrRow.second.push(cell);     
                     }
-<<<<<<< .mine
                     retval.push(currentAttrRow);     
 				}
-=======
-                }
-                if (attrName.length > 0)
-                    retval.push(currentAttrRow);         
->>>>>>> .r61
             }
         }
     }
