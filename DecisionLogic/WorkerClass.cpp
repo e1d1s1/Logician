@@ -3,8 +3,8 @@
 // Purpose:     Application event handling
 // Author:      Eric D. Schmidt
 // Modified by:
-// Created:     07/01/2009
-// Copyright:   (c) 2009 Eric D. Schmidt
+// Created:     07/01/2010
+// Copyright:   (c) 2010 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -24,21 +24,10 @@
 #include "stdafx.h"
 #include <algorithm>
 #include <string>
-#include <stack>
 #include <zlib.h>
-#include <libxml/tree.h>
-#include <libxml/parser.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
 
 #include "WorkerClass.h"
 #include "utilities.h"
-
-#ifdef POSIX
-const wchar_t PATHSEP = L'/';
-#else
-const wchar_t PATHSEP = L'\\';
-#endif
 
 const wstring INPUT_TABLE = L"Inputs";
 const wstring OUTPUT_TABLE = L"Outputs";
@@ -53,39 +42,38 @@ enum
 };
 
 void* pt2WorkerObject;
-void SignalTableClosed()
+void SignalTableClosed(wstring tableName)
 {
 	WorkerClass *mySelf = (WorkerClass*)pt2WorkerObject;
-	mySelf->ChildWindowHasClosed();
+	mySelf->ChildWindowHasClosed(tableName);
 }
 
-void OpenTableCallback(wstring tableName)
+bool OpenTableCallback(wstring tableName)
 {
 	WorkerClass *mySelf = (WorkerClass*)pt2WorkerObject;
-	mySelf->LoadTable(tableName);
+	return mySelf->LoadTable(tableName);
 }
 
-WorkerClass::WorkerClass(wxMDIParentFrame *parentFrame, wxTreeCtrl *tree, wxTextCtrl *log, int orient)
+bool SaveTableCallback(OpenLogicTable *table)
 {
-	m_tree = tree;
-	m_parentFrame = parentFrame;
+	WorkerClass *mySelf = (WorkerClass*)pt2WorkerObject;
+	return mySelf->Save(table);
+}
+
+WorkerClass::WorkerClass(GUIClass *gui, int orient)
+{
+	m_gui = gui;
 	m_orientation = orient;
-	m_log = log;
-	m_debug_status = false;
-	m_server = NULL;
-	config = new wxConfig(_T("DecisionLogic"));
-	m_MaxRecentFiles = 5;
-	wxtid_active_group = m_tree->GetRootItem();
+	m_debug_status = false;	
+	m_MaxRecentFiles = 5;	
 	pt2WorkerObject = (void*)this;
 
-	bIsSaved = false;
+	bIsSaved = true;
 }
 
 WorkerClass::~WorkerClass(void)
 {
-	SaveApplicationSettings();
-	if (config) delete config;
-	if (m_server) delete m_server;
+	SaveApplicationSettings();	
 }
 
 bool WorkerClass::CheckSave()
@@ -93,9 +81,7 @@ bool WorkerClass::CheckSave()
 	bool retval = false;
 	try
 	{
-		wxMessageDialog saveNow(m_parentFrame, _T("Do you want to save your current changes?"),
-				_T("Save Changes"), wxYES_NO);
-		int res = saveNow.ShowModal();
+		int res = m_gui->PromptQuestion(L"Do you want to save your current changes?", L"Save Changes");
 		if (res == wxID_YES)
 		{
 			retval = Save();
@@ -108,34 +94,34 @@ bool WorkerClass::CheckSave()
 	return retval;
 }
 
+wstring WorkerClass::GetProjectName()
+{
+	if (m_pm.GetProjectFilePath().length() > 0)
+		return m_pm.GetProjectName();
+}
+
 bool WorkerClass::NewProject()
 {
 	bool retval = false;
 	try
 	{
-		wstring savePath;
-		wxFileDialog saveFileDialog (
-						m_parentFrame,
-						_T("Save new project file"),
-						wxEmptyString,
-						wxEmptyString,
-						_T("Decision Logic Project files (*.dlp)|*.dlp"),
-						wxSAVE
-					 );
+		if (m_gui->GetOpenWindows()->size() > 0 || bIsSaved == false)
+			CheckSave();
+		m_gui->CloseAllWindows();
 
-		saveFileDialog.CentreOnParent();
-
-		if (saveFileDialog.ShowModal() == wxID_OK)
+		wstring savePath = m_gui->SaveDialog("dlp");		
+		if (savePath.length() > 0)
 		{
 			SaveApplicationSettings();
 			m_pm.Reset();
-			savePath = saveFileDialog.GetPath();
-			if (savePath.length() > 0)
-			{
-				m_pm.SaveNewProjectFileAs(savePath);
-				retval = true;
-			}
-		}
+			m_pm.SaveNewProjectFileAs(savePath);
+			retval = true;
+			bIsSaved = true;
+			m_gui->AddAllProjectNodes(m_pm.GetProjectTable());
+			GetSettings();
+			SaveApplicationSettings();
+		}			
+		
 	}
 	catch(...)
 	{
@@ -149,34 +135,14 @@ bool WorkerClass::OpenProject(wstring fileName)
 	bool retval = false;
 	try
 	{
-		if (m_opened_windows.size() > 0)
+		if (m_gui->GetOpenWindows()->size() > 0 || bIsSaved == false)
 			CheckSave();
-		for (int i = 0; i < m_opened_windows.size(); i++)
-		{
-			OpenLogicTable current_table = m_opened_windows[i];
-			MDIChild *childForm = (MDIChild*)current_table.child_window_ptr;
-			childForm->Close();
-		}
-		m_opened_windows.clear();
+		m_gui->CloseAllWindows();
 
 		wstring openPath;
 		if (fileName.length() == 0)
 		{
-			wxFileDialog openFileDialog (
-							m_parentFrame,
-							_T("Open an existing project file"),
-							wxEmptyString,
-							wxEmptyString,
-							_T("Decision Logic Project files (*.dlp)|*.dlp"),
-							wxOPEN
-						 );
-
-			openFileDialog.CentreOnParent();
-
-			if (openFileDialog.ShowModal() == wxID_OK)
-			{
-				openPath = openFileDialog.GetPath();
-			}
+			openPath = m_gui->OpenDialog();
 		}
 		else
 		{
@@ -187,7 +153,7 @@ bool WorkerClass::OpenProject(wstring fileName)
 		{
 			bIsSaved = true;
 			retval = true;
-			AddAllProjectNodes();
+			m_gui->AddAllProjectNodes(m_pm.GetProjectTable());
 			GetSettings();
 			SaveApplicationSettings();
 		}
@@ -205,11 +171,11 @@ void WorkerClass::GetSettings()
 	long l;
 
 	m_debugOptions.connection = m_pm.GetConnection();
-	config->Read(_T("DebugMode"), &l);
+	m_gui->GetConfig(L"DebugMode", &l);
 	m_debugOptions.debugMode = atoi(UTILS::stringify(l).c_str());
 	if (m_debugOptions.debugMode == m_debugOptions.SELECTED_TABLES)
 	{
-		config->Read(_T("HighlightDebug"), &l);
+		m_gui->GetConfig(L"HighlightDebug", &l);		
 		m_debugOptions.bOpenTable = (bool)l;
 	}
 	else
@@ -225,11 +191,11 @@ void WorkerClass::GetSettings()
 
 void WorkerClass::SaveApplicationSettings()
 {
-	wxString str;
+	wstring str;
 	if (m_pm.GetProjectFilePath().length() > 0)
 	{
 		//renently opened projects
-		config->Read(_T("RecentProjectList"), &str);
+		m_gui->GetConfig(L"RecentProjectList", &str);
 		vector<wstring> files = UTILS::Split((wstring)str, L";");
 		if (find(files.begin(), files.end(), m_pm.GetProjectFilePath()) == files.end())
 			files.insert(files.begin(), m_pm.GetProjectFilePath());
@@ -243,49 +209,50 @@ void WorkerClass::SaveApplicationSettings()
 			fileList += *it;
 			cnt--;
 		}
-		config->Write(_T("RecentProjectList"), fileList);
+		m_gui->WriteConfig(L"RecentProjectList", fileList);		
 
 		//remember debugging options
-		config->Write(_T("DebugMode"), UTILS::stringify((long)m_debugOptions.debugMode).c_str());
-		config->Write(_T("HighlightDebug"), UTILS::stringify((long)m_debugOptions.bOpenTable).c_str());
+		m_gui->WriteConfig(L"DebugMode", UTILS::stringify((long)m_debugOptions.debugMode).c_str());
+		m_gui->WriteConfig(L"HighlightDebug", UTILS::stringify((long)m_debugOptions.bOpenTable).c_str());
 		vector<wstring> tables = m_debugOptions.selectedTables;
 	}
 }
 
-void WorkerClass::EnableAllChildWindows(bool enable)
-{
-	for (vector<OpenLogicTable>::iterator it = m_opened_windows.begin(); it != m_opened_windows.end(); it++)
-	{
-		OpenLogicTable current_table = *it;
-		MDIChild *childForm = (MDIChild*)current_table.child_window_ptr;
-		childForm->Enable(enable);
-	}
-}
-
-bool WorkerClass::Save()
+bool WorkerClass::Save(OpenLogicTable *targetTable)
 {
 	try
 	{
 		bool bTablesSaved = true;
 
-		EnableAllChildWindows(false);
+		m_gui->EnableAllChildWindows(false);
 
-		for (vector<OpenLogicTable>::iterator it = m_opened_windows.begin(); it != m_opened_windows.end(); it++)
+		for (vector<OpenLogicTable>::iterator it = m_gui->GetOpenWindows()->begin(); it != m_gui->GetOpenWindows()->end(); it++)
 		{
-			OpenLogicTable current_table = *it;
+			OpenLogicTable current_table;
+			if (targetTable)
+				current_table = *targetTable;
+			else
+				current_table = *it;
+
 			MDIChild *childForm = (MDIChild*)current_table.child_window_ptr;
+
+			//update with any table changes
+			wstring oldPath = current_table.logic_table.Path;
 			current_table = childForm->Save();
+			current_table.logic_table.Path = oldPath;
 			if (current_table.logic_table.HasData())
 			{
 				if (current_table.logic_table.Path.length() == 0)
 				{
 					current_table.logic_table.Path = m_pm.GetProjectWorkingPath();
+					//append the subdir, if needed
+
 					if (current_table.logic_table.Name != GLOBALORS_TABLE_NAME &&
 						current_table.logic_table.Name != TRANSLATIONS_TABLE_NAME)
 					{
 						//set path according to its place in the tree, relative to working directory
 						current_table.logic_table.Path = current_table.logic_table.Path + PATHSEP +
-							GetTreeNodePath(m_tree, (wstring)m_tree->GetItemText(wxtid_active_group)) +
+							m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) +
 							current_table.logic_table.Name + L".xml";
 					}
 					else
@@ -298,18 +265,30 @@ bool WorkerClass::Save()
 				if (!m_pm.SaveDataSet(current_table.logic_table.Name, current_table.logic_table.Path, current_table.logic_table.GetDataSet(), current_table.logic_table.bGetAll))
 					bTablesSaved = false;
 			}
+			if (targetTable)
+				break;
 		}
-		bool bProjectSaved = m_pm.SaveProjectFile();
+		
+		if (!targetTable)
+		{
+			bool bProjectSaved = m_pm.SaveProjectFile();
 
-		if (bProjectSaved == true && bTablesSaved == true)
-			bIsSaved = true;
+			if (bProjectSaved == true && bTablesSaved == true)
+				bIsSaved = true;
 
-		EnableAllChildWindows(true);
+			m_gui->EnableAllChildWindows(true);
+		}
+		else
+		{
+			m_gui->EnableAllChildWindows(true);
+			return bTablesSaved;
+		}		
 	}
 	catch(...)
 	{
 		ReportError("WorkerClass::Save");
 	}
+
 	return bIsSaved;
 }
 
@@ -318,28 +297,15 @@ bool WorkerClass::LoadTable(wstring name)
 	bool retval = false;
 	try
 	{
+		if (name == L"Root")
+			return false;
 		//see if the tree node is already selected
-		wxTreeItemId sel_item = m_tree->GetSelection();
-		if (sel_item.IsOk() && m_tree->GetItemText(sel_item).c_str() != name)
-		{
-			m_tree->Unselect();
-			wxTreeItemId locItem = FindItemNamed(m_tree->GetRootItem(), name);
-			if (locItem.IsOk())
-				m_tree->SelectItem(locItem);
-		}
+		m_gui->SelectAnItem(name);
 
 		//see if the window is already open, if so activate it
-		for (vector<OpenLogicTable>::iterator it = m_opened_windows.begin(); it != m_opened_windows.end(); it++)
-		{
-			OpenLogicTable opened = *it;
-			if (opened.logic_table.Name == name)
-			{
-				MDIChild *childForm = (MDIChild*)opened.child_window_ptr;
-				childForm->Activate();
-				retval = true;
-				return retval;
-			}
-		}
+		if (m_gui->BringWindowToFront(name))
+			return true;
+
 		int table_type = RULES_TABLE;
 		if (name == GLOBALORS_TABLE_NAME)
 			table_type = GLOBAL_ORS_TABLE;
@@ -352,12 +318,12 @@ bool WorkerClass::LoadTable(wstring name)
 			DataSet<wstring> ds = m_pm.LoadDataSet(name);
 			if (ds.TableCount() == 3)
 			{
-				path += PATHSEP + GetTreeNodePath(m_tree, (wstring)m_tree->GetItemText(wxtid_active_group)) + name + L".xml";
+				path += PATHSEP + m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
 
 				LogicTable table;
 				table.LoadDataSet(ds, name, path);
 				table.bGetAll = m_pm.TableIsGetAll(name);
-				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, OpenTableCallback, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
+				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
 				childForm->Show();
 				retval = true;
 			}
@@ -370,7 +336,7 @@ bool WorkerClass::LoadTable(wstring name)
 				DataSet<wstring> ds = m_pm.LoadDataSet(name);
 				LogicTable table;
 				table.LoadDataSet(ds, name, path);
-				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, OpenTableCallback, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
+				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
 				childForm->Show();
 				retval = true;
 			}
@@ -389,33 +355,50 @@ bool WorkerClass::LoadTable(wstring name)
 	return retval;
 }
 
-void WorkerClass::RenameTable()
-{	
-	wstring existingName;
-	//get the existing table name from the active child
-	wxMDIChildFrame *active = m_parentFrame->GetActiveChild();
-	if (!active)
-		return;
-
-	OpenLogicTable opened;
-	for (vector<OpenLogicTable>::iterator it = m_opened_windows.begin(); it != m_opened_windows.end(); it++)
+void WorkerClass::MoveTable(wstring table, wstring oldLoc, wstring newLoc)
+{
+	try
 	{
-		opened = *it;
-		if (opened.child_window_ptr == (void**)active)
-		{
+
+	}
+	catch(...)
+	{
+		ReportError("WorkerClass::MoveTable");
+	}
+}
+
+void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
+{	
+	wstring existingName, newName;
+	OpenLogicTable opened;
+
+	if (oldTableName.length() == 0 && newTableName.length() == 0)
+	{
+		opened = m_gui->GetActiveChild();
+
+		if (!opened.child_window_ptr)
+			return;
+		else
 			existingName = opened.logic_table.Name;
-			break;
-		}
+
+		newName = wxGetTextFromUser(_T("Rename Table:"), _T("Rename Table"));
+	}
+	else
+	{
+		existingName = oldTableName;
+		newName = newTableName;
 	}
 
-	if (!opened.child_window_ptr)
+	if (!ValidateFolderName(newName))
+	{
+		m_gui->PromptMessage(L"Invalid file name.");
 		return;
+	}
 
-	bool bSystemTable = false;
-	wstring newName = wxGetTextFromUser(_T("Rename Table:"), _T("Rename Table"));
+	bool bSystemTable = false;	
 	if (newName == GLOBALORS_TABLE_NAME || newName == TRANSLATIONS_TABLE_NAME)
 	{
-		wxMessageBox(L"This name is a reserved system table, please try again");
+		m_gui->PromptMessage(L"This name is a reserved system table, please try again");
 		return;
 	}
 
@@ -426,30 +409,35 @@ void WorkerClass::RenameTable()
 		vector<wstring>::iterator itFind = find(existing_names.begin(), existing_names.end(), newName);
 		if (itFind == existing_names.end())
 		{
-			opened.logic_table.Name = newName;
-			wstring oldPath = opened.logic_table.Path;
-			opened.logic_table.Path = opened.logic_table.Path.replace(opened.logic_table.Path.find(existingName), existingName.length(), newName);
-			wstring path = opened.logic_table.Path;
-			if (m_pm.RenameDataSet(existingName + L".xml", newName + L".xml"))
+			wstring path, oldPath;
+			if (opened.child_window_ptr)
 			{
-				DeleteTreeNode(existingName);
-				active->Close();
-			
+				opened.logic_table.Name = newName;
+				oldPath = opened.logic_table.Path;
+				opened.logic_table.Path = opened.logic_table.Path.replace(opened.logic_table.Path.find(existingName), existingName.length(), newName);
+				path = opened.logic_table.Path;
+			}
+			else
+			{
+				path = m_pm.GetProjectWorkingPath();
+				wstring folder = m_gui->GetTreeNodePath(existingName);
+				if (folder.length() > 0)
+				{
+					path += PATHSEP + folder;
+					oldPath = path;
+				}
+				oldPath += PATHSEP + existingName + L".xml";
+				path += PATHSEP + newName + L".xml";
+			}
+			if (m_pm.RenameDataSet(existingName + L".xml", newName + L".xml"))
+			{							
+				existing_names.erase(find(existing_names.begin(), existing_names.end(), existingName));				
 				existing_names.push_back(newName);
 				sort(existing_names.begin(), existing_names.end());
 
-				size_t pos = find(existing_names.begin(), existing_names.end(), newName) - existing_names.begin();					
-				wxTreeItemId locItem;					
-				if (existing_names.size() > 1)
-				{
-					if (pos > 0)
-					{
-						wstring preValue = existing_names[pos - 1];
-						locItem = FindItemNamed(wxtid_active_group, preValue);
-					}
-				}
-				wxTreeItemId newItem = AddTreeNode(wxtid_active_group, locItem, newName);
-				m_tree->SelectItem(newItem);	
+				m_gui->CloseWindow(existingName);
+				m_gui->AddTreeNodeToActiveGroup(existingName, newName);				
+				m_gui->DeleteTreeNode(existingName);
 
 				//rename the file on disk
 				#ifdef WIN32
@@ -458,13 +446,14 @@ void WorkerClass::RenameTable()
 				rename(UTILS::WStrToMBCStr(oldPath).c_str(), UTILS::WStrToMBCStr(path).c_str());
 				#endif
 
-				LoadTable(newName);					
+				if (opened.child_window_ptr)
+					LoadTable(newName);					
 				Save();
 			}
 		}
 		else
 		{
-			wxMessageBox(L"This table name already exists.");
+			m_gui->PromptMessage(L"This table name already exists.");
 		}		
 	}
 }
@@ -473,11 +462,11 @@ void WorkerClass::NewTable(wstring name)
 {
 	try
 	{
-		if (!bIsSaved && m_tree->GetCount() > 1)
+		if (!bIsSaved && m_gui->GetNodeCount() > 1)
 		{
 			if (!CheckSave())
 			{
-				wxMessageBox(L"You must save any existing changes before creating a new table.");
+				m_gui->PromptMessage(L"You must save any existing changes before creating a new table.");
 				return;
 			}
 		}
@@ -490,10 +479,15 @@ void WorkerClass::NewTable(wstring name)
 		{
 			if (bUserEnteredName)
 			{
-				wxMessageBox(L"This name is a reserved system table, please try again");
+				m_gui->PromptMessage(L"This name is a reserved system table, please try again");
 				return;
 			}
 			bSystemTable = true;
+		}
+		if (!ValidateFolderName(name))
+		{
+			m_gui->PromptMessage(L"Invalid file name.");
+			return;
 		}
 
 		if (name.length() > 0)
@@ -510,17 +504,15 @@ void WorkerClass::NewTable(wstring name)
 				{
 					size_t pos = find(existing_names.begin(), existing_names.end(), name) - existing_names.begin();
 					
-					wxTreeItemId locItem;					
+					wstring preValue;
 					if (existing_names.size() > 1)
 					{
 						if (pos > 0)
 						{
 							wstring preValue = existing_names[pos - 1];
-							locItem = FindItemNamed(wxtid_active_group, preValue);
 						}
 					}
-					wxTreeItemId newItem = AddTreeNode(wxtid_active_group, locItem, name);
-					m_tree->SelectItem(newItem);
+					m_gui->AddTreeNodeToActiveGroup(preValue, name);
 				}
 
 				int table_type = RULES_TABLE;
@@ -529,13 +521,13 @@ void WorkerClass::NewTable(wstring name)
 				else if (name == TRANSLATIONS_TABLE_NAME)
 					table_type = TRANSLATIONS_TABLE;
 
-				MDIChild *childForm = new MDIChild(m_parentFrame, SignalTableClosed, OpenTableCallback, m_orientation, table_type, &m_opened_windows, table, &m_pm, name);
+				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
 				childForm->Show();
 				bIsSaved = false;
 			}
 			else
 			{
-				wxMessageBox(L"This table name already exists.");
+				m_gui->PromptMessage(L"This table name already exists.");
 			}
 		}
 	}
@@ -555,7 +547,7 @@ void WorkerClass::GenerateTranslations()
 
 		//load the table
 		LoadTable(TRANSLATIONS_TABLE_NAME);
-		MDIChild *childForm = (MDIChild*)m_parentFrame->GetActiveChild();
+		MDIChild *childForm = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 		childForm->RepopulateTranslationsTable(strings);
 	}
 	catch(...)
@@ -564,39 +556,58 @@ void WorkerClass::GenerateTranslations()
 	}
 }
 
-void WorkerClass::DeleteTable()
+void WorkerClass::DeleteTable(wstring nameDelete)
 {
 	try
 	{
-		//get the active child
-		wxMDIChildFrame *active = m_parentFrame->GetActiveChild();
-
-		for (vector<OpenLogicTable>::iterator it = m_opened_windows.begin(); it != m_opened_windows.end(); it++)
+		wstring nameToDelete;
+		wstring path = m_pm.GetProjectWorkingPath();
+		OpenLogicTable opened;
+		
+		if (nameDelete.length() > 0)
 		{
-			OpenLogicTable opened = *it;
-			if (opened.child_window_ptr == (void**)active)
+			nameToDelete = nameDelete;
+			wstring folder = m_gui->GetTreeNodePath(nameDelete);
+			if (folder.length() > 0)
+				path += PATHSEP + folder;
+			path += PATHSEP + nameToDelete + L".xml";
+		}
+		else
+		{
+			//get the active child
+			opened = m_gui->GetActiveChild();
+
+			if (!opened.child_window_ptr)
+				return;
+			else
+				nameToDelete = opened.logic_table.Name;
+		}
+
+		if (nameToDelete.length() > 0 && path.length() > 0)
+		{
+			wstring question = L"Do you wnat to delete the " + nameToDelete + L" table";
+			int ans = m_gui->PromptQuestion(question, L"Remove Table?");
+
+			if (ans == ID_YES && m_pm.DeleteDataSet(nameToDelete + L".xml"))
 			{
-				wstring name = opened.logic_table.Name;
-				wstring path = opened.logic_table.Path;
-				if (m_pm.DeleteDataSet(name + L".xml"))
+				m_gui->DeleteTreeNode(nameToDelete);
+				if (opened.child_window_ptr)
+					m_gui->CloseWindow(nameToDelete);
+
+				ans = m_gui->PromptQuestion(L"Table removed from project.\nDo you wnat to delete the file as well?", L"Remove File?");
+				if (ans == ID_YES)
 				{
-					DeleteTreeNode(name);
-					active->Close();
-					int ans = wxMessageBox(_T("Table removed from project.\nDo you wnat to delete the file as well?"), _T("Remove File?"), wxYES_NO );
-					if (ans == wxYES)
-					{
-					    #ifdef WIN32
-						_wremove(path.c_str());
-						#else
-						remove(UTILS::WStrToMBCStr(path).c_str());
-						#endif
-						//if file is gone, force a save of the project
-						Save();
-					}
+				    #ifdef WIN32
+					_wremove(path.c_str());
+					#else
+					remove(UTILS::WStrToMBCStr(path).c_str());
+					#endif
+					//if file is gone, force a save of the project
+					Save();
 				}
-				break;
 			}
 		}
+		
 	}
 	catch(...)
 	{
@@ -613,14 +624,15 @@ void WorkerClass::NewGroup()
 			CheckSave();
 		}
 
-		wstring name = wxGetTextFromUser(_T("Enter new group name:"), _T("Group Name")).wc_str();
-		if (name.length() > 0)
+		wstring name = m_gui->PromptUserForText(L"Enter new group name:", L"Group Name");
+		if (name.length() > 0 && ValidateFolderName(name))
 		{
-			AddTreeNode(wxtid_active_group, NULL, name);
-			wxTreeItemId id = FindItemNamed(m_tree->GetRootItem(), name);
-			m_tree->SelectItem(id, true);
-			wxtid_active_group = m_tree->GetSelection();
+			m_gui->AddTreeNodeToActiveGroup(NULL, name, "Group");			
+			Save();
 		}
+		else
+			m_gui->PromptMessage(L"Invalid file name");
+				
 	}
 	catch(...)
 	{
@@ -628,28 +640,100 @@ void WorkerClass::NewGroup()
 	}
 }
 
+void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
+{
+	try
+	{
+		if (!CheckSave())
+		{
+			m_gui->PromptMessage(L"You must save any existing changes before renaming an existing group.");
+			return;			
+		}
+		else
+			m_gui->CloseAllWindows();
+		
+		wstring existingName, newName;
+		if (oldGroupName.length() == 0 && newGroupName.length() == 0)
+		{
+			existingName = m_gui->GetActiveGroupName();
+			newName = m_gui->PromptUserForText(L"Rename Group:", L"Rename Group");
+		}
+		else
+		{
+			existingName = oldGroupName;
+			newName = newGroupName;
+		}
+		if (!ValidateFolderName(newName))
+		{
+			m_gui->PromptMessage(L"Invalid folder name.");
+			return;
+		}
+
+		wstring path, oldPath;
+		path = m_pm.GetProjectWorkingPath();
+		oldPath = m_pm.GetProjectWorkingPath();
+		wstring oldFolder = m_gui->GetTreeNodePath(existingName);
+		if (oldFolder.length() > 0)
+		{
+			path += PATHSEP + newName;
+			oldPath += PATHSEP + oldFolder;
+		}
+
+		if (path.length() > 0 && oldPath.length() > 0)
+		{
+			if (m_pm.RenameDataSetFolder(existingName, newName))
+			{
+				m_gui->DeleteTreeNode(existingName); //the new active node will become the parent node of whats being deleted
+				m_gui->AddTreeNodeToActiveGroup(existingName, newName, "Group");		
+				Save();
+
+				//rename the folder on disk
+				#ifdef WIN32
+				_wrename(oldPath.c_str(), path.c_str());
+				#else
+				rename(UTILS::WStrToMBCStr(oldPath).c_str(), UTILS::WStrToMBCStr(path).c_str());
+				#endif		
+
+				m_gui->AddAllProjectNodes(m_pm.GetProjectTable());
+				m_gui->SelectAnItem(newName);
+			}
+		}
+	}
+	catch(...)
+	{
+		ReportError("WorkerClass::RenameGroup");
+	}
+}
+
+bool WorkerClass::ValidateFolderName(wstring name)
+{
+	char invalidCharacters[9] = {'<', '>',':', '"', '/', '\\', '|', '?', '*'};
+	for (int i = 0; i < name.length(); i++)
+	{
+		for (int j = 0; j < strlen(invalidCharacters); j++)
+		{
+			if (name[i] == invalidCharacters[j])
+				return false;
+		}
+	}
+
+	if (name.length() > 0)
+		return true;
+}
+
 void WorkerClass::DeleteGroup()
 {
 	try
 	{
-		if (m_tree->GetSelection().IsOk())
-		{
-			wxTreeItemId selection = m_tree->GetSelection();
-			wxTreeItemIdValue cookie;
-			wxTreeItemId nextChild = m_tree->GetFirstChild(selection, cookie);
-			vector<wxTreeItemId> list;
-			while (nextChild.IsOk())
-			{
-				list.push_back(nextChild);
-				nextChild = m_tree->GetNextSibling(nextChild);
-			}
-			wstring groupName = m_tree->GetItemText(selection).wc_str();
-			wstring dirPath = GetTreeNodePath(m_tree, groupName);
+		vector<wstring> list = m_gui->GetChildrenOfSelection();
+		if (list.size() > 0)
+		{			
+			wstring groupName = m_gui->GetActiveGroupName();
+			wstring dirPath = m_gui->GetTreeNodePath(groupName);
 			vector<wstring> paths;
-			for (vector<wxTreeItemId>::iterator itChild = list.begin(); itChild != list.end(); itChild++)
-			{
-				wxTreeItemId id = *itChild;
-				wstring name = m_tree->GetItemText(id).wc_str();
+			for (vector<wstring>::iterator itChild = list.begin(); itChild != list.end(); itChild++)
+			{		
+				wstring name = *itChild;
 				if (name.length() > 0)
 				{
 					wstring path = m_pm.GetProjectWorkingPath();
@@ -658,28 +742,26 @@ void WorkerClass::DeleteGroup()
 				}
 			}
 
-			if (list.size() > 0)
-			{
-				m_tree->Delete(m_tree->GetSelection());
+			m_gui->DeleteTreeNode(groupName);
 
-				int ans = wxMessageBox(_T("Group removed from project.\nDo you wnat to delete the associated files as well?"), _T("Remove Files?"), wxYES_NO );
-				if (ans == wxYES)
+			int ans = m_gui->PromptQuestion(L"Group removed from project.\nDo you wnat to delete the associated files as well?", L"Remove Files?");
+			if (ans == ID_YES)
+			{
+				for (vector<wstring>::iterator it = paths.begin(); it != paths.end(); it++)
 				{
-					for (vector<wstring>::iterator it = paths.begin(); it != paths.end(); it++)
-					{
-						#ifdef WIN32
-						_wremove(it->c_str());
-						#else
-						remove(UTILS::WStrToMBCStr(*it).c_str());
-						#endif
-					}
 					#ifdef WIN32
-					_wrmdir(dirPath.c_str());
+					_wremove(it->c_str());
 					#else
-					rmdir(UTILS::WStrToMBCStr(dirPath).c_str());
+					remove(UTILS::WStrToMBCStr(*it).c_str());
 					#endif
 				}
+				#ifdef WIN32
+				_wrmdir(dirPath.c_str());
+				#else
+				rmdir(UTILS::WStrToMBCStr(dirPath).c_str());
+				#endif
 			}
+			
 		}
 	}
 	catch(...)
@@ -693,7 +775,7 @@ void WorkerClass::SetOrientation(int orient)
 	m_orientation = orient;
 
 	//reorient all open tables
-	for (vector<OpenLogicTable>::iterator it = m_opened_windows.begin(); it != m_opened_windows.end(); it++)
+	for (vector<OpenLogicTable>::iterator it = m_gui->GetOpenWindows()->begin(); it != m_gui->GetOpenWindows()->end(); it++)
 	{
 		OpenLogicTable opened = *it;
 		MDIChild *childForm = (MDIChild*)opened.child_window_ptr;
@@ -703,8 +785,8 @@ void WorkerClass::SetOrientation(int orient)
 
 void WorkerClass::GenerateRecentFileList(wxMenu *listMenu, int RecentFile_ID_BEGIN, int RecentFile_ID_END)
 {
-	wxString str;
-	config->Read(_T("RecentProjectList"), &str);
+	wstring str;
+	m_gui->ReadConfig(L"RecentProjectList", &str);	
 	vector<wstring> files = UTILS::Split((wstring)str, L";");
 	int cnt = RecentFile_ID_END - RecentFile_ID_BEGIN, index = 0;
 	m_MaxRecentFiles = cnt;
@@ -717,145 +799,6 @@ void WorkerClass::GenerateRecentFileList(wxMenu *listMenu, int RecentFile_ID_BEG
 	}
 }
 
-bool WorkerClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring *last_found_name, bool bMatchCase, bool bMatchWholeWord, bool bDoReplace, wstring strReplace)
-{
-	bool bFoundAnything = false;
-	vector<wstring> allTables = m_pm.GetProjectTableNames();
-	if (allTables.size() == 0)
-		return false;
-
-	bool bNextTable = true;
-	if (last_found_name->length() == 0)
-	{
-		*last_found_name = allTables[0].c_str();
-		bNextTable = false;
-	}
-
-	bool bFoundInTable = true;
-	if (startPos->x == 0 && startPos->y == 0)
-	{
-		vector<wstring>::iterator itFind = find(allTables.begin(), allTables.end(), last_found_name->c_str());
-		for (vector<wstring>::iterator itTable = itFind; itTable != allTables.end(); itTable++)
-		{
-			if (bNextTable)
-				itTable++;
-			if (itTable == allTables.end())
-			{
-				last_found_name->empty();
-				startPos->x = -1;
-				startPos->y = -1;
-				break;
-			}
-			//open each table, find the strings
-			bFoundInTable = false;
-			xmlInitParser();
-			xmlDocPtr doc = m_pm.LoadTableRawXML(*itTable);
-			xmlXPathContextPtr xpathCtx = xmlXPathNewContext(doc);
-			xmlXPathObjectPtr xpathObjAttrs = xmlXPathEvalExpression((xmlChar*)"//Attr", xpathCtx);
-			xmlXPathObjectPtr xpathObjValues = xmlXPathEvalExpression((xmlChar*)"//Value", xpathCtx);
-			xmlNodeSetPtr attrNodes = xpathObjAttrs->nodesetval;
-			xmlNodeSetPtr valueNodes = xpathObjValues->nodesetval;
-			if (attrNodes != NULL)
-			{
-				for (int i = 0; i < attrNodes->nodeNr; i++)
-				{
-					wstring innerText = UTILS::MBCStrToWStr(xmlNodeGetContent(attrNodes->nodeTab[i]));
-					if (TestStringTextMatch(innerText, strToFind, bMatchCase, bMatchWholeWord))
-					{
-						bFoundInTable = true;
-						break;
-					}
-				}
-			}
-
-			if (bFoundInTable == false && valueNodes != NULL)
-			{
-				for (int i = 0; i < valueNodes->nodeNr; i++)
-				{
-					wstring innerText = UTILS::MBCStrToWStr(xmlNodeGetContent(valueNodes->nodeTab[i]));
-					if (TestStringTextMatch(innerText, strToFind, bMatchCase, bMatchWholeWord))
-					{
-						bFoundInTable = true;
-						break;
-					}
-				}
-			}
-
-			xmlXPathFreeObject(xpathObjAttrs);
-			xmlXPathFreeObject(xpathObjValues);
-			xmlXPathFreeContext(xpathCtx);
-			xmlCleanupParser();
-
-			if (bFoundInTable)
-			{
-				*last_found_name = itTable->c_str();
-				if (LoadTable(*itTable))
-				{
-					bFoundAnything = true;
-					FindTextInActiveTable(strToFind, startPos, bMatchCase, bMatchWholeWord);
-					break;
-				}
-			}
-
-		}
-	}
-	else
-	{
-		FindTextInActiveTable(strToFind, startPos, bMatchCase, bMatchWholeWord);
-		if (startPos->x == -1 && startPos->y == -1)
-		{
-			startPos->x = 0;
-			startPos->y = 0;
-			bFoundAnything = FindTextInAnyTable(strToFind, startPos, last_found_name, bMatchCase, bMatchWholeWord, bDoReplace, strReplace);
-		}
-	}
-	return bFoundAnything;
-}
-
-bool WorkerClass::TestStringTextMatch(wxString test, wxString find, bool bMatchCase, bool bMatchWholeWord)
-{
-	bool bTest = false;
-
-	if (bMatchCase == true && bMatchWholeWord == true)
-	{
-		bTest = test == find;
-	}
-	else if (bMatchCase == true && bMatchWholeWord == false)
-	{
-		bTest = test.Contains(find);
-	}
-	else if (bMatchCase == false && bMatchWholeWord == true)
-	{
-		bTest = test.Lower() == find.Lower();
-	}
-	else if (bMatchCase == false && bMatchWholeWord == false)
-	{
-		bTest = test.Lower().Contains(find.Lower());
-	}
-
-	return bTest;
-}
-
-void WorkerClass::FindTextInActiveTable(wstring strToFind, wxPoint *startPos, bool bMatchCase, bool bMatchWholeWord, bool bDoReplace, wstring strReplace)
-{
-	wxPoint retval(-1, -1);
-
-	MDIChild *childForm = (MDIChild*)m_parentFrame->GetActiveChild();
-	if (childForm)
-	{
-		if (!bDoReplace)
-			retval = childForm->FindText(strToFind, *startPos, bMatchCase, bMatchWholeWord);
-		else
-			retval = childForm->FindAndReplaceText(strToFind, *startPos, bMatchCase, bMatchWholeWord, strReplace);
-
-		if (retval.x >= 0 && retval.y >= 0)
-			retval = childForm->GetNextCellPosition(retval);
-	}
-
-	startPos->x = retval.x;
-	startPos->y = retval.y;
-}
-
 void WorkerClass::ShowDebugOptions()
 {
 	vector<wstring> allTables = m_pm.GetProjectTableNames();
@@ -866,14 +809,14 @@ void WorkerClass::ShowDebugOptions()
 	if (itFind != allTables.end()) allTables.erase(itFind);
 
 	m_debugOptions.allTables = allTables;
-	DebugOptionsDialog debugDialog(m_parentFrame, wxID_ANY, &m_debugOptions);
+	DebugOptionsDialog debugDialog(m_gui->GetParentFrame(), wxID_ANY, &m_debugOptions);
 	debugDialog.ShowModal();
 	m_pm.SetDebugStatus(m_debug_status, m_debugOptions.connection, m_debugOptions.selectedTables);
 }
 
 void WorkerClass::ShowCompileOptions()
 {
-	CompileOptionsDialog compileDialog(m_parentFrame, wxID_ANY, &m_compileOptions);
+	CompileOptionsDialog compileDialog(m_gui->GetParentFrame(), wxID_ANY, &m_compileOptions);
 	compileDialog.ShowModal();
 	m_pm.SetCompilerOptions(m_compileOptions.JavascriptCode, m_compileOptions.PythonCode);
 }
@@ -887,27 +830,12 @@ wstring WorkerClass::CompileXML(wstring tempFilePath)
 
 		if (tempFilePath.length() == 0)
 		{
-			wstring savePath;
-			wxFileDialog saveFileDialog (
-							m_parentFrame,
-							_T("Save new compiled XML ruleset"),
-							wxEmptyString,
-							wxEmptyString,
-							_T("xml file (*.xml)|*.xml"),
-							wxSAVE
-						 );
-
-			saveFileDialog.CentreOnParent();
-
-			if (saveFileDialog.ShowModal() == wxID_OK)
+			wstring savePath = m_gui->SaveDialog("xml");
+			if (savePath.length() > 0)
 			{
-				savePath = saveFileDialog.GetPath();
-				if (savePath.length() > 0)
-				{
-					m_pm.WriteAllDataSetsToXMLFile(savePath);
-					retval = savePath;
-				}
-			}
+				m_pm.WriteAllDataSetsToXMLFile(savePath);
+				retval = savePath;
+			}			
 		}
 		else
 		{
@@ -927,48 +855,34 @@ void WorkerClass::CompileZip()
 {
 	try
 	{
-		wstring savePath;
-		wxFileDialog saveFileDialog (
-						m_parentFrame,
-						_T("Save new compiled & compressed XML ruleset"),
-						wxEmptyString,
-						wxEmptyString,
-						_T("gz file (*.gz)|*.gz"),
-						wxSAVE
-					 );
-
-		saveFileDialog.CentreOnParent();
-
-		if (saveFileDialog.ShowModal() == wxID_OK)
+		wstring savePath = m_gui->SaveDialog("gz");
+		if (savePath.length() > 0)
 		{
-			savePath = saveFileDialog.GetPath();
-			if (savePath.length() > 0)
-			{
-				CompileXML(savePath);
-				//compress file
-				string sPath = UTILS::WStrToMBCStr(savePath);
-				FILE *infile = fopen(UTILS::WStrToMBCStr(UTILS::FindAndReplace(savePath, L".gz", L".xml")).c_str(), "rb");
-				gzFile outfile = gzopen(UTILS::WStrToMBCStr(savePath).c_str(), "wb");
-				if (!infile || !outfile) return;
+			CompileXML(savePath);
+			//compress file
+			string sPath = UTILS::WStrToMBCStr(savePath);
+			FILE *infile = fopen(UTILS::WStrToMBCStr(UTILS::FindAndReplace(savePath, L".gz", L".xml")).c_str(), "rb");
+			gzFile outfile = gzopen(UTILS::WStrToMBCStr(savePath).c_str(), "wb");
+			if (!infile || !outfile) return;
 
-				char inbuffer[128];
-				int num_read = 0;
-				unsigned long total_read = 0;
-				while ((num_read = fread(inbuffer, 1, sizeof(inbuffer), infile)) > 0)
-				{
-					total_read += num_read;
-					gzwrite(outfile, inbuffer, num_read);
-				}
-				fclose(infile);
-				gzclose(outfile);
-				wstring fileToRemove = UTILS::FindAndReplace(savePath, L".gz", L".xml");
-				#ifdef WIN32
-				_wremove(fileToRemove.c_str());
-				#else
-				remove(UTILS::WStrToMBCStr(fileToRemove).c_str());
-				#endif
+			char inbuffer[128];
+			int num_read = 0;
+			unsigned long total_read = 0;
+			while ((num_read = fread(inbuffer, 1, sizeof(inbuffer), infile)) > 0)
+			{
+				total_read += num_read;
+				gzwrite(outfile, inbuffer, num_read);
 			}
+			fclose(infile);
+			gzclose(outfile);
+			wstring fileToRemove = UTILS::FindAndReplace(savePath, L".gz", L".xml");
+			#ifdef WIN32
+			_wremove(fileToRemove.c_str());
+			#else
+			remove(UTILS::WStrToMBCStr(fileToRemove).c_str());
+			#endif
 		}
+		
 	}
 	catch(...)
 	{
@@ -976,214 +890,9 @@ void WorkerClass::CompileZip()
 	}
 }
 
-void WorkerClass::FillDataTable(StringTable<wstring> *table, wxGrid *grid)
-{
-	try
-	{
-		//set up table width
-		table->Clear();
-		for (size_t i = 0; i < table->Columns(); i++)
-		{
-			wstring colName = VALUE_NAME;
-			if (i == 0)
-				colName = ATTR_NAME;
-
-			table->AddColumn(colName);
-		}
-
-		for (size_t j = 0; j < table->Rows(); j++)
-		{
-			table->AddRow();
-			for (size_t i = 0; i < table->Columns(); i++)
-			{
-				wstring colName = table->GetColumns().at(j);
-				table->SetItem(j, colName, (wstring)grid->GetCellValue(j, i));
-			}
-		}
-	}
-	catch(...)
-	{
-		ReportError("WorkerClass::FillDataTable");
-	}
-}
-
-wxTreeItemId WorkerClass::AddTreeNode(wxTreeItemId parent, wxTreeItemId previous, wstring name)
-{
-	wxTreeItemId retval;
-	try
-	{
-		if (previous.IsOk() == false)
-			retval = m_tree->AppendItem(parent, name, NULL, NULL, NULL);
-		else
-			retval = m_tree->InsertItem(parent, previous, name, NULL, NULL);
-	}
-	catch(...)
-	{
-		ReportError("WorkerClass::AddTreeNode");
-	}
-	return retval;
-}
-
-void WorkerClass::DeleteTreeNode(wstring name)
-{
-	try
-	{
-		//wxTreeItemId item = m_tree->GetSelection();
-		wxTreeItemId item = FindItemNamed(m_tree->GetRootItem(), name);
-		m_tree->Delete(item);
-		m_tree->Unselect();
-	}
-	catch(...)
-	{
-		ReportError("WorkerClass::DeleteTreeNode");
-	}
-}
-
-wxTreeItemId WorkerClass::FindItemNamed(wxTreeItemId root, const wxString& sSearchFor, bool bCaseSensitive, bool bExactMatch)
-{
-	try
-	{
-		wxTreeItemId item=root, child;
-		wxTreeItemIdValue cookie;
-		wxString findtext(sSearchFor), itemtext;
-		bool bFound;
-		if(!bCaseSensitive) findtext.MakeLower();
-	 
-		while(item.IsOk())
-		{
-			itemtext = m_tree->GetItemText(item);
-			if(!bCaseSensitive) itemtext.MakeLower();
-			bFound = bExactMatch ? (itemtext == findtext) : itemtext.Contains(findtext);
-			if(bFound) return item;
-			child = m_tree->GetFirstChild(item, cookie);
-			if(child.IsOk()) child = FindItemNamed(child, sSearchFor, bCaseSensitive, bExactMatch);
-			if(child.IsOk()) return child;
-			item = m_tree->GetNextSibling(item);
-		}
-	 
-		return item;
-
-
-	}
-	catch(...)
-	{
-		ReportError("WorkerClass::FindItemNamed");
-	}
-
-	return NULL;
-}
-
-void WorkerClass::AddAllProjectNodes()
-{
-	try
-	{
-		m_tree->DeleteAllItems();
-		m_tree->AddRoot(wxT("Root"), NULL, NULL, NULL);
-		wxtid_active_group = m_tree->GetRootItem();
-
-		StringTable<wstring> *project = m_pm.GetProjectTable();
-		project->SortByCol(L"DataSetName");
-		if (project != NULL)
-		{
-			for (size_t j = 0; j < project->Rows(); j++)
-			{
-				wstring name = UTILS::FindAndReplace(project->GetItem(j, L"DataSetName"), L".xml", L"");
-				wstring rel_path = project->GetItem(j,L"RelativePath");
-
-				if (name == GLOBALORS_TABLE_NAME ||
-					name == TRANSLATIONS_TABLE_NAME) continue;
-
-				wstring parent_group, sep;
-				sep += PATHSEP;
-				vector<wstring> parts = UTILS::Split(rel_path, sep);
-				parent_group = parts[parts.size() - 1];
-
-				//root nodes
-				if (parent_group.length() == 0)
-				{
-					AddTreeNode(m_tree->GetRootItem(), NULL, name);
-				}
-				else //recursive children
-				{
-					wxTreeItemId parent_id_ptr = FindItemNamed(m_tree->GetRootItem(), parent_group);
-					wxTreeItemId parentNode;
-					if (parent_id_ptr.IsOk()) //need to create a folder node
-					{
-						for (size_t i = 0; i < parts.size(); i++)
-						{
-							if (i > 0)
-								parent_id_ptr = FindItemNamed(m_tree->GetRootItem(), parts[i - 1]);
-							else
-								parent_id_ptr = &m_tree->GetRootItem();
-
-							parentNode = parent_id_ptr;
-							AddTreeNode(parentNode, NULL, parts[i]);
-						}
-						AddTreeNode(parentNode, NULL, name);
-					}
-					else
-					{
-						parentNode = parent_id_ptr;
-						AddTreeNode(parentNode, NULL, name);
-					}
-				}
-			}
-		}
-
-		m_tree->Expand(m_tree->GetRootItem());
-	}
-	catch(...)
-	{
-		ReportError("WorkerClass::AddAllProjectNodes");
-	}
-}
-
-wstring WorkerClass::GetTreeNodePath(wxTreeCtrl *tree, wstring name)
-{
-	wstring retval;
-	stack<wstring> path;
-
-	try
-	{
-		wxTreeItemId next = FindItemNamed(m_tree->GetRootItem(), name);
-		if (next.IsOk())
-		{
-			while (next != tree->GetRootItem())
-			{
-				wxTreeItemId next = tree->GetItemParent(next);
-
-				if (!next.IsOk())
-					break;
-
-				if (next != tree->GetRootItem())
-				{
-					path.push((wstring)tree->GetItemText(next));
-					if (tree->GetItemText(next) == name)
-						break;
-				}
-			}
-		}
-
-		while (!path.empty())
-		{
-			if (retval.length() > 0)
-				retval += PATHSEP;
-
-			retval += path.top();
-			path.pop();
-		}
-	}
-	catch(...)
-	{
-		ReportError("WorkerClass::GetTreeNodePath");
-	}
-
-	return retval;
-}
-
 void WorkerClass::InsertCol(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->InsertCol(event);
@@ -1192,7 +901,7 @@ void WorkerClass::InsertCol(wxCommandEvent& event)
 
 void WorkerClass::InsertRow(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->InsertRow(event);
@@ -1201,7 +910,7 @@ void WorkerClass::InsertRow(wxCommandEvent& event)
 
 void WorkerClass::DeleteCol(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->DeleteCol(event);
@@ -1210,7 +919,7 @@ void WorkerClass::DeleteCol(wxCommandEvent& event)
 
 void WorkerClass::DeleteRow(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->DeleteRow(event);
@@ -1219,7 +928,7 @@ void WorkerClass::DeleteRow(wxCommandEvent& event)
 
 void WorkerClass::AppendRow(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->AppendRow();
@@ -1228,7 +937,7 @@ void WorkerClass::AppendRow(wxCommandEvent& event)
 
 void WorkerClass::AppendColumn(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->AppendColumn();
@@ -1237,7 +946,7 @@ void WorkerClass::AppendColumn(wxCommandEvent& event)
 
 void WorkerClass::ClearCells(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->ClearCells(event);
@@ -1246,7 +955,7 @@ void WorkerClass::ClearCells(wxCommandEvent& event)
 
 void WorkerClass::Redo(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->Redo(event);
@@ -1255,7 +964,7 @@ void WorkerClass::Redo(wxCommandEvent& event)
 
 void WorkerClass::Undo(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->Undo(event);
@@ -1264,7 +973,7 @@ void WorkerClass::Undo(wxCommandEvent& event)
 
 void WorkerClass::Copy(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->Copy(event);
@@ -1273,7 +982,7 @@ void WorkerClass::Copy(wxCommandEvent& event)
 
 void WorkerClass::Cut(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->Cut(event);
@@ -1282,7 +991,7 @@ void WorkerClass::Cut(wxCommandEvent& event)
 
 void WorkerClass::Paste(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->Paste(event);
@@ -1291,7 +1000,7 @@ void WorkerClass::Paste(wxCommandEvent& event)
 
 void WorkerClass::EditCode(wxCommandEvent& event)
 {
-	MDIChild *active = (MDIChild*)m_parentFrame->GetActiveChild();
+	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
 		active->EditCode(event);
@@ -1303,23 +1012,17 @@ void WorkerClass::SetProjectDebugging(bool enabled, int server_id)
 	m_debug_status = enabled;
 	m_pm.SetDebugStatus(enabled, m_debugOptions.connection, m_debugOptions.selectedTables);
 	if (enabled) //start socket server, listen for incoming connections
-	{
-
-		wxIPV4address addr;
+	{		
 		vector<wstring> con = UTILS::Split(m_debugOptions.connection, L":");
 		unsigned short port = (unsigned short)atoi(UTILS::WStrToMBCStr(con[1]).c_str());
-		addr.Service(port);
-
 		// Create the socket
-		if (m_server)
+		if (m_gui)
 		{
-			m_server->Close();
-			m_server->Destroy();
+			m_gui->CreateServer(port);			
 		}
-		m_server = new wxSocketServer(addr);
 
-		// We use Ok() here to see if the server is really listening
-		if (! m_server->Ok())
+		//see if the server is really listening
+		if (!m_gui->ServerReady())
 		{
 			LogTextLine(_("Could not listen at the specified port !n"));
 			return;
@@ -1327,211 +1030,21 @@ void WorkerClass::SetProjectDebugging(bool enabled, int server_id)
 		else
 		{
 			// Setup the event handler and subscribe to connection events
-			  m_server->SetEventHandler(*m_parentFrame, server_id);
-			  m_server->SetNotify(wxSOCKET_CONNECTION_FLAG);
-			  m_server->Notify(true);
-
+			m_gui->StartServer(server_id, &m_debugOptions);
 			LogTextLine(_("Debugger server listening.\n"));
 		}
 	}
 	else
 	{
-		m_server->Close();
-		m_server->Destroy();
-		m_server = NULL;
+		m_gui->ShutdownServer();
+		
 		LogTextLine(_("Debugger server stopped.\n"));
 	}
 }
 
-void WorkerClass::ParseSocket(wxSocketEvent& event)
-{
-	wxString s = _("OnServerEvent: ");
-	wxSocketBase *sock = event.GetSocket();
 
-	// First, print a message
-	switch(event.GetSocketEvent())
-	{
-	case wxSOCKET_INPUT : s.Append(_("wxSOCKET_INPUT\n")); break;
-	case wxSOCKET_LOST  : s.Append(_("wxSOCKET_LOST\n")); break;
-	default             : s.Append(_("Unexpected event !\n")); break;
-	}
-
-	// Now we process the event
-	switch(event.GetSocketEvent())
-	{
-	case wxSOCKET_INPUT:
-	{
-		// We disable input events, so that the test doesn't trigger
-		// wxSocketEvent again.
-		sock->SetNotify(wxSOCKET_LOST_FLAG);
-
-		unsigned int len = 256;
-		wchar_t *buf;
-		wstring strBuff;
-
-		sock->SetFlags(wxSOCKET_WAITALL);
-		buf = new wchar_t[len];
-
-		// Read the data in 256 byte chunks
-		int bytecnt = 0;
-		do
-		{
-			sock->Read(buf, len);
-			bytecnt = sock->LastCount();
-			if (bytecnt) strBuff.insert(strBuff.length(), buf, bytecnt/sizeof(wchar_t));
-		} while(bytecnt > 0);
-
-		DebugInfoReceived(strBuff);
-
-		// Enable input events again.
-		sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
-		break;
-	}
-	case wxSOCKET_LOST:
-	{
-		//m_numClients--;
-
-		// Destroy() should be used instead of delete wherever possible,
-		// due to the fact that wxSocket uses 'delayed events' (see the
-		// documentation for wxPostEvent) and we don't want an event to
-		// arrive to the event handler (the frame, here) after the socket
-		// has been deleted. Also, we might be doing some other thing with
-		// the socket at the same time; for example, we might be in the
-		// middle of a test or something. Destroy() takes care of all
-		// this for us.
-		sock->Destroy();
-		break;
-	}
-	default: ;
-	}
-}
-
-void WorkerClass::ServerEvent(wxSocketEvent& event, int socket_id)
-{
-  wxString s = _("OnServerEvent: ");
-  wxSocketBase *sock;
-
-  switch(event.GetSocketEvent())
-  {
-    case wxSOCKET_CONNECTION : s.Append(_("wxSOCKET_CONNECTION\n")); break;
-    default                  : s.Append(_("Unexpected event !\n")); break;
-  }
-
-  // Accept new connection if there is one in the pending
-  // connections queue, else exit. We use Accept(false) for
-  // non-blocking accept (although if we got here, there
-  // should ALWAYS be a pending connection).
-
-  sock = m_server->Accept(false);
-
-  if (sock)
-  {
-    LogTextLine(_("Received debug info"));
-  }
-  else
-  {
-    LogTextLine(_("Error: couldn't accept a new connection\n"));
-    return;
-  }
-
-  sock->SetEventHandler(*m_parentFrame, socket_id);
-  sock->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
-  sock->Notify(true);
-}
-
-void WorkerClass::DebugInfoReceived(wstring buff)
-{
-	wstring logMessage;
-
-	xmlInitParser();
-	string sBuff = UTILS::WStrToMBCStr(buff);
-	xmlDocPtr xmlDoc = xmlParseMemory(sBuff.c_str(), (int)sBuff.size());
-	if (xmlDoc)
-	{
-		xmlXPathContextPtr xpathCtx = xmlXPathNewContext(xmlDoc);
-		xmlXPathObjectPtr xpathInputs = xmlXPathEvalExpression((xmlChar*)"//Input", xpathCtx);
-		xmlXPathObjectPtr xpathOutputs = xmlXPathEvalExpression((xmlChar*)"//Output", xpathCtx);
-		wstring tableName = UTILS::MBCStrToWStr(xmlGetProp(xmlDocGetRootElement(xmlDoc), (xmlChar*)"name"));
-		wstring outputName = UTILS::MBCStrToWStr(xmlGetProp(xmlDocGetRootElement(xmlDoc), (xmlChar*)"output"));
-		logMessage += L"Table: ";
-		logMessage += tableName;
-
-		if (m_debugOptions.debugMode == m_debugOptions.ALL_TABLES ||
-			find(m_debugOptions.selectedTables.begin(), m_debugOptions.selectedTables.end(), tableName) != m_debugOptions.selectedTables.end())
-		{
-			logMessage += L" Output Name: ";
-			logMessage += outputName;
-			logMessage += L"\n";
-
-			xmlNodeSetPtr allInputs = xpathInputs->nodesetval;
-			xmlNodeSetPtr allOutputs = xpathOutputs->nodesetval;
-			if (allInputs != NULL && allOutputs != NULL)
-			{
-				logMessage += L"Inputs:\n";
-				for (int i = 0; i < allInputs->nodeNr; i++)
-				{
-					xmlNodePtr input = allInputs->nodeTab[i];
-					wstring inputName = UTILS::MBCStrToWStr(xmlGetProp(input, (xmlChar*)"name"));
-					wstring inputValue = UTILS::MBCStrToWStr(xmlGetProp(input, (xmlChar*)"value"));
-					logMessage += inputName;
-					logMessage += L": ";
-					logMessage += inputValue;
-					logMessage += L"\n";
-				}
-
-				logMessage += L"Results:\n";
-				for (int i = 0; i < allOutputs->nodeNr; i++)
-				{
-					xmlNodePtr output = allOutputs->nodeTab[i];
-					wstring outputValue = UTILS::MBCStrToWStr(xmlGetProp(output, (xmlChar*)"value"));
-					string strSolutionIdx = UTILS::ToASCIIString(UTILS::MBCStrToWStr(xmlGetProp(output, (xmlChar*)"index")));
-					int iSolnIdx = atoi(strSolutionIdx.c_str());
-					logMessage += outputValue;
-					logMessage += L"\n";
-
-					if (m_debugOptions.debugMode == m_debugOptions.SELECTED_TABLES && m_debugOptions.bOpenTable == true)
-						HighlightTableAndRule(tableName, iSolnIdx);
-				}
-			}
-
-			LogTextLine(logMessage);
-		}
-
-		xmlXPathFreeObject(xpathInputs);
-		xmlXPathFreeObject(xpathOutputs);
-		xmlXPathFreeContext(xpathCtx);
-	}
-
-	xmlCleanupParser();
-}
-
-void WorkerClass::HighlightTableAndRule(wstring tableName, size_t iSolnIdx)
-{
-	if (LoadTable(tableName))
-	{
-		MDIChild *childForm = (MDIChild*)m_parentFrame->GetActiveChild();
-		if (childForm)
-		{
-			size_t actualRowIndex = iSolnIdx; //the index should account for disabled rows (skip them)
-			vector<size_t> disabledIndexes = childForm->GetDisabledRules();
-			//how many disabled rules between us and where we want to highlight?
-			for (size_t i = 0; i < disabledIndexes.size(); i++)
-			{
-				if (disabledIndexes[i] <= iSolnIdx)
-					actualRowIndex++;
-				else
-					break;
-			}
-
-			childForm->HighlightRule(actualRowIndex);
-		}
-	}
-}
-
-
-void WorkerClass::ChildWindowHasClosed()
+void WorkerClass::ChildWindowHasClosed(wstring tableName)
 {
 	//deselect all items of tree
-	m_tree->Unselect();
-	wxtid_active_group = m_tree->GetRootItem();
+	m_gui->ChildWindowsHasClosed(tableName);	
 }

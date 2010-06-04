@@ -3,8 +3,8 @@
 // Purpose:     EDSEngine rules generator
 // Author:      Eric D. Schmidt
 // Modified by:
-// Created:     07/01/2009
-// Copyright:   (c) 2009 Eric D. Schmidt
+// Created:     07/01/2010
+// Copyright:   (c) 2010 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -99,6 +99,7 @@ public:
 	void OnDeleteTable(wxCommandEvent& event);
 	void OnRenameTable(wxCommandEvent& event);
 	void OnNewGroup(wxCommandEvent& event);
+	void OnRenameGroup(wxCommandEvent& event);
 	void OnDeleteGroup(wxCommandEvent& event);
 	void OnOrientationChange(wxCommandEvent& event);
 	void OnInsertCol(wxCommandEvent& event);
@@ -128,10 +129,17 @@ public:
 
 	//tree events
 	void TreeItemSelected(wxTreeEvent& event);
+	void TreeOnBeginDrag(wxTreeEvent& event);
+	void TreeOnEndDrag(wxTreeEvent& event);
+	void TreeOnBeginLabelEdit(wxTreeEvent& event);
+	void TreeOnEndLabelEdit(wxTreeEvent& event);
+	void TreeOnKeyDownItem(wxTreeEvent& event);
 
 	//debugger
 	void OnSocketEvent(wxSocketEvent& event);
 	void OnServerEvent(wxSocketEvent& event);
+
+	WorkerClass* GetWorker(){return m_worker;}
 
 private:
 	void OnSize(wxSizeEvent& event);
@@ -140,13 +148,20 @@ private:
 	void ShowReplaceDialog(wxCommandEvent& WXUNUSED(event));
 	void OnFindDialog(wxFindDialogEvent& event);
 	void SaveAndQuit();
+	bool EditNotAllowed(const wxTreeItemId& item);
+	bool ItemIsDraggable(const wxTreeItemId& item);
+	wxImageList* CreateImageList(int size = 16);
+	void OnTreeContextMenu(wxTreeEvent& event);
+
 
 	WorkerClass *m_worker;
+	GUIClass *m_gui;
 	wxTreeCtrl *m_tree;
 	wxSashLayoutWindow *winTree, *winLog;
 	wxTextCtrl *txtLog;
+	wxTreeItemId m_draggedItem;
 	wxMenu *compilerMenu, *fileMenu, *tableMenu, *recentFileMenu;
-
+	wstring m_lastName;
 	wxPoint *m_last_find_pos;
 	wstring m_found_name;
 	wxFindReplaceData m_findData;
@@ -176,6 +191,7 @@ enum
 	DecisionLogic_DeleteTable,
 	DecisionLogic_RenameTable,
 	DecisionLogic_NewGroup,
+	DecisionLogic_RenameGroup,
 	DecisionLogic_CompileCompressed,
 	DecisionLogic_CompileXML,
 	DecisionLogic_CompileOptions,
@@ -199,7 +215,7 @@ enum
 	DecisionLogic_Log,
 	DecisionLogic_ClearLog,
 	DecisionLogic_Socket,
-	DecisionLogic_Server,
+	DecisionLogic_Server,	
 	APPEND_COL,
 	APPEND_ROW,
 	APPEND_COLS,

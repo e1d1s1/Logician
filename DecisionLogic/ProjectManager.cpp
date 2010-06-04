@@ -3,8 +3,8 @@
 // Purpose:     Manages project related info for all tables, saving, loading, etc
 // Author:      Eric D. Schmidt
 // Modified by:
-// Created:     07/01/2009
-// Copyright:   (c) 2009 Eric D. Schmidt
+// Created:     07/01/2010
+// Copyright:   (c) 2010 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -57,12 +57,6 @@ const string OUTPUT_TABLE = "Outputs";
 const string VALUE_NAME = "Value";
 const string ATTR_NAME = "Attr";
 const string FORMULA_INPUT_NAME = "FormulaInput";
-
-#ifdef POSIX
-const wchar_t PATHSEP = L'/';
-#else
-const wchar_t PATHSEP = L'\\';
-#endif
 
 ProjectManager::ProjectManager(void)
 {
@@ -201,7 +195,7 @@ void ProjectManager::SaveStringDefs(xmlDocPtr doc)
 		wstring file_name = m_project_files->GetItem(j, L"DataSetName");
 		if (file_name == GLOBALORS_TABLE_NAME + L".xml" ||
 			file_name == TRANSLATIONS_TABLE_NAME + L".xml") continue;
-		wstring rel_path = m_project_files->GetItem(j,L"RelativePath");
+		wstring rel_path = m_project_files->GetItem(j,L"RelativePath");		
 		wstring full_path = m_project_working_path + PATHSEP + rel_path;
 		if (rel_path.length() > 0)
 			full_path += PATHSEP;
@@ -296,6 +290,11 @@ xmlDocPtr ProjectManager::GetProjectFileXML()
 					else
 						xmlSetProp(tableDataNode, (xmlChar*)"debug", (xmlChar*)"0");
 				}
+				else if (name == L"RelativePath")
+				{
+					wstring pathSep; pathSep+=PATHSEP;
+					text = UTILS::FindAndReplace(text, pathSep, L"/");
+				}
 				xmlNodePtr textNode = xmlNewText((xmlChar*)UTILS::WStrToMBCStr(text).c_str());
 				xmlAddChild(tableDataNode, nameNode);
 				xmlAddChild(nameNode, textNode);
@@ -320,7 +319,7 @@ xmlDocPtr ProjectManager::GetProjectFileXML()
 	}
 	catch(...)
 	{
-		ReportError("ProjectManager::WriteProjectFile");
+		ReportError("ProjectManager::GetProjectFileXML");
 		xmlFreeDoc(xmlDoc);
 		xmlDoc = NULL;
 	}
@@ -734,6 +733,9 @@ StringTable<wstring>* ProjectManager::ReadProjectFile(wstring path)
 					if (cDebugStatus == '1')
 						m_SelectedTables.push_back(UTILS::FindAndReplace(name, L".xml", L""));
 					wstring path = UTILS::MBCStrToWStr(xmlNodeGetContent(nodePath));
+					//saved unix style so well formed
+					wstring pathSep; pathSep+=PATHSEP;
+					path = UTILS::FindAndReplace(path, L"/", pathSep);
 					retval->AddRow();
 					retval->SetItem(iRow, L"DataSetName", name);
 					retval->SetItem(iRow, L"RelativePath", path);
@@ -779,6 +781,8 @@ bool ProjectManager::SaveDataSet(wstring name, wstring full_path, DataSet<wstrin
 		wstring working = m_project_working_path + PATHSEP;
 		wstring rel_path = UTILS::FindAndReplace(full_path, working, L"");
 		rel_path = UTILS::FindAndReplace(rel_path, name + L".xml", L"");
+		wstring pathSep; pathSep+=PATHSEP;
+		rel_path = UTILS::FindAndReplace(rel_path, pathSep, L"/"); //save unix style
         for (size_t iRow = 0; iRow < m_project_files->Rows(); iRow++)
         {
 			wstring saved = m_project_files->GetItem(iRow, L"DataSetName");
@@ -802,6 +806,17 @@ bool ProjectManager::SaveDataSet(wstring name, wstring full_path, DataSet<wstrin
 		xmlDocPtr doc = GetDataSetXML(ds, GetAll);
 		if (doc != NULL)
 		{
+			//make sure any subdirs exist
+			if (rel_path.length() > 0)
+			{
+				wstring remove = PATHSEP + name + L".xml";
+				wstring pathToFile = UTILS::FindAndReplace(full_path, remove, L"");
+				#ifdef WIN32
+				_wmkdir(pathToFile.c_str());
+				#else
+				mkdir(UTILS::ToASCIIString(pathToFile).c_str(), 0777);
+				#endif
+			}
 			retval = xmlSaveFormatFileEnc(UTILS::WStrToMBCStr(full_path).c_str(), doc, "UTF-8", 1) > 0;
 			xmlFreeDoc(doc);
 		}
@@ -973,7 +988,6 @@ bool ProjectManager::RenameDataSet(wstring oldName, wstring newName)
 {
 	bool retval = false;
 
-	wstring path, filename;
     for (size_t rowIndex = 0; rowIndex < m_project_files->Rows(); rowIndex++)
     {
         if (m_project_files->GetItem(rowIndex, L"DataSetName") == oldName)
@@ -991,7 +1005,6 @@ bool ProjectManager::DeleteDataSet(wstring name)
 {
 	bool retval = false;
 
-	wstring path, filename;
     for (size_t rowIndex = 0; rowIndex < m_project_files->Rows(); rowIndex++)
     {
         if (m_project_files->GetItem(rowIndex, L"DataSetName") == name)
@@ -1002,6 +1015,24 @@ bool ProjectManager::DeleteDataSet(wstring name)
         }
     }
 
+
+	return retval;
+}
+
+bool ProjectManager::RenameDataSetFolder(wstring oldFolder, wstring newFolder)
+{
+	bool retval = false;
+
+    for (size_t rowIndex = 0; rowIndex < m_project_files->Rows(); rowIndex++)
+    {
+		wstring pathFind = oldFolder + PATHSEP, pathReplace = newFolder + PATHSEP;
+        if (m_project_files->GetItem(rowIndex, L"RelativePath") == pathFind)
+        {
+			m_project_files->SetItem(rowIndex, L"RelativePath", pathReplace);
+			retval = true;
+            break;
+        }
+    }
 
 	return retval;
 }

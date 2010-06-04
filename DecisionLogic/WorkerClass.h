@@ -3,8 +3,8 @@
 // Purpose:     Application event handling
 // Author:      Eric D. Schmidt
 // Modified by:
-// Created:     07/01/2009
-// Copyright:   (c) 2009 Eric D. Schmidt
+// Created:     07/01/2010
+// Copyright:   (c) 2010 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -24,28 +24,6 @@
 
 #pragma once
 
-// For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-    #pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
-#ifndef WX_PRECOMP
-    #include "wx/wx.h"
-#endif
-#include <string>
-#include <wx/grid.h>
-#include <wx/treectrl.h>
-#include <wx/laywin.h>
-#if defined(WIN32)
-	#include <winsock.h>
-#endif
-#include <wx/socket.h>
-#include <wx/config.h>
-
 #include "ProjectManager.h"
 #include "LogicTable.h"
 #include "MDIChild.h"
@@ -53,24 +31,27 @@
 #include "CompileOptions.h"
 #include "CodeEditor.h"
 #include "OpenLogicTable.h"
+#include "GUIClass.h"
 
 using namespace std;
 
 class WorkerClass
 {
 public:
-	WorkerClass(wxMDIParentFrame *parent, wxTreeCtrl *tree, wxTextCtrl *log, int orient);
+	WorkerClass(GUIClass *gui, int orient);
 	~WorkerClass(void);
 
 	//implementation of menus
 	bool NewProject();
 	bool OpenProject(wstring fileName);
-	bool Save();
+	bool Save(OpenLogicTable *targetTable = NULL);
 	bool LoadTable(wstring name);
 	void NewTable(wstring name = L"");
-	void DeleteTable();
-	void RenameTable();
+	void DeleteTable(wstring nameDelete = L"");
+	void RenameTable(wstring oldTableName = L"", wstring newTableName = L"");
+	void MoveTable(wstring table, wstring oldLoc, wstring newLoc);
 	void NewGroup();
+	void RenameGroup(wstring oldGroupName = L"", wstring newGroupName = L"");
 	void DeleteGroup();
 	wstring CompileXML(wstring tempFilePath = L"");
 	void CompileZip();
@@ -82,9 +63,7 @@ public:
 
 	//debugging
 	void SetProjectDebugging(bool enabled, int server_id);
-	void LogTextLine(wstring text) {m_log->AppendText(text); m_log->AppendText(L"\n");}
-	void ParseSocket(wxSocketEvent& event);
-	void ServerEvent(wxSocketEvent& event, int socket_id);
+	void LogTextLine(wstring text) {m_gui->LogText(text); m_gui->LogText(L"\n");}	
 
 	//pass through menu commands to child windows
 	void InsertCol(wxCommandEvent& event);
@@ -101,50 +80,29 @@ public:
 	void Paste(wxCommandEvent& event);
 	void EditCode(wxCommandEvent& event);
 
-	//find
-	void FindTextInActiveTable(wstring strToFind, wxPoint *startPos,
-		bool bMatchCase, bool bMatchWholeWord, bool bDoReplace = false, wstring strReplace = L"");
-	bool FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring *last_found_name,
-		bool bMatchCase, bool bMatchWholeWord, bool bDoReplace = false, wstring strReplace = L"");
-
+	wstring GetProjectName();
 	bool CheckSave();
-	void ChildWindowHasClosed();
+	void ChildWindowHasClosed(wstring tableName);
+	bool ValidateFolderName(wstring name);
+	ProjectManager* GetProjectManager() {return &m_pm;}
 
 	bool bIsSaved;
 	vector<OpenLogicTable> open_tables;
-	wxGrid *grid_input_table, *grid_output_table;
-
 
 private:	
-	wxTreeItemId AddTreeNode(wxTreeItemId parent, wxTreeItemId previous, wstring name);
-	wstring GetTreeNodePath(wxTreeCtrl *tree, wstring nodeName);
-	void DeleteTreeNode(wstring name);
-	void FillDataTable(StringTable<wstring> *table, wxGrid *grid);
-	wxTreeItemId FindItemNamed(wxTreeItemId root, const wxString& sSearchFor, bool bCaseSensitive = true, bool bExactMatch = true);
-	void AddAllProjectNodes();
+	
 	void GetSettings();
-	void SaveApplicationSettings();
-	void DebugInfoReceived(wstring buff);
-	void HighlightTableAndRule(wstring tableName, size_t iSolnIdx);
-	bool TestStringTextMatch(wxString test, wxString find, bool bMatchCase, bool bMatchWholeWord);	
-	void EnableAllChildWindows(bool enable);
+	void SaveApplicationSettings();	
 
-	ProjectManager m_pm;
-	vector<OpenLogicTable> m_opened_windows;	
+
+	ProjectManager m_pm;		
 	int m_orientation;
-
-	wxConfig *config;
 	int m_MaxRecentFiles;
 	DebugOptions m_debugOptions;
 	CompileOptions m_compileOptions;
 	bool m_debug_status;
-	wxSocketServer *m_server;
 
-	wxMDIParentFrame *m_parentFrame;
-	wxTreeCtrl *m_tree;
-	wxTreeItemId *root_node;
-	wxTreeItemId wxtid_active_group;
-	wxTextCtrl *m_log;
+	GUIClass *m_gui;	
 };
 
 /*

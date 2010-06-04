@@ -3,8 +3,8 @@
 // Purpose:     DecisionLogic GUI implementation
 // Author:      Eric D. Schmidt
 // Modified by:
-// Created:     07/01/2009
-// Copyright:   (c) 2009 Eric D. Schmidt
+// Created:     07/01/2010
+// Copyright:   (c) 2010 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -29,6 +29,11 @@
 #include "DecisionLogic.h"
 #include <wx/fdrepdlg.h>
 #include <wx/utils.h>
+#include <wx/treectrl.h>
+
+#include "file.xpm"
+#include "folder.xpm"
+#include "folder_open.xpm"
 
 //Icon
 #if !defined(__WXMSW__) && !defined(__WXPM__)
@@ -61,6 +66,7 @@ BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
 	EVT_MENU(DecisionLogic_DeleteTable, DecisionLogicFrame::OnDeleteTable)
 	EVT_MENU(DecisionLogic_RenameTable, DecisionLogicFrame::OnRenameTable)
 	EVT_MENU(DecisionLogic_NewGroup,  DecisionLogicFrame::OnNewGroup)
+	EVT_MENU(DecisionLogic_RenameGroup, DecisionLogicFrame::OnRenameGroup)
 	EVT_MENU(DecisionLogic_DeleteGroup, DecisionLogicFrame::OnDeleteGroup)
 	EVT_MENU(DecisionLogic_OrientationHorizontal, DecisionLogicFrame::OnOrientationChange)
     EVT_MENU(DecisionLogic_OrientationVertical, DecisionLogicFrame::OnOrientationChange)
@@ -100,6 +106,18 @@ BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
 
 	//TREE EVENTS///////////////////////////////////////////////////////////////////
 	EVT_TREE_SEL_CHANGED(DecisionLogic_TreeConrol, DecisionLogicFrame::TreeItemSelected)
+	EVT_TREE_ITEM_RIGHT_CLICK(DecisionLogic_TreeConrol, DecisionLogicFrame::OnTreeContextMenu)
+	EVT_TREE_BEGIN_DRAG(DecisionLogic_TreeConrol, DecisionLogicFrame::TreeOnBeginDrag)
+	EVT_TREE_END_DRAG(DecisionLogic_TreeConrol, DecisionLogicFrame::TreeOnEndDrag)
+	EVT_TREE_BEGIN_LABEL_EDIT(DecisionLogic_TreeConrol, DecisionLogicFrame::TreeOnBeginLabelEdit)
+    EVT_TREE_END_LABEL_EDIT(DecisionLogic_TreeConrol, DecisionLogicFrame::TreeOnEndLabelEdit)
+    EVT_TREE_KEY_DOWN(DecisionLogic_TreeConrol, DecisionLogicFrame::TreeOnKeyDownItem)
+	EVT_MENU(DecisionLogic_DeleteTable, DecisionLogicFrame::OnDeleteTable)
+	EVT_MENU(DecisionLogic_RenameTable, DecisionLogicFrame::OnRenameTable)
+	EVT_MENU(DecisionLogic_NewTable, DecisionLogicFrame::OnNewTable)
+	EVT_MENU(DecisionLogic_DeleteGroup, DecisionLogicFrame::OnDeleteGroup)
+	EVT_MENU(DecisionLogic_NewGroup, DecisionLogicFrame::OnNewGroup)
+	
 
 	//DEBUGGER//////////////////////////////////////////////////////////////////////
 	EVT_SOCKET(DecisionLogic_Server,  DecisionLogicFrame::OnServerEvent)
@@ -153,6 +171,13 @@ END_EVENT_TABLE()
 BEGIN_EVENT_TABLE(CodeEditorDialog, wxPropertySheetDialog)
 	EVT_BUTTON(wxID_OK, CodeEditorDialog::OnOK)
 END_EVENT_TABLE()
+
+void* pt2WorkerObject2;
+bool OpenTableCallback2(wstring tableName)
+{
+	DecisionLogicFrame *mySelf = (DecisionLogicFrame*)pt2WorkerObject2;
+	return mySelf->GetWorker()->LoadTable(tableName);
+}
 // ============================================================================
 // implementation
 // ============================================================================
@@ -223,6 +248,7 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	tableMenu->Append(DecisionLogic_RenameTable, _T("&Rename Table"), _T("Rename current logic table"));
 	tableMenu->Append(DecisionLogic_DeleteTable, _T("&Delete Table"), _T("Delete logic table"));
 	tableMenu->Append(DecisionLogic_NewGroup, _T("New &Group"), _T("Create a new table group"));
+	tableMenu->Append(DecisionLogic_RenameGroup, _T("Ren&ame Group"), _T("Rename current table group"));
 	tableMenu->Append(DecisionLogic_DeleteGroup, _T("D&elete Group"), _T("Delete a table group"));
 	wxMenu *orientationMenu = new wxMenu();
 	tableMenu->AppendSubMenu(orientationMenu, _T("&Orientation"));
@@ -256,6 +282,7 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	tableMenu->Enable(DecisionLogic_RenameTable, false);
 	tableMenu->Enable(DecisionLogic_DeleteTable, false);
 	tableMenu->Enable(DecisionLogic_NewGroup, false);
+	tableMenu->Enable(DecisionLogic_RenameGroup, false);
 	tableMenu->Enable(DecisionLogic_DeleteGroup, false);
 
 	compilerMenu = new wxMenu();
@@ -315,15 +342,40 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 		wxDefaultSize, wxTE_MULTILINE);
 
 	m_tree = new wxTreeCtrl(winTree, DecisionLogic_TreeConrol, wxDefaultPosition, wxSize(200, 600));
-	wxTreeItemId rootId = m_tree->AddRoot(wxT("Root"),NULL, NULL, NULL);
+	m_tree->AssignImageList(CreateImageList());
 
 	winTree->Show(true);
-	winLog->Show(true);
-	m_worker = new WorkerClass(this, m_tree, txtLog, DEFAULT_ORIENTATION);
-
-	m_worker->GenerateRecentFileList(recentFileMenu, DecisionLogic_RecentFile1, DecisionLogic_RecentFile1 + 5);
+	winLog->Show(true);	
 	m_dlgReplace = NULL;
-	m_last_find_pos = NULL;
+	m_last_find_pos = NULL;	
+	m_gui = new GUIClass(this, m_tree, txtLog, m_worker->GetProjectManager(), OpenTableCallback2);		
+	m_worker = new WorkerClass(m_gui, DEFAULT_ORIENTATION);
+	m_worker->GenerateRecentFileList(recentFileMenu, DecisionLogic_RecentFile1, DecisionLogic_RecentFile1 + 5);
+	
+	pt2WorkerObject2 = (void*)this;
+}
+
+wxImageList* DecisionLogicFrame::CreateImageList(int size)
+{
+	wxImageList *images = new wxImageList(size, size, true);
+	wxIcon icons[3];
+    icons[0] = wxIcon(file_xpm);
+    icons[1] = wxIcon(folder_xpm);
+    icons[2] = wxIcon(folder_open_xpm);
+
+	int sizeOrig = icons[0].GetWidth();
+    for ( size_t i = 0; i < WXSIZEOF(icons); i++ )
+    {
+        if ( size == sizeOrig )
+        {
+            images->Add(icons[i]);
+        }
+        else
+        {
+            images->Add(wxBitmap(wxBitmap(icons[i]).ConvertToImage().Rescale(size, size)));
+        }
+    }
+	return images;
 }
 
 
@@ -331,13 +383,19 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 void DecisionLogicFrame::OnNewProject(wxCommandEvent& WXUNUSED(event))
 {
 	if (m_worker->NewProject())
+	{
 		EnableAllMenus();
+		this->SetTitle(L"DecisionLogic - " + m_worker->GetProjectName());
+	}
 }
 
 void DecisionLogicFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event))
 {
 	if (m_worker->OpenProject(L""))
+	{
 		EnableAllMenus();
+		this->SetTitle(L"DecisionLogic - " + m_worker->GetProjectName());
+	}
 }
 
 void DecisionLogicFrame::OnSaveProject(wxCommandEvent& WXUNUSED(event))
@@ -356,7 +414,12 @@ void DecisionLogicFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 	{
 		SaveAndQuit();
 		delete m_worker;
-		m_worker = NULL;
+		m_worker = NULL;		
+	}
+	if (m_gui)
+	{
+		delete m_gui;
+		m_gui = NULL;
 	}
     // true is to force the frame to close
     Close(true);
@@ -422,6 +485,11 @@ void DecisionLogicFrame::OnRenameTable(wxCommandEvent& WXUNUSED(event))
 void DecisionLogicFrame::OnNewGroup(wxCommandEvent& WXUNUSED(event))
 {
 	m_worker->NewGroup();
+}
+
+void DecisionLogicFrame::OnRenameGroup(wxCommandEvent& WXUNUSED(event))
+{
+	m_worker->RenameGroup();
 }
 
 void DecisionLogicFrame::OnDeleteGroup(wxCommandEvent& WXUNUSED(event))
@@ -504,7 +572,10 @@ void DecisionLogicFrame::OnOpenRecentFile (wxCommandEvent& event)
 {
 	wstring filename = recentFileMenu->GetLabelText(event.GetId()).wc_str();
 	if (m_worker->OpenProject(filename))
+	{
 		EnableAllMenus();
+		this->SetTitle(L"DecisionLogic - " + m_worker->GetProjectName());
+	}
 }
 
 //Tree Events
@@ -512,7 +583,94 @@ void DecisionLogicFrame::TreeItemSelected(wxTreeEvent& event)
 {
 	wxTreeItemId item = m_tree->GetSelection();
 	if (item.IsOk())
-		m_worker->LoadTable((wstring)m_tree->GetItemText(m_tree->GetSelection()));
+		m_worker->LoadTable( ((wstring)(m_tree->GetItemText(m_tree->GetSelection()))) );
+}
+
+void DecisionLogicFrame::TreeOnBeginDrag(wxTreeEvent& event)
+{
+    // need to explicitly allow drag
+    if ( ItemIsDraggable(event.GetItem()) )
+	{
+        m_draggedItem = event.GetItem();
+
+        wxPoint clientpt = event.GetPoint();
+        wxPoint screenpt = ClientToScreen(clientpt);
+
+        event.Allow();
+    }
+}
+
+void DecisionLogicFrame::TreeOnEndDrag(wxTreeEvent& event)
+{
+    wxTreeItemId itemSrc = m_draggedItem,
+                 itemDst = event.GetItem();
+
+	wxTreeItemId cur_sel = event.GetItem();
+
+	if (m_tree->GetItemImage(cur_sel) == TreeCtrlIcon_File)
+	{
+		wstring text = m_tree->GetItemText(cur_sel);
+		if (m_worker->MoveTable(text, oldLoc, newLoc))
+		{
+			// where to copy the item?
+			if ( itemDst.IsOk() && !m_tree->ItemHasChildren(itemDst) )
+			{
+				// copy to the parent then
+				itemDst = m_tree->GetItemParent(itemDst);
+			}
+
+			if ( !itemDst.IsOk() || !m_draggedItem.IsOk() )
+			{	
+				return;
+			}
+		}    
+	}
+}
+
+void DecisionLogicFrame::TreeOnBeginLabelEdit(wxTreeEvent& event)
+{
+    // for testing, prevent this item's label editing
+    wxTreeItemId itemId = event.GetItem();
+    if ( EditNotAllowed(itemId) )
+    {
+        event.Veto();
+    }
+	else
+	{
+		m_lastName = event.GetLabel();
+	}
+    
+}
+
+void DecisionLogicFrame::TreeOnEndLabelEdit(wxTreeEvent& event)
+{
+    // don't allow anything except letters in the labels
+	wstring newName = event.GetLabel();
+    if (!m_worker->ValidateFolderName(newName))
+    {
+        event.Veto();
+    }
+	else
+	{
+		m_worker->RenameTable(m_lastName, newName);
+	}
+	m_lastName = L"";
+}
+
+void DecisionLogicFrame::TreeOnKeyDownItem(wxTreeEvent& event)                        
+{                         
+	if (event.GetKeyCode() == 127) //delete
+		m_worker->DeleteTable(m_tree->GetItemText(event.GetItem()).wc_str());
+}
+
+bool DecisionLogicFrame::EditNotAllowed(const wxTreeItemId& item)
+{
+	return m_tree->GetItemParent(item) == m_tree->GetRootItem() && !m_tree->GetPrevSibling(item);
+}
+
+bool DecisionLogicFrame::ItemIsDraggable(const wxTreeItemId& item)
+{
+	return (item != m_tree->GetRootItem() && m_tree->GetItemImage(item, wxTreeItemIcon_Normal) == TreeCtrlIcon_File);
 }
 
 //Frame Events
@@ -555,6 +713,7 @@ void DecisionLogicFrame::EnableAllMenus()
 	tableMenu->Enable(DecisionLogic_DeleteTable, true);
 	tableMenu->Enable(DecisionLogic_RenameTable, true);
 	tableMenu->Enable(DecisionLogic_NewGroup, true);
+	tableMenu->Enable(DecisionLogic_RenameGroup, true);
 	tableMenu->Enable(DecisionLogic_DeleteGroup, true);
 }
 
@@ -638,12 +797,12 @@ void DecisionLogicFrame::OnEditCode(wxCommandEvent& event)
 
 void DecisionLogicFrame::OnSocketEvent(wxSocketEvent& event)
 {
-	m_worker->ParseSocket(event);
+	m_gui->ParseSocket(event);
 }
 
 void DecisionLogicFrame::OnServerEvent(wxSocketEvent& event)
 {
-	m_worker->ServerEvent(event, DecisionLogic_Socket);
+	m_gui->ServerEvent(event, DecisionLogic_Socket);
 }
 
 void DecisionLogicFrame::ShowFindReplaceDialog( wxCommandEvent& WXUNUSED(event) )
@@ -679,7 +838,7 @@ void DecisionLogicFrame::OnFindDialog(wxFindDialogEvent& event)
 		{
 			if (!m_last_find_pos)
 				m_last_find_pos = new wxPoint(0,0);
-			bool res = m_worker->FindTextInAnyTable((wstring)event.GetFindString(), m_last_find_pos, &m_found_name, bMatchCase, bMatchWholeWord);
+			bool res = m_gui->FindTextInAnyTable((wstring)event.GetFindString(), m_last_find_pos, &m_found_name, bMatchCase, bMatchWholeWord);
 			if (res == false)
 			{
 				wxMessageBox(_T("No more matches"));
@@ -704,7 +863,7 @@ void DecisionLogicFrame::OnFindDialog(wxFindDialogEvent& event)
 			}
 
 			//highlight on current open table
-			m_worker->FindTextInActiveTable((wstring)event.GetFindString(), m_last_find_pos, bMatchCase, bMatchWholeWord);
+			m_gui->FindTextInActiveTable((wstring)event.GetFindString(), m_last_find_pos, bMatchCase, bMatchWholeWord);
 			if (m_last_find_pos->x == -1 && m_last_find_pos->y == -1)
 			{
 				wxMessageBox(_T("Reached the end of the table, no matches"));
@@ -729,14 +888,14 @@ void DecisionLogicFrame::OnFindDialog(wxFindDialogEvent& event)
 			m_last_find_pos = new wxPoint(0,0);
 			do
 			{
-				m_worker->FindTextInActiveTable((wstring)event.GetFindString(), m_last_find_pos, bMatchCase, bMatchWholeWord, true, (wstring)event.GetReplaceString());
+				m_gui->FindTextInActiveTable((wstring)event.GetFindString(), m_last_find_pos, bMatchCase, bMatchWholeWord, true, (wstring)event.GetReplaceString());
 			} while (m_last_find_pos->x != -1 && m_last_find_pos->y != -1);
 		}
 		else
 		{
 			if (!m_last_find_pos)
 				m_last_find_pos = new wxPoint(0,0);
-			m_worker->FindTextInActiveTable((wstring)event.GetFindString(), m_last_find_pos, bMatchCase, bMatchWholeWord, true, (wstring)event.GetReplaceString());
+			m_gui->FindTextInActiveTable((wstring)event.GetFindString(), m_last_find_pos, bMatchCase, bMatchWholeWord, true, (wstring)event.GetReplaceString());
 			if (m_last_find_pos->x == -1 && m_last_find_pos->y == -1)
 				wxMessageBox(_T("Reached the end of the table, no matches"));
 		}
@@ -756,4 +915,28 @@ void DecisionLogicFrame::OnFindDialog(wxFindDialogEvent& event)
     {
         wxLogError(wxT("Unknown find dialog event!"));
     }
+}
+
+void DecisionLogicFrame::OnTreeContextMenu(wxTreeEvent &event)
+{
+	wxMenu popupMenu;
+
+	wxTreeItemId cur_sel = event.GetItem();
+	if (cur_sel.IsOk())
+	{
+		if (m_tree->GetItemImage(cur_sel) == TreeCtrlIcon_File)
+		{
+			popupMenu.Append(DecisionLogic_DeleteTable, _T("Delete Table"));
+			popupMenu.Append(DecisionLogic_RenameTable, _T("Rename Table"));
+		}
+		else if (m_tree->GetRootItem() != cur_sel)
+		{
+			popupMenu.Append(DecisionLogic_NewTable, _T("New Table"));
+			popupMenu.Append(DecisionLogic_NewGroup, _T("New Group"));
+			popupMenu.Append(DecisionLogic_DeleteGroup, _T("Delete Group"));
+			popupMenu.Append(DecisionLogic_RenameGroup, _T("Rename Group"));
+		}		
+
+		PopupMenu(&popupMenu);
+	}
 }

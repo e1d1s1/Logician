@@ -3,8 +3,8 @@
 // Purpose:     GUI impelmentation of rules table
 // Author:      Eric D. Schmidt
 // Modified by:
-// Created:     07/01/2009
-// Copyright:   (c) 2009 Eric D. Schmidt
+// Created:     07/01/2010
+// Copyright:   (c) 2010 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -91,7 +91,7 @@ enum
 class LogicGrid: public wxGrid
 {
 public:
-	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void), void(*ChildOpenTableCallback)(wstring), map<wstring, vector<wstring> > *gORs, 
+	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void), bool(*ChildOpenTableCallback)(wstring), map<wstring, vector<wstring> > *gORs, 
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = wxWANTS_CHARS,
 		const wxString& name = wxPanelNameStr):
@@ -1285,7 +1285,7 @@ private:
 	int								m_type;
 	wxRect							m_sel_range;
 	void							(*m_updateCallback)(void);
-	void							(*m_OpenTableCallback)(wstring tableName);
+	bool							(*m_OpenTableCallback)(wstring tableName);
 	map<wstring, vector<wstring> >	*m_ors;
 
 	DECLARE_EVENT_TABLE()
@@ -1294,7 +1294,9 @@ private:
 class MDIChild: public wxMDIChildFrame
 {
 public:
-	MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), void(*ChildOpenTableCallback)(wstring), int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
+	MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(wstring), bool(*ChildOpenTableCallback)(wstring), 
+		bool(*ChildSaveTableCallback)(OpenLogicTable*),	int orient, int type, 
+		vector<OpenLogicTable> *open_tables, LogicTable logic,
 		ProjectManager *pm, const wxString& title, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, const long style = 0);
 	~MDIChild(void);
@@ -1347,8 +1349,9 @@ private:
 	int						m_type;
 	stack<StringTable<wstring> >		stUndo;
 	stack<StringTable<wstring> >		stRedo;
-	void (*m_ChildClosedCallback)(void);
-	void (*m_OpenTableCallback)(wstring tableName);
+	void (*m_ChildClosedCallback)(wstring tableName);
+	bool (*m_ChildSaveCallback)(OpenLogicTable *data);
+	bool (*m_OpenTableCallback)(wstring tableName);
 
 	DECLARE_EVENT_TABLE()
 };

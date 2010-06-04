@@ -3,8 +3,8 @@
 // Purpose:     CompileOptions class header and CompileOptionsDialog box
 // Author:      Eric D. Schmidt
 // Modified by:
-// Created:     07/01/2009
-// Copyright:   (c) 2009 Eric D. Schmidt
+// Created:     07/01/2010
+// Copyright:   (c) 2010 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -91,7 +91,7 @@ private:
 		wxPanel* panel = new wxPanel(parent, wxID_ANY);
 		wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
 
-		javaCodeBox = new wxTextCtrl(panel, wxID_ANY, m_options->JavascriptCode, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+		javaCodeBox = new wxTextCtrl(panel, wxID_ANY, m_options->JavascriptCode, wxDefaultPosition, wxSize(480, 480), wxTE_MULTILINE);
 		
 		topSizer->Add(javaCodeBox, 1, wxGROW);
 
@@ -105,7 +105,7 @@ private:
 		wxPanel* panel = new wxPanel(parent, wxID_ANY);
 		wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
 
-		pythonCodeBox = new wxTextCtrl(panel, wxID_ANY, m_options->PythonCode, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+		pythonCodeBox = new wxTextCtrl(panel, wxID_ANY, m_options->PythonCode, wxDefaultPosition, wxSize(480, 480), wxTE_MULTILINE);
 		
 		topSizer->Add(pythonCodeBox, 1, wxGROW);
 
