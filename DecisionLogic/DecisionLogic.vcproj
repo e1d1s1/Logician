@@ -299,6 +299,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GUIClass.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GUIClass.h"
+				>
+			</File>
+			<File
 				RelativePath=".\LogicTable.h"
 				>
 			</File>

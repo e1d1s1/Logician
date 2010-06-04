@@ -3,8 +3,8 @@
 // Purpose:     Headers and defines
 // Author:      Eric D. Schmidt
 // Modified by:
-// Created:     07/01/2009
-// Copyright:   (c) 2009 Eric D. Schmidt
+// Created:     07/01/2010
+// Copyright:   (c) 2010 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -59,6 +59,14 @@
 #include <sstream>
 #include <stdexcept>
 #include <wx/msgdlg.h>
+
+#ifdef POSIX
+const wchar_t PATHSEP = L'/';
+#else
+const wchar_t PATHSEP = L'\\';
+#endif
+
+#define ID_YES wxYES
 
 using namespace std;
 

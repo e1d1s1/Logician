@@ -3,8 +3,8 @@
 // Purpose:     Manages project related info for all tables, saving, loading, etc
 // Author:      Eric D. Schmidt
 // Modified by:
-// Created:     12/04/2009
-// Copyright:   (c) 2009 Eric D. Schmidt
+// Created:     12/04/2010
+// Copyright:   (c) 2010 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -32,8 +32,9 @@ void SignalTableChanged()
 	mySelf->SignalTableChangedCallback();
 }
 
-MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), void(*ChildOpenTableCallback)(wstring), int orient, int type, vector<OpenLogicTable> *open_tables, LogicTable logic,
-		ProjectManager *pm, const wxString& title, const wxPoint& pos,
+MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(wstring), bool(*ChildOpenTableCallback)(wstring), 
+		bool(*ChildSaveTableCallback)(OpenLogicTable*), int orient, int type, vector<OpenLogicTable> *open_tables, 
+		LogicTable logic, ProjectManager *pm, const wxString& title, const wxPoint& pos,
 		const wxSize& size, const long style):
 		  wxMDIChildFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
                          wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
@@ -53,6 +54,7 @@ MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(void), vo
 	m_opened_window_tracker->push_back(table);
 	m_ChildClosedCallback = ChildCloseCallback;
 	m_OpenTableCallback = ChildOpenTableCallback;
+	m_ChildSaveCallback = ChildSaveTableCallback;
 	m_table = NULL;
 	m_table = new LogicGrid(this, m_orientation, -1, type, SignalTableChanged, m_OpenTableCallback, &pm->GlobalORs, wxDefaultPosition, wxDefaultSize);
 	if (!m_table)
@@ -403,7 +405,7 @@ void MDIChild::OnChildClose(wxCloseEvent& event)
 		if (res == wxID_YES)
 		{
 			OpenLogicTable newData = Save();
-			if (!m_pm->SaveDataSet(newData.logic_table.Name, newData.logic_table.Path, newData.logic_table.GetDataSet(), newData.logic_table.bGetAll))
+			if (!m_ChildSaveCallback(&newData))
 			{
 				wxMessageBox(_T("Save failed"));
 				return;
@@ -420,12 +422,11 @@ void MDIChild::OnChildClose(wxCloseEvent& event)
 		{
 			m_opened_window_tracker->erase(it);
 		}
-
 	}
 	else
 		m_opened_window_tracker->erase(it);
 
-	m_ChildClosedCallback();
+	m_ChildClosedCallback((wstring)this->GetTitle());
 	event.Skip();
 }
 

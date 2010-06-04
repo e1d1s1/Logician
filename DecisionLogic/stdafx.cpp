@@ -1,6 +1,6 @@
 /*
 This file is part of the Relational Object Model 2 Library.
-Copyright (C) 2009 Eric D. Schmidt
+Copyright (c) 2010 Eric D. Schmidt
 
     Relational Object Model 2 is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by

@@ -3,8 +3,8 @@
 // Purpose:     Manages project related info for all tables, saving, loading, etc
 // Author:      Eric D. Schmidt
 // Modified by:
-// Created:     07/01/2009
-// Copyright:   (c) 2009 Eric D. Schmidt
+// Created:     07/01/2010
+// Copyright:   (c) 2010 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -54,6 +54,7 @@ public:
 	DataSet<wstring> LoadDataSet(wstring name);
 	bool DeleteDataSet(wstring name);
 	bool RenameDataSet(wstring oldName, wstring newName);
+	bool RenameDataSetFolder(wstring oldFolder, wstring newFolder);
 	wstring GetProjectWorkingPath() {return m_project_working_path;}
 	void WriteAllDataSetsToXMLFile(wstring savePath);
 	StringTable<wstring>* GetProjectTable() {return m_project_files;}
@@ -67,6 +68,7 @@ public:
 	wstring GetPythonCode() {return m_pyCode;}
 	vector<wstring> GetSelectedDebugTables() {return m_SelectedTables;}
 	wstring GetProjectFilePath() {return m_project_full_path_name;}
+	wstring GetProjectName() {return m_project_name;}
 	set<wstring>* GetProjectStrings() {return &stringCollection;}
 	xmlDocPtr LoadTableRawXML(wstring name);
 	bool TableIsGetAll(wstring name);
