@@ -168,12 +168,14 @@ map<wstring, vector<wstring> > EDS::CKnowledgeBase::EvaluateTable(wstring tableN
 
 vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring outputAttr, std::wstring param, bool bGetAll)
 {
+	CRuleTable *table = m_TableSet.GetTable(tableName);
 	if (iRecursingDepth == 0)
+	{
 		m_StateParameter = param;
+	}
 	iRecursingDepth++;
 	vector<wstring> retval;
-
-	CRuleTable *table = m_TableSet.GetTable(tableName);
+	
 	table->EnbleDebugging(m_DEBUGGING_MSGS);
 
 	table->SetInputValues(m_GlobalInputAttrsValues);
@@ -197,7 +199,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 					wstring chainTableName = TrimString(args[0]);
 					wstring chainAttrName = TrimString(args[1]);
 
-					chainedResults = EvaluateTableWithParam(chainTableName, chainAttrName, param, bGetAll);
+					chainedResults = EvaluateTableWithParam(chainTableName, chainAttrName, param, TableIsGetAll(chainTableName));
 					for (vector<wstring>::iterator itRes = chainedResults.begin(); itRes != chainedResults.end(); itRes++)
 					{
 						newResults.push_back((*itRes));
@@ -460,7 +462,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 
 	iRecursingDepth--;
 
-	if (m_DEBUGGING_MSGS == true && iRecursingDepth == 0)
+	if (m_DEBUGGING_MSGS == true)
 	{
 		SendToDebugServer(table->DebugMessage);
 	}
@@ -546,6 +548,9 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 	m_IsOpen = false;
 	iRecursingDepth = 0;
 	mapBaseIDtoTranslations.clear();
+	m_GlobalInputAttrsValues.clear();
+	m_GlobalInputAttrsValues[L""] = EMPTY_STRING;
+	m_GlobalInputAttrsValues[L"NULL"] = EXPLICIT_NULL_STRING;
 #ifdef USE_MSXML
 	HRESULT hr = CoInitialize(NULL);
 #endif
