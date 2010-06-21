@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
     <title>EDSEngine Web Implementation (No Server Callbacks)</title>
-    <script src="KnowledgeBase.js" type="text/javascript"></script>    
-    <script src="ROMTree.js" type="text/javascript"></script>    
+    <script src="./KnowledgeBase.js" type="text/javascript"></script>    
+    <script src="./ROMTree.js" type="text/javascript"></script>    
     <script type="text/javascript">
         function btnTest_onclick()
         {
@@ -22,9 +22,9 @@
             }
                         
             var cnt = knowledge.TableCount();
-            if (cnt == 9)
+            if (cnt == 10)
             {
-                write_result("OK: 9 Tables loaded");
+                write_result("OK: 10 Tables loaded");
             }
             else
             {
@@ -232,7 +232,36 @@
 	        {
 	            write_result("FAILURE: Did not get proper eval result on get() test");
 		        return false;
+		    }
+	        
+	        write_result("testing NULL conditions");
+	        knowledge.SetInputValue("inputAttr1", "");
+	        knowledge.SetInputValue("inputAttr2", "");
+	        var result7 = knowledge.EvaluateTableForAttr("testtable4", "outputAttr1", true);
+	        if (result7.length == 4 && result7[2]== "both attrs are NULL")
+	        {
+		        write_result("OK: " + result7[0] + "\n" + 
+		        result7[1] + "\n" + 
+		        result7[2] + "\n" + 
+		        result7[3]);
 	        }
+	        else
+	        {
+	            write_result("FAILURE: Did not get proper eval result on NULL test");
+	        }
+
+	        knowledge.SetInputValue("inputAttr1", "blah");
+	        knowledge.SetInputValue("c", "");
+	        result7 = knowledge.EvaluateTableForAttr("testtable4", "outputAttr1", true);
+	        if (result7.length == 2 && result7[0] == "inputAttr2 is NULL")
+	        {
+		        write_result("OK: " + result7[0] + "\n" +
+		        result7[1]);
+	        }
+	        else
+	        {
+	            write_result("FAILURE: Did not get proper eval result on NULL test");
+	        }	
 	        
 	        write_result("testing translation of: A");
 	        var localeValue = knowledge.Localize("A", "en-US");

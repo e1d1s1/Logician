@@ -68,13 +68,18 @@ size_t CBimapper::GetIDByString(std::wstring s)
 #ifdef _MSC_VER
 	stdext::hash_map<wstring, size_t>::iterator it = m_StringsToIndexMap.find(s);
 #else
-
 	__gnu_cxx::hash_map<wstring, size_t>::iterator it = m_StringsToIndexMap.find(s);
 #endif
-	if (it != m_StringsToIndexMap.end())
+
+	if (s.length() == 0)
+	{
+		retval = EMPTY_STRING;
+	}
+	else if (it != m_StringsToIndexMap.end())
 	{
 		retval = (*it).second;
-	}
+	} 
+
 	return retval;
 }
 

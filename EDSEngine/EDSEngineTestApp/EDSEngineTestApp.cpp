@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 
 	string s = stringifyDouble(knowledge.TableCount());
 	Log("# of Tables loaded: " + s);
-	if (s == "9")
+	if (s == "10")
 	{
 		res.SetResult(true, "");
 	}
@@ -329,6 +329,38 @@ int main(int argc, char* argv[])
 	else
 	{
 		res.SetResult(false, "Did not get proper eval result on get() test");
+	}
+
+	res.Reset();
+	Log("testing NULL conditions");
+	knowledge.SetInputValue(L"inputAttr1", L"");
+	knowledge.SetInputValue(L"inputAttr2", L"");
+	vector<wstring> result7 = knowledge.EvaluateTable(L"testtable4", L"outputAttr1", true);
+	if (result7.size() == 4 && result7.at(2) == L"both attrs are NULL")
+	{
+		Log(result7.at(0));
+		Log(result7.at(1));
+		Log(result7.at(2));
+		Log(result7.at(3));
+		res.SetResult(true, "");
+	}
+	else
+	{
+		res.SetResult(false, "Did not get proper eval result on NULL test");
+	}
+
+	knowledge.SetInputValue(L"inputAttr1", L"blah");
+	knowledge.SetInputValue(L"c", L"");
+	result7 = knowledge.EvaluateTable(L"testtable4", L"outputAttr1", true);
+	if (result7.size() == 2 && result7.at(0) == L"inputAttr2 is NULL")
+	{
+		Log(result7.at(0));
+		Log(result7.at(1));
+		res.SetResult(true, "");
+	}
+	else
+	{
+		res.SetResult(false, "Did not get proper eval result on NULL test");
 	}
 
 	Log("testing translation of: A");

@@ -98,7 +98,7 @@ vector<wstring> CTableSet::ParseTablesAndChainsForInputs(wstring tableName)
 		{
 			if (StringContains(*itValue, L"eval("))
 			{
-				wstring cmdArgs((*itValue).begin() + 1, (*itValue).end() - 1);
+				wstring cmdArgs((*itValue).begin() + 5, (*itValue).end() - 1);
 				vector<wstring> args = Split(cmdArgs, L",");
 				if (args.size() > 0)
 				{

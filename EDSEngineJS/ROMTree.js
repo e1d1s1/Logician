@@ -15,6 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Relational Object Model 2 JS.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+/// reference path="KnowledgeBase.js"
+
 //stupid IE doesnt do indexOf for array
 function GetIndexOfItem(arr, obj)
 {
@@ -576,19 +579,15 @@ ROMTree.prototype.LoadTree = function(xmlStr)
     }
 }
 
-ROMTree.prototype.LoadInputs = function(currentObject, evalTable)
-{
-    try
-    {
+ROMTree.prototype.LoadInputs = function(currentObject, evalTable) {
+    try {
         var inputs = this.m_KnowledgeBase.GetInputDependencies(evalTable);
-        if (inputs != null) for (var i = 0; i < inputs.length; i++)
-        {
-            var value = this.GetATableInputValue(currentObject, inputs[i]);
+        if (inputs != null) for (var i = 0; i < inputs.length; i++) {
+            var value = this.GetATableInputValue(currentObject, inputs[i]);            
             this.m_KnowledgeBase.SetInputValue(inputs[i], value);
         }
     }
-    catch (err)
-    {
+    catch (err) {
         ReportError(err);
     }
 }
@@ -1259,13 +1258,10 @@ LinearEngine.prototype.EvalMultiSelect = function(dictAttrName, newValues)
 	    {
 		    selectedValues.push(availableValues[0]);
 		    this.base.m_dict[dictAttrName].ChangedByUser = false;
-	    }
+		}
+	    
 	    //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
-<<<<<<< .mine
-	    else if (currentValues != null && (currentValues.length == 1 && (currentValues[0].length == 0 || GetIndexOfItem(availableValues, currentValues[0]) < 0)) && prefixes.length > 0)
-=======
-	    else if (currentValues != null && (currentValues.length == 1 && (currentValues[0].length == 0 || GetIndexOfItem(availableValues, currentValues[0]) >= 0)) && prefixes.length > 0)
->>>>>>> .r61
+	    if (currentValues != null && (currentValues.length == 1 && (currentValues[0].length == 0 || GetIndexOfItem(availableValues, currentValues[0]) >= 0)) && prefixes.length > 0)
 	    {
 		    for (var i = 0; i < prefixes.length; i++)
 		    {
@@ -1344,11 +1340,7 @@ LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
 	    }
 	    
 	    //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
-<<<<<<< .mine
-	    if ((currentValue.length == 0 || GetIndexOfItem(availableValues, currentValue) < 0) && prefixes.length > 0)
-=======
 	    if ((currentValue.length == 0 || GetIndexOfItem(availableValues, currentValue) >= 0) && prefixes.length > 0)
->>>>>>> .r61
 	    {
 		    for (var i = 0; i < prefixes.length; i++)
 		    {

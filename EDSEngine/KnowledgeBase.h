@@ -48,9 +48,17 @@ namespace EDS
 		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, bool bGetAll);
 		wstring GetEvalParameter() {return m_StateParameter;}
 	#ifdef _MSC_VER
-		void SetInputValues(stdext::hash_map<wstring, size_t> values) {m_GlobalInputAttrsValues = values;}
+		void SetInputValues(stdext::hash_map<wstring, size_t> values) 
+		{
+			m_GlobalInputAttrsValues = values;
+			m_GlobalInputAttrsValues[L""] = EMPTY_STRING;
+			m_GlobalInputAttrsValues[L"NULL"] = EXPLICIT_NULL_STRING;
+		}
 	#else
-		void SetInputValues(__gnu_cxx::hash_map<wstring, size_t> values) {m_GlobalInputAttrsValues = values;}
+		void SetInputValues(__gnu_cxx::hash_map<wstring, size_t> values) 
+		{
+			m_GlobalInputAttrsValues = values;
+		}
 	#endif
 		void SetInputValue(wstring name, wstring value);
 		void ResetTable(wstring tableName);
@@ -85,6 +93,7 @@ namespace EDS
 		void SetInputValues(__gnu_cxx::hash_map<string, size_t> values);
 	#endif
 		void SetInputValue(string name, string value);
+		size_t GetInputValuesCount() {return m_GlobalInputAttrsValues.size();}
 		void ResetTable(string tableName);
 		vector<string> GetInputAttrs(string tableName);
 		vector<string> GetInputDependencies(string tableName);

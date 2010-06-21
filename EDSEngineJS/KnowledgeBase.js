@@ -225,8 +225,12 @@ Bimapper.prototype.GetIDByString = function(s)
 {
     var retval = INVALID_STRING;
     try
-    {        
-        for (var i in this.m_StringsToIndexMap)
+    {    
+		if (s.length == 0)
+		{
+			retval = EMPTY_STRING;
+		}
+		else for (var i in this.m_StringsToIndexMap)
         {
             if (i == s)
             {
@@ -527,7 +531,7 @@ Decode.prototype.GetString = function(id)
 			    return s;
 		    else
 		    {
-			    ReportError("string not found for index: " + id.toString());
+			    throw "string not found for index: " + id.toString();
 		    }
 	    }
 	    return "";
@@ -1730,7 +1734,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
 					    var chainAttrName = args[1].trim();
 					    var debugVals = "";
 
-					    chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, param, bGetAll);
+					    chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, param, this.TableIsGetAll(chainTableName));
 					    for (var j = 0; j < chainedResults.length; j++)
 					    {
 					        var result = chainedResults[j];
@@ -1874,6 +1878,10 @@ KnowledgeBase.prototype.EvaluateTableWithParamGet = function(tableName, param, b
         ReportError(err);
     }
     return retval;
+}
+
+KnowledgeBase.prototype.GetInputValueCount = function() {
+    return ArraySize(this.m_GlobalInputAttrsValues);
 }
 
 KnowledgeBase.prototype.SetInputValue = function(valName, value)

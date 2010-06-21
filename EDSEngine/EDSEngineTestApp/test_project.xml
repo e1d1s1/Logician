@@ -16,7 +16,7 @@
     </Inputs>
     <Outputs>
       <Attr>cDictAttr1</Attr>
-      <Value id="3,4,5,6" operation="1">Option1|Option2|Option3|Option4</Value>
+      <Value id="5,6,7,8" operation="1">Option1|Option2|Option3|Option4</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -31,9 +31,9 @@
   <Table name="DictAttr2" getall="false">
     <Inputs>
       <Attr>cDictAttr1</Attr>
-      <Value id="3" operation="1">Option1</Value>
-      <Value id="4" operation="1">Option2</Value>
-      <Value id="5" operation="1">Option3</Value>
+      <Value id="5" operation="1">Option1</Value>
+      <Value id="6" operation="1">Option2</Value>
+      <Value id="7" operation="1">Option3</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -44,9 +44,9 @@
     </Inputs>
     <Outputs>
       <Attr>dDictAttr2</Attr>
-      <Value id="7,8,9" operation="1">@ResultByOption1|Result2|Result3</Value>
-      <Value id="8" operation="1">Result2</Value>
-      <Value id="9" operation="1">Result3</Value>
+      <Value id="9,10,11" operation="1">@ResultByOption1|Result2|Result3</Value>
+      <Value id="10" operation="1">Result2</Value>
+      <Value id="11" operation="1">Result3</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -59,8 +59,8 @@
   <Table name="DictAttr3" getall="false">
     <Inputs>
       <Attr>dDictAttr2</Attr>
-      <Value id="10" operation="1">ResultByOption1</Value>
-      <Value id="8" operation="1">Result2</Value>
+      <Value id="12" operation="1">ResultByOption1</Value>
+      <Value id="10" operation="1">Result2</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -72,9 +72,9 @@
     </Inputs>
     <Outputs>
       <Attr>aDictAttr3</Attr>
-      <Value id="11" operation="1">YY</Value>
-      <Value id="12" operation="1">YN</Value>
-      <Value id="13" operation="1">N</Value>
+      <Value id="13" operation="1">YY</Value>
+      <Value id="14" operation="1">YN</Value>
+      <Value id="15" operation="1">N</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -87,8 +87,8 @@
   <Table name="DictAttr4" getall="false">
     <Inputs>
       <Attr>aDictAttr3</Attr>
-      <Value id="14" operation="1">Y</Value>
-      <Value id="13" operation="1">N</Value>
+      <Value id="16" operation="1">Y</Value>
+      <Value id="15" operation="1">N</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -100,8 +100,8 @@
     </Inputs>
     <Outputs>
       <Attr>bDictAttr4</Attr>
-      <Value id="15,16,17" operation="1">Selection1|@Selection2|@Selection3</Value>
-      <Value id="15,18" operation="1">Selection1|Selection2</Value>
+      <Value id="17,18,19" operation="1">Selection1|@Selection2|@Selection3</Value>
+      <Value id="17,20" operation="1">Selection1|Selection2</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -115,8 +115,8 @@
   <Table name="DictAttr5" getall="false">
     <Inputs>
       <Attr>aDictAttr3</Attr>
-      <Value id="14" operation="1">Y</Value>
-      <Value id="13" operation="1">N</Value>
+      <Value id="16" operation="1">Y</Value>
+      <Value id="15" operation="1">N</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -128,8 +128,8 @@
     </Inputs>
     <Outputs>
       <Attr>eDictAttr5</Attr>
-      <Value id="19" operation="1">[0,35]</Value>
-      <Value id="20" operation="1">[10,50]</Value>
+      <Value id="21" operation="1">[0,35]</Value>
+      <Value id="22" operation="1">[10,50]</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -156,11 +156,11 @@
     </Inputs>
     <Outputs>
       <Attr>Name</Attr>
-      <Value id="21" operation="1">aDictAttr3</Value>
-      <Value id="22" operation="1">bDictAttr4</Value>
-      <Value id="23" operation="1">cDictAttr1</Value>
-      <Value id="24" operation="1">dDictAttr2</Value>
-      <Value id="25" operation="1">eDictAttr5</Value>
+      <Value id="23" operation="1">aDictAttr3</Value>
+      <Value id="24" operation="1">bDictAttr4</Value>
+      <Value id="25" operation="1">cDictAttr1</Value>
+      <Value id="26" operation="1">dDictAttr2</Value>
+      <Value id="27" operation="1">eDictAttr5</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -169,11 +169,11 @@
     </Outputs>
     <Outputs>
       <Attr>Description</Attr>
-      <Value id="26" operation="1">A Boolean Attribute</Value>
-      <Value id="27" operation="1">A Multi-Select Attribute</Value>
-      <Value id="28" operation="1">A Single Selection Attribute</Value>
-      <Value id="29" operation="1">Another Single Selection</Value>
-      <Value id="30" operation="1">An Edit Attribute</Value>
+      <Value id="28" operation="1">A Boolean Attribute</Value>
+      <Value id="29" operation="1">A Multi-Select Attribute</Value>
+      <Value id="30" operation="1">A Single Selection Attribute</Value>
+      <Value id="31" operation="1">Another Single Selection</Value>
+      <Value id="32" operation="1">An Edit Attribute</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -182,11 +182,11 @@
     </Outputs>
     <Outputs>
       <Attr>DefaultValue</Attr>
-      <Value id="31" operation="1">~</Value>
-      <Value id="31" operation="1">~</Value>
-      <Value id="31" operation="1">~</Value>
-      <Value id="31" operation="1">~</Value>
-      <Value id="32" operation="1">0</Value>
+      <Value id="33" operation="1">~</Value>
+      <Value id="33" operation="1">~</Value>
+      <Value id="33" operation="1">~</Value>
+      <Value id="33" operation="1">~</Value>
+      <Value id="34" operation="1">0</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -195,11 +195,11 @@
     </Outputs>
     <Outputs>
       <Attr>AttributeType</Attr>
-      <Value id="33" operation="1">BOOLEAN</Value>
-      <Value id="34" operation="1">MULTISELECT</Value>
-      <Value id="35" operation="1">SINGLESELECT</Value>
-      <Value id="35" operation="1">SINGLESELECT</Value>
-      <Value id="36" operation="1">EDIT</Value>
+      <Value id="35" operation="1">BOOLEAN</Value>
+      <Value id="36" operation="1">MULTISELECT</Value>
+      <Value id="37" operation="1">SINGLESELECT</Value>
+      <Value id="37" operation="1">SINGLESELECT</Value>
+      <Value id="38" operation="1">EDIT</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -208,11 +208,11 @@
     </Outputs>
     <Outputs>
       <Attr>RuleTable</Attr>
-      <Value id="37" operation="1">DictAttr3</Value>
-      <Value id="38" operation="1">DictAttr4</Value>
-      <Value id="39" operation="1">DictAttr1</Value>
-      <Value id="40" operation="1">DictAttr2</Value>
-      <Value id="41" operation="1">DictAttr5</Value>
+      <Value id="39" operation="1">DictAttr3</Value>
+      <Value id="40" operation="1">DictAttr4</Value>
+      <Value id="41" operation="1">DictAttr1</Value>
+      <Value id="42" operation="1">DictAttr2</Value>
+      <Value id="43" operation="1">DictAttr5</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -223,8 +223,8 @@
   <Table name="testtable1" getall="true">
     <Inputs>
       <Attr>inputAttr1</Attr>
-      <Value id="42,43" operation="1">A|Z</Value>
-      <Value id="44" operation="1">C</Value>
+      <Value id="44,45" operation="1">A|Z</Value>
+      <Value id="46" operation="1">C</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -235,13 +235,13 @@
     </Inputs>
     <Inputs>
       <Attr>inputAttr2</Attr>
-      <Value id="45" operation="1">1</Value>
+      <Value id="47" operation="1">1</Value>
       <Value/>
-      <Value id="46" operation="16">9</Value>
+      <Value id="48" operation="16">9</Value>
       <Value/>
       <Value/>
-      <Value id="47" operation="64">50,60</Value>
-      <Value id="48" operation="64">70,80</Value>
+      <Value id="49" operation="64">50,60</Value>
+      <Value id="50" operation="64">70,80</Value>
       <Value/>
       <Value/>
     </Inputs>
@@ -259,13 +259,13 @@
     </Outputs>
     <Outputs>
       <Attr>outputAttr1</Attr>
-      <Value id="45,49" operation="1">1|2</Value>
-      <Value id="49" operation="1">2</Value>
-      <Value id="50" operation="2049">get(outsideAttr1) with concat</Value>
-      <Value id="51" operation="1">4</Value>
-      <Value id="52" operation="1">5</Value>
-      <Value id="53" operation="3073">py(get(outsideAttr1) + 2)</Value>
-      <Value id="54" operation="10241">js(get(outsideAttr1) + 2)</Value>
+      <Value id="47,51" operation="1">1|2</Value>
+      <Value id="51" operation="1">2</Value>
+      <Value id="52" operation="2049">get(outsideAttr1) with concat</Value>
+      <Value id="53" operation="1">4</Value>
+      <Value id="54" operation="1">5</Value>
+      <Value id="55" operation="3073">py(get(outsideAttr1) + 2)</Value>
+      <Value id="56" operation="10241">js(get(outsideAttr1) + 2)</Value>
       <Value/>
       <Value/>
     </Outputs>
@@ -274,7 +274,7 @@
   <Table name="testtable2" getall="true">
     <Inputs>
       <Attr>in1</Attr>
-      <Value id="55" operation="1">this is a comment</Value>
+      <Value id="57" operation="1">this is a comment</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -283,22 +283,22 @@
       <Attr>xpath(//Object[@id='ChildObject']/Attribute[@id='childAttr']/@value)</Attr>
       <Value/>
       <Value/>
-      <Value id="56" operation="1">some value of value</Value>
+      <Value id="58" operation="1">some value of value</Value>
       <Value/>
     </Inputs>
     <Outputs>
       <Attr>out1</Attr>
       <Value/>
-      <Value id="57" operation="4096">eval(testtable1, outputAttr1)</Value>
-      <Value id="58" operation="1">XPATH Worked</Value>
+      <Value id="59" operation="4096">eval(testtable1, outputAttr1)</Value>
+      <Value id="60" operation="1">XPATH Worked</Value>
       <Value/>
     </Outputs>
   </Table>
   <Table name="testtable3" getall="true">
     <Inputs>
       <Attr>inputAttr2</Attr>
-      <Value id="59" operation="2064">get(someAttr)</Value>
-      <Value id="59" operation="2056">get(someAttr)</Value>
+      <Value id="61" operation="2064">get(someAttr)</Value>
+      <Value id="61" operation="2056">get(someAttr)</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -306,8 +306,8 @@
     <FormulaInput>someAttr</FormulaInput>
     <Outputs>
       <Attr>outputAttr1</Attr>
-      <Value id="60" operation="2049">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Value>
-      <Value id="61" operation="2049">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Value>
+      <Value id="62" operation="2049">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Value>
+      <Value id="63" operation="2049">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -315,10 +315,51 @@
     <FormulaInput>inputAttr2</FormulaInput>
     <FormulaInput>someAttr</FormulaInput>
   </Table>
+  <Table name="testtable4" getall="true">
+    <Inputs>
+      <Attr>inputAttr2</Attr>
+      <Value id="2" operation="1">NULL</Value>
+      <Value/>
+      <Value id="2" operation="1">NULL</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Inputs>
+      <Attr>inputAttr1</Attr>
+      <Value/>
+      <Value id="2" operation="1">NULL</Value>
+      <Value id="2" operation="1">NULL</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>outputAttr1</Attr>
+      <Value id="64" operation="1">inputAttr2 is NULL</Value>
+      <Value id="65" operation="1">inputAttr1 is NULL</Value>
+      <Value id="66" operation="1">both attrs are NULL</Value>
+      <Value id="67" operation="1">fallout rule</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+  </Table>
   <Translations>
-    <String id="42" en-US="A trans"/>
-    <String id="43" en-US="Z trans"/>
-    <String id="58" en-US="XPATH Worked trans"/>
+    <String id="44" en-US="A trans"/>
+    <String id="45" en-US="Z trans"/>
+    <String id="60" en-US="XPATH Worked trans"/>
   </Translations>
   <Scripting>
     <Python>from math import *
