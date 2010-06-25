@@ -64,8 +64,7 @@ WorkerClass::WorkerClass(GUIClass *gui, int orient)
 {
 	m_gui = gui;
 	m_orientation = orient;
-	m_debug_status = false;	
-	m_MaxRecentFiles = 5;	
+	m_debug_status = false;		
 	pt2WorkerObject = (void*)this;
 
 	bIsSaved = true;
@@ -82,7 +81,7 @@ bool WorkerClass::CheckSave()
 	try
 	{
 		int res = m_gui->PromptQuestion(L"Do you want to save your current changes?", L"Save Changes");
-		if (res == wxID_YES)
+		if (res == ID_YES)
 		{
 			retval = Save();
 		}
@@ -98,6 +97,7 @@ wstring WorkerClass::GetProjectName()
 {
 	if (m_pm.GetProjectFilePath().length() > 0)
 		return m_pm.GetProjectName();
+	else return L"";
 }
 
 bool WorkerClass::NewProject()
@@ -167,7 +167,6 @@ bool WorkerClass::OpenProject(wstring fileName)
 
 void WorkerClass::GetSettings()
 {
-	wxString str;
 	long l;
 
 	m_debugOptions.connection = m_pm.GetConnection();
@@ -184,9 +183,8 @@ void WorkerClass::GetSettings()
 	}
 
 	m_debugOptions.selectedTables = m_pm.GetSelectedDebugTables();
-
-	m_compileOptions.PythonCode == m_pm.GetPythonCode();
-	m_compileOptions.JavascriptCode == m_pm.GetJavascriptCode();
+	m_compileOptions.PythonCode = m_pm.GetPythonCode();
+	m_compileOptions.JavascriptCode = m_pm.GetJavascriptCode();
 }
 
 void WorkerClass::SaveApplicationSettings()
@@ -200,7 +198,7 @@ void WorkerClass::SaveApplicationSettings()
 		if (find(files.begin(), files.end(), m_pm.GetProjectFilePath()) == files.end())
 			files.insert(files.begin(), m_pm.GetProjectFilePath());
 		wstring fileList;
-		int cnt = m_MaxRecentFiles;
+		int cnt = MAX_RECENT_FILES;
 		for (vector<wstring>::iterator it = files.begin(); it != files.end(); it++)
 		{
 			if (cnt <= 1) break;
@@ -298,7 +296,11 @@ bool WorkerClass::LoadTable(wstring name)
 	try
 	{
 		if (name == L"Root")
+		{
+			m_gui->SelectAnItem(name);
 			return false;
+		}
+
 		//see if the tree node is already selected
 		m_gui->SelectAnItem(name);
 
@@ -355,16 +357,118 @@ bool WorkerClass::LoadTable(wstring name)
 	return retval;
 }
 
-void WorkerClass::MoveTable(wstring table, wstring oldLoc, wstring newLoc)
+bool WorkerClass::MoveTable(wstring table, wstring oldLoc, wstring newLoc)
 {
+	bool retval = false;
 	try
 	{
+		if (!bIsSaved)
+		{
+			if (!CheckSave())
+			{
+				m_gui->PromptMessage(L"You must save any existing changes before moving an existing table.");
+				return retval;		
+			}
+		}
 
+		wstring pathFrom = m_pm.GetProjectWorkingPath() + PATHSEP;
+		wstring pathTo = m_pm.GetProjectWorkingPath() + PATHSEP;
+
+		wstring folderFrom = oldLoc;
+		if (folderFrom.length() > 0)
+			if (!(folderFrom.length() == 1 && folderFrom[0] == PATHSEP))
+				pathFrom += folderFrom;
+		pathFrom += table + L".xml";
+
+		wstring folderTo = newLoc;
+		if (folderTo.length() > 0)
+			if (!(folderTo.length() == 1 && folderTo[0] == PATHSEP))
+				pathTo += folderTo;
+		pathTo += table + L".xml";
+
+		//close the window if its open
+		bool bWasClosed = m_gui->CloseWindow(table);
+
+		//make sure any subdirs exist
+		if (pathTo.length() > 0)
+		{
+			wstring fileName = PATHSEP + table + L".xml";
+			wstring pathToFile = UTILS::FindAndReplace(pathTo, fileName, L"");
+			#ifdef WIN32
+			_wmkdir(pathToFile.c_str());
+			#else
+			mkdir(UTILS::WStrToMBCStr(pathToFile).c_str(), 0777);
+			#endif
+		}
+
+		//move the file on disk
+		#ifdef WIN32
+		FILE *oldFile = _wfopen(pathFrom.c_str(), L"rb");
+		FILE *newFile = _wfopen(pathTo.c_str(), L"wb");
+		#else
+		FILE *oldFile = fopen(UTILS::WStrToMBCStr(pathFrom).c_str(), "rb");
+		FILE *newFile = fopen(UTILS::WStrToMBCStr(pathTo).c_str(), "wb");
+		#endif
+
+		if (oldFile == NULL || newFile == NULL)
+		{
+			ReportError("Could not move the file");
+			return retval;
+		}
+		else
+		{
+			char *buffer = NULL;
+			fseek(oldFile, 0, SEEK_END);
+			size_t len = ftell(oldFile);
+			buffer = new char[len];
+			rewind(oldFile);
+			size_t result = fread(buffer, 1, len, oldFile);
+			if (result > 0)
+				fwrite(buffer, 1, len, newFile);
+			delete[] buffer;			
+			fclose(oldFile);
+			fclose(newFile);
+			#ifdef WIN32
+			_wremove(pathFrom.c_str());
+			#else
+			remove(UTILS::WStrToMBCStr(pathFrom).c_str());
+			#endif
+		}
+
+		m_pm.MoveFile(table + L".xml", oldLoc, newLoc);
+
+		//rearrange the nodes
+		vector<wstring> existing_names = m_gui->GetChildrenOfGroup(newLoc);
+		existing_names.push_back(table);
+		sort(existing_names.begin(), existing_names.end());
+		size_t pos = find(existing_names.begin(), existing_names.end(), table) - existing_names.begin();		
+		wstring prevValue;
+		if (existing_names.size() > 1)
+		{
+			if (pos > 0)
+			{
+				wstring prevValue = existing_names[pos - 1];
+			}
+		}	
+		
+		m_gui->SetActiveGroup(oldLoc);
+		m_gui->DeleteTreeNode(table);
+		m_gui->SetActiveGroup(newLoc);
+		m_gui->AddTreeNodeToActiveGroup(prevValue, table);		
+
+		//if the windows was closed, reopen it
+		if (bWasClosed)
+			LoadTable(table);
+
+		Save();
+		
+		retval = true;
 	}
 	catch(...)
 	{
 		ReportError("WorkerClass::MoveTable");
 	}
+	return retval;
 }
 
 void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
@@ -381,13 +485,16 @@ void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
 		else
 			existingName = opened.logic_table.Name;
 
-		newName = wxGetTextFromUser(_T("Rename Table:"), _T("Rename Table"));
+		newName = m_gui->PromptUserForText(L"Rename Table:", L"Rename Table");
 	}
 	else
 	{
 		existingName = oldTableName;
 		newName = newTableName;
 	}
+
+	if (newName.length() == 0)
+		return;
 
 	if (!ValidateFolderName(newName))
 	{
@@ -474,7 +581,7 @@ void WorkerClass::NewTable(wstring name)
 		bool bUserEnteredName = name.length() == 0;
 		bool bSystemTable = false;
 		if (bUserEnteredName)
-			name = wxGetTextFromUser(_T("Enter new table name:"), _T("Table Name"));
+			name = m_gui->PromptUserForText(L"Enter new table name:", L"Table Name");
 		if (name == GLOBALORS_TABLE_NAME || name == TRANSLATIONS_TABLE_NAME)
 		{
 			if (bUserEnteredName)
@@ -492,7 +599,7 @@ void WorkerClass::NewTable(wstring name)
 
 		if (name.length() > 0)
 		{
-			vector<wstring> existing_names = m_pm.GetProjectTableNames();			
+			vector<wstring> existing_names = m_pm.GetProjectTableNames(m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()));			
 			vector<wstring>::iterator itFind = find(existing_names.begin(), existing_names.end(), name);
 			if (itFind == existing_names.end())
 			{
@@ -619,7 +726,7 @@ void WorkerClass::NewGroup()
 {
 	try
 	{
-		if (bIsSaved)
+		if (!bIsSaved)
 		{
 			CheckSave();
 		}
@@ -627,7 +734,7 @@ void WorkerClass::NewGroup()
 		wstring name = m_gui->PromptUserForText(L"Enter new group name:", L"Group Name");
 		if (name.length() > 0 && ValidateFolderName(name))
 		{
-			m_gui->AddTreeNodeToActiveGroup(NULL, name, "Group");			
+			m_gui->AddTreeNodeToActiveGroup(L"", name, "Group");
 			Save();
 		}
 		else
@@ -644,13 +751,20 @@ void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
 {
 	try
 	{
-		if (!CheckSave())
+		if (!bIsSaved)
 		{
-			m_gui->PromptMessage(L"You must save any existing changes before renaming an existing group.");
-			return;			
+			if (!CheckSave())
+			{
+				m_gui->PromptMessage(L"You must save any existing changes before renaming an existing group.");
+				return;		
+			}
 		}
-		else
-			m_gui->CloseAllWindows();
+
+		vector<wstring> tables = m_gui->GetChildTablesOfActiveGroup(), tableThatClosed;
+		wstring activeTable = m_gui->GetActiveChild().logic_table.Name;
+		for (vector<wstring>::iterator it = tables.begin(); it != tables.end(); it++)
+			if (m_gui->CloseWindow(*it))
+				tableThatClosed.push_back(*it);
 		
 		wstring existingName, newName;
 		if (oldGroupName.length() == 0 && newGroupName.length() == 0)
@@ -672,16 +786,17 @@ void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
 		wstring path, oldPath;
 		path = m_pm.GetProjectWorkingPath();
 		oldPath = m_pm.GetProjectWorkingPath();
+		wstring wsPathSep; wsPathSep += PATHSEP;
 		wstring oldFolder = m_gui->GetTreeNodePath(existingName);
 		if (oldFolder.length() > 0)
 		{
-			path += PATHSEP + newName;
+			path += PATHSEP + UTILS::FindAndReplace(oldFolder, existingName, newName);
 			oldPath += PATHSEP + oldFolder;
 		}
 
 		if (path.length() > 0 && oldPath.length() > 0)
 		{
-			if (m_pm.RenameDataSetFolder(existingName, newName))
+			if (m_pm.RenameDataSetFolder(existingName + PATHSEP, newName + PATHSEP))
 			{
 				m_gui->DeleteTreeNode(existingName); //the new active node will become the parent node of whats being deleted
 				m_gui->AddTreeNodeToActiveGroup(existingName, newName, "Group");		
@@ -697,7 +812,18 @@ void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
 				m_gui->AddAllProjectNodes(m_pm.GetProjectTable());
 				m_gui->SelectAnItem(newName);
 			}
+			else if (m_gui->GetChildTablesOfActiveGroup().size() == 0)
+			{
+				m_gui->AddAllProjectNodes(m_pm.GetProjectTable());
+				m_gui->SelectAnItem(newName);
+			}
+
+			for (vector<wstring>::iterator it = tableThatClosed.begin(); it != tableThatClosed.end(); it++)
+				LoadTable(*it);
+			if (activeTable.length() > 0)
+				LoadTable(activeTable);
 		}
+		
 	}
 	catch(...)
 	{
@@ -707,10 +833,10 @@ void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
 
 bool WorkerClass::ValidateFolderName(wstring name)
 {
-	char invalidCharacters[9] = {'<', '>',':', '"', '/', '\\', '|', '?', '*'};
+	char invalidCharacters[9] = {'<', '>',':', '\"', '/', '\\', '|', '\?', '*'};
 	for (int i = 0; i < name.length(); i++)
 	{
-		for (int j = 0; j < strlen(invalidCharacters); j++)
+		for (int j = 0; j < 9; j++)
 		{
 			if (name[i] == invalidCharacters[j])
 				return false;
@@ -719,18 +845,21 @@ bool WorkerClass::ValidateFolderName(wstring name)
 
 	if (name.length() > 0)
 		return true;
+	else
+		return false;
 }
 
 void WorkerClass::DeleteGroup()
 {
 	try
 	{
-		vector<wstring> list = m_gui->GetChildrenOfSelection();
+		wstring groupName = m_gui->GetActiveGroupName();
+		vector<wstring> list = m_gui->GetChildrenOfActiveGroup();
+		vector<wstring> paths;
+		wstring dirPath;
 		if (list.size() > 0)
-		{			
-			wstring groupName = m_gui->GetActiveGroupName();
-			wstring dirPath = m_gui->GetTreeNodePath(groupName);
-			vector<wstring> paths;
+		{						
+			dirPath = m_gui->GetTreeNodePath(groupName);			
 			for (vector<wstring>::iterator itChild = list.begin(); itChild != list.end(); itChild++)
 			{		
 				wstring name = *itChild;
@@ -741,10 +870,13 @@ void WorkerClass::DeleteGroup()
 					paths.push_back(path);
 				}
 			}
+		}
 
+		if (groupName != L"Root")
 			m_gui->DeleteTreeNode(groupName);
 
-			int ans = m_gui->PromptQuestion(L"Group removed from project.\nDo you wnat to delete the associated files as well?", L"Remove Files?");
+		if (paths.size() > 0)
+		{	int ans = m_gui->PromptQuestion(L"Group removed from project.\nDo you wnat to delete the associated files as well?", L"Remove Files?");
 			if (ans == ID_YES)
 			{
 				for (vector<wstring>::iterator it = paths.begin(); it != paths.end(); it++)
@@ -755,14 +887,26 @@ void WorkerClass::DeleteGroup()
 					remove(UTILS::WStrToMBCStr(*it).c_str());
 					#endif
 				}
-				#ifdef WIN32
-				_wrmdir(dirPath.c_str());
-				#else
-				rmdir(UTILS::WStrToMBCStr(dirPath).c_str());
-				#endif
+				if (dirPath.length() > 0 && !(dirPath.length() == 1 && dirPath[0] == PATHSEP))
+				{
+					#ifdef WIN32
+					_wrmdir(dirPath.c_str());
+					#else
+					rmdir(UTILS::WStrToMBCStr(dirPath).c_str());
+					#endif
+				}
 			}
-			
 		}
+		else if (dirPath.length() > 1 && !(dirPath.length() == 1 && dirPath[0] == PATHSEP))
+		{
+			#ifdef WIN32
+			_wrmdir(dirPath.c_str());
+			#else
+			rmdir(UTILS::WStrToMBCStr(dirPath).c_str());
+			#endif
+		}
+			
+		
 	}
 	catch(...)
 	{
@@ -783,22 +927,6 @@ void WorkerClass::SetOrientation(int orient)
 	}
 }
 
-void WorkerClass::GenerateRecentFileList(wxMenu *listMenu, int RecentFile_ID_BEGIN, int RecentFile_ID_END)
-{
-	wstring str;
-	m_gui->ReadConfig(L"RecentProjectList", &str);	
-	vector<wstring> files = UTILS::Split((wstring)str, L";");
-	int cnt = RecentFile_ID_END - RecentFile_ID_BEGIN, index = 0;
-	m_MaxRecentFiles = cnt;
-	for (vector<wstring>::iterator it = files.begin(); it != files.end(); it++)
-	{
-		if (cnt <= 1 || (*it).length() == 0) break;
-		listMenu->Append(RecentFile_ID_BEGIN + index, *it);
-		cnt--;
-		index++;
-	}
-}
-
 void WorkerClass::ShowDebugOptions()
 {
 	vector<wstring> allTables = m_pm.GetProjectTableNames();
@@ -809,15 +937,16 @@ void WorkerClass::ShowDebugOptions()
 	if (itFind != allTables.end()) allTables.erase(itFind);
 
 	m_debugOptions.allTables = allTables;
-	DebugOptionsDialog debugDialog(m_gui->GetParentFrame(), wxID_ANY, &m_debugOptions);
+	DebugOptionsDialog debugDialog(m_gui->GetParentFrame(), -1, &m_debugOptions);
 	debugDialog.ShowModal();
 	m_pm.SetDebugStatus(m_debug_status, m_debugOptions.connection, m_debugOptions.selectedTables);
 }
 
 void WorkerClass::ShowCompileOptions()
 {
-	CompileOptionsDialog compileDialog(m_gui->GetParentFrame(), wxID_ANY, &m_compileOptions);
+	CompileOptionsDialog compileDialog(m_gui->GetParentFrame(), -1, &m_compileOptions);
 	compileDialog.ShowModal();
+	bIsSaved = false;
 	m_pm.SetCompilerOptions(m_compileOptions.JavascriptCode, m_compileOptions.PythonCode);
 }
 
@@ -890,43 +1019,43 @@ void WorkerClass::CompileZip()
 	}
 }
 
-void WorkerClass::InsertCol(wxCommandEvent& event)
+void WorkerClass::InsertCol()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->InsertCol(event);
+		active->InsertCol();
 	}
 }
 
-void WorkerClass::InsertRow(wxCommandEvent& event)
+void WorkerClass::InsertRow()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->InsertRow(event);
+		active->InsertRow();
 	}
 }
 
-void WorkerClass::DeleteCol(wxCommandEvent& event)
+void WorkerClass::DeleteCol()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->DeleteCol(event);
+		active->DeleteCol();
 	}
 }
 
-void WorkerClass::DeleteRow(wxCommandEvent& event)
+void WorkerClass::DeleteRow()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->DeleteRow(event);
+		active->DeleteRow();
 	}
 }
 
-void WorkerClass::AppendRow(wxCommandEvent& event)
+void WorkerClass::AppendRow()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
@@ -935,7 +1064,7 @@ void WorkerClass::AppendRow(wxCommandEvent& event)
 	}
 }
 
-void WorkerClass::AppendColumn(wxCommandEvent& event)
+void WorkerClass::AppendColumn()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
@@ -944,66 +1073,66 @@ void WorkerClass::AppendColumn(wxCommandEvent& event)
 	}
 }
 
-void WorkerClass::ClearCells(wxCommandEvent& event)
+void WorkerClass::ClearCells()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->ClearCells(event);
+		active->ClearCells();
 	}
 }
 
-void WorkerClass::Redo(wxCommandEvent& event)
+void WorkerClass::Redo()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->Redo(event);
+		active->Redo();
 	}
 }
 
-void WorkerClass::Undo(wxCommandEvent& event)
+void WorkerClass::Undo()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->Undo(event);
+		active->Undo();
 	}
 }
 
-void WorkerClass::Copy(wxCommandEvent& event)
+void WorkerClass::Copy()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->Copy(event);
+		active->Copy();
 	}
 }
 
-void WorkerClass::Cut(wxCommandEvent& event)
+void WorkerClass::Cut()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->Cut(event);
+		active->Cut();
 	}
 }
 
-void WorkerClass::Paste(wxCommandEvent& event)
+void WorkerClass::Paste()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->Paste(event);
+		active->Paste();
 	}
 }
 
-void WorkerClass::EditCode(wxCommandEvent& event)
+void WorkerClass::EditCode()
 {
 	MDIChild *active = (MDIChild*)m_gui->GetActiveChild().child_window_ptr;
 	if (active != NULL)
 	{
-		active->EditCode(event);
+		active->EditCode();
 	}
 }
 

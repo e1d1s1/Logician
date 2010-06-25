@@ -56,14 +56,18 @@ public:
 	}
 
 	//tree
-	wstring GetTreeNodePath(wstring nodeName);	
+	wstring GetTreeNodePath(wstring nodeName);
+	wstring GetTreeNodePath(void* nodePtr);
 	void AddTreeNodeToActiveGroup(wstring preValue, wstring name, string type = "Table");
 	void DeleteTreeNode(wstring name);		
 	void SelectAnItem(wstring name);
-	wstring GetActiveGroupName(){return m_tree->GetItemText(wxtid_active_group);}
+	wstring GetActiveGroupName(){return (wstring)m_tree->GetItemText(wxtid_active_group);}
 	unsigned int GetNodeCount() {return m_tree->GetCount();}
-	vector<wstring> GetChildrenOfSelection();
+	vector<wstring> GetChildrenOfActiveGroup();
+	vector<wstring> GetChildTablesOfActiveGroup();
+	vector<wstring> GetChildrenOfGroup(wstring groupPath);
 	void AddAllProjectNodes(StringTable<wstring> *project);
+	void SetActiveGroup(wstring groupPath);
 
 	void LogText(wstring text) {m_log->AppendText(text);}
 	int PromptQuestion(wstring question, wstring title)
@@ -136,8 +140,9 @@ public:
 	void EnableAllChildWindows(bool enable);
 	wxMDIParentFrame* GetParentFrame() {return m_parent;}
 	OpenLogicTable GetActiveChild();
-	void CloseWindow(wstring name);
+	bool CloseWindow(wstring name);
 	void ChildWindowsHasClosed(wstring tableName);
+	void GenerateRecentFileList(wxMenu *listMenu, int RecentFile_ID_BEGIN, int RecentFile_ID_END);
 
 	//debugging server
 	void CreateServer(unsigned short port);
@@ -173,6 +178,7 @@ private:
 	wxMDIParentFrame *m_parent;
 	ProjectManager *m_pm;
 	DebugOptions *m_debugOptions;
+	wstring m_lastDebugLine;
 
 	bool (*m_OpenTableCallback)(wstring tableName);
 };

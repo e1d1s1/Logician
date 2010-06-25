@@ -164,8 +164,10 @@ private:
 	wstring m_lastName;
 	wxPoint *m_last_find_pos;
 	wstring m_found_name;
+	wstring m_draiggingName;
 	wxFindReplaceData m_findData;
     MyFindReplaceDialog *m_dlgReplace;
+	bool m_bBypassLoad;
     // any class wishing to process wxWidgets events must use this macro
     DECLARE_EVENT_TABLE();
 

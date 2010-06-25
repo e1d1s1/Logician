@@ -152,6 +152,12 @@ void ProjectManager::SaveStringDefs(xmlDocPtr doc)
 	stringCollection.clear();
 	stringDictionary.clear();
 
+	//reserved ids always
+	stringCollection.insert(L"");
+	stringDictionary[L""] = EMPTY_STRING;
+	stringCollection.insert(L"NULL");
+	stringDictionary[L"NULL"] = EXPLICIT_NULL_STRING;
+
 	//start by building the OR list
 	GlobalORs.clear();
 	wstring ors_path = m_project_working_path + PATHSEP + GLOBALORS_TABLE_NAME + L".xml";
@@ -568,7 +574,7 @@ void ProjectManager::GetXMLValuesForCell(wstring cellText, long &operation, wstr
 			case L'!':
 				if (cellText.length() >= 2 && cellText[1] == L'=')
 				{
-					operation = LESS_THAN_EQUAL;
+					operation = NOT_EQUAL;
 					saveText = cellText.substr(2);
 				}
 				break;
@@ -748,7 +754,7 @@ StringTable<wstring>* ProjectManager::ReadProjectFile(wstring path)
 			xmlXPathObjectPtr xpathPY = xmlXPathEvalExpression((xmlChar*)"//Python", xpathCtx);
 			if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathJS->nodesetval->nodeNr == 1)
 				m_jsCode = UTILS::MBCStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0]));
-			if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathPY->nodesetval->nodeNr == 1)
+			if (xpathPY != NULL && xpathPY->nodesetval != NULL && xpathPY->nodesetval->nodeNr == 1)
 				m_pyCode = UTILS::MBCStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0]));
 
 			xmlXPathFreeObject(xpathJS);
@@ -814,7 +820,7 @@ bool ProjectManager::SaveDataSet(wstring name, wstring full_path, DataSet<wstrin
 				#ifdef WIN32
 				_wmkdir(pathToFile.c_str());
 				#else
-				mkdir(UTILS::ToASCIIString(pathToFile).c_str(), 0777);
+				mkdir(UTILS::WStrToMBCStr(pathToFile).c_str(), 0777);
 				#endif
 			}
 			retval = xmlSaveFormatFileEnc(UTILS::WStrToMBCStr(full_path).c_str(), doc, "UTF-8", 1) > 0;
@@ -984,6 +990,25 @@ vector<wstring> ProjectManager::GetProjectTableNames()
 	return retval;
 }
 
+vector<wstring> ProjectManager::GetProjectTableNames(wstring path)
+{
+	vector<wstring> retval;
+	if (path.length() == 1 && path[0] == PATHSEP)
+		path.clear();
+
+	for (size_t rowIndex = 0; rowIndex < m_project_files->Rows(); rowIndex++)
+    {
+		if (m_project_files->GetItem(rowIndex, L"RelativePath") == path)
+		{
+			wstring name = m_project_files->GetItem(rowIndex, L"DataSetName");
+			name = UTILS::FindAndReplace(name, L".xml", L"");
+			retval.push_back(name);
+		}
+    }
+
+	return retval;
+}
+
 bool ProjectManager::RenameDataSet(wstring oldName, wstring newName)
 {
 	bool retval = false;
@@ -1022,11 +1047,38 @@ bool ProjectManager::DeleteDataSet(wstring name)
 bool ProjectManager::RenameDataSetFolder(wstring oldFolder, wstring newFolder)
 {
 	bool retval = false;
+	if (oldFolder.length() == 1 && oldFolder[0] == PATHSEP)
+		oldFolder.clear();
+	if (newFolder.length() == 1 && newFolder[0] == PATHSEP)
+		newFolder.clear();
 
     for (size_t rowIndex = 0; rowIndex < m_project_files->Rows(); rowIndex++)
     {
-		wstring pathFind = oldFolder + PATHSEP, pathReplace = newFolder + PATHSEP;
-        if (m_project_files->GetItem(rowIndex, L"RelativePath") == pathFind)
+		wstring pathFind = oldFolder, pathReplace = newFolder;
+		if (UTILS::StringContains(m_project_files->GetItem(rowIndex, L"RelativePath"), pathFind))
+        {
+			wstring newPath = UTILS::FindAndReplace(m_project_files->GetItem(rowIndex, L"RelativePath"), pathFind, pathReplace);
+			m_project_files->SetItem(rowIndex, L"RelativePath", newPath);
+			retval = true;
+        }
+    }
+
+	return retval;
+}
+
+bool ProjectManager::MoveFile(wstring name, wstring oldFolderPath, wstring newFolderPath)
+{
+	bool retval = false;
+
+	if (oldFolderPath.length() == 1 && oldFolderPath[0] == PATHSEP)
+		oldFolderPath.clear();
+	if (newFolderPath.length() == 1 && newFolderPath[0] == PATHSEP)
+		newFolderPath.clear();
+
+    for (size_t rowIndex = 0; rowIndex < m_project_files->Rows(); rowIndex++)
+    {
+		wstring pathFind = oldFolderPath, pathReplace = newFolderPath;
+        if (m_project_files->GetItem(rowIndex, L"DataSetName") == name && m_project_files->GetItem(rowIndex, L"RelativePath") == pathFind)
         {
 			m_project_files->SetItem(rowIndex, L"RelativePath", pathReplace);
 			retval = true;

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include <stack>
+#include <list>
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -47,47 +47,60 @@ wstring GUIClass::SaveDialog(string type)
 	return savePath;
 }
 
-wstring GUIClass::GetTreeNodePath(wstring name)
+wstring GUIClass::GetTreeNodePath(void* nodePtr)
 {
 	wstring retval;
-	stack<wstring> path;
-
+	wxTreeItemId next(nodePtr);
+	list<wstring> path;
 	try
 	{
-		wxTreeItemId next = FindItemNamed(m_tree->GetRootItem(), name);
 		if (next.IsOk())
 		{			
+			wxTreeItemId targetItem = next;
+			wstring name = m_tree->GetItemText(next);
 			while (next != m_tree->GetRootItem())
 			{
-				wxTreeItemId next = m_tree->GetItemParent(next);
+				next = m_tree->GetItemParent(next);
 
 				if (!next.IsOk())
 					break;
 
-				if (next != m_tree->GetRootItem())
+				if (next != m_tree->GetRootItem() && m_tree->GetItemImage(next) != TreeCtrlIcon_File)
 				{
 					wstring pathPart = m_tree->GetItemText(next);
 					if (pathPart != L"Root")
-						path.push(pathPart);
+						path.push_front(pathPart);
 					if (m_tree->GetItemText(next) == name)
 						break;
 				}
 			}
-			if (name != L"Root")
-				path.push(name);
+			if (name != L"Root" && m_tree->GetItemImage(targetItem) != TreeCtrlIcon_File)
+				path.push_back(name);
 		}
 
 		while (!path.empty())
 		{
-			retval += path.top();
+			retval += path.front();
 			retval += PATHSEP;
-			path.pop();
+			path.pop_front();
 		}
+
+		if (retval.length() == 0)
+			retval += PATHSEP;		
 	}
 	catch(...)
 	{
 		ReportError("GUIClass::GetTreeNodePath");
 	}
+	return retval;
+}
+
+wstring GUIClass::GetTreeNodePath(wstring name)
+{
+	wstring retval;	
+
+	wxTreeItemId next = FindItemNamed(m_tree->GetRootItem(), name), targetItem = next;
+	retval = GetTreeNodePath((void*)next.m_pItem);
 
 	return retval;
 }
@@ -222,15 +235,83 @@ void GUIClass::SelectAnItem(wstring name)
 	wstring active = m_tree->GetItemText(wxtid_active_group);
 }
 
-vector<wstring> GUIClass::GetChildrenOfSelection()
+vector<wstring> GUIClass::GetChildrenOfGroup(wstring groupPath)
 {
 	vector<wstring> names;
-	if (m_tree->GetSelection().IsOk())
+	wstring strPathSep; strPathSep += PATHSEP;
+	vector<wstring> pathParts = UTILS::Split(groupPath, strPathSep);
+	wxTreeItemId grpItem;
+	if (pathParts.size() > 0)
 	{
-		wxTreeItemId selection = m_tree->GetSelection();
+		grpItem = FindItemNamed(m_tree->GetRootItem(), pathParts[0]);
+		for (vector<wstring>::iterator it = pathParts.begin() + 1; it != pathParts.end(); it++)
+		{
+			grpItem = FindItemNamed(grpItem, *it);
+		}
+	}	
+
+	if (grpItem.IsOk())
+	{
 		wxTreeItemIdValue cookie;
-		wxTreeItemId nextChild = m_tree->GetFirstChild(selection, cookie);
+		wxTreeItemId nextChild = m_tree->GetFirstChild(grpItem, cookie);
 		while (nextChild.IsOk())
+		{
+			wstring name = m_tree->GetItemText(nextChild).wc_str();
+			names.push_back(name);
+			nextChild = m_tree->GetNextSibling(nextChild);
+		}
+	}
+
+	return names;
+}
+
+void GUIClass::SetActiveGroup(wstring groupPath)
+{
+	wstring strPathSep; strPathSep += PATHSEP;
+	vector<wstring> pathParts = UTILS::Split(groupPath, strPathSep);
+	wxTreeItemId grpItem;
+	if (pathParts.size() > 0 || (pathParts.size() == 1 && !(pathParts[0].length() == 1 && pathParts[0][0] == PATHSEP)))
+	{
+		grpItem = FindItemNamed(m_tree->GetRootItem(), pathParts[0]);
+		for (vector<wstring>::iterator it = pathParts.begin() + 1; it != pathParts.end(); it++)
+		{
+			grpItem = FindItemNamed(grpItem, *it);
+		}
+	}	
+	else
+		grpItem = m_tree->GetRootItem();
+
+	if (grpItem.IsOk())
+	{
+		wxtid_active_group = grpItem;
+	}
+}
+
+vector<wstring> GUIClass::GetChildrenOfActiveGroup()
+{
+	vector<wstring> names;
+	if (wxtid_active_group.IsOk())
+	{
+		wxTreeItemIdValue cookie;
+		wxTreeItemId nextChild = m_tree->GetFirstChild(wxtid_active_group, cookie);
+		while (nextChild.IsOk())
+		{
+			wstring name = m_tree->GetItemText(nextChild).wc_str();
+			names.push_back(name);
+			nextChild = m_tree->GetNextSibling(nextChild);
+		}		
+	}
+	return names;
+}
+
+vector<wstring> GUIClass::GetChildTablesOfActiveGroup()
+{
+	vector<wstring> names;
+	if (wxtid_active_group.IsOk())
+	{
+		wxTreeItemIdValue cookie;
+		wxTreeItemId nextChild = m_tree->GetFirstChild(wxtid_active_group, cookie);
+		while (nextChild.IsOk() && m_tree->GetItemImage(nextChild) == TreeCtrlIcon_File)
 		{
 			wstring name = m_tree->GetItemText(nextChild).wc_str();
 			names.push_back(name);
@@ -269,18 +350,17 @@ void GUIClass::AddAllProjectNodes(StringTable<wstring> *project)
 				{
 					AddTreeNode(m_tree->GetRootItem(), NULL, name);
 				}
-				else //recursive children
+				else //children
 				{
-					wxTreeItemId parentNode, tableParent;
+					wxTreeItemId parentNode = m_tree->GetRootItem(), tableParent, childToAdd;
 					for (size_t i = 0; i < parts.size(); i++)
 					{
-						if (i > 0)
-							parentNode = FindItemNamed(m_tree->GetRootItem(), parts[i - 1]);
-						else
-							parentNode = m_tree->GetRootItem();
-
-						if (parentNode.IsOk())
-							tableParent = AddTreeNode(parentNode, NULL, parts[i], "Group");
+						tableParent = FindItemNamed(parentNode, parts[i]);
+						if (!tableParent.IsOk())
+						{
+							parentNode = AddTreeNode(parentNode, NULL, parts[i], "Group");
+							tableParent = parentNode;
+						}
 					}
 					if (tableParent.IsOk())
 						AddTreeNode(tableParent, NULL, name);
@@ -324,8 +404,9 @@ void GUIClass::CloseAllWindows()
 	m_opened_windows->clear();
 }
 
-void GUIClass::CloseWindow(wstring name)
+bool GUIClass::CloseWindow(wstring name)
 {
+	bool retval = false;
 	for (int i = 0; i < m_opened_windows->size(); i++)
 	{
 		OpenLogicTable current_table = m_opened_windows->at(i);
@@ -333,9 +414,11 @@ void GUIClass::CloseWindow(wstring name)
 		{
 			MDIChild *childForm = (MDIChild*)current_table.child_window_ptr;
 			childForm->Close();
+			retval = true;
 			break;
 		}
 	}
+	return retval;
 }
 
 void GUIClass::EnableAllChildWindows(bool enable)
@@ -382,6 +465,21 @@ void GUIClass::ChildWindowsHasClosed(wstring tableName)
 	wxtid_active_group = parentId;
 	m_tree->SelectItem(parentId);
 	wstring active = m_tree->GetItemText(wxtid_active_group);
+}
+
+void GUIClass::GenerateRecentFileList(wxMenu *listMenu, int RecentFile_ID_BEGIN, int RecentFile_ID_END)
+{
+	wstring str;
+	ReadConfig(L"RecentProjectList", &str);	
+	vector<wstring> files = UTILS::Split((wstring)str, L";");
+	int cnt = RecentFile_ID_END - RecentFile_ID_BEGIN, index = 0;	
+	for (vector<wstring>::iterator it = files.begin(); it != files.end(); it++)
+	{
+		if (cnt <= 1 || (*it).length() == 0) break;
+		listMenu->Append(RecentFile_ID_BEGIN + index, *it);
+		cnt--;
+		index++;
+	}
 }
 
 bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring *last_found_name, bool bMatchCase, bool bMatchWholeWord, bool bDoReplace, wstring strReplace)
@@ -623,15 +721,23 @@ void GUIClass::ServerEvent(wxSocketEvent& event, int socket_id)
 
   sock = m_server->Accept(false);
 
+  wstring msg;
+  bool bSkipNotify = false;
   if (sock)
-  {
-    LogText(_("Received debug info\n"));
+  {    
+    msg = L"Received debug info\n";
   }
   else
   {
-    LogText(_("Error: couldn't accept a new connection\n"));
-    return;
+    msg = L"Error: couldn't accept a new connection\n";
+	bSkipNotify = true;
   }
+  if (m_lastDebugLine != msg)
+	  LogText(msg);
+  m_lastDebugLine = msg;
+
+  if (bSkipNotify)
+	  return;
 
   sock->SetEventHandler(*m_parent, socket_id);
   sock->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
@@ -705,16 +811,20 @@ void GUIClass::DebugInfoReceived(wstring buff)
 					xmlNodePtr output = allOutputs->nodeTab[i];
 					wstring outputValue = UTILS::MBCStrToWStr(xmlGetProp(output, (xmlChar*)"value"));
 					string strSolutionIdx = UTILS::ToASCIIString(UTILS::MBCStrToWStr(xmlGetProp(output, (xmlChar*)"index")));
-					int iSolnIdx = atoi(strSolutionIdx.c_str());
-					logMessage += outputValue;
-					logMessage += L"\n";
+					int iSolnIdx = atoi(strSolutionIdx.c_str());					
+					if (outputValue.length() > 0)
+					{
+						logMessage += outputValue;
+						logMessage += L"\n";
+					}
 
 					if (m_debugOptions->debugMode == m_debugOptions->SELECTED_TABLES && m_debugOptions->bOpenTable == true)
 						HighlightTableAndRule(tableName, iSolnIdx);
 				}
 			}
 
-			LogText(logMessage + L"\n");
+			if (logMessage.length() > 0)
+				LogText(logMessage + L"\n");
 		}
 
 		xmlXPathFreeObject(xpathInputs);

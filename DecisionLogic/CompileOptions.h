@@ -37,6 +37,7 @@
 #include <wx/dialog.h>
 #include <wx/bookctrl.h>
 #include <wx/propdlg.h>
+#include "CodeControl.h"
 #include <string>
 #include <vector>
 #include "utilities.h"
@@ -60,9 +61,9 @@ class CompileOptionsDialog : public wxPropertySheetDialog
 {
 public:
 	CompileOptionsDialog(wxWindow* parent, wxWindowID id, CompileOptions* options):
-		wxPropertySheetDialog(parent, id, _T("Compiler Options"), 
+		wxPropertySheetDialog(parent, id, _T("Global Code"), 
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | (int)wxPlatform::IfNot(wxOS_WINDOWS_CE, wxRESIZE_BORDER)
-		, _T("Compiler Options"))
+		, _T("Global Code"))
 	{
 		m_options = options;
 		CreateButtons(wxOK|wxCANCEL|wxHELP);
@@ -71,16 +72,16 @@ public:
 
 		wxPanel* jsOptions = CreateJavascriptPage(notebook);
 		wxPanel* pyOptions = CreatePythonPage(notebook);
-		notebook->AddPage(jsOptions, _T("Javascript Options"), true);
-		notebook->AddPage(pyOptions, _T("Python Options"));
+		notebook->AddPage(jsOptions, _T("Javascript Global Code"), true);
+		notebook->AddPage(pyOptions, _T("Python Global Code"));
 
 		LayoutDialog();
 	}
 
 	inline void OnOK(wxCommandEvent& WXUNUSED(event))
 	{
-		m_options->JavascriptCode = javaCodeBox->GetValue();
-		m_options->PythonCode = pythonCodeBox->GetValue();
+		m_options->JavascriptCode = javaCodeBox->GetText();
+		m_options->PythonCode = pythonCodeBox->GetText();
 
 		Close();
 	}
@@ -91,8 +92,9 @@ private:
 		wxPanel* panel = new wxPanel(parent, wxID_ANY);
 		wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
 
-		javaCodeBox = new wxTextCtrl(panel, wxID_ANY, m_options->JavascriptCode, wxDefaultPosition, wxSize(480, 480), wxTE_MULTILINE);
-		
+		javaCodeBox = new Edit(panel, wxID_ANY, wxDefaultPosition, wxSize(600, 480), wxTE_MULTILINE);
+		javaCodeBox->LoadText(m_options->JavascriptCode, L"C++");
+
 		topSizer->Add(javaCodeBox, 1, wxGROW);
 
 		panel->SetSizer(topSizer);
@@ -105,16 +107,17 @@ private:
 		wxPanel* panel = new wxPanel(parent, wxID_ANY);
 		wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
 
-		pythonCodeBox = new wxTextCtrl(panel, wxID_ANY, m_options->PythonCode, wxDefaultPosition, wxSize(480, 480), wxTE_MULTILINE);
-		
+		pythonCodeBox = new Edit(panel, wxID_ANY, wxDefaultPosition, wxSize(600, 480), wxTE_MULTILINE);
+		pythonCodeBox->LoadText(m_options->PythonCode, L"Python");
+
 		topSizer->Add(pythonCodeBox, 1, wxGROW);
 
 		panel->SetSizer(topSizer);
 
 		return panel;
-	}
+	}	
 
-	wxTextCtrl *javaCodeBox, *pythonCodeBox;
+	Edit *javaCodeBox, *pythonCodeBox;
 	CompileOptions *m_options;
 
 	DECLARE_EVENT_TABLE()

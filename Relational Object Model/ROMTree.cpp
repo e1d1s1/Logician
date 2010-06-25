@@ -679,13 +679,6 @@ vector<wstring> ROMTree::LoadInputs(Node currentObject, wstring evalTable)
 		wstring value = GetATableInputValue(currentObject, *it);
 		m_KnowledgeBase.SetInputValue(*it, value);
 	}
-	/*char buff[16] = "";
-	itoa(m_KnowledgeBase.GetInputValuesCount(), buff, 10);
-	string msg = ROMUTIL::ToASCIIString(evalTable);
-	msg += " : ";
-	msg += buff;
-	msg += "\n";
-	OutputDebugString(msg.c_str());*/
 	return inputs;
 }
 
