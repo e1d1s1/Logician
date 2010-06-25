@@ -1204,51 +1204,43 @@ TableSet.prototype.Count = function()
     }
 }
 
-TableSet.prototype.LoadTableInfo = function(table)
-{
-    try
-    {
+TableSet.prototype.LoadTableInfo = function(table) {
+    try {
         //get the input info for this table
         var inputs = table.GetAllInputAttrNames();
         if (ArraySize(inputs) > 0)
             this.m_inputAttrsByTable[table.m_Name] = inputs;
-            
+
         //outputs
         var outputs = table.GetAllOutputAttrNames();
         if (ArraySize(outputs) > 0)
             this.m_outputAttrsByTable[table.m_Name] = outputs;
-            
+
         //dependancies
-        var inputDeps = table.GetAllInputDependencies();	
-        for (var i = 0; i < outputs.length; i++)
-        {
+        var inputDeps = table.GetAllInputDependencies();
+        for (var i = 0; i < outputs.length; i++) {
             //check for table chaining
             var values = table.GetAllPossibleOutputs(outputs[i]);
-            for (var j = 0; j < values.length; j++)
-            {
+            for (var j = 0; j < values.length; j++) {
                 var value = values[j];
                 var evalIndex = value.indexOf("eval(");
-                if (evalIndex >= 0)
-                {
+                if (evalIndex >= 0) {
                     var cmdArgs = value.substr(evalIndex + 5, value.length - evalIndex - 6);
                     var args = cmdArgs.split(",");
-                    if (args && args.length > 0)
-                    {
+                    if (args && args.length > 0) {                        
                         var chainInputs = this.ParseTablesAndChainsForInputs(args[0]); //recursive
-                        for (var chainCnt = 0; chainCnt < chainInputs.length; chainCnt++)
-                        {
+                        for (var chainCnt = 0; chainCnt < chainInputs.length; chainCnt++) {
                             inputDeps.push(chainInputs[chainCnt]);
                         }
                     }
                 }
             }
-        }        
-        
+        }
+
         if (ArraySize(inputDeps) > 0)
             this.m_inputDependenciesByTable[table.m_Name] = inputDeps;
     }
-    catch (err)
-    {
+    catch (err) {
         ReportError(err);
     }
 }
@@ -1256,15 +1248,14 @@ TableSet.prototype.LoadTableInfo = function(table)
 TableSet.prototype.ParseTablesAndChainsForInputs = function(tableName)
 {
     var retval = new Array();
-    try
-    {
+    try {
         var table = this.m_tables[tableName];
         retval = table.GetAllInputDependencies();
         var outputs = table.GetAllOutputAttrNames();
         
         for (var i = 0; i < outputs.length; i++)
         {
-            values = table.GetAllPossibleOutputs(outputs[i]);
+            var values = table.GetAllPossibleOutputs(outputs[i]);
             for (var j = 0; j < values.length; j++)
             {
                 var value = values[j];
@@ -1831,7 +1822,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
 	    
 	    this.iRecursingDepth--;
 	    
-	    if (this.m_DEBUGGING_MSGS == true && this.iRecursingDepth == 0 && this.m_DebugHandlerFunct != null)
+	    if (this.m_DEBUGGING_MSGS == true && this.m_DebugHandlerFunct != null)
 	    {
 		    this.m_DebugHandlerFunct(table.DebugMessage);
 	    }

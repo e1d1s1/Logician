@@ -49,7 +49,7 @@ public:
 	void NewTable(wstring name = L"");
 	void DeleteTable(wstring nameDelete = L"");
 	void RenameTable(wstring oldTableName = L"", wstring newTableName = L"");
-	void MoveTable(wstring table, wstring oldLoc, wstring newLoc);
+	bool MoveTable(wstring table, wstring oldLoc, wstring newLoc);
 	void NewGroup();
 	void RenameGroup(wstring oldGroupName = L"", wstring newGroupName = L"");
 	void DeleteGroup();
@@ -57,7 +57,6 @@ public:
 	void CompileZip();
 	void ShowDebugOptions();
 	void SetOrientation(int orient);
-	void GenerateRecentFileList(wxMenu *listMenu, int RecentFile_ID_BEGIN, int RecentFile_ID_END);
 	void GenerateTranslations();
 	void ShowCompileOptions();
 
@@ -66,19 +65,19 @@ public:
 	void LogTextLine(wstring text) {m_gui->LogText(text); m_gui->LogText(L"\n");}	
 
 	//pass through menu commands to child windows
-	void InsertCol(wxCommandEvent& event);
-	void InsertRow(wxCommandEvent& event);
-	void DeleteCol(wxCommandEvent& event);
-	void DeleteRow(wxCommandEvent& event);
-	void AppendRow(wxCommandEvent& event);
-	void AppendColumn(wxCommandEvent& event);
-	void ClearCells(wxCommandEvent& event);
-	void Redo(wxCommandEvent& event);
-	void Undo(wxCommandEvent& event);
-	void Copy(wxCommandEvent& event);
-	void Cut(wxCommandEvent& event);
-	void Paste(wxCommandEvent& event);
-	void EditCode(wxCommandEvent& event);
+	void InsertCol();
+	void InsertRow();
+	void DeleteCol();
+	void DeleteRow();
+	void AppendRow();
+	void AppendColumn();
+	void ClearCells();
+	void Redo();
+	void Undo();
+	void Copy();
+	void Cut();
+	void Paste();
+	void EditCode();
 
 	wstring GetProjectName();
 	bool CheckSave();
@@ -96,8 +95,7 @@ private:
 
 
 	ProjectManager m_pm;		
-	int m_orientation;
-	int m_MaxRecentFiles;
+	int m_orientation;	
 	DebugOptions m_debugOptions;
 	CompileOptions m_compileOptions;
 	bool m_debug_status;

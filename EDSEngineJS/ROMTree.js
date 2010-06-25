@@ -582,10 +582,10 @@ ROMTree.prototype.LoadTree = function(xmlStr)
 ROMTree.prototype.LoadInputs = function(currentObject, evalTable) {
     try {
         var inputs = this.m_KnowledgeBase.GetInputDependencies(evalTable);
-        if (inputs != null) for (var i = 0; i < inputs.length; i++) {
+        if (inputs != null) for (var i = 0; i < inputs.length; i++) {			
             var value = this.GetATableInputValue(currentObject, inputs[i]);            
             this.m_KnowledgeBase.SetInputValue(inputs[i], value);
-        }
+        }       
     }
     catch (err) {
         ReportError(err);

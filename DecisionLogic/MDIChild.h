@@ -85,7 +85,8 @@ enum
 	DELETE_ROW,
 	CLEAR_CELLS,
 	EDIT_CODE,
-	JUMP
+	JUMP,
+	JUMPOR
 };
 
 class LogicGrid: public wxGrid
@@ -749,7 +750,7 @@ public:
 
 	inline void SetOrientation(int orient) {m_orientation = orient;}
 
-	inline void OnInsertCol(wxCommandEvent& event)
+	inline void OnInsertCol(wxCommandEvent& WXUNUSED(event))
 	{
 		int lowInsertPosition, highInsertPosition, min_i = 0;
 		GetSelectionRange(lowInsertPosition, highInsertPosition, true, INSERT);
@@ -790,7 +791,7 @@ public:
 		UpdateUndo();
 	}
 
-	inline void OnInsertRow(wxCommandEvent& event)
+	inline void OnInsertRow(wxCommandEvent& WXUNUSED(event))
 	{
 		int lowInsertPosition, highInsertPosition, min_j = 0;
 		GetSelectionRange(lowInsertPosition, highInsertPosition, false, INSERT);
@@ -945,6 +946,11 @@ public:
 		}
 	}
 
+	inline void OnJumpOR(wxCommandEvent& event)
+	{
+		m_OpenTableCallback(GLOBALORS_TABLE_NAME);
+	}
+
 	inline void OnEditCode(wxCommandEvent& event)
 	{
 		wstring text = GetSelectionText();
@@ -954,8 +960,12 @@ public:
 			wxRect selection = m_sel_range;
 			wstring prefix(text.begin(), text.begin() + 3);
 			wstring code(text.begin() + 3, text.end() - 1);
-			CodeEditorDialog codeEditor(this, wxID_ANY, &code);
+			wstring lang = L"C++";
+			if (text.substr(0, 2) == L"py")
+				lang = L"Python";
+			CodeEditorDialog codeEditor(this, wxID_ANY, &code, lang);
 			codeEditor.ShowModal();
+			HasChanged = true;
 			text = prefix + code + L")";
 			this->SetCellValue(selection.y, selection.x, text);
 		}
@@ -1004,13 +1014,43 @@ private:
 		popupMenu.Append(INSERT_ROW, _T("Insert Row(s)"));
 		popupMenu.AppendSeparator();
 		popupMenu.Append(DELETE_COL, _T("Delete Column(s)"));
-		popupMenu.Append(DELETE_ROW, _T("Delete Row(s)"));
-		popupMenu.AppendSeparator();
-		popupMenu.Append(JUMP, _T("Jump to Table"));
+		popupMenu.Append(DELETE_ROW, _T("Delete Row(s)"));	
+		
+		bool bSep = true;
+		bool bJumpTable = true;
+		bool bJumpOR = false;
+		bool bEditCode = false;
+		
+		if ((event.GetRow() > 1 && m_orientation == wxVERTICAL || 
+			event.GetCol() > 1 && m_orientation == wxHORIZONTAL) &&
+			this->GetCellTextColour(event.GetRow(), event.GetCol()) == DARKRED)
+		{
+			bSep = true;
+			bJumpOR = true;
+		}
 
 		wstring text = GetSelectionText();
 		if (text.substr(0, 3) == L"py(" ||
 			text.substr(0, 3) == L"js(")
+		{
+			bEditCode = true;			
+		}
+		//else if (text.substr(0, 5) == L"eval(")
+		//{
+		//	bSep = true;
+		//	bJumpTable = true;
+		//}
+
+		if (bSep)
+			popupMenu.AppendSeparator();
+
+		if (bJumpTable)
+			popupMenu.Append(JUMP, _T("Jump to Table"));
+
+		if (bJumpOR)
+			popupMenu.Append(JUMPOR, _T("Jump to OR"));
+
+		if (bEditCode)
 		{
 			popupMenu.AppendSeparator();
 			popupMenu.Append(EDIT_CODE, _T("Edit Code"));
@@ -1306,19 +1346,19 @@ public:
 	void DisplayRawTableData(StringTable<wstring> table);
 	void RepopulateTranslationsTable(set<wstring> *strings);
 	
-	void InsertCol(wxCommandEvent& event);
-	void InsertRow(wxCommandEvent& event);
+	void InsertCol();
+	void InsertRow();
 	void AppendRow();
 	void AppendColumn();
-	void DeleteCol(wxCommandEvent& event);
-	void DeleteRow(wxCommandEvent& event);
-	void ClearCells(wxCommandEvent& event);
-	void Undo(wxCommandEvent& event);	
-	void Redo(wxCommandEvent& event);
-	void Cut(wxCommandEvent& event);
-	void Copy(wxCommandEvent& event);
-	void Paste(wxCommandEvent& event);
-	void EditCode(wxCommandEvent& event);
+	void DeleteCol();
+	void DeleteRow();
+	void ClearCells();
+	void Undo();	
+	void Redo();
+	void Cut();
+	void Copy();
+	void Paste();
+	void EditCode();
 
 	void HighlightRule(int rule);
 	bool HasChanged();

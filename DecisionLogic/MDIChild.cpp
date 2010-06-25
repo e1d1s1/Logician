@@ -209,14 +209,14 @@ void MDIChild::RepopulateTranslationsTable(set<wstring> *strings)
 	delete tableStrings;
 }
 
-void MDIChild::InsertCol(wxCommandEvent& event) {m_table->OnInsertCol(event);}
-void MDIChild::InsertRow(wxCommandEvent& event) {m_table->OnInsertRow(event);}
+void MDIChild::InsertCol() {m_table->OnInsertCol(wxCommandEvent(NULL));}
+void MDIChild::InsertRow() {m_table->OnInsertRow(wxCommandEvent(NULL));}
 void MDIChild::AppendRow() {m_table->OnAppendRow(true);}
 void MDIChild::AppendColumn() {m_table->OnAppendColumn(true);}
-void MDIChild::DeleteCol(wxCommandEvent& event) {m_table->OnDeleteCol(event);}
-void MDIChild::DeleteRow(wxCommandEvent& event) {m_table->OnDeleteRow(event);}
-void MDIChild::ClearCells(wxCommandEvent& event) {m_table->OnClearCells(event);}
-void MDIChild::Undo(wxCommandEvent& event) 
+void MDIChild::DeleteCol() {m_table->OnDeleteCol(wxCommandEvent(NULL));}
+void MDIChild::DeleteRow() {m_table->OnDeleteRow(wxCommandEvent(NULL));}
+void MDIChild::ClearCells() {m_table->OnClearCells(wxCommandEvent(NULL));}
+void MDIChild::Undo() 
 {
 	if (stUndo.size() > 0)
 	{
@@ -232,7 +232,7 @@ void MDIChild::Undo(wxCommandEvent& event)
 	}
 }
 
-void MDIChild::Redo(wxCommandEvent& event) 
+void MDIChild::Redo() 
 {
 	if (stRedo.size() > 0)
 	{
@@ -243,10 +243,10 @@ void MDIChild::Redo(wxCommandEvent& event)
 	}
 }
 
-void MDIChild::Cut(wxCommandEvent& event) {return m_table->OnCut(event);}
-void MDIChild::Copy(wxCommandEvent& event) {return m_table->OnCopy(event);}
-void MDIChild::Paste(wxCommandEvent& event) {return m_table->OnPaste(event);}
-void MDIChild::EditCode(wxCommandEvent& event) {return m_table->OnEditCode(event);}
+void MDIChild::Cut() {return m_table->OnCut(wxCommandEvent(NULL));}
+void MDIChild::Copy() {return m_table->OnCopy(wxCommandEvent(NULL));}
+void MDIChild::Paste() {return m_table->OnPaste(wxCommandEvent(NULL));}
+void MDIChild::EditCode() {return m_table->OnEditCode(wxCommandEvent(NULL));}
 
 void MDIChild::HighlightRule(int rule) {m_table->HighlightRule(rule);}
 bool MDIChild::HasChanged() {return m_table->HasChanged;}
@@ -426,7 +426,9 @@ void MDIChild::OnChildClose(wxCloseEvent& event)
 	else
 		m_opened_window_tracker->erase(it);
 
+	this->Freeze(); //if you click really fast on multiple windows to close you might cause a threading issue
 	m_ChildClosedCallback((wstring)this->GetTitle());
+	this->Thaw();
 	event.Skip();
 }
 

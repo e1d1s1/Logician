@@ -59,7 +59,7 @@
 				AssemblerListingLocation=".\vc_mswud\DecisionLogic/"
 				ObjectFile=".\vc_mswud\DecisionLogic/"
 				ProgramDataBaseFileName="vc_mswud\DecisionLogic.pdb"
-				WarningLevel="4"
+				WarningLevel="1"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 			/>
@@ -77,7 +77,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw28ud_adv.lib wxmsw28ud_html.lib wxbase28ud_xml.lib wxmsw28ud_core.lib wxbase28ud_net.lib wxbase28ud.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxregexud.lib wxexpatd.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib zlib.lib iconv.lib libxml2.lib"
+				AdditionalDependencies="wxmsw28ud_adv.lib wxmsw28ud_html.lib wxbase28ud_xml.lib wxmsw28ud_core.lib wxbase28ud_net.lib wxbase28ud.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxregexud.lib wxexpatd.lib wxmsw28ud_stc.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib zlib.lib iconv.lib libxml2.lib"
 				OutputFile="vc_mswud\DecisionLogic.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw28u_adv.lib wxmsw28u_html.lib wxbase28u_xml.lib wxmsw28u_core.lib wxbase28u_net.lib wxbase28u.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib zlib.lib iconv_a.lib libxml2_a.lib"
+				AdditionalDependencies="wxmsw28u_adv.lib wxmsw28u_html.lib wxbase28u_xml.lib wxmsw28u_core.lib wxbase28u_net.lib wxbase28u.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_stc.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib zlib.lib iconv_a.lib libxml2_a.lib"
 				OutputFile="vc_mswu\DecisionLogic.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -221,6 +221,10 @@
 			Name="Source Files"
 			>
 			<File
+				RelativePath=".\CodeControl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="DecisionLogic.cpp"
 				>
 				<FileConfiguration
@@ -243,7 +247,15 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\EditorPrefs.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\FindReplaceDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GUIClass.cpp"
 				>
 			</File>
 			<File
@@ -275,6 +287,10 @@
 			Name="Header Files"
 			>
 			<File
+				RelativePath=".\CodeControl.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CodeEditor.h"
 				>
 			</File>
@@ -295,11 +311,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\FindReplaceDialog.h"
+				RelativePath=".\EditorPrefs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\GUIClass.cpp"
+				RelativePath=".\FindReplaceDialog.h"
 				>
 			</File>
 			<File

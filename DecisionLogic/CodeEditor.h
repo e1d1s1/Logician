@@ -37,6 +37,7 @@
 #include <wx/dialog.h>
 #include <wx/bookctrl.h>
 #include <wx/propdlg.h>
+#include "CodeControl.h"
 #include <string>
 #include <vector>
 #include "utilities.h"
@@ -46,7 +47,7 @@ using namespace std;
 class CodeEditorDialog : public wxPropertySheetDialog
 {
 public:
-	CodeEditorDialog(wxWindow* parent, wxWindowID id, wstring *text):wxPropertySheetDialog(parent, id, _T("Code Editor"), 
+	CodeEditorDialog(wxWindow* parent, wxWindowID id, wstring *text, wstring codeLang):wxPropertySheetDialog(parent, id, _T("Code Editor"), 
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | (int)wxPlatform::IfNot(wxOS_WINDOWS_CE, wxRESIZE_BORDER)
 		, _T("Code Editor"))
 	{
@@ -54,7 +55,7 @@ public:
 		CreateButtons(wxOK|wxCANCEL|wxHELP);
 
 		wxBookCtrlBase* notebook = GetBookCtrl();
-		wxPanel* codePanel = CreateCodePage(notebook);
+		wxPanel* codePanel = CreateCodePage(notebook, codeLang);
 		notebook->AddPage(codePanel, _T("Source"), true);
 
 		LayoutDialog();		
@@ -62,27 +63,28 @@ public:
 
 	void OnOK(wxCommandEvent& WXUNUSED(event))
 	{
-		*m_code = codeBox->GetValue();
+		*m_code = codeBox->GetText();
 		Close();
 	}
 
 private:
-
-	wxPanel* CreateCodePage(wxWindow* parent)
+	wxPanel* CreateCodePage(wxWindow* parent, wstring langCode)
 	{
 		wxPanel* panel = new wxPanel(parent, wxID_ANY);
 		wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
 
-		codeBox = new wxTextCtrl(panel, wxID_ANY, m_code->c_str(), wxDefaultPosition, wxSize(320, 480), wxTE_MULTILINE);
-		
+		codeBox = new Edit(panel, wxID_ANY, wxDefaultPosition, wxSize(600, 480));
+		codeBox->LoadText(m_code->c_str(), langCode);
+
 		topSizer->Add(codeBox, 1, wxGROW|wxALL);
 		panel->SetSizer(topSizer);
 
 		return panel;
 	}
 
-	wxTextCtrl *codeBox;
+	Edit *codeBox;
 	wstring *m_code;
+
 	DECLARE_EVENT_TABLE()
 };
 

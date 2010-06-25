@@ -55,14 +55,16 @@ public:
 	bool DeleteDataSet(wstring name);
 	bool RenameDataSet(wstring oldName, wstring newName);
 	bool RenameDataSetFolder(wstring oldFolder, wstring newFolder);
+	bool MoveFile(wstring name, wstring oldFolder, wstring newFolder);
 	wstring GetProjectWorkingPath() {return m_project_working_path;}
 	void WriteAllDataSetsToXMLFile(wstring savePath);
 	StringTable<wstring>* GetProjectTable() {return m_project_files;}
 	void SetDebugStatus(bool status, wstring con, vector<wstring> selectedDebugTables)
 		{m_deubgStaus = status; m_DebugConnection = con; m_SelectedTables = selectedDebugTables;}
 	void SetCompilerOptions(wstring js, wstring py)
-		{m_jsCode = js, m_pyCode = py;}
+		{m_jsCode = js; m_pyCode = py;}
 	vector<wstring> GetProjectTableNames();
+	vector<wstring> GetProjectTableNames(wstring path);
 	wstring GetConnection() {return m_DebugConnection;}
 	wstring GetJavascriptCode() {return m_jsCode;}
 	wstring GetPythonCode() {return m_pyCode;}

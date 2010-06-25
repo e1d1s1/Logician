@@ -19,6 +19,7 @@ Copyright (C) 2009 Eric D. Schmidt
 #include "TableSet.h"
 #include "RuleTable.h"
 #include "utilities.h"
+#include <algorithm>
 using namespace EDSUTIL;
 
 CTableSet::CTableSet(void)
@@ -72,7 +73,11 @@ void CTableSet::LoadTableInfo(CRuleTable table)
 				if (args.size() > 0)
 				{
 					vector<wstring> chainInputs = ParseTablesAndChainsForInputs(args[0]); //recursive
-					std::copy(chainInputs.begin(), chainInputs.end(), std::back_inserter(inputDeps));
+					for (vector<wstring>::iterator itChain = chainInputs.begin(); itChain != chainInputs.end(); itChain++)
+					{
+						if (find(inputDeps.begin(), inputDeps.end(), *itChain) == inputDeps.end())
+							inputDeps.push_back(*itChain);
+					}
 				}
 			}
 		}
@@ -103,7 +108,11 @@ vector<wstring> CTableSet::ParseTablesAndChainsForInputs(wstring tableName)
 				if (args.size() > 0)
 				{
 					vector<wstring> chainInputs = ParseTablesAndChainsForInputs(args[0]);
-					std::copy(chainInputs.begin(), chainInputs.end(), std::back_inserter(retval));
+					for (vector<wstring>::iterator itChain = chainInputs.begin(); itChain != chainInputs.end(); itChain++)
+					{
+						if (find(retval.begin(), retval.end(), *itChain) == retval.end())
+							retval.push_back(*itChain);
+					}
 				}
 			}
 		}
