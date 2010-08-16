@@ -55,6 +55,7 @@ public:
 	bool DeleteDataSet(wstring name);
 	bool RenameDataSet(wstring oldName, wstring newName);
 	bool RenameDataSetFolder(wstring oldFolder, wstring newFolder);
+	bool AddDataSetFile(wstring name, wstring full_path);
 	bool MoveFile(wstring name, wstring oldFolder, wstring newFolder);
 	wstring GetProjectWorkingPath() {return m_project_working_path;}
 	void WriteAllDataSetsToXMLFile(wstring savePath);

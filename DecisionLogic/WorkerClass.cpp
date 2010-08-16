@@ -26,6 +26,7 @@
 #include <string>
 #include <zlib.h>
 
+
 #include "WorkerClass.h"
 #include "utilities.h"
 
@@ -142,7 +143,7 @@ bool WorkerClass::OpenProject(wstring fileName)
 		wstring openPath;
 		if (fileName.length() == 0)
 		{
-			openPath = m_gui->OpenDialog();
+			openPath = m_gui->OpenDialog(L"Decision Logic Project files (*.dlp)|*.dlp");
 		}
 		else
 		{
@@ -249,7 +250,7 @@ bool WorkerClass::Save(OpenLogicTable *targetTable)
 						current_table.logic_table.Name != TRANSLATIONS_TABLE_NAME)
 					{
 						//set path according to its place in the tree, relative to working directory
-						current_table.logic_table.Path = current_table.logic_table.Path + PATHSEP +
+						current_table.logic_table.Path = current_table.logic_table.Path +
 							m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) +
 							current_table.logic_table.Name + L".xml";
 					}
@@ -317,18 +318,17 @@ bool WorkerClass::LoadTable(wstring name)
 		wstring path = m_pm.GetProjectWorkingPath();
 		if (table_type == RULES_TABLE)
 		{
-			DataSet<wstring> ds = m_pm.LoadDataSet(name);
+			DataSet<wstring> ds = m_pm.LoadDataSet(name);			
 			if (ds.TableCount() == 3)
-			{
+			{		
 				path += PATHSEP + m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
-
 				LogicTable table;
 				table.LoadDataSet(ds, name, path);
 				table.bGetAll = m_pm.TableIsGetAll(name);
 				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
 				childForm->Show();
 				retval = true;
-			}
+			}			
 		}
 		else
 		{
@@ -565,6 +565,73 @@ void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
 	}
 }
 
+void WorkerClass::InsertTable()
+{
+	try
+	{
+		if (!bIsSaved && m_gui->GetNodeCount() > 1)
+		{
+			if (!CheckSave())
+			{
+				m_gui->PromptMessage(L"You must save any existing changes before creating a new table.");
+				return;
+			}
+		}
+
+		//prompt user for a table from disk, copy to the working dir unless it is the same dir
+		wstring path = m_gui->OpenDialog(L"Decision Logic Table files (*.xml)|*.xml");
+		if (path.length() == 0)
+			return;
+		if (UTILS::StringContains(path, GLOBALORS_TABLE_NAME) || UTILS::StringContains(path, TRANSLATIONS_TABLE_NAME))
+		{
+			m_gui->PromptMessage(L"This file is a reserved system table, please try again");
+			return;
+		}
+		
+		wstring wstrSep;
+		wstrSep += PATHSEP;
+		vector<wstring> pathParts = UTILS::Split(path, wstrSep);
+		wstring name = UTILS::FindAndReplace(pathParts[pathParts.size() - 1], L".xml", L"");		
+
+		wstring target = m_pm.GetProjectWorkingPath() + wstrSep + m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
+		wstring sourcePath = path;
+		wstring targetPath = target;
+		transform(targetPath.begin(), targetPath.end(), targetPath.begin(), tolower);
+		transform(sourcePath.begin(), sourcePath.end(), sourcePath.begin(), tolower);
+		if (targetPath != sourcePath)
+		{
+			//copy from source to target
+			//move the file on disk
+			#ifdef WIN32
+			FILE *oldFile = _wfopen(path.c_str(), L"rb");
+			FILE *newFile = _wfopen(target.c_str(), L"wb");
+			#else
+			FILE *oldFile = fopen(UTILS::WStrToMBCStr(path).c_str(), "rb");
+			FILE *newFile = fopen(UTILS::WStrToMBCStr(targetPath).c_str(), "wb");
+			#endif
+
+			char *buffer = NULL;
+			fseek(oldFile, 0, SEEK_END);
+			size_t len = ftell(oldFile);
+			buffer = new char[len];
+			rewind(oldFile);
+			size_t result = fread(buffer, 1, len, oldFile);
+			if (result > 0)
+				fwrite(buffer, 1, len, newFile);
+			delete[] buffer;			
+			fclose(oldFile);
+			fclose(newFile);			
+		}
+
+		m_pm.AddDataSetFile(name, path);
+		AddTableToProject(name, false, false);		
+	}
+	catch(...)
+	{
+		ReportError("WorkerClass::InsertTable");
+	}
+}
+
 void WorkerClass::NewTable(wstring name)
 {
 	try
@@ -596,51 +663,61 @@ void WorkerClass::NewTable(wstring name)
 			m_gui->PromptMessage(L"Invalid file name.");
 			return;
 		}
-
-		if (name.length() > 0)
-		{
-			vector<wstring> existing_names = m_pm.GetProjectTableNames(m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()));			
-			vector<wstring>::iterator itFind = find(existing_names.begin(), existing_names.end(), name);
-			if (itFind == existing_names.end())
-			{
-				existing_names.push_back(name);
-				sort(existing_names.begin(), existing_names.end());
-				LogicTable table;
-				table.CreateLogicTable(name);
-				if (!bSystemTable)
-				{
-					size_t pos = find(existing_names.begin(), existing_names.end(), name) - existing_names.begin();
-					
-					wstring preValue;
-					if (existing_names.size() > 1)
-					{
-						if (pos > 0)
-						{
-							wstring preValue = existing_names[pos - 1];
-						}
-					}
-					m_gui->AddTreeNodeToActiveGroup(preValue, name);
-				}
-
-				int table_type = RULES_TABLE;
-				if (name == GLOBALORS_TABLE_NAME)
-					table_type = GLOBAL_ORS_TABLE;
-				else if (name == TRANSLATIONS_TABLE_NAME)
-					table_type = TRANSLATIONS_TABLE;
-
-				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
-				childForm->Show();
-				bIsSaved = false;
-			}
-			else
-			{
-				m_gui->PromptMessage(L"This table name already exists.");
-			}
-		}
+		
+		AddTableToProject(name, true, bSystemTable);
 	}
 	catch(...)
 	{
 		ReportError("WorkerClass::NewTable");
+	}
+}
+
+void WorkerClass::AddTableToProject(wstring name, bool bCreateNew, bool bSystemTable)
+{
+	if (name.length() > 0)
+	{
+		vector<wstring> existing_names = m_pm.GetProjectTableNames(m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()));			
+		vector<wstring>::iterator itFind = find(existing_names.begin(), existing_names.end(), name);
+		if (!bCreateNew || itFind == existing_names.end())
+		{
+			existing_names.push_back(name);
+			sort(existing_names.begin(), existing_names.end());
+			
+			if (!bSystemTable)
+			{
+				size_t pos = find(existing_names.begin(), existing_names.end(), name) - existing_names.begin();
+				
+				wstring preValue;
+				if (existing_names.size() > 1)
+				{
+					if (pos > 0)
+					{
+						wstring preValue = existing_names[pos - 1];
+					}
+				}
+				m_gui->AddTreeNodeToActiveGroup(preValue, name);
+			}
+
+			int table_type = RULES_TABLE;
+			if (name == GLOBALORS_TABLE_NAME)
+				table_type = GLOBAL_ORS_TABLE;
+			else if (name == TRANSLATIONS_TABLE_NAME)
+				table_type = TRANSLATIONS_TABLE;
+			
+			if (bCreateNew)
+			{
+				LogicTable table;
+				table.CreateLogicTable(name);
+				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
+				childForm->Show();
+			}
+			
+			bIsSaved = false;
+		}
+		else
+		{
+			m_gui->PromptMessage(L"This table name already exists.");
+		}
 	}
 }
 
@@ -676,8 +753,7 @@ void WorkerClass::DeleteTable(wstring nameDelete)
 			nameToDelete = nameDelete;
 			wstring folder = m_gui->GetTreeNodePath(nameDelete);
 			if (folder.length() > 0)
-				path += PATHSEP + folder;
-			path += PATHSEP + nameToDelete + L".xml";
+				path += PATHSEP + folder;			
 		}
 		else
 		{
@@ -690,27 +766,37 @@ void WorkerClass::DeleteTable(wstring nameDelete)
 				nameToDelete = opened.logic_table.Name;
 		}
 
+		if (nameToDelete.length() == 0)
+		{
+			nameToDelete = m_gui->GetSelectedNodeName();
+		}
+
+		path += PATHSEP + nameToDelete + L".xml";
+
 		if (nameToDelete.length() > 0 && path.length() > 0)
 		{
 			wstring question = L"Do you wnat to delete the " + nameToDelete + L" table";
 			int ans = m_gui->PromptQuestion(question, L"Remove Table?");
 
-			if (ans == ID_YES && m_pm.DeleteDataSet(nameToDelete + L".xml"))
-			{
+			if (ans == ID_YES)
+			{	
 				m_gui->DeleteTreeNode(nameToDelete);
 				if (opened.child_window_ptr)
 					m_gui->CloseWindow(nameToDelete);
-
-				ans = m_gui->PromptQuestion(L"Table removed from project.\nDo you wnat to delete the file as well?", L"Remove File?");
-				if (ans == ID_YES)
+				m_pm.DeleteDataSet(nameToDelete + L".xml");
+				if (UTILS::FileExists(path))
 				{
-				    #ifdef WIN32
-					_wremove(path.c_str());
-					#else
-					remove(UTILS::WStrToMBCStr(path).c_str());
-					#endif
-					//if file is gone, force a save of the project
-					Save();
+					ans = m_gui->PromptQuestion(L"Table removed from project.\nDo you wnat to delete the file as well?", L"Remove File?");
+					if (ans == ID_YES)
+					{
+						#ifdef WIN32
+						_wremove(path.c_str());
+						#else
+						remove(UTILS::WStrToMBCStr(path).c_str());
+						#endif
+						//if file is gone, force a save of the project
+						Save();
+					}
 				}
 			}
 		}

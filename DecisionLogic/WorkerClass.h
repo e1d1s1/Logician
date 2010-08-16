@@ -47,6 +47,7 @@ public:
 	bool Save(OpenLogicTable *targetTable = NULL);
 	bool LoadTable(wstring name);
 	void NewTable(wstring name = L"");
+	void InsertTable();
 	void DeleteTable(wstring nameDelete = L"");
 	void RenameTable(wstring oldTableName = L"", wstring newTableName = L"");
 	bool MoveTable(wstring table, wstring oldLoc, wstring newLoc);
@@ -89,7 +90,7 @@ public:
 	vector<OpenLogicTable> open_tables;
 
 private:	
-	
+	void AddTableToProject(wstring name, bool bCreateNew, bool bSystemTable);
 	void GetSettings();
 	void SaveApplicationSettings();	
 

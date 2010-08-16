@@ -58,7 +58,8 @@ public:
 	//tree
 	wstring GetTreeNodePath(wstring nodeName);
 	wstring GetTreeNodePath(void* nodePtr);
-	void AddTreeNodeToActiveGroup(wstring preValue, wstring name, string type = "Table");
+	wstring GetSelectedNodeName();
+	void AddTreeNodeToActiveGroup(wstring preValue, wstring name, string type = "Table", bool bSelect = true);
 	void DeleteTreeNode(wstring name);		
 	void SelectAnItem(wstring name);
 	wstring GetActiveGroupName(){return (wstring)m_tree->GetItemText(wxtid_active_group);}
@@ -83,7 +84,7 @@ public:
 	void PromptMessage(wstring msg) {wxMessageBox(msg);}
 	wstring PromptUserForText(wstring msg, wstring title) {return wxGetTextFromUser(msg, title).wc_str();}
 	wstring SaveDialog(string type);
-	wstring OpenDialog()
+	wstring OpenDialog(wstring filterString)
 	{
 		wstring openPath;
 		wxFileDialog openFileDialog (
@@ -91,7 +92,7 @@ public:
 							_T("Open an existing project file"),
 							wxEmptyString,
 							wxEmptyString,
-							_T("Decision Logic Project files (*.dlp)|*.dlp"),
+							filterString,
 							wxOPEN
 						 );
 
