@@ -189,14 +189,26 @@ wxTreeItemId GUIClass::FindItemNamed(wxTreeItemId root, const wxString& sSearchF
 	return NULL;
 }
 
-void GUIClass::AddTreeNodeToActiveGroup(wstring preValue, wstring name, string type)
+void GUIClass::AddTreeNodeToActiveGroup(wstring preValue, wstring name, string type, bool bSelect)
 {
 	wstring active = m_tree->GetItemText(wxtid_active_group);
 	wxTreeItemId locItem;
 	if (preValue.length() > 0)
 		locItem = FindItemNamed(wxtid_active_group, preValue);
 	wxTreeItemId newItem = AddTreeNode(wxtid_active_group, locItem, name, type);
-	m_tree->SelectItem(newItem);
+	if (bSelect)
+		m_tree->SelectItem(newItem);
+}
+
+wstring GUIClass::GetSelectedNodeName()
+{
+	wstring retval;
+	wxTreeItemId sel_item = m_tree->GetSelection(), initial_sel = sel_item;
+	if (sel_item.IsOk())
+	{
+		retval = m_tree->GetItemText(sel_item);
+	}
+	return retval;
 }
 
 void GUIClass::SelectAnItem(wstring name)

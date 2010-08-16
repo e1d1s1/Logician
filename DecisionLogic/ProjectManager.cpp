@@ -772,6 +772,33 @@ StringTable<wstring>* ProjectManager::ReadProjectFile(wstring path)
 	return retval;
 }
 
+bool ProjectManager::AddDataSetFile(wstring name, wstring full_path)
+{
+	bool retval = true;
+    if (name.length() == 0 || full_path.length() == 0)
+        return false;
+
+	try
+	{
+		//get the relative path from the current path
+		wstring working = m_project_working_path + PATHSEP;
+		wstring rel_path = UTILS::FindAndReplace(full_path, working, L"");
+		rel_path = UTILS::FindAndReplace(rel_path, name + L".xml", L"");
+		wstring pathSep; pathSep+=PATHSEP;
+		rel_path = UTILS::FindAndReplace(rel_path, pathSep, L"/"); //save unix style
+
+		m_project_files->AddRow();
+		m_project_files->SetItem(m_project_files->Rows() - 1, L"DataSetName", name + L".xml");
+		m_project_files->SetItem(m_project_files->Rows() - 1, L"RelativePath", rel_path);		
+	}
+	catch(...)
+	{
+		throw;
+	}
+
+	return retval;
+}
+
 bool ProjectManager::SaveDataSet(wstring name, wstring full_path, DataSet<wstring>* ds, bool GetAll)
 {
     bool retval = false;

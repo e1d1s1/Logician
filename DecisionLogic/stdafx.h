@@ -81,7 +81,7 @@ const wchar_t PATHSEP = L'\\';
 #define EMPTY_STRING 1;
 #define EXPLICIT_NULL_STRING 2;
 
-#define ID_YES wxYES
+#define ID_YES wxID_YES
 #define MAX_RECENT_FILES 5
 
 using namespace std;

@@ -96,6 +96,7 @@ public:
 
 	//table menu
 	void OnNewTable(wxCommandEvent& event);
+	void OnInsertTable(wxCommandEvent& event);
 	void OnDeleteTable(wxCommandEvent& event);
 	void OnRenameTable(wxCommandEvent& event);
 	void OnNewGroup(wxCommandEvent& event);
@@ -190,6 +191,7 @@ enum
 	DecisionLogic_Undo = wxID_UNDO,
 	DecisionLogic_Redo = wxID_REDO,
 	DecisionLogic_NewTable = 0,
+	DecisionLogic_InsertTable,
 	DecisionLogic_DeleteTable,
 	DecisionLogic_RenameTable,
 	DecisionLogic_NewGroup,

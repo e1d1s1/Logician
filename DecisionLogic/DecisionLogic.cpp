@@ -71,6 +71,7 @@ BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
 	EVT_MENU(DecisionLogic_Paste, DecisionLogicFrame::OnPaste)
 	EVT_MENU(DecisionLogic_Find, DecisionLogicFrame::ShowFindReplaceDialog)
 	EVT_MENU(DecisionLogic_NewTable, DecisionLogicFrame::OnNewTable)
+	EVT_MENU(DecisionLogic_InsertTable, DecisionLogicFrame::OnInsertTable)
 	EVT_MENU(DecisionLogic_DeleteTable, DecisionLogicFrame::OnDeleteTable)
 	EVT_MENU(DecisionLogic_RenameTable, DecisionLogicFrame::OnRenameTable)
 	EVT_MENU(DecisionLogic_NewGroup,  DecisionLogicFrame::OnNewGroup)
@@ -255,6 +256,7 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 
 	tableMenu = new wxMenu();
 	tableMenu->Append(DecisionLogic_NewTable, _T("New &Table"), _T("Create a new logic table"));
+	tableMenu->Append(DecisionLogic_InsertTable, _T("&Insert Table"), _T("Insert existing table from disk"));
 	tableMenu->Append(DecisionLogic_RenameTable, _T("&Rename Table"), _T("Rename current logic table"));
 	tableMenu->Append(DecisionLogic_DeleteTable, _T("&Delete Table"), _T("Delete logic table"));
 	tableMenu->Append(DecisionLogic_NewGroup, _T("New &Group"), _T("Create a new table group"));
@@ -476,6 +478,11 @@ void DecisionLogicFrame::OnCopy(wxCommandEvent& event)
 void DecisionLogicFrame::OnPaste(wxCommandEvent& event)
 {
 	m_worker->Paste();
+}
+
+void DecisionLogicFrame::OnInsertTable(wxCommandEvent& event)
+{
+	m_worker->InsertTable();
 }
 
 void DecisionLogicFrame::OnNewTable(wxCommandEvent& WXUNUSED(event))
