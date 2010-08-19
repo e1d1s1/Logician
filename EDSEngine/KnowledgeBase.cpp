@@ -168,306 +168,356 @@ map<wstring, vector<wstring> > EDS::CKnowledgeBase::EvaluateTable(wstring tableN
 
 vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring outputAttr, std::wstring param, bool bGetAll)
 {
-	CRuleTable *table = m_TableSet.GetTable(tableName);
-	if (iRecursingDepth == 0)
-	{
-		m_StateParameter = param;
-	}
-	iRecursingDepth++;
 	vector<wstring> retval;
-	
-	table->EnbleDebugging(m_DEBUGGING_MSGS);
-
-	table->SetInputValues(m_GlobalInputAttrsValues);
-
-	vector<wstring> results = table->EvaluateTable(outputAttr, bGetAll);
-	//check for existance of table chain
-	if (table->HasChain() == true)
+	try
 	{
-		vector<wstring> eraseResults;
-		vector<wstring> newResults;
-		for (vector<wstring>::iterator it = results.begin(); it != results.end(); it++)
+		CRuleTable *table = m_TableSet.GetTable(tableName);
+		if (iRecursingDepth == 0)
 		{
-			if (StringContains(*it, L"eval("))
+			m_StateParameter = param;
+		}
+		iRecursingDepth++;		
+		
+		table->EnbleDebugging(m_DEBUGGING_MSGS);
+
+		table->SetInputValues(m_GlobalInputAttrsValues);
+
+		vector<wstring> results = table->EvaluateTable(outputAttr, bGetAll);
+		//check for existance of table chain
+		if (table->HasChain() == true)
+		{
+			vector<wstring> eraseResults;
+			vector<wstring> newResults;
+			for (vector<wstring>::iterator it = results.begin(); it != results.end(); it++)
 			{
-				wstring cmd((*it).begin() + 5, (*it).end() - 1);
-				vector<wstring> args = Split(cmd, L",");
-				vector<wstring> chainedResults;
-				wstring debugVals;
-				if (args.size() == 2)
+				if (StringContains(*it, L"eval("))
 				{
-					wstring chainTableName = TrimString(args[0]);
-					wstring chainAttrName = TrimString(args[1]);
-
-					chainedResults = EvaluateTableWithParam(chainTableName, chainAttrName, param, TableIsGetAll(chainTableName));
-					for (vector<wstring>::iterator itRes = chainedResults.begin(); itRes != chainedResults.end(); itRes++)
+					wstring cmd((*it).begin() + 5, (*it).end() - 1);
+					vector<wstring> args = Split(cmd, L",");
+					vector<wstring> chainedResults;
+					wstring debugVals;
+					if (args.size() == 2)
 					{
-						newResults.push_back((*itRes));
-						if (m_DEBUGGING_MSGS)
-						{
-							if (debugVals.size() > 0)
-								debugVals+=L"|";
-							else
-								debugVals = L":";
+						wstring chainTableName = TrimString(args[0]);
+						wstring chainAttrName = TrimString(args[1]);
 
-							debugVals+=XMLSafe(*itRes);
+						chainedResults = EvaluateTableWithParam(chainTableName, chainAttrName, param, TableIsGetAll(chainTableName));
+						for (vector<wstring>::iterator itRes = chainedResults.begin(); itRes != chainedResults.end(); itRes++)
+						{
+							newResults.push_back((*itRes));
+							if (m_DEBUGGING_MSGS)
+							{
+								if (debugVals.size() > 0)
+									debugVals+=L"|";
+								else
+									debugVals = L":";
+
+								debugVals+=XMLSafe(*itRes);
+							}
 						}
 					}
+					if (m_DEBUGGING_MSGS && chainedResults.size() > 0)
+					{ //replace the eval( string with the actual value
+						table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + debugVals);
+					}
 				}
-				if (m_DEBUGGING_MSGS && chainedResults.size() > 0)
-				{ //replace the eval( string with the actual value
-					table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + debugVals);
-				}
-			}
-			else
-			{
-				newResults.push_back(*it);
-			}
-		}
-
-		results.clear();
-		for (vector<wstring>::iterator it = newResults.begin(); it != newResults.end(); it++)
-		{
-			results.push_back((*it));
-		}
-	}
-
-	//check for existance of runtime scripting, JavaScript or Python
-#ifdef USE_JAVASCRIPT
-
-	if (table->HasJS() == true)
-	{
-        vector<wstring> eraseResults;
-        vector<wstring> newResults;
-
-        for (vector<wstring>::iterator it = results.begin(); it != results.end(); it++)
-        {
-            if (StringContains(*it, L"js("))
-            {
-                wstring val = L"ERROR";
-                #ifdef USE_WINDOWS_SCRIPTING
-                IScriptControlPtr pScriptControl(__uuidof(ScriptControl));
-
-                LPSAFEARRAY psa;
-                SAFEARRAYBOUND rgsabound[]  = { 1, 0 }; // 1 element, 0-based
-
-                psa = SafeArrayCreate(VT_VARIANT, 1, rgsabound);
-                if (psa)
-                {
-                    VARIANT vParam[1];
-                    VariantInit(&vParam[0]);
-                    V_VT(&vParam[0]) = VT_BSTR;
-
-                    V_BSTR(&vParam[0]) = SysAllocString(m_StateParameter.c_str());
-                    long lZero = 0;
-                    HRESULT hr = SafeArrayPutElement(psa, &lZero, &vParam[0]);
-                    SysFreeString(vParam[0].bstrVal);
-                }
-                #endif
-                try
-                {
-                    //everything must return as a string
-                    wstring customCode((*it).begin() + 3, (*it).end() - 1);
-                    vector<wstring> lines = EDSUTIL::Split(customCode, L"\n");
-                    if (lines.size() == 1) //do this for covienience and table brevity
-                    {
-                        if (!EDSUTIL::StringContains(lines[0], L"return"))
-                        {
-                            lines[0] = L"return (" + lines[0] + L").toString();";
-                        }
-                    }
-                    wstring codeBody;
-                    for (vector<wstring>::iterator it = lines.begin(); it != lines.end(); it++)
-                    {
-                        codeBody += *it;
-                        codeBody += L"\n";
-                    }
-                    string JSCode = "function myfunc(param){\n" + WStrToMBCStr(codeBody) + "}\n";
-                    #ifdef USE_WINDOWS_SCRIPTING
-                    if (psa)
-                    {
-                        pScriptControl->Language = "JScript";
-                        pScriptControl->AddCode(JSCode.c_str());
-
-                        val = VariantToWStr(pScriptControl->Run("myfunc", &psa));
-
-                        SafeArrayDestroy(psa);
-                    }
-                    #else
-                    /* JS variables. */
-                    JSRuntime *rt;
-                    JSContext *cx;
-                    JSObject  *global;
-
-                    /* Create a JS runtime. */
-                    rt = JS_NewRuntime(8L * 1024L * 1024L);
-                    if (rt == NULL)
-                        throw;
-
-                    /* Create a context. */
-                    cx = JS_NewContext(rt, 8192);
-                    if (cx == NULL)
-                        throw;
-                    JS_SetOptions(cx, JSOPTION_VAROBJFIX);
-                    JS_SetVersion(cx, JSVERSION_DEFAULT);
-                    //JS_SetErrorReporter(cx, reportError);
-
-                    /* Create the global object. */
-                    global = JS_NewObject(cx, NULL, NULL, NULL);
-                    if (global == NULL)
-                        throw;
-
-                    /* Populate the global object with the standard globals,
-                       like Object and Array. */
-                    if (!JS_InitStandardClasses(cx, global))
-                        throw;
-
-                    jsval rval, funval;
-                    JS_EvaluateScript(cx, global, JSCode.c_str(), JSCode.length(), "EDS_JScript", 1, &funval);
-
-                    jsval argv;
-                    string cStr = WStrToMBCStr(m_StateParameter).c_str();
-                    char* tempStr = (char*)JS_malloc(cx, cStr.length() + 1);
-                    strcpy(tempStr, cStr.c_str());
-                    JSString *jsStr = JS_NewString(cx, tempStr, strlen(tempStr));
-                    argv = STRING_TO_JSVAL(jsStr);
-                    JSBool ok = JS_CallFunctionName(cx, global, "myfunc", 1, &argv, &rval);
-
-
-                    if (rval != NULL && ok)
-                    {
-                        char* s = JS_GetStringBytes(JSVAL_TO_STRING(rval));
-                        val = MBCStrToWStr(s);
-                    }
-
-                    //free(tempStr);
-                    // Cleanup.
-                    JS_DestroyContext(cx);
-                    JS_DestroyRuntime(rt);
-                    JS_ShutDown();
-
-                    #endif
-                }
-                #ifdef USE_WINDOWS_SCRIPTING
-                catch(_com_error e)
-                {
-                    wstring message = L"Failed to evaluate javascript\n";
-                    message += e.Error();
-                    message += L":";
-                    message += e.Source();
-                    message += L"\n";
-                    message += e.Description();
-                    OutputDebugString(message.c_str());
-                    val = L"ERROR";
-                }
-                #else
-                catch(...)
-                {
-                    val = L"ERROR";
-                }
-                #endif
-                newResults.push_back(val);
-
-                if (m_DEBUGGING_MSGS)
-                { //replace the js( string with the actual value
-                    table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + L":" + XMLSafe(val));
-                }
-            }
-            else
-            {
-                newResults.push_back(*it);
-            }
-        }
-
-        results.clear();
-        for (vector<wstring>::iterator it = newResults.begin(); it != newResults.end(); it++)
-        {
-            results.push_back((*it));
-        }
-	}
-#endif
-
-#ifdef USE_PYTHON
-	if (table->HasPython() == true)
-	{
-		vector<wstring> eraseResults;
-		vector<wstring> newResults;
-		for (vector<wstring>::iterator it = results.begin(); it != results.end(); it++)
-		{
-			if (StringContains(*it, L"py("))
-			{
-				wstring val = L"ERROR";
-				try
+				else
 				{
-					wstring customCode((*it).begin() + 3, (*it).end() - 1), indentedCode;
+					newResults.push_back(*it);
+				}
+			}
 
-					//everything must return as a string
-					vector<wstring> lines = EDSUTIL::Split(customCode, L"\n");
-					if (lines.size() == 1) //do this for covienience and table brevity
+			results.clear();
+			for (vector<wstring>::iterator it = newResults.begin(); it != newResults.end(); it++)
+			{
+				results.push_back((*it));
+			}
+		}
+
+		//check for existance of runtime scripting, JavaScript or Python
+	#ifdef USE_JAVASCRIPT
+
+		if (table->HasJS() == true)
+		{
+			vector<wstring> eraseResults;
+			vector<wstring> newResults;
+
+			for (vector<wstring>::iterator it = results.begin(); it != results.end(); it++)
+			{
+				if (StringContains(*it, L"js("))
+				{
+					wstring val = L"ERROR";
+					#ifdef USE_WINDOWS_SCRIPTING
+					IScriptControlPtr pScriptControl(__uuidof(ScriptControl));
+
+					LPSAFEARRAY psa;
+					SAFEARRAYBOUND rgsabound[]  = { 1, 0 }; // 1 element, 0-based
+
+					psa = SafeArrayCreate(VT_VARIANT, 1, rgsabound);
+					if (psa)
 					{
-						if (!EDSUTIL::StringContains(lines[0], L"return"))
+						VARIANT vParam[1];
+						VariantInit(&vParam[0]);
+						V_VT(&vParam[0]) = VT_BSTR;
+
+						V_BSTR(&vParam[0]) = SysAllocString(m_StateParameter.c_str());
+						long lZero = 0;
+						HRESULT hr = SafeArrayPutElement(psa, &lZero, &vParam[0]);
+						SysFreeString(vParam[0].bstrVal);
+					}
+					#endif
+					try
+					{
+						//everything must return as a string
+						wstring customCode((*it).begin() + 3, (*it).end() - 1);
+						vector<wstring> lines = EDSUTIL::Split(customCode, L"\n");
+						if (lines.size() == 1) //do this for covienience and table brevity
 						{
-							lines[0] = L"return str(" + lines[0] + L")";
+							if (!EDSUTIL::StringContains(lines[0], L"return"))
+							{
+								lines[0] = L"return (" + lines[0] + L").toString();";
+							}
 						}
-					}
+						wstring codeBody;
+						for (vector<wstring>::iterator it = lines.begin(); it != lines.end(); it++)
+						{
+							codeBody += *it;
+							codeBody += L"\n";
+						}
+						string JSCode = "function myfunc(param){\n" + WStrToMBCStr(codeBody) + "}\n";
+						#ifdef USE_WINDOWS_SCRIPTING
+						if (psa)
+						{
+							pScriptControl->Language = "JScript";
+							pScriptControl->AddCode(JSCode.c_str());
 
-					//function code must be indented
-					for (vector<wstring>::iterator it = lines.begin(); it != lines.end(); it++)
+							val = VariantToWStr(pScriptControl->Run("myfunc", &psa));
+
+							SafeArrayDestroy(psa);
+						}
+						#else
+						/* JS variables. */
+						JSRuntime *rt;
+						JSContext *cx;
+						JSObject  *global;
+
+						/* Create a JS runtime. */
+						rt = JS_NewRuntime(8L * 1024L * 1024L);
+						if (rt == NULL)
+							throw;
+
+						/* Create a context. */
+						cx = JS_NewContext(rt, 8192);
+						if (cx == NULL)
+							throw;
+						JS_SetOptions(cx, JSOPTION_VAROBJFIX);
+						JS_SetVersion(cx, JSVERSION_DEFAULT);
+						//JS_SetErrorReporter(cx, reportError);
+
+						/* Create the global object. */
+						global = JS_NewObject(cx, NULL, NULL, NULL);
+						if (global == NULL)
+							throw;
+
+						/* Populate the global object with the standard globals,
+						   like Object and Array. */
+						if (!JS_InitStandardClasses(cx, global))
+							throw;
+
+						jsval rval, funval;
+						JS_EvaluateScript(cx, global, JSCode.c_str(), JSCode.length(), "EDS_JScript", 1, &funval);
+
+						jsval argv;
+						string cStr = WStrToMBCStr(m_StateParameter).c_str();
+						char* tempStr = (char*)JS_malloc(cx, cStr.length() + 1);
+						strcpy(tempStr, cStr.c_str());
+						JSString *jsStr = JS_NewString(cx, tempStr, strlen(tempStr));
+						argv = STRING_TO_JSVAL(jsStr);
+						JSBool ok = JS_CallFunctionName(cx, global, "myfunc", 1, &argv, &rval);
+
+
+						if (rval != NULL && ok)
+						{
+							char* s = JS_GetStringBytes(JSVAL_TO_STRING(rval));
+							val = MBCStrToWStr(s);
+						}
+
+						//free(tempStr);
+						// Cleanup.
+						JS_DestroyContext(cx);
+						JS_DestroyRuntime(rt);
+						JS_ShutDown();
+
+						#endif
+					}
+					#ifdef USE_WINDOWS_SCRIPTING
+					catch(_com_error e)
 					{
-						indentedCode += L"   ";
-						indentedCode += *it;
-						indentedCode += L"\n";
+						wstring message = L"Failed to evaluate javascript\n";
+						message += e.Error();
+						message += L":";
+						message += e.Source();
+						message += L"\n";
+						message += e.Description();
+						OutputDebugString(message.c_str());
+						val = L"ERROR";
 					}
-					string PythonCode = "def myfunc():\n" + WStrToMBCStr(indentedCode) + "\n";
-					Py_Initialize();
-					PyRun_SimpleString(WStrToMBCStr(m_pyCode).c_str());
-					PyRun_SimpleString(PythonCode.c_str());
+					#else
+					catch(...)
+					{
+						val = L"ERROR";
+					}
+					#endif
+					newResults.push_back(val);
 
-					boost::python::object module(boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("__main__"))));
-					boost::python::object function = module.attr("myfunc");
-					boost::python::object dictionary = module.attr("__dict__");
-					dictionary["param"] = WStrToMBCStr(m_StateParameter);
-
-					boost::python::object result = function();
-					val = boost::python::extract<wstring>(result);
-					m_StateParameter = boost::python::extract<wstring>(dictionary["param"]);
-
-					Py_Finalize();
+					if (m_DEBUGGING_MSGS)
+					{ //replace the js( string with the actual value
+						table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + L":" + XMLSafe(val));
+					}
 				}
-				catch (boost::python::error_already_set)
+				else
 				{
-					//PyErr_Print();
-					val = L"ERROR";
-				}
-				newResults.push_back(val);
-
-				if (m_DEBUGGING_MSGS)
-				{	//replace the py( string with the actual value
-					table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + L":" + XMLSafe(val));
+					newResults.push_back(*it);
 				}
 			}
-			else
+
+			results.clear();
+			for (vector<wstring>::iterator it = newResults.begin(); it != newResults.end(); it++)
 			{
-				newResults.push_back(*it);
+				results.push_back((*it));
 			}
 		}
+	#endif
 
-		results.clear();
-		for (vector<wstring>::iterator it = newResults.begin(); it != newResults.end(); it++)
+	#ifdef USE_PYTHON
+		if (table->HasPython() == true)
 		{
-			results.push_back((*it));
+			vector<wstring> eraseResults;
+			vector<wstring> newResults;
+			for (vector<wstring>::iterator it = results.begin(); it != results.end(); it++)
+			{
+				if (StringContains(*it, L"py("))
+				{
+					wstring val = L"ERROR";
+					try
+					{
+						wstring customCode((*it).begin() + 3, (*it).end() - 1), indentedCode;
+
+						//everything must return as a string
+						vector<wstring> lines = EDSUTIL::Split(customCode, L"\n");
+						if (lines.size() == 1) //do this for covienience and table brevity
+						{
+							if (!EDSUTIL::StringContains(lines[0], L"return"))
+							{
+								lines[0] = L"return str(" + lines[0] + L")";
+							}
+						}
+
+						//function code must be indented
+						for (vector<wstring>::iterator it = lines.begin(); it != lines.end(); it++)
+						{
+							indentedCode += L"   ";
+							indentedCode += *it;
+							indentedCode += L"\n";
+						}
+						string PythonCode = "def myfunc():\n" + WStrToMBCStr(indentedCode) + "\n";
+						Py_Initialize();
+						PyRun_SimpleString(WStrToMBCStr(m_pyCode).c_str());
+						PyRun_SimpleString(PythonCode.c_str());
+
+						boost::python::object module(boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("__main__"))));
+						boost::python::object function = module.attr("myfunc");
+						boost::python::object dictionary = module.attr("__dict__");
+						dictionary["param"] = WStrToMBCStr(m_StateParameter);
+
+						boost::python::object result = function();
+						val = boost::python::extract<wstring>(result);
+						m_StateParameter = boost::python::extract<wstring>(dictionary["param"]);
+
+						Py_Finalize();
+					}
+					catch (boost::python::error_already_set)
+					{
+						//PyErr_Print();
+						val = L"ERROR";
+					}
+					newResults.push_back(val);
+
+					if (m_DEBUGGING_MSGS)
+					{	//replace the py( string with the actual value
+						table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + L":" + XMLSafe(val));
+					}
+				}
+				else
+				{
+					newResults.push_back(*it);
+				}
+			}
+
+			results.clear();
+			for (vector<wstring>::iterator it = newResults.begin(); it != newResults.end(); it++)
+			{
+				results.push_back((*it));
+			}
+		}
+	#endif
+
+		iRecursingDepth--;
+
+		if (m_DEBUGGING_MSGS == true)
+		{
+			SendToDebugServer(table->DebugMessage);
+		}
+
+		retval = results;
+	}
+	catch (...)
+	{
+		ReportError("CKnowledgeBase::EvaluateTableWithParam\nCheck your table name.");
+	}
+	return retval;
+}
+
+vector<wstring> EDS::CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll)
+{
+	vector<wstring> retval;
+	//no chaining or scripting in reverse
+	try
+	{
+		CRuleTable *table = m_TableSet.GetTable(tableName);
+		table->EnbleDebugging(m_DEBUGGING_MSGS);
+		table->SetInputValues(m_GlobalInputAttrsValues);
+		retval = table->EvaluateTable(inputAttr, bGetAll, false);
+	}
+	catch (...)
+	{
+		ReportError("CKnowledgeBase::ReverseEvaluateTable\nCheck your table name.");
+	}
+	return retval;
+}
+
+map<wstring, vector<wstring> > EDS::CKnowledgeBase::ReverseEvaluateTable(wstring tableName, bool bGetAll)
+{
+	map<wstring, vector<wstring> > retval;
+
+	try
+	{
+		CRuleTable *table = m_TableSet.GetTable(tableName);
+		table->EnbleDebugging(m_DEBUGGING_MSGS);
+		table->SetInputValues(m_GlobalInputAttrsValues);
+		vector<pair<wstring, vector<CRuleCell> > > outputCollection = table->GetInputAttrsTests();
+		//for all the outputs get the results
+		for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = outputCollection.begin(); itOut != outputCollection.end(); itOut++)
+		{
+			vector<wstring> result = table->EvaluateTable((*itOut).first, bGetAll, false);
+			retval[(*itOut).first] = result;
 		}
 	}
-#endif
-
-	iRecursingDepth--;
-
-	if (m_DEBUGGING_MSGS == true)
+	catch (...)
 	{
-		SendToDebugServer(table->DebugMessage);
+		ReportError("CKnowledgeBase::ReverseEvaluateTable\nCheck your table name.");
 	}
 
-	retval = results;
 	return retval;
 }
 
@@ -1065,6 +1115,32 @@ std::map<string, vector<string> > EDS::CKnowledgeBase::EvaluateTableWithParam(st
 	}
 	return retval;
 }
+
+vector<string> EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll)
+{
+	//no chaining or scripting in reverse
+	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
+	table->EnbleDebugging(m_DEBUGGING_MSGS);
+	table->SetInputValues(m_GlobalInputAttrsValues);
+	return ToASCIIStringVector(table->EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false));
+}
+
+map<string, vector<string> > EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, bool bGetAll)
+{
+	map<string, vector<string> > retval;
+
+	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
+	vector<pair<wstring, vector<CRuleCell> > > outputCollection = table->GetInputAttrsTests();
+	//for all the outputs get the results
+	for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = outputCollection.begin(); itOut != outputCollection.end(); itOut++)
+	{
+		vector<wstring> result = ReverseEvaluateTable(MBCStrToWStr(tableName), (*itOut).first, bGetAll);
+		retval[ToASCIIString((*itOut).first)] = ToASCIIStringVector(result);
+	}
+
+	return retval;
+}
+
 
 void EDS::CKnowledgeBase::SetInputValues(hash_map<string, size_t> values)
 {

@@ -1036,6 +1036,11 @@ vector<wstring> ProjectManager::GetProjectTableNames(wstring path)
 	return retval;
 }
 
+wstring ProjectManager::GetProjectTitle()
+{
+	return UTILS::FindAndReplace(m_project_name, L".dlp", L"");
+}
+
 bool ProjectManager::RenameDataSet(wstring oldName, wstring newName)
 {
 	bool retval = false;
@@ -1330,22 +1335,46 @@ void ProjectManager::WriteAllDataSetsToXMLFile(wstring savePath)
 				//status, we will skip these rules
 				StringTable<wstring> status = ds.GetTableCopy(UTILS::ToWString(STATUS_TABLE));
 
-				vector<size_t> indexesToRemove;
 				for (long ruleCnt = status.Columns() - 1; ruleCnt > 0 ; ruleCnt--)
 				{
 					if (status.GetItem(0, ruleCnt) == L"Disabled")
 					{
-						//indexesToRemove.push_back(ruleCnt + 1);		
 						inputs.RemoveColumn(ruleCnt + 1);
 						outputs.RemoveColumn(ruleCnt + 1);
 					}
 				}
 
-				//for (vector<size_t>::reverse_iterator itRemove = indexesToRemove.rbegin(); itRemove != indexesToRemove.rend(); itRemove++)
-				//{
-				//	inputs.RemoveColumn(*itRemove);
-				//	outputs.RemoveColumn(*itRemove);
-				//}
+				//optimize the output by removing blank rules
+				for (long ruleCnt = inputs.Columns() - 1; ruleCnt > 1 ; ruleCnt--)
+				{
+					bool bNoInputs = true;
+					bool bNoOutputs = true;
+					for (long cellCnt = outputs.Rows() - 1; cellCnt >= 0; cellCnt--)
+					{
+						wstring val = outputs.GetItem(cellCnt, ruleCnt);
+						if (val.length() != 0)
+						{
+							bNoOutputs = false;
+							break;
+						}						
+					}
+
+					if (bNoOutputs == true) for (long cellCnt = inputs.Rows() - 1; cellCnt >= 0; cellCnt--)
+					{
+						wstring val = inputs.GetItem(cellCnt, ruleCnt);
+						if (val.length() != 0)
+						{
+							bNoInputs = false;
+							break;
+						}
+					}
+
+					if (bNoOutputs == true && bNoInputs == true)
+					{
+						inputs.RemoveColumn(ruleCnt);
+						outputs.RemoveColumn(ruleCnt);
+					}
+				}
 
 				WriteXMLForTable(tableDataNode, &inputs, INPUT_TABLE, true);
 				WriteXMLForTable(tableDataNode, &outputs, OUTPUT_TABLE, true);

@@ -22,9 +22,9 @@
             }
                         
             var cnt = knowledge.TableCount();
-            if (cnt == 10)
+            if (cnt == 11)
             {
-                write_result("OK: 10 Tables loaded");
+                write_result("OK: 11 Tables loaded");
             }
             else
             {
@@ -270,7 +270,20 @@
 	        if (localeValue == "A trans" && reverse == "A")
 	            write_result("OK");
 	        else
-	            write_result("FAILURE: translation failed");            
+	            write_result("FAILURE: translation failed");  
+	            
+	        write_result("testing reverse evaluation of ReverseTest table");
+	        knowledge.SetInputValue("OutColor","green");
+	        var result8 = knowledge.ReverseEvaluateTable("ReverseTest", true);
+	        if (ArraySize(result8) == 2 && result8["Color1"][0] == "blue" &&
+	            result8["Color2"][0] == "yellow")
+	        {
+		        write_result("OK: " + result8["Color1"][0] + ", " + result8["Color2"][0]);
+	        }
+	        else
+	        {
+		        write_result("FAILURE: reverse evaluation failed");
+	        }          
             	       
             return false;
         }

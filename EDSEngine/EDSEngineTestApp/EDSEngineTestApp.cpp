@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 
 	string s = stringifyDouble(knowledge.TableCount());
 	Log("# of Tables loaded: " + s);
-	if (s == "10")
+	if (s == "11")
 	{
 		res.SetResult(true, "");
 	}
@@ -372,6 +372,18 @@ int main(int argc, char* argv[])
 	else
 		res.SetResult(false, "translation failed");
 
+	Log("testing reverse evaluation of ReverseTest table");
+	knowledge.SetInputValue(L"OutColor", L"green");
+	map<wstring, vector<wstring> > result8 = knowledge.ReverseEvaluateTable(L"ReverseTest", true);
+	if (result8.size() == 2 && result8[L"Color1"].at(0) == L"blue" &&
+		result8[L"Color2"].at(0) == L"yellow")
+	{
+		res.SetResult(true, "");
+	}
+	else
+	{
+		res.SetResult(false, "reverse evaluation failed");
+	}
 	pause();
 
 	return 0;

@@ -85,32 +85,50 @@ CRuleTable::CRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTest
 	CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll);
 }
 
-map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll)
+map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bForward)
 {
 	map<wstring, vector<wstring> > retval;
+	vector<pair<wstring, vector<CRuleCell> > > resultCollection;
+	if (bForward)
+		resultCollection = m_OutputAttrsValues;
+	else
+		resultCollection = m_InputAttrsTests;
 
 	//for all the outputs get the results
-	for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = m_OutputAttrsValues.begin(); itOut != m_OutputAttrsValues.end(); itOut++)
+	for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = resultCollection.begin(); itOut != resultCollection.end(); itOut++)
 	{
-		vector<wstring> result = EvaluateTable((*itOut).first, bGetAll);
+		vector<wstring> result = EvaluateTable((*itOut).first, bGetAll, bForward);
 		retval[(*itOut).first] = result;
 	}
 
 	return retval;
 }
 
-vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll)
+vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool bForward)
 {
 	vector<wstring> retval;
 	vector<size_t> values;
 	map<size_t, set<wstring> > solutions;
+	vector<pair<wstring, vector<CRuleCell> > > inputCollection;
+	vector<pair<wstring, vector<CRuleCell> > > outputCollection;
+	if (bForward)
+	{
+		inputCollection = m_InputAttrsTests;
+		outputCollection = m_OutputAttrsValues;
+	}
+	else
+	{
+		inputCollection = m_OutputAttrsValues;
+		outputCollection = m_InputAttrsTests;
+	}
+
 
 	SetInvalidAttrs();
 	vector<bool> colResults (m_Tests, true); //a table need not have any inputs
-	if (m_InputAttrsValues.size() > 0 && m_InputAttrsTests.size() > 0)
+	if (m_InputAttrsValues.size() > 0 && inputCollection.size() > 0)
 	{
 		//get the current values of all input attrs
-		for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = m_InputAttrsTests.begin(); it != m_InputAttrsTests.end(); it++)
+		for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = inputCollection.begin(); it != inputCollection.end(); it++)
 		{
 			wstring attr = (*it).first;
 			hash_map<wstring, size_t>::iterator itFind = m_InputAttrsValues.find(attr);
@@ -128,7 +146,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll)
 		{
 			//sweep through the inputs
 			size_t inputCnt = 0;
-			for (vector< pair<wstring, vector<CRuleCell> > >::iterator itTests = m_InputAttrsTests.begin(); itTests != m_InputAttrsTests.end(); itTests++)
+			for (vector< pair<wstring, vector<CRuleCell> > >::iterator itTests = inputCollection.begin(); itTests != inputCollection.end(); itTests++)
 			{
 				if ( testCnt < (*itTests).second.size())
 				{
@@ -149,11 +167,11 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll)
 	vector<CRuleCell> results;
 	for (size_t result = 0; result < m_Tests; result++)
 	{
-		if (result >= m_OutputAttrsValues.size())
+		if (result >= outputCollection.size())
 			break;
-		if (m_OutputAttrsValues[result].first == outputAttr)
+		if (outputCollection[result].first == outputAttr)
 		{
-			results = m_OutputAttrsValues[result].second;
+			results = outputCollection[result].second;
 		}
 	}
 
