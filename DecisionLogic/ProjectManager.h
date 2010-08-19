@@ -72,6 +72,7 @@ public:
 	vector<wstring> GetSelectedDebugTables() {return m_SelectedTables;}
 	wstring GetProjectFilePath() {return m_project_full_path_name;}
 	wstring GetProjectName() {return m_project_name;}
+	wstring GetProjectTitle();
 	set<wstring>* GetProjectStrings() {return &stringCollection;}
 	xmlDocPtr LoadTableRawXML(wstring name);
 	bool TableIsGetAll(wstring name);
@@ -104,6 +105,7 @@ private:
 
 	bool m_deubgStaus;
 	wstring m_DebugConnection;
+	wstring m_CompiledName;
 	vector<wstring> m_SelectedTables;
 
 	wstring m_jsCode;

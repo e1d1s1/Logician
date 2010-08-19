@@ -11,7 +11,7 @@
 #include "utilities.h"
 
 
-wstring GUIClass::SaveDialog(string type)
+wstring GUIClass::SaveDialog(string type, wstring defaultName)
 {
 	wstring savePath, msg, filetype;
 	if (type == "dlp")
@@ -33,7 +33,7 @@ wstring GUIClass::SaveDialog(string type)
 					m_parent,
 					msg,
 					wxEmptyString,
-					wxEmptyString,
+					defaultName,
 					filetype,
 					wxSAVE
 				 );

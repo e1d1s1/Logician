@@ -29,6 +29,10 @@
     <RelativePath></RelativePath>
   </DataSet>
   <DataSet debug="0">
+    <DataSetName>ReverseTest.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
     <DataSetName>Translations.xml</DataSetName>
     <RelativePath></RelativePath>
   </DataSet>
@@ -46,7 +50,7 @@
   </DataSet>
   <DataSet debug="0">
     <DataSetName>testtable4.xml</DataSetName>
-    <RelativePath>/</RelativePath>
+    <RelativePath></RelativePath>
   </DataSet>
   <Compiler>
     <Javascript></Javascript>
@@ -56,24 +60,24 @@ from xml import *</Python>
   <Tokens>
     <Token id="1"></Token>
     <Token id="34">0</Token>
-    <Token id="47">1</Token>
-    <Token id="51">2</Token>
-    <Token id="53">4</Token>
-    <Token id="54">5</Token>
-    <Token id="49">50,60</Token>
-    <Token id="50">70,80</Token>
-    <Token id="48">9</Token>
+    <Token id="53">1</Token>
+    <Token id="57">2</Token>
+    <Token id="59">4</Token>
+    <Token id="60">5</Token>
+    <Token id="55">50,60</Token>
+    <Token id="56">70,80</Token>
+    <Token id="54">9</Token>
     <Token id="9">@ResultByOption1</Token>
     <Token id="18">@Selection2</Token>
     <Token id="19">@Selection3</Token>
-    <Token id="44">A</Token>
+    <Token id="50">A</Token>
     <Token id="28">A Boolean Attribute</Token>
     <Token id="29">A Multi-Select Attribute</Token>
     <Token id="30">A Single Selection Attribute</Token>
     <Token id="32">An Edit Attribute</Token>
     <Token id="31">Another Single Selection</Token>
     <Token id="35">BOOLEAN</Token>
-    <Token id="46">C</Token>
+    <Token id="52">C</Token>
     <Token id="41">DictAttr1</Token>
     <Token id="42">DictAttr2</Token>
     <Token id="39">DictAttr3</Token>
@@ -93,31 +97,37 @@ from xml import *</Python>
     <Token id="37">SINGLESELECT</Token>
     <Token id="17">Selection1</Token>
     <Token id="20">Selection2</Token>
-    <Token id="60">XPATH Worked</Token>
+    <Token id="66">XPATH Worked</Token>
     <Token id="16">Y</Token>
     <Token id="14">YN</Token>
     <Token id="13">YY</Token>
-    <Token id="45">Z</Token>
+    <Token id="51">Z</Token>
     <Token id="21">[0,35]</Token>
     <Token id="22">[10,50]</Token>
     <Token id="23">aDictAttr3</Token>
     <Token id="24">bDictAttr4</Token>
-    <Token id="66">both attrs are NULL</Token>
+    <Token id="45">blue</Token>
+    <Token id="72">both attrs are NULL</Token>
     <Token id="25">cDictAttr1</Token>
     <Token id="26">dDictAttr2</Token>
     <Token id="27">eDictAttr5</Token>
-    <Token id="59">eval(testtable1, outputAttr1)</Token>
-    <Token id="67">fallout rule</Token>
-    <Token id="52">get(outsideAttr1) with concat</Token>
-    <Token id="61">get(someAttr)</Token>
-    <Token id="65">inputAttr1 is NULL</Token>
-    <Token id="64">inputAttr2 is NULL</Token>
-    <Token id="62">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Token>
-    <Token id="63">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Token>
-    <Token id="56">js(get(outsideAttr1) + 2)</Token>
-    <Token id="55">py(get(outsideAttr1) + 2)</Token>
-    <Token id="58">some value of value</Token>
-    <Token id="57">this is a comment</Token>
+    <Token id="65">eval(testtable1, outputAttr1)</Token>
+    <Token id="73">fallout rule</Token>
+    <Token id="58">get(outsideAttr1) with concat</Token>
+    <Token id="67">get(someAttr)</Token>
+    <Token id="48">green</Token>
+    <Token id="71">inputAttr1 is NULL</Token>
+    <Token id="70">inputAttr2 is NULL</Token>
+    <Token id="68">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Token>
+    <Token id="69">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Token>
+    <Token id="62">js(get(outsideAttr1) + 2)</Token>
+    <Token id="47">orange</Token>
+    <Token id="49">purple</Token>
+    <Token id="61">py(get(outsideAttr1) + 2)</Token>
+    <Token id="44">red</Token>
+    <Token id="64">some value of value</Token>
+    <Token id="63">this is a comment</Token>
+    <Token id="46">yellow</Token>
     <Token id="33">~</Token>
   </Tokens>
 </DecisionLogicProject>

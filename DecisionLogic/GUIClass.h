@@ -82,8 +82,8 @@ public:
 		okBox.ShowModal();
 	}
 	void PromptMessage(wstring msg) {wxMessageBox(msg);}
-	wstring PromptUserForText(wstring msg, wstring title) {return wxGetTextFromUser(msg, title).wc_str();}
-	wstring SaveDialog(string type);
+	wstring PromptUserForText(wstring msg, wstring title, wstring defaultValue = L"") {return wxGetTextFromUser(msg, title, defaultValue).wc_str();}
+	wstring SaveDialog(string type, wstring defaultName = L"");
 	wstring OpenDialog(wstring filterString)
 	{
 		wstring openPath;

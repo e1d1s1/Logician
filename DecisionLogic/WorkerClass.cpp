@@ -485,13 +485,16 @@ void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
 		else
 			existingName = opened.logic_table.Name;
 
-		newName = m_gui->PromptUserForText(L"Rename Table:", L"Rename Table");
+		newName = m_gui->PromptUserForText(L"Rename Table:", L"Rename Table", existingName);
 	}
 	else
 	{
 		existingName = oldTableName;
 		newName = newTableName;
 	}
+
+	if (newName == existingName && existingName.length() > 0)
+		return;
 
 	if (newName.length() == 0)
 		return;
@@ -856,13 +859,17 @@ void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
 		if (oldGroupName.length() == 0 && newGroupName.length() == 0)
 		{
 			existingName = m_gui->GetActiveGroupName();
-			newName = m_gui->PromptUserForText(L"Rename Group:", L"Rename Group");
+			newName = m_gui->PromptUserForText(L"Rename Group:", L"Rename Group", existingName);
 		}
 		else
 		{
 			existingName = oldGroupName;
 			newName = newGroupName;
 		}
+
+		if (newName == existingName && existingName.length() > 0)
+			return;
+
 		if (!ValidateFolderName(newName))
 		{
 			m_gui->PromptMessage(L"Invalid folder name.");
@@ -1045,7 +1052,7 @@ wstring WorkerClass::CompileXML(wstring tempFilePath)
 
 		if (tempFilePath.length() == 0)
 		{
-			wstring savePath = m_gui->SaveDialog("xml");
+			wstring savePath = m_gui->SaveDialog("xml", m_pm.GetProjectTitle());
 			if (savePath.length() > 0)
 			{
 				m_pm.WriteAllDataSetsToXMLFile(savePath);
@@ -1070,7 +1077,7 @@ void WorkerClass::CompileZip()
 {
 	try
 	{
-		wstring savePath = m_gui->SaveDialog("gz");
+		wstring savePath = m_gui->SaveDialog("gz", m_pm.GetProjectTitle());
 		if (savePath.length() > 0)
 		{
 			CompileXML(savePath);

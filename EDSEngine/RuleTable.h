@@ -35,8 +35,8 @@ public:
 	CRuleTable(void);
 	~CRuleTable(void);
 
-	vector<wstring> EvaluateTable(wstring outputAttr, bool bGetAll = true); //results come back as the full strings
-	map<wstring, vector<wstring> > EvaluateTable(bool bGetAll = true);
+	vector<wstring> EvaluateTable(wstring outputAttr, bool bGetAll = true, bool bForward = true); //results come back as the full strings
+	map<wstring, vector<wstring> > EvaluateTable(bool bGetAll = true, bool bForward = true);
 	void SetInputValues(hash_map<wstring, size_t> values);
 	void SetInputValue(wstring name, wstring value);
 	void SetInvalidAttrs();
@@ -51,6 +51,7 @@ public:
 	vector<wstring> GetAllInputDependencies(); //input columns + formulas/gets
 	vector<wstring> GetAllPossibleOutputs(wstring outputName);
 	vector<pair<wstring, vector<CRuleCell> > > GetOutputAttrsValues() {return m_OutputAttrsValues;}
+	vector<pair<wstring, vector<CRuleCell> > > GetInputAttrsTests() {return m_InputAttrsTests;}
 
 	//ordered vector of (string)inputAttrName, (vector)inputAttrTest pairs, vector of outputAttrs
 	void CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,

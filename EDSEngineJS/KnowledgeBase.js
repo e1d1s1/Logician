@@ -681,16 +681,22 @@ RuleTable.prototype.CreateRuleTable = function(inputAttrsTests, outputAttrsValue
     }
 }
 
-RuleTable.prototype.EvaluateTable = function(bGetAll)
+RuleTable.prototype.EvaluateTable = function(bGetAll, bForward)
 {
     var retval = new Array();
     try
     {
+        var resultCollection = null;
+        if (bForward)
+            resultCollection = this.m_OutputAttrsValues;
+        else
+            resultCollection = this.m_InputAttrsTest;
+            
         //for all the outputs get the results
-        for (var i = 0; i < ArraySize(this.m_OutputAttrsValues); i++)
+        for (var i = 0; i < ArraySize(resultCollection); i++)
         {
-            var outputAttrValuePair = this.m_OutputAttrsValues[i];
-            var result = this.EvaluateTableForAttr(outputAttrValuePair.first, bGetAll);
+            var outputAttrValuePair = resultCollection[i];
+            var result = this.EvaluateTableForAttr(outputAttrValuePair.first, bGetAll, bForward);
             retval[outputAttrValuePair.first] = result;
         }        
     }
@@ -701,7 +707,7 @@ RuleTable.prototype.EvaluateTable = function(bGetAll)
     return retval;
 }
 
-RuleTable.prototype.EvaluateTableForAttr = function(outputAttr, bGetAll)
+RuleTable.prototype.EvaluateTableForAttr = function(outputAttr, bGetAll, bForward)
 {
     var retval = new Array();
     try
@@ -712,14 +718,27 @@ RuleTable.prototype.EvaluateTableForAttr = function(outputAttr, bGetAll)
 	    for (var j = 0; j < colResults.length; j++)
 	        colResults[j] = true;
 	    
+	    var inputCollection = null;
+	    var outputCollection = null;
+	    if (bForward)
+	    {
+		    inputCollection = this.m_InputAttrsTests;
+		    outputCollection = this.m_OutputAttrsValues;
+	    }
+	    else
+	    {
+		    inputCollection = this.m_OutputAttrsValues;
+		    outputCollection = this.m_InputAttrsTests;
+	    }
+	    
 	    this.SetInvalidAttrs();
 	    
-	    if (ArraySize(this.m_InputAttrsValues) > 0 && ArraySize(this.m_InputAttrsTests) > 0)
+	    if (ArraySize(this.m_InputAttrsValues) > 0 && ArraySize(inputCollection) > 0)
 	    {
 		    //get the current values of all input attrs
-		    for (var i = 0; i < ArraySize(this.m_InputAttrsTests); i++)
+		    for (var i = 0; i < ArraySize(inputCollection); i++)
 		    {
-		        var inputAttrPair = this.m_InputAttrsTests[i];
+		        var inputAttrPair = inputCollection[i];
 			    var attr = inputAttrPair.first;
 			    var currentInputAttrValuesIndex = this.m_InputAttrsValues[attr];
 			    if (currentInputAttrValuesIndex != null)
@@ -738,9 +757,9 @@ RuleTable.prototype.EvaluateTableForAttr = function(outputAttr, bGetAll)
 		    {
 			    //sweep through the inputs			    
 			    var inputCnt = 0;
-			    for (var i = 0; i < ArraySize(this.m_InputAttrsTests); i++)
+			    for (var i = 0; i < ArraySize(inputCollection); i++)
 			    {
-			        var inputAttrPair = this.m_InputAttrsTests[i];
+			        var inputAttrPair = inputCollection[i];
 				    if (testCnt < ArraySize(inputAttrPair.second))
 				    {
 				        var decoder = new Decode();
@@ -761,11 +780,11 @@ RuleTable.prototype.EvaluateTableForAttr = function(outputAttr, bGetAll)
 	    var results = new Array();
 	    for (var result = 0; result < this.m_Tests; result++)
 	    {
-		    if (result >= ArraySize(this.m_OutputAttrsValues))
+		    if (result >= ArraySize(outputCollection))
 			    break;
-		    if (this.m_OutputAttrsValues[result].first == outputAttr)
+		    if (outputCollection[result].first == outputAttr)
 		    {
-			    results = this.m_OutputAttrsValues[result].second;
+			    results = outputCollection[result].second;
 		    }
 	    }
 
@@ -1031,6 +1050,18 @@ RuleTable.prototype.GetOutputAttrsValues = function()
     try
     {
         return this.m_OutputAttrsValues;
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+}
+
+RuleTable.prototype.GetInputAttrsTests = function()
+{
+    try
+    {
+        return this.m_InputAttrsTests;
     }
     catch (err)
     {
@@ -1704,7 +1735,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
 
         table.SetInputValues(this.m_GlobalInputAttrsValues);
         
-        var results = table.EvaluateTableForAttr(outputAttr, bGetAll);
+        var results = table.EvaluateTableForAttr(outputAttr, bGetAll, true);
         //check for existance of table chain
 	    if (table.HasChain() == true)
 	    {
@@ -1725,7 +1756,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
 					    var chainAttrName = args[1].trim();
 					    var debugVals = "";
 
-					    chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, param, this.TableIsGetAll(chainTableName));
+					    chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, param, this.TableIsGetAll(chainTableName), true);
 					    for (var j = 0; j < chainedResults.length; j++)
 					    {
 					        var result = chainedResults[j];
@@ -1863,6 +1894,49 @@ KnowledgeBase.prototype.EvaluateTableWithParamGet = function(tableName, param, b
             var result = this.EvaluateTableForAttrWithParam(tableName, outputName, param, bGetAll);
             retval[outputName] = result;
         }        
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+KnowledgeBase.prototype.ReverseEvaluateTable = function(tableName, bGetAll)
+{
+    var retval = new Array();
+    try
+    {
+        var table = this.m_TableSet.GetTable(tableName);
+        table.EnableDebugging(this.m_DEBUGGING_MSGS);
+        table.SetInputValues(this.m_GlobalInputAttrsValues);
+        var outputCollection = table.GetInputAttrsTests();
+        //for all the outputs get the results
+        for (var i = 0; i < ArraySize(outputCollection); i++)
+        {
+            var resPair = outputCollection[i];
+            var outputName = resPair.first;
+            var result = table.EvaluateTableForAttr(outputName, bGetAll, false);
+            retval[outputName] = result;
+        }
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+KnowledgeBase.prototype.ReverseEvaluateTableForAttr = function(tableName, outputAttr, bGetAll)
+{
+    var retval = new Array();
+    try
+    {
+        //no chaining or scripting in reverse        
+        var table = this.m_TableSet.GetTable(tableName);
+        table.EnableDebugging(this.m_DEBUGGING_MSGS);
+        table.SetInputValues(this.m_GlobalInputAttrsValues);
+        retval = table.EvaluateTableForAttr(outputAttr, bGetAll, false);
     }
     catch (err)
     {

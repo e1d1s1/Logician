@@ -46,6 +46,11 @@ namespace EDS
 		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll);
 		map<wstring, vector<wstring> > EvaluateTable(wstring tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
 		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, bool bGetAll);
+		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr) {return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName));}
+		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll);
+		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
+		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName, bool bGetAll);
+
 		wstring GetEvalParameter() {return m_StateParameter;}
 	#ifdef _MSC_VER
 		void SetInputValues(stdext::hash_map<wstring, size_t> values) 
@@ -86,6 +91,10 @@ namespace EDS
 		vector<string> EvaluateTable(string tableName, string outputAttr, bool bGetAll);
 		map<string, vector<string> > EvaluateTable(string tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
 		map<string, vector<string> > EvaluateTable(string tableName, bool bGetAll);
+		vector<string> ReverseEvaluateTable(string tableName, string inputAttr) {return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName));}
+		vector<string> ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll);
+		map<string, vector<string> > ReverseEvaluateTable(string tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
+		map<string, vector<string> > ReverseEvaluateTable(string tableName, bool bGetAll);
 		string GetEvalParameterA() {return WStrToMBCStr(m_StateParameter);}
 	#ifdef _MSC_VER
 		void SetInputValues(stdext::hash_map<string, size_t> values);
