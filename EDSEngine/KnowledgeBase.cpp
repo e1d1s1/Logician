@@ -277,7 +277,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 							{
 								lines[0] = L"return (" + lines[0] + L").toString();";
 							}
-						}
+						}						
 						wstring codeBody;
 						for (vector<wstring>::iterator it = lines.begin(); it != lines.end(); it++)
 						{
@@ -285,6 +285,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 							codeBody += L"\n";
 						}
 						string JSCode = "function myfunc(param){\n" + WStrToMBCStr(codeBody) + "}\n";
+						JSCode += WStrToMBCStr(m_jsCode);
 						#ifdef USE_WINDOWS_SCRIPTING
 						if (psa)
 						{
@@ -421,6 +422,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 							indentedCode += L"\n";
 						}
 						string PythonCode = "def myfunc():\n" + WStrToMBCStr(indentedCode) + "\n";
+						PythonCode += WStrToMBCStr(m_pyCode);
 						Py_Initialize();
 						PyRun_SimpleString(WStrToMBCStr(m_pyCode).c_str());
 						PyRun_SimpleString(PythonCode.c_str());
