@@ -72,7 +72,9 @@ enum
 {
 	DEBUG_SCOPE = 1100,
 	DEBUG_ADD_TABLE,
-	DEBUG_REMOVE_TABLE
+	DEBUG_REMOVE_TABLE,
+	TABLELIST,
+	DEBUGLIST
 };
 
 class DebugOptionsDialog : public wxPropertySheetDialog
@@ -124,7 +126,7 @@ private:
 		wxBoxSizer *tableSizer = new wxBoxSizer( wxHORIZONTAL );
 		wxStaticBox *box1 = new wxStaticBox(panel, wxID_ANY, _T("&Project Tables"));
 		wxSizer *staticBox1 = new wxStaticBoxSizer(box1, wxVERTICAL);
-		tableList = new wxListBox(panel, wxID_ANY, wxDefaultPosition, wxSize(150, 200), 0, NULL, wxLB_SORT);		
+		tableList = new wxListBox(panel, TABLELIST, wxDefaultPosition, wxSize(150, 200), 0, NULL, wxLB_SORT);		
 		staticBox1->Add(tableList, 1, wxGROW);
 
 		wxBoxSizer *arrowSizer = new wxBoxSizer( wxVERTICAL );
@@ -136,7 +138,7 @@ private:
 
 		wxStaticBox *box2 = new wxStaticBox(panel, wxID_ANY, _T("&Debugging Tables"));
 		wxSizer *staticBox2 = new wxStaticBoxSizer(box2, wxVERTICAL);
-		selectedList = new wxListBox(panel, wxID_ANY, wxDefaultPosition, wxSize(150, 200), 0, NULL, wxLB_SORT);	
+		selectedList = new wxListBox(panel, DEBUGLIST, wxDefaultPosition, wxSize(150, 200), 0, NULL, wxLB_SORT);	
 		staticBox2->Add(selectedList, 1, wxGROW);
 		chkOpenTableOnDebug = new wxCheckBox(panel, wxID_ANY, _T("&Open table and highlight on debug"));
 
@@ -198,7 +200,7 @@ private:
 
 	inline void AddRemoveClick(wxCommandEvent &event)
 	{
-		if (event.GetId() == DEBUG_ADD_TABLE)
+		if (event.GetId() == DEBUG_ADD_TABLE || event.GetId() == TABLELIST)
 		{
 			int n_all = tableList->GetSelection();
 			if (n_all != wxNOT_FOUND && selectedList->FindString(tableList->GetString(n_all)) == wxNOT_FOUND)

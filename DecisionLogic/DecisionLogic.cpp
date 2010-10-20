@@ -172,6 +172,8 @@ BEGIN_EVENT_TABLE(DebugOptionsDialog, wxPropertySheetDialog)
 	EVT_BUTTON(DEBUG_REMOVE_TABLE, DebugOptionsDialog::AddRemoveClick)
 	EVT_BUTTON(wxID_OK, DebugOptionsDialog::OnOK)
 	EVT_RADIOBOX(DEBUG_SCOPE, DebugOptionsDialog::OnScopeChanage)
+	EVT_LISTBOX_DCLICK(TABLELIST, DebugOptionsDialog::AddRemoveClick)
+	EVT_LISTBOX_DCLICK(DEBUGLIST, DebugOptionsDialog::AddRemoveClick) 
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(CompileOptionsDialog, wxPropertySheetDialog)
