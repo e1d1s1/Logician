@@ -53,20 +53,29 @@
     <RelativePath></RelativePath>
   </DataSet>
   <Compiler>
-    <Javascript></Javascript>
+    <Javascript>function alterparameter()&#13;
+{    &#13;
+    param = param + " modified";&#13;
+    return "eval ok";&#13;
+}</Javascript>
     <Python>from math import *
-from xml import *</Python>
+from xml import *&#13;
+&#13;
+def alterparameter():&#13;
+    global param&#13;
+    param = param + " modified"&#13;
+    return "eval ok"</Python>
   </Compiler>
   <Tokens>
     <Token id="1"></Token>
     <Token id="34">0</Token>
-    <Token id="53">1</Token>
-    <Token id="57">2</Token>
-    <Token id="59">4</Token>
-    <Token id="60">5</Token>
-    <Token id="55">50,60</Token>
-    <Token id="56">70,80</Token>
-    <Token id="54">9</Token>
+    <Token id="55">1</Token>
+    <Token id="59">2</Token>
+    <Token id="61">4</Token>
+    <Token id="62">5</Token>
+    <Token id="57">50,60</Token>
+    <Token id="58">70,80</Token>
+    <Token id="56">9</Token>
     <Token id="9">@ResultByOption1</Token>
     <Token id="18">@Selection2</Token>
     <Token id="19">@Selection3</Token>
@@ -97,7 +106,9 @@ from xml import *</Python>
     <Token id="37">SINGLESELECT</Token>
     <Token id="17">Selection1</Token>
     <Token id="20">Selection2</Token>
-    <Token id="66">XPATH Worked</Token>
+    <Token id="53">TestParameterJS</Token>
+    <Token id="54">TestParameterPY</Token>
+    <Token id="70">XPATH Worked</Token>
     <Token id="16">Y</Token>
     <Token id="14">YN</Token>
     <Token id="13">YY</Token>
@@ -107,26 +118,28 @@ from xml import *</Python>
     <Token id="23">aDictAttr3</Token>
     <Token id="24">bDictAttr4</Token>
     <Token id="45">blue</Token>
-    <Token id="72">both attrs are NULL</Token>
+    <Token id="76">both attrs are NULL</Token>
     <Token id="25">cDictAttr1</Token>
     <Token id="26">dDictAttr2</Token>
     <Token id="27">eDictAttr5</Token>
-    <Token id="65">eval(testtable1, outputAttr1)</Token>
-    <Token id="73">fallout rule</Token>
-    <Token id="58">get(outsideAttr1) with concat</Token>
-    <Token id="67">get(someAttr)</Token>
+    <Token id="69">eval(testtable1, outputAttr1)</Token>
+    <Token id="77">fallout rule</Token>
+    <Token id="60">get(outsideAttr1) with concat</Token>
+    <Token id="71">get(someAttr)</Token>
     <Token id="48">green</Token>
-    <Token id="71">inputAttr1 is NULL</Token>
-    <Token id="70">inputAttr2 is NULL</Token>
-    <Token id="68">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Token>
-    <Token id="69">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Token>
-    <Token id="62">js(get(outsideAttr1) + 2)</Token>
+    <Token id="75">inputAttr1 is NULL</Token>
+    <Token id="74">inputAttr2 is NULL</Token>
+    <Token id="72">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Token>
+    <Token id="73">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Token>
+    <Token id="65">js(alterparameter())</Token>
+    <Token id="64">js(get(outsideAttr1) + 2)</Token>
     <Token id="47">orange</Token>
     <Token id="49">purple</Token>
-    <Token id="61">py(get(outsideAttr1) + 2)</Token>
+    <Token id="66">py(alterparameter())</Token>
+    <Token id="63">py(get(outsideAttr1) + 2)</Token>
     <Token id="44">red</Token>
-    <Token id="64">some value of value</Token>
-    <Token id="63">this is a comment</Token>
+    <Token id="68">some value of value</Token>
+    <Token id="67">this is a comment</Token>
     <Token id="46">yellow</Token>
     <Token id="33">~</Token>
   </Tokens>

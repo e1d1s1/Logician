@@ -162,14 +162,16 @@ int main(int argc, char* argv[])
 	{
 		Log(allOutputs[i]);
 	}
-	if (allOutputs.size() == 7 &&
+	if (allOutputs.size() == 9 &&
 		allOutputs[0] == L"1" &&
 		allOutputs[1] == L"2" &&
 		allOutputs[2] == L"get(outsideAttr1) with concat" &&
 		allOutputs[3] == L"4" &&
 		allOutputs[4] == L"5" &&
 		allOutputs[5] == L"py(get(outsideAttr1) + 2)" &&
-		allOutputs[6] == L"js(get(outsideAttr1) + 2)")
+		allOutputs[6] == L"js(get(outsideAttr1) + 2)" &&
+		allOutputs[7] == L"js(alterparameter())" &&
+		allOutputs[8] == L"py(alterparameter())")
 	{
 		res.SetResult(true, "");
 	}
@@ -268,6 +270,41 @@ int main(int argc, char* argv[])
 	{
 		res.SetResult(false, "Did not get proper eval result");
 	}
+
+	res.Reset();
+	Log("testing evaluation (Javascript) with state parameter on testtable1 with inputAttr1 = 'TestParameterJS' and inputAttr2 = 'TestParameterJS'");
+	knowledge.SetInputValue(L"inputAttr1", L"TestParameterJS");
+	knowledge.SetInputValue(L"inputAttr2", L"TestParameterJS");
+	vector<wstring> results9 = knowledge.EvaluateTableWithParam(tableName, (wstring)L"outputAttr1", (wstring)L"PassedValue");
+	wstring retParam = knowledge.GetEvalParameter();
+	if (results9.size() == 4 && results9.at(3) == L"eval ok" &&
+		retParam == L"PassedValue modified")
+	{
+		Log("Javascript state parameter working");
+		res.SetResult(true, "");
+	}
+	else
+	{
+		res.SetResult(false, "Problem with Javascript state parameter");
+	}
+
+	res.Reset();
+	Log("testing evaluation (Python) with state parameter on testtable1 with inputAttr1 = 'TestParameterPY' and inputAttr2 = 'TestParameterPY'");
+	knowledge.SetInputValue(L"inputAttr1", L"TestParameterPY");
+	knowledge.SetInputValue(L"inputAttr2", L"TestParameterPY");
+	vector<wstring> results10 = knowledge.EvaluateTableWithParam(tableName, (wstring)L"outputAttr1", (wstring)L"PassedValue");
+	retParam = knowledge.GetEvalParameter();
+	if (results10.size() == 4 && results10.at(3) == L"eval ok" &&
+		retParam == L"PassedValue modified")
+	{
+		Log("Python state parameter working");
+		res.SetResult(true, "");
+	}
+	else
+	{
+		res.SetResult(false, "Problem with Python state parameter");
+	}
+
 
 	res.Reset();
 	Log("testing evaluation (Python) of testtable1 with inputAttr1 = 'C', inputAttr2 = 58, get all, outsideAttr1 = 28");
