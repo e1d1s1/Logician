@@ -90,14 +90,16 @@
 	        {
 		        write_result(allOutputs[i]);
 	        }
-	        if (allOutputs.length == 7 && 
+	        if (allOutputs.length == 9 && 
 	            allOutputs[0] == "1" && 
 	            allOutputs[1] == "2" &&
 	            allOutputs[2] == "get(outsideAttr1) with concat" &&
 	            allOutputs[3] == "4" &&
 	            allOutputs[4] == "5" &&
 	            allOutputs[5] == "py(get(outsideAttr1) + 2)" &&
-	            allOutputs[6] == "js(get(outsideAttr1) + 2)")
+	            allOutputs[6] == "js(get(outsideAttr1) + 2)" &&
+	            allOutputs[7] == "js(alterparameter())" &&
+	            allOutputs[8] == "py(alterparameter())")
 	        {
 		        write_result("OK");
 	        }
@@ -173,7 +175,7 @@
 		        return false;
 	        }
 	        
-	        write_result("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 78,  outsideAttr1 = 28, get all");
+	        write_result("testing evaluation (Javascript) of testtable1 with inputAttr1 = 'C', inputAttr2 = 78,  outsideAttr1 = 28, get all");
 	        knowledge.SetInputValue("inputAttr1", "C");
 	        knowledge.SetInputValue("inputAttr2", "78");
 	        knowledge.SetInputValue("outsideAttr1", "28");
@@ -197,7 +199,28 @@
 		        return false;
 	        }
 	        
+	        write_result("testing evaluation (Javascript) with state parameter on testtable1 with inputAttr1 = 'TestParameterJS' and inputAttr2 = 'TestParameterJS'");
+	        knowledge.SetInputValue("inputAttr1", "TestParameterJS");
+	        knowledge.SetInputValue("inputAttr2", "TestParameterJS");
+	        var result9 = knowledge.EvaluateTableForAttrWithParam(tableName, "outputAttr1", "PassedValue");
+	        var retParam = knowledge.GetEvalParameter();
+	        write_result(ArraySize(result9));
+	        if (ArraySize(result9) == 4 && result9[3] == "eval ok" &&
+	            retParam == "PassedValue modified")
+	        {
+	            write_result("Javascript state parameter working");
+	        }
+	        else
+	        {
+	            write_result("FAILURE: Problem with Javascript state parameter: " + result9[3] + ":" + retParam);
+	            return false;
+	        }      
+	        
+	        
 	        write_result("testing table chaining");
+	        knowledge.SetInputValue("inputAttr1", "C");
+	        knowledge.SetInputValue("inputAttr2", "78");
+	        knowledge.SetInputValue("outsideAttr1", "28");
 	        tableName = "testtable2";
 	        var result5 = knowledge.EvaluateTableForAttr(tableName, "out1", true);
 	        if (result5.length == results4["outputAttr1"].length &&

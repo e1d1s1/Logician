@@ -249,22 +249,9 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 					wstring val = L"ERROR";
 					#ifdef USE_WINDOWS_SCRIPTING
 					IScriptControlPtr pScriptControl(__uuidof(ScriptControl));
-
 					LPSAFEARRAY psa;
 					SAFEARRAYBOUND rgsabound[]  = { 1, 0 }; // 1 element, 0-based
-
 					psa = SafeArrayCreate(VT_VARIANT, 1, rgsabound);
-					if (psa)
-					{
-						VARIANT vParam[1];
-						VariantInit(&vParam[0]);
-						V_VT(&vParam[0]) = VT_BSTR;
-
-						V_BSTR(&vParam[0]) = SysAllocString(m_StateParameter.c_str());
-						long lZero = 0;
-						HRESULT hr = SafeArrayPutElement(psa, &lZero, &vParam[0]);
-						SysFreeString(vParam[0].bstrVal);
-					}
 					#endif
 					try
 					{
@@ -284,7 +271,9 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 							codeBody += *it;
 							codeBody += L"\n";
 						}
-						string JSCode = "function myfunc(param){\n" + WStrToMBCStr(codeBody) + "}\n";
+						string JSCode = "function myfunc(){\n" + WStrToMBCStr(codeBody) + "}\n";
+						JSCode += "var param = \"" + WStrToMBCStr(m_StateParameter) + "\";\n";
+						JSCode += "function getparam(){return param;}\n";
 						JSCode += WStrToMBCStr(m_jsCode);
 						#ifdef USE_WINDOWS_SCRIPTING
 						if (psa)
@@ -292,7 +281,8 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 							pScriptControl->Language = "JScript";
 							pScriptControl->AddCode(JSCode.c_str());
 
-							val = VariantToWStr(pScriptControl->Run("myfunc", &psa));
+							val = VariantToWStr(pScriptControl->Run("myfunc", &psa));							
+							m_StateParameter = VariantToWStr(pScriptControl->Run("getparam", &psa));
 
 							SafeArrayDestroy(psa);
 						}
@@ -325,25 +315,29 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 						if (!JS_InitStandardClasses(cx, global))
 							throw;
 
-						jsval rval, funval;
+						jsval rval, stateval, funval;
 						JS_EvaluateScript(cx, global, JSCode.c_str(), JSCode.length(), "EDS_JScript", 1, &funval);
 
 						jsval argv;
-						string cStr = WStrToMBCStr(m_StateParameter).c_str();
+						/*string cStr = WStrToMBCStr(m_StateParameter).c_str();
 						char* tempStr = (char*)JS_malloc(cx, cStr.length() + 1);
 						strcpy(tempStr, cStr.c_str());
 						JSString *jsStr = JS_NewString(cx, tempStr, strlen(tempStr));
-						argv = STRING_TO_JSVAL(jsStr);
+						argv = STRING_TO_JSVAL(jsStr);*/
 						JSBool ok = JS_CallFunctionName(cx, global, "myfunc", 1, &argv, &rval);
-
+						JSBool ok = JS_CallFunctionName(cx, global, "getparam", 1, &argv, &stateval);
 
 						if (rval != NULL && ok)
 						{
 							char* s = JS_GetStringBytes(JSVAL_TO_STRING(rval));
 							val = MBCStrToWStr(s);
 						}
+						if (stateval != NULL && ok)
+						{
+							char* s = JS_GetStringBytes(JSVAL_TO_STRING(stateval));
+							m_StateParameter = MBCStrToWStr(s);
+						}
 
-						//free(tempStr);
 						// Cleanup.
 						JS_DestroyContext(cx);
 						JS_DestroyRuntime(rt);

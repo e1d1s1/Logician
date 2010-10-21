@@ -1824,10 +1824,11 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
                     
                     var jsCode = this.m_jsCode + "\n" + "var param = \"" + this.m_StateParameter + "\";\n";
                     jsCode += "function myfunc()\n" + codeBody + "\n";
+                    jsCode += "function getparam(){return param;}\n";
                     scriptTag = InstallScript(jsCode);
                     var res = myfunc();
                     val = res.toString();
-                    this.m_StateParameter = param;
+                    this.m_StateParameter = getparam();
                     RemoveScriptTag(scriptTag);
                     newResults.push(val);                                    
                     if (this.m_DEBUGGING_MSGS)
@@ -1943,6 +1944,10 @@ KnowledgeBase.prototype.ReverseEvaluateTableForAttr = function(tableName, output
         ReportError(err);
     }
     return retval;
+}
+
+KnowledgeBase.prototype.GetEvalParameter = function () {
+    return this.m_StateParameter;
 }
 
 KnowledgeBase.prototype.GetInputValueCount = function() {
