@@ -54,7 +54,12 @@
 			<Add library="libEDSEngine" />
 			<Add library="libuuid" />
 		</Linker>
+		<Unit filename="LinearEngine.cpp" />
+		<Unit filename="LinearEngine.h" />
 		<Unit filename="ROM.cpp" />
+		<Unit filename="ROMDictionary.cpp" />
+		<Unit filename="ROMDictionary.h" />
+		<Unit filename="ROMDictionaryAttribute.h" />
 		<Unit filename="ROMTree.cpp" />
 		<Unit filename="ROMTree.h" />
 		<Unit filename="XMLWrapper.h" />
