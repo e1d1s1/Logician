@@ -176,8 +176,8 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 		{
 			m_StateParameter = param;
 		}
-		iRecursingDepth++;		
-		
+		iRecursingDepth++;
+
 		table->EnbleDebugging(m_DEBUGGING_MSGS);
 
 		table->SetInputValues(m_GlobalInputAttrsValues);
@@ -264,7 +264,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 							{
 								lines[0] = L"return (" + lines[0] + L").toString();";
 							}
-						}						
+						}
 						wstring codeBody;
 						for (vector<wstring>::iterator it = lines.begin(); it != lines.end(); it++)
 						{
@@ -281,7 +281,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 							pScriptControl->Language = "JScript";
 							pScriptControl->AddCode(JSCode.c_str());
 
-							val = VariantToWStr(pScriptControl->Run("myfunc", &psa));							
+							val = VariantToWStr(pScriptControl->Run("myfunc", &psa));
 							m_StateParameter = VariantToWStr(pScriptControl->Run("getparam", &psa));
 
 							SafeArrayDestroy(psa);
@@ -325,14 +325,14 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 						JSString *jsStr = JS_NewString(cx, tempStr, strlen(tempStr));
 						argv = STRING_TO_JSVAL(jsStr);*/
 						JSBool ok = JS_CallFunctionName(cx, global, "myfunc", 1, &argv, &rval);
-						JSBool ok = JS_CallFunctionName(cx, global, "getparam", 1, &argv, &stateval);
+						JSBool ok2 = JS_CallFunctionName(cx, global, "getparam", 1, &argv, &stateval);
 
 						if (rval != NULL && ok)
 						{
 							char* s = JS_GetStringBytes(JSVAL_TO_STRING(rval));
 							val = MBCStrToWStr(s);
 						}
-						if (stateval != NULL && ok)
+						if (stateval != NULL && ok2)
 						{
 							char* s = JS_GetStringBytes(JSVAL_TO_STRING(stateval));
 							m_StateParameter = MBCStrToWStr(s);
