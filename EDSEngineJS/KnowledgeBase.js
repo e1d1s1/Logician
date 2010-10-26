@@ -15,6 +15,7 @@ Copyright (C) 2009 Eric D. Schmidt
     You should have received a copy of the GNU General Public License
     along with EDSEngineJS.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 //stupid IE doesnt do indexOf for array
 function GetIndexOfItem(arr, obj)
 {
