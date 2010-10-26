@@ -367,6 +367,7 @@ bool ROMTree::SetROMObjectValue(Node currentObject, wstring name, wstring value)
 		}
 	#endif
 	retval = true;
+	return retval;
 }
 
 wstring ROMTree::GetROMObjectValue(Node currentObject, wstring name)
@@ -580,7 +581,7 @@ map<wstring, map<wstring, wstring> > ROMTree::GetAllAttributes(Node currentObjec
 			{
 				NamedNodeMap attrNodeMap = res->item[i]->attributes;
 				wstring key = attrNodeMap->item[j]->nodeName;
-				wstring value = ToWString(attrNodeMap->item[j]->nodeValue);		
+				wstring value = ToWString(attrNodeMap->item[j]->nodeValue);
 				keysAndValues[key] = value;
 			}
 			retval[name] = keysAndValues;
