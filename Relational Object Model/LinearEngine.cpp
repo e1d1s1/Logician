@@ -116,7 +116,7 @@ namespace ROM
 			}
 		}
 
-		for (int i = 0; i < evalOrderCopy.size(); i++)
+		for (size_t i = 0; i < evalOrderCopy.size(); i++)
 		{
 			//if the lists differ, do another sort, otherwise we should be done
 			if (evalOrderCopy[i] != m_vEvalList[i] && m_CurrentRecursion < MAX_RECURSION)
@@ -124,7 +124,7 @@ namespace ROM
 				//does it match a previous result (are we flipping between a couple values, circular logic)
 				if (m_CurrentRecursion % 2 == 0 && m_vEvalListRecursChecker.size() > 0)
 				{
-					for (int j = 0; j < m_vEvalListRecursChecker.size(); j++)
+					for (size_t j = 0; j < m_vEvalListRecursChecker.size(); j++)
 					{
 						if (m_vEvalList[j] != m_vEvalListRecursChecker[j])
 						{
@@ -133,9 +133,9 @@ namespace ROM
 						}
 					}
 				}
-				else				
+				else
 					OrderDictionary();
-				
+
 				break;
 			}
 		}
@@ -207,7 +207,7 @@ namespace ROM
 
 	bool LinearEngine::DictionaryIsValid()
 	{
-		bool retval = true;	
+		bool retval = true;
 		for (vector<ROMDictionaryAttribute*>::iterator it = m_vEvalList.begin(); it != m_vEvalList.end(); it++)
 		{
 			if (!(*it)->Valid)
@@ -348,7 +348,7 @@ namespace ROM
 			else if (availableValues[0].length() == 1 && availableValues[0][0] == L'Y')
 			{
 				m_tree->SetAttribute(m_context, dictAttrName, newValue);
-			}			
+			}
 			else if (availableValues[0].length() == 1 && availableValues[0][0] == L'N')
 			{
 				m_tree->SetAttribute(m_context, dictAttrName, L"");
@@ -365,7 +365,7 @@ namespace ROM
 				m_tree->SetAttribute(m_context, dictAttrName, availableValues[0]);
 				m_dict[dictAttrName].ChangedByUser = false;
 			}
-		}		
+		}
 		else if (availableValues.size() == 0)
 		{
 			m_tree->SetAttribute(m_context, dictAttrName, newValue);
@@ -375,7 +375,7 @@ namespace ROM
 		else if (availableValues.size() == 1 && availableValues[0].length() > 0)
 		{
 			m_tree->SetAttribute(m_context, dictAttrName, availableValues[0]);
-			m_dict[dictAttrName].ChangedByUser = false;			
+			m_dict[dictAttrName].ChangedByUser = false;
 		}
 		else if (availableValues.size() > 0)
 		{
@@ -384,7 +384,7 @@ namespace ROM
 			{
 				m_tree->SetAttribute(m_context, dictAttrName, newValue);
 			}
-			else 
+			else
 			{
 				m_tree->SetAttribute(m_context, dictAttrName, L"");
 				m_dict[dictAttrName].ChangedByUser = false;
@@ -421,7 +421,7 @@ namespace ROM
 				m_dict[dictAttrName].ChangedByUser = false;
 			}
 		}
-		
+
 		//if only one is available, force that selection now
 		if (availableValues.size() == 1)
 		{
@@ -448,7 +448,7 @@ namespace ROM
 		if (selectedValues.size() == 0 && currentValues.size() > 0) //compare the new values to what is really available
 		{
 			for (size_t i = 0; i < newValues.size(); i++)
-			{				
+			{
 				vector<wstring>::iterator itFind = find(availableValues.begin(), availableValues.end(), newValues[i]);
 				if (itFind != availableValues.end())
 				{
@@ -596,7 +596,7 @@ namespace ROM
 						vector<wstring> newSelectedValues = GetSelectedValues(&itFind->second);
 						if (newSelectedValues.size() != selectedValues.size())
 							bValuesRemainSame = false;
-						else for (int i = 0; i < selectedValues.size(); i++)
+						else for (size_t i = 0; i < selectedValues.size(); i++)
 						{
 							vector<wstring>::iterator itFind = find(newSelectedValues.begin(), newSelectedValues.end(), selectedValues[i]);
 							if (itFind == newSelectedValues.end())

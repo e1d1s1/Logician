@@ -39,7 +39,7 @@ namespace ROM
 	friend class LinearEngine;
 	public:
 		ROMTree(wstring name);
-		virtual ~ROMTree(void);		
+		virtual ~ROMTree(void);
 
 		//relational interface
 		Node GetRoot();
@@ -56,10 +56,10 @@ namespace ROM
 		wstring				GetAttribute(Node currentObject, wstring id, bool recurs = true) {return GetAttribute(currentObject, id, L"value", recurs);}
 		bool				SetAttribute(Node currentObject, wstring id, wstring name, wstring value);
 		bool				SetAttribute(Node currentObject, wstring id, wstring value);
-		bool				SetAttributeValue(Node currentObject, wstring id, wstring value) {SetAttribute(currentObject, id, value);}
+		bool				SetAttributeValue(Node currentObject, wstring id, wstring value) {return SetAttribute(currentObject, id, value);}
 		bool				SetROMObjectValue(Node currentObject, wstring name, wstring value);
 		wstring				GetROMObjectValue(Node currentObject, wstring name);
-		bool				RemoveAttribute(Node current, wstring id);	
+		bool				RemoveAttribute(Node current, wstring id);
 		wstring				GetROMObjectName(Node current);
 		void				SetROMObjectName(Node current, wstring name);
 		map<wstring, map<wstring, wstring> > GetAllAttributes(Node current);
@@ -80,14 +80,14 @@ namespace ROM
 		//ASCII Overloads
 		ROMTree(string name);
 		vector<Node>		Find(Node current, string searchStr);
-		Node				CreateROMObject(string name);		
+		Node				CreateROMObject(string name);
 		string				GetAttribute(Node currentObject, string id, string name, bool recurs = true);
 		string				GetAttribute(Node currentObject, string id, bool recurs = true) {return GetAttribute(currentObject, id, "value", recurs);}
 		bool				SetAttribute(Node currentObject, string id, string name, string value);
 		bool				SetAttribute(Node currentObject, string id, string value);
 		bool				SetROMObjectValue(Node currentObject, string name, string value);
 		string				GetROMObjectValue(Node currentObject, string name);
-		bool				RemoveAttribute(Node current, string id);	
+		bool				RemoveAttribute(Node current, string id);
 		string				GetROMObjectNameA(Node current);
 		void				SetROMObjectName(Node currrent, string name);
 		bool				LoadRules(string knowledge_file);
@@ -135,11 +135,11 @@ namespace ROM
 #ifdef USE_MSXML
 		Element				m_tree;
 #endif
-#ifdef USE_LIBXML			
-		Node				m_tree;	
+#ifdef USE_LIBXML
+		Node				m_tree;
 #endif
-		EDS::CKnowledgeBase		m_KnowledgeBase;	
-	};	
+		EDS::CKnowledgeBase		m_KnowledgeBase;
+	};
 }
 #define ATTRIBUTE_NODE L"Attribute"
 #define OBJECT_NODE L"Object"

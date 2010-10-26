@@ -49,7 +49,7 @@ class CompileOptions
 public:
 	CompileOptions()
 	{
-		PythonCode = L"from math import *\nfrom xml import *\n";
+		PythonCode = L"";
 		JavascriptCode = L"";
 	}
 

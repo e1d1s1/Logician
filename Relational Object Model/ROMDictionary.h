@@ -16,7 +16,7 @@ Copyright (C) 2009 Eric D. Schmidt
     along with Relational Object Model 2.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "ROMTree.h"
-#include "ROMDictionaryAttribute.h";
+#include "ROMDictionaryAttribute.h"
 
 #pragma once
 
@@ -34,7 +34,7 @@ namespace ROM
 		void LoadDictionary(wstring dictionaryTable);
 		ROMDictionaryAttribute* GetDictionaryAttr(wstring dictAttrName);
 		map<wstring, ROMDictionaryAttribute>* GetAllDictionaryAttrs() {return &m_dict;}
-		
+
 		//ASCII overloadas
 		void LoadDictionary(string dictionaryTable);
 		ROMDictionaryAttribute* GetDictionaryAttr(string dictAttrName);
