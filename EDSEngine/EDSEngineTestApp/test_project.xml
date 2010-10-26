@@ -247,10 +247,7 @@
     <String id="70" en-US="XPATH Worked trans"/>
   </Translations>
   <Scripting>
-    <Python>from math import *
-from xml import *&#13;
-&#13;
-def alterparameter():&#13;
+    <Python>def alterparameter():&#13;
     global param&#13;
     param = param + " modified"&#13;
     return "eval ok"</Python>

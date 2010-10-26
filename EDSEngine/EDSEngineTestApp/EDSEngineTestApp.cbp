@@ -47,7 +47,7 @@
 			<Add library="libxml2" />
 			<Add library="libpython2.6" />
 			<Add library="libboost_system-mt" />
-			<Add library="libboost_python-mt" />
+			<Add library="libboost_python-mt-py26" />
 			<Add library="libmozjs" />
 			<Add library="libEDSEngine" />
 			<Add directory="C:/msys/1.0/local/lib" />
