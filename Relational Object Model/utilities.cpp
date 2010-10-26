@@ -25,7 +25,7 @@ Copyright (C) 2009 Eric D. Schmidt
 	#include "Objbase.h"
 	#else
 	#include <cstdlib>
-	#endif	
+	#endif
 #endif
 
 using namespace std;
@@ -244,7 +244,7 @@ string ROMUTIL::MakeGUID()
 	return guid;
 }
 
-#ifdef USE_MSXML	
+#ifdef USE_MSXML
 		wstring ROMUTIL::ToWString(_variant_t str)
 		{
 			return (wstring)str.bstrVal;
@@ -265,11 +265,9 @@ string ROMUTIL::MakeGUID()
 
 		string ROMUTIL::WStrToMBCStr(wstring wstr)
 		{
-			mbstate_t *ps = NULL;
 			const size_t MAX_SIZE = 4*wstr.length() + 1; //should handle UTF-8 largest char????
 			char *mbcstr = new char[MAX_SIZE];
-			const wchar_t   *wcsIndirectString = wstr.c_str();
-			size_t finalSize = wcstombs(mbcstr, wstr.c_str(), MAX_SIZE);
+			wcstombs(mbcstr, wstr.c_str(), MAX_SIZE);
 			string retval = mbcstr;
 			delete [] mbcstr;
 			return retval;
