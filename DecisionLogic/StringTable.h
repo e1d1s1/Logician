@@ -35,7 +35,7 @@ template <class T>
 class SortByColumn
 {
 public:
-	SortByColumn::SortByColumn(int colIndex) {m_colIndex = colIndex;}
+	SortByColumn(int colIndex) {m_colIndex = colIndex;}
 	int operator() (const vector<T> lhs, const vector<T> rhs)
 	{
 		return lhs.at(m_colIndex) < rhs.at(m_colIndex);

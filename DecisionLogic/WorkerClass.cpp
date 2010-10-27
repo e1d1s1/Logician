@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <string>
 #include <zlib.h>
+#include <cctype>
 
 
 #include "WorkerClass.h"
@@ -65,7 +66,7 @@ WorkerClass::WorkerClass(GUIClass *gui, int orient)
 {
 	m_gui = gui;
 	m_orientation = orient;
-	m_debug_status = false;		
+	m_debug_status = false;
 	pt2WorkerObject = (void*)this;
 
 	bIsSaved = true;
@@ -73,7 +74,7 @@ WorkerClass::WorkerClass(GUIClass *gui, int orient)
 
 WorkerClass::~WorkerClass(void)
 {
-	SaveApplicationSettings();	
+	SaveApplicationSettings();
 }
 
 bool WorkerClass::CheckSave()
@@ -110,7 +111,7 @@ bool WorkerClass::NewProject()
 			CheckSave();
 		m_gui->CloseAllWindows();
 
-		wstring savePath = m_gui->SaveDialog("dlp");		
+		wstring savePath = m_gui->SaveDialog("dlp");
 		if (savePath.length() > 0)
 		{
 			SaveApplicationSettings();
@@ -121,8 +122,8 @@ bool WorkerClass::NewProject()
 			m_gui->AddAllProjectNodes(m_pm.GetProjectTable());
 			GetSettings();
 			SaveApplicationSettings();
-		}			
-		
+		}
+
 	}
 	catch(...)
 	{
@@ -175,7 +176,7 @@ void WorkerClass::GetSettings()
 	m_debugOptions.debugMode = atoi(UTILS::stringify(l).c_str());
 	if (m_debugOptions.debugMode == m_debugOptions.SELECTED_TABLES)
 	{
-		m_gui->GetConfig(L"HighlightDebug", &l);		
+		m_gui->GetConfig(L"HighlightDebug", &l);
 		m_debugOptions.bOpenTable = (bool)l;
 	}
 	else
@@ -208,7 +209,7 @@ void WorkerClass::SaveApplicationSettings()
 			fileList += *it;
 			cnt--;
 		}
-		m_gui->WriteConfig(L"RecentProjectList", fileList);		
+		m_gui->WriteConfig(L"RecentProjectList", fileList);
 
 		//remember debugging options
 		m_gui->WriteConfig(L"DebugMode", UTILS::stringify((long)m_debugOptions.debugMode).c_str());
@@ -267,7 +268,7 @@ bool WorkerClass::Save(OpenLogicTable *targetTable)
 			if (targetTable)
 				break;
 		}
-		
+
 		if (!targetTable)
 		{
 			bool bProjectSaved = m_pm.SaveProjectFile();
@@ -281,7 +282,7 @@ bool WorkerClass::Save(OpenLogicTable *targetTable)
 		{
 			m_gui->EnableAllChildWindows(true);
 			return bTablesSaved;
-		}		
+		}
 	}
 	catch(...)
 	{
@@ -318,9 +319,9 @@ bool WorkerClass::LoadTable(wstring name)
 		wstring path = m_pm.GetProjectWorkingPath();
 		if (table_type == RULES_TABLE)
 		{
-			DataSet<wstring> ds = m_pm.LoadDataSet(name);			
+			DataSet<wstring> ds = m_pm.LoadDataSet(name);
 			if (ds.TableCount() == 3)
-			{		
+			{
 				path += PATHSEP + m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
 				LogicTable table;
 				table.LoadDataSet(ds, name, path);
@@ -328,7 +329,7 @@ bool WorkerClass::LoadTable(wstring name)
 				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
 				childForm->Show();
 				retval = true;
-			}			
+			}
 		}
 		else
 		{
@@ -357,6 +358,24 @@ bool WorkerClass::LoadTable(wstring name)
 	return retval;
 }
 
+void WorkerClass::CloseTable()
+{
+    wstring nameToDelete;
+	OpenLogicTable opened;
+
+    opened = m_gui->GetActiveChild();
+
+    if (!opened.child_window_ptr)
+        return;
+    else
+        nameToDelete = opened.logic_table.Name;
+
+    if (nameToDelete.length() == 0)
+        return;
+
+    m_gui->CloseWindow(nameToDelete);
+}
+
 bool WorkerClass::MoveTable(wstring table, wstring oldLoc, wstring newLoc)
 {
 	bool retval = false;
@@ -367,7 +386,7 @@ bool WorkerClass::MoveTable(wstring table, wstring oldLoc, wstring newLoc)
 			if (!CheckSave())
 			{
 				m_gui->PromptMessage(L"You must save any existing changes before moving an existing table.");
-				return retval;		
+				return retval;
 			}
 		}
 
@@ -425,7 +444,7 @@ bool WorkerClass::MoveTable(wstring table, wstring oldLoc, wstring newLoc)
 			size_t result = fread(buffer, 1, len, oldFile);
 			if (result > 0)
 				fwrite(buffer, 1, len, newFile);
-			delete[] buffer;			
+			delete[] buffer;
 			fclose(oldFile);
 			fclose(newFile);
 			#ifdef WIN32
@@ -441,7 +460,7 @@ bool WorkerClass::MoveTable(wstring table, wstring oldLoc, wstring newLoc)
 		vector<wstring> existing_names = m_gui->GetChildrenOfGroup(newLoc);
 		existing_names.push_back(table);
 		sort(existing_names.begin(), existing_names.end());
-		size_t pos = find(existing_names.begin(), existing_names.end(), table) - existing_names.begin();		
+		size_t pos = find(existing_names.begin(), existing_names.end(), table) - existing_names.begin();
 		wstring prevValue;
 		if (existing_names.size() > 1)
 		{
@@ -449,19 +468,19 @@ bool WorkerClass::MoveTable(wstring table, wstring oldLoc, wstring newLoc)
 			{
 				wstring prevValue = existing_names[pos - 1];
 			}
-		}	
-		
+		}
+
 		m_gui->SetActiveGroup(oldLoc);
 		m_gui->DeleteTreeNode(table);
 		m_gui->SetActiveGroup(newLoc);
-		m_gui->AddTreeNodeToActiveGroup(prevValue, table);		
+		m_gui->AddTreeNodeToActiveGroup(prevValue, table);
 
 		//if the windows was closed, reopen it
 		if (bWasClosed)
 			LoadTable(table);
 
 		Save();
-		
+
 		retval = true;
 	}
 	catch(...)
@@ -472,7 +491,7 @@ bool WorkerClass::MoveTable(wstring table, wstring oldLoc, wstring newLoc)
 }
 
 void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
-{	
+{
 	wstring existingName, newName;
 	OpenLogicTable opened;
 
@@ -505,17 +524,17 @@ void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
 		return;
 	}
 
-	bool bSystemTable = false;	
+	bool bSystemTable = false;
 	if (newName == GLOBALORS_TABLE_NAME || newName == TRANSLATIONS_TABLE_NAME)
 	{
 		m_gui->PromptMessage(L"This name is a reserved system table, please try again");
 		return;
 	}
 
-	if (newName.length() > 0 && existingName.length() > 0) 
-	{		
+	if (newName.length() > 0 && existingName.length() > 0)
+	{
 		//now add the table as a new item
-		vector<wstring> existing_names = m_pm.GetProjectTableNames();			
+		vector<wstring> existing_names = m_pm.GetProjectTableNames();
 		vector<wstring>::iterator itFind = find(existing_names.begin(), existing_names.end(), newName);
 		if (itFind == existing_names.end())
 		{
@@ -540,13 +559,13 @@ void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
 				path += PATHSEP + newName + L".xml";
 			}
 			if (m_pm.RenameDataSet(existingName + L".xml", newName + L".xml"))
-			{							
-				existing_names.erase(find(existing_names.begin(), existing_names.end(), existingName));				
+			{
+				existing_names.erase(find(existing_names.begin(), existing_names.end(), existingName));
 				existing_names.push_back(newName);
 				sort(existing_names.begin(), existing_names.end());
 
 				m_gui->CloseWindow(existingName);
-				m_gui->AddTreeNodeToActiveGroup(existingName, newName);				
+				m_gui->AddTreeNodeToActiveGroup(existingName, newName);
 				m_gui->DeleteTreeNode(existingName);
 
 				//rename the file on disk
@@ -557,14 +576,14 @@ void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
 				#endif
 
 				if (opened.child_window_ptr)
-					LoadTable(newName);					
+					LoadTable(newName);
 				Save();
 			}
 		}
 		else
 		{
 			m_gui->PromptMessage(L"This table name already exists.");
-		}		
+		}
 	}
 }
 
@@ -590,17 +609,17 @@ void WorkerClass::InsertTable()
 			m_gui->PromptMessage(L"This file is a reserved system table, please try again");
 			return;
 		}
-		
+
 		wstring wstrSep;
 		wstrSep += PATHSEP;
 		vector<wstring> pathParts = UTILS::Split(path, wstrSep);
-		wstring name = UTILS::FindAndReplace(pathParts[pathParts.size() - 1], L".xml", L"");		
+		wstring name = UTILS::FindAndReplace(pathParts[pathParts.size() - 1], L".xml", L"");
 
 		wstring target = m_pm.GetProjectWorkingPath() + wstrSep + m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
 		wstring sourcePath = path;
 		wstring targetPath = target;
-		transform(targetPath.begin(), targetPath.end(), targetPath.begin(), tolower);
-		transform(sourcePath.begin(), sourcePath.end(), sourcePath.begin(), tolower);
+		transform(targetPath.begin(), targetPath.end(), targetPath.begin(), ::tolower);
+		transform(sourcePath.begin(), sourcePath.end(), sourcePath.begin(), ::tolower);
 		if (targetPath != sourcePath)
 		{
 			//copy from source to target
@@ -621,13 +640,13 @@ void WorkerClass::InsertTable()
 			size_t result = fread(buffer, 1, len, oldFile);
 			if (result > 0)
 				fwrite(buffer, 1, len, newFile);
-			delete[] buffer;			
+			delete[] buffer;
 			fclose(oldFile);
-			fclose(newFile);			
+			fclose(newFile);
 		}
 
 		m_pm.AddDataSetFile(name, path);
-		AddTableToProject(name, false, false);		
+		AddTableToProject(name, false, false);
 	}
 	catch(...)
 	{
@@ -666,7 +685,7 @@ void WorkerClass::NewTable(wstring name)
 			m_gui->PromptMessage(L"Invalid file name.");
 			return;
 		}
-		
+
 		AddTableToProject(name, true, bSystemTable);
 	}
 	catch(...)
@@ -679,17 +698,17 @@ void WorkerClass::AddTableToProject(wstring name, bool bCreateNew, bool bSystemT
 {
 	if (name.length() > 0)
 	{
-		vector<wstring> existing_names = m_pm.GetProjectTableNames(m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()));			
+		vector<wstring> existing_names = m_pm.GetProjectTableNames(m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()));
 		vector<wstring>::iterator itFind = find(existing_names.begin(), existing_names.end(), name);
 		if (!bCreateNew || itFind == existing_names.end())
 		{
 			existing_names.push_back(name);
 			sort(existing_names.begin(), existing_names.end());
-			
+
 			if (!bSystemTable)
 			{
 				size_t pos = find(existing_names.begin(), existing_names.end(), name) - existing_names.begin();
-				
+
 				wstring preValue;
 				if (existing_names.size() > 1)
 				{
@@ -706,7 +725,7 @@ void WorkerClass::AddTableToProject(wstring name, bool bCreateNew, bool bSystemT
 				table_type = GLOBAL_ORS_TABLE;
 			else if (name == TRANSLATIONS_TABLE_NAME)
 				table_type = TRANSLATIONS_TABLE;
-			
+
 			if (bCreateNew)
 			{
 				LogicTable table;
@@ -714,7 +733,7 @@ void WorkerClass::AddTableToProject(wstring name, bool bCreateNew, bool bSystemT
 				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
 				childForm->Show();
 			}
-			
+
 			bIsSaved = false;
 		}
 		else
@@ -750,13 +769,13 @@ void WorkerClass::DeleteTable(wstring nameDelete)
 		wstring nameToDelete;
 		wstring path = m_pm.GetProjectWorkingPath();
 		OpenLogicTable opened;
-		
+
 		if (nameDelete.length() > 0)
 		{
 			nameToDelete = nameDelete;
 			wstring folder = m_gui->GetTreeNodePath(nameDelete);
 			if (folder.length() > 0)
-				path += PATHSEP + folder;			
+				path += PATHSEP + folder;
 		}
 		else
 		{
@@ -782,7 +801,7 @@ void WorkerClass::DeleteTable(wstring nameDelete)
 			int ans = m_gui->PromptQuestion(question, L"Remove Table?");
 
 			if (ans == ID_YES)
-			{	
+			{
 				m_gui->DeleteTreeNode(nameToDelete);
 				if (opened.child_window_ptr)
 					m_gui->CloseWindow(nameToDelete);
@@ -803,7 +822,7 @@ void WorkerClass::DeleteTable(wstring nameDelete)
 				}
 			}
 		}
-		
+
 	}
 	catch(...)
 	{
@@ -828,7 +847,7 @@ void WorkerClass::NewGroup()
 		}
 		else
 			m_gui->PromptMessage(L"Invalid file name");
-				
+
 	}
 	catch(...)
 	{
@@ -845,7 +864,7 @@ void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
 			if (!CheckSave())
 			{
 				m_gui->PromptMessage(L"You must save any existing changes before renaming an existing group.");
-				return;		
+				return;
 			}
 		}
 
@@ -854,7 +873,7 @@ void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
 		for (vector<wstring>::iterator it = tables.begin(); it != tables.end(); it++)
 			if (m_gui->CloseWindow(*it))
 				tableThatClosed.push_back(*it);
-		
+
 		wstring existingName, newName;
 		if (oldGroupName.length() == 0 && newGroupName.length() == 0)
 		{
@@ -892,7 +911,7 @@ void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
 			if (m_pm.RenameDataSetFolder(existingName + PATHSEP, newName + PATHSEP))
 			{
 				m_gui->DeleteTreeNode(existingName); //the new active node will become the parent node of whats being deleted
-				m_gui->AddTreeNodeToActiveGroup(existingName, newName, "Group");		
+				m_gui->AddTreeNodeToActiveGroup(existingName, newName, "Group");
 				Save();
 
 				//rename the folder on disk
@@ -900,7 +919,7 @@ void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
 				_wrename(oldPath.c_str(), path.c_str());
 				#else
 				rename(UTILS::WStrToMBCStr(oldPath).c_str(), UTILS::WStrToMBCStr(path).c_str());
-				#endif		
+				#endif
 
 				m_gui->AddAllProjectNodes(m_pm.GetProjectTable());
 				m_gui->SelectAnItem(newName);
@@ -916,7 +935,7 @@ void WorkerClass::RenameGroup(wstring oldGroupName, wstring newGroupName)
 			if (activeTable.length() > 0)
 				LoadTable(activeTable);
 		}
-		
+
 	}
 	catch(...)
 	{
@@ -951,10 +970,10 @@ void WorkerClass::DeleteGroup()
 		vector<wstring> paths;
 		wstring dirPath;
 		if (list.size() > 0)
-		{						
-			dirPath = m_gui->GetTreeNodePath(groupName);			
+		{
+			dirPath = m_gui->GetTreeNodePath(groupName);
 			for (vector<wstring>::iterator itChild = list.begin(); itChild != list.end(); itChild++)
-			{		
+			{
 				wstring name = *itChild;
 				if (name.length() > 0)
 				{
@@ -998,8 +1017,8 @@ void WorkerClass::DeleteGroup()
 			rmdir(UTILS::WStrToMBCStr(dirPath).c_str());
 			#endif
 		}
-			
-		
+
+
 	}
 	catch(...)
 	{
@@ -1057,7 +1076,7 @@ wstring WorkerClass::CompileXML(wstring tempFilePath)
 			{
 				m_pm.WriteAllDataSetsToXMLFile(savePath);
 				retval = savePath;
-			}			
+			}
 		}
 		else
 		{
@@ -1104,7 +1123,7 @@ void WorkerClass::CompileZip()
 			remove(UTILS::WStrToMBCStr(fileToRemove).c_str());
 			#endif
 		}
-		
+
 	}
 	catch(...)
 	{
@@ -1234,13 +1253,13 @@ void WorkerClass::SetProjectDebugging(bool enabled, int server_id)
 	m_debug_status = enabled;
 	m_pm.SetDebugStatus(enabled, m_debugOptions.connection, m_debugOptions.selectedTables);
 	if (enabled) //start socket server, listen for incoming connections
-	{		
+	{
 		vector<wstring> con = UTILS::Split(m_debugOptions.connection, L":");
 		unsigned short port = (unsigned short)atoi(UTILS::WStrToMBCStr(con[1]).c_str());
 		// Create the socket
 		if (m_gui)
 		{
-			m_gui->CreateServer(port);			
+			m_gui->CreateServer(port);
 		}
 
 		//see if the server is really listening
@@ -1259,7 +1278,7 @@ void WorkerClass::SetProjectDebugging(bool enabled, int server_id)
 	else
 	{
 		m_gui->ShutdownServer();
-		
+
 		LogTextLine(_("Debugger server stopped.\n"));
 	}
 }
@@ -1268,5 +1287,5 @@ void WorkerClass::SetProjectDebugging(bool enabled, int server_id)
 void WorkerClass::ChildWindowHasClosed(wstring tableName)
 {
 	//deselect all items of tree
-	m_gui->ChildWindowsHasClosed(tableName);	
+	m_gui->ChildWindowsHasClosed(tableName);
 }

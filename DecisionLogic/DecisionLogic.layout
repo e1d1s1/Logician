@@ -1,37 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
-	<File name="DecisionLogic.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="16688" topLine="354" />
+	<File name="CodeControl.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="7638" topLine="127" />
+	</File>
+	<File name="CompileOptions.h" open="1" top="0" tabpos="6">
+		<Cursor position="2350" topLine="67" />
+	</File>
+	<File name="DecisionLogic.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="20108" topLine="406" />
 	</File>
 	<File name="DecisionLogic.h" open="0" top="0" tabpos="0">
-		<Cursor position="2083" topLine="37" />
+		<Cursor position="8479" topLine="162" />
+	</File>
+	<File name="GUIClass.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="991" topLine="0" />
 	</File>
 	<File name="LogicTable.h" open="0" top="0" tabpos="0">
 		<Cursor position="1101" topLine="0" />
 	</File>
-	<File name="MDIChild.h" open="1" top="0" tabpos="4">
-		<Cursor position="3500" topLine="108" />
+	<File name="MDIChild.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="7763" topLine="212" />
 	</File>
-	<File name="ProjectManager.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="13120" topLine="391" />
+	<File name="MDIChild.h" open="1" top="0" tabpos="1">
+		<Cursor position="25264" topLine="911" />
+	</File>
+	<File name="ProjectManager.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="27718" topLine="0" />
 	</File>
 	<File name="ProjectManager.h" open="0" top="0" tabpos="0">
 		<Cursor position="3619" topLine="49" />
 	</File>
 	<File name="StringTable.h" open="0" top="0" tabpos="0">
-		<Cursor position="3173" topLine="151" />
+		<Cursor position="1233" topLine="0" />
 	</File>
-	<File name="WorkerClass.cpp" open="1" top="0" tabpos="3">
-		<Cursor position="34241" topLine="1293" />
+	<File name="WorkerClass.cpp" open="1" top="1" tabpos="5">
+		<Cursor position="26592" topLine="1010" />
 	</File>
-	<File name="WorkerClass.h" open="1" top="1" tabpos="6">
+	<File name="WorkerClass.h" open="0" top="0" tabpos="6">
 		<Cursor position="4212" topLine="78" />
 	</File>
-	<File name="utilities.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="5216" topLine="168" />
+	<File name="stdafx.h" open="0" top="0" tabpos="0">
+		<Cursor position="3313" topLine="31" />
 	</File>
-	<File name="utilities.h" open="1" top="0" tabpos="5">
+	<File name="utilities.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="5216" topLine="155" />
+	</File>
+	<File name="utilities.h" open="0" top="0" tabpos="5">
 		<Cursor position="1993" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>

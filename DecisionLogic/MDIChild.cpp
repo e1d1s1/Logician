@@ -26,14 +26,16 @@ void* pt2Object;
 #include "stdafx.h"
 #include "MDIChild.h"
 
+using namespace std;
+
 void SignalTableChanged()
 {
 	MDIChild *mySelf = (MDIChild*)pt2Object;
 	mySelf->SignalTableChangedCallback();
 }
 
-MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(wstring), bool(*ChildOpenTableCallback)(wstring), 
-		bool(*ChildSaveTableCallback)(OpenLogicTable*), int orient, int type, vector<OpenLogicTable> *open_tables, 
+MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(wstring), bool(*ChildOpenTableCallback)(wstring),
+		bool(*ChildSaveTableCallback)(OpenLogicTable*), int orient, int type, vector<OpenLogicTable> *open_tables,
 		LogicTable logic, ProjectManager *pm, const wxString& title, const wxPoint& pos,
 		const wxSize& size, const long style):
 		  wxMDIChildFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
@@ -58,9 +60,9 @@ MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(wstring),
 	m_table = NULL;
 	m_table = new LogicGrid(this, m_orientation, -1, type, SignalTableChanged, m_OpenTableCallback, &pm->GlobalORs, wxDefaultPosition, wxDefaultSize);
 	if (!m_table)
-		throw exception("Could not create LogicGrid object");
+		throw std::runtime_error("Could not create LogicGrid object");
 
-	sizer = new wxBoxSizer(wxHORIZONTAL);	
+	sizer = new wxBoxSizer(wxHORIZONTAL);
 	sizer->Add(m_table, wxEXPAND);
 
 	DisplayTableData(logic);
@@ -79,7 +81,7 @@ MDIChild::MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(wstring),
 
 	pt2Object = (void*)this;
 }
-		  
+
 MDIChild::~MDIChild(void)
 {
 }
@@ -209,14 +211,14 @@ void MDIChild::RepopulateTranslationsTable(set<wstring> *strings)
 	delete tableStrings;
 }
 
-void MDIChild::InsertCol() {m_table->OnInsertCol(wxCommandEvent(NULL));}
-void MDIChild::InsertRow() {m_table->OnInsertRow(wxCommandEvent(NULL));}
+void MDIChild::InsertCol() {m_table->InsertCol();}
+void MDIChild::InsertRow() {m_table->InsertRow();}
 void MDIChild::AppendRow() {m_table->OnAppendRow(true);}
 void MDIChild::AppendColumn() {m_table->OnAppendColumn(true);}
-void MDIChild::DeleteCol() {m_table->OnDeleteCol(wxCommandEvent(NULL));}
-void MDIChild::DeleteRow() {m_table->OnDeleteRow(wxCommandEvent(NULL));}
-void MDIChild::ClearCells() {m_table->OnClearCells(wxCommandEvent(NULL));}
-void MDIChild::Undo() 
+void MDIChild::DeleteCol() {m_table->DeleteCol();}
+void MDIChild::DeleteRow() {m_table->DeleteRow();}
+void MDIChild::ClearCells() {m_table->ClearCells();}
+void MDIChild::Undo()
 {
 	if (stUndo.size() > 0)
 	{
@@ -227,12 +229,12 @@ void MDIChild::Undo()
 			stRedo.push(tableData);
 		}
 		tableData = stUndo.top();
-		
+
 		DisplayRawTableData(tableData);
 	}
 }
 
-void MDIChild::Redo() 
+void MDIChild::Redo()
 {
 	if (stRedo.size() > 0)
 	{
@@ -243,10 +245,10 @@ void MDIChild::Redo()
 	}
 }
 
-void MDIChild::Cut() {return m_table->OnCut(wxCommandEvent(NULL));}
-void MDIChild::Copy() {return m_table->OnCopy(wxCommandEvent(NULL));}
-void MDIChild::Paste() {return m_table->OnPaste(wxCommandEvent(NULL));}
-void MDIChild::EditCode() {return m_table->OnEditCode(wxCommandEvent(NULL));}
+void MDIChild::Cut() {m_table->Cut();}
+void MDIChild::Copy() {m_table->Copy();}
+void MDIChild::Paste() {m_table->Paste();}
+void MDIChild::EditCode() {m_table->EditCode();}
 
 void MDIChild::HighlightRule(int rule) {m_table->HighlightRule(rule);}
 bool MDIChild::HasChanged() {return m_table->HasChanged;}
@@ -298,7 +300,7 @@ wxPoint MDIChild::FindAndReplaceText(wstring textToFind, wxPoint startPos, bool 
 			cellvalue = cellvalue.insert(pos, textToReplace);
 			m_table->SetCellValue(curLocCheck.y, curLocCheck.x, cellvalue);
 		}
-		SignalTableChanged();			
+		SignalTableChanged();
 		return curLocCheck;
 	}
 
@@ -382,7 +384,7 @@ vector<size_t> MDIChild::GetDisabledRules()
 	return retval;
 }
 
-void MDIChild::OnActivate(wxActivateEvent& event) 
+void MDIChild::OnActivate(wxActivateEvent& event)
 {
 	pt2Object = (void*)this;
 }
@@ -481,7 +483,7 @@ OpenLogicTable MDIChild::GetCurrentTable()
 	ds->Clear();
 	ds->AddTable(inputTable);
 	ds->AddTable(outputTable);
-	ds->AddTable(statusTable);		
+	ds->AddTable(statusTable);
 
 	return table;
 }

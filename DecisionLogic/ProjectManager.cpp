@@ -201,7 +201,7 @@ void ProjectManager::SaveStringDefs(xmlDocPtr doc)
 		wstring file_name = m_project_files->GetItem(j, L"DataSetName");
 		if (file_name == GLOBALORS_TABLE_NAME + L".xml" ||
 			file_name == TRANSLATIONS_TABLE_NAME + L".xml") continue;
-		wstring rel_path = m_project_files->GetItem(j,L"RelativePath");		
+		wstring rel_path = m_project_files->GetItem(j,L"RelativePath");
 		wstring full_path = m_project_working_path + PATHSEP + rel_path;
 		if (rel_path.length() > 0)
 			full_path += PATHSEP;
@@ -414,7 +414,7 @@ void ProjectManager::WriteXMLForTable(xmlNodePtr tableDataNode, StringTable<wstr
 		else
 		{
 			set<wstring> formulaInputs;
-			
+
 			for(size_t rowIndex = 0; rowIndex <= table->Rows(); rowIndex++)
 			{
 				xmlNodePtr rowNode = xmlNewNode(NULL, (xmlChar*)tableXMLID.c_str());
@@ -789,7 +789,7 @@ bool ProjectManager::AddDataSetFile(wstring name, wstring full_path)
 
 		m_project_files->AddRow();
 		m_project_files->SetItem(m_project_files->Rows() - 1, L"DataSetName", name + L".xml");
-		m_project_files->SetItem(m_project_files->Rows() - 1, L"RelativePath", rel_path);		
+		m_project_files->SetItem(m_project_files->Rows() - 1, L"RelativePath", rel_path);
 	}
 	catch(...)
 	{
@@ -877,7 +877,7 @@ void ProjectManager::UpdateGlobalORs()
 	{
 		DataSet<wstring> ds = LoadDataSet(GLOBALORS_TABLE_NAME);
 		StringTable<wstring> *table = ds.GetTable(UTILS::ToWString(INPUT_TABLE));
-		
+
 		for (size_t j = 0; j < table->Rows(); j++)
 		{
 			wstring ORName = table->GetItem(j, 0);
@@ -892,7 +892,7 @@ void ProjectManager::UpdateGlobalORs()
 				}
 				GlobalORs[ORName] = vValues;
 			}
-		}		
+		}
 	}
 }
 
@@ -949,7 +949,7 @@ bool ProjectManager::TableIsGetAll(wstring name)
 		#ifdef WIN32
 		fin.open(filename.c_str(),ios::in);
 		#else
-		fin.open(UTILS::WStrToMBCStr(path).c_str(), ios::in);
+		fin.open(UTILS::WStrToMBCStr(filename).c_str(), ios::in);
 		#endif
 		if(fin.is_open())
 		{
@@ -1356,7 +1356,7 @@ void ProjectManager::WriteAllDataSetsToXMLFile(wstring savePath)
 						{
 							bNoOutputs = false;
 							break;
-						}						
+						}
 					}
 
 					if (bNoOutputs == true) for (long cellCnt = inputs.Rows() - 1; cellCnt >= 0; cellCnt--)

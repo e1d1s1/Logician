@@ -96,6 +96,7 @@ public:
 
 	//table menu
 	void OnNewTable(wxCommandEvent& event);
+	void OnCloseTable(wxCommandEvent& event);
 	void OnInsertTable(wxCommandEvent& event);
 	void OnDeleteTable(wxCommandEvent& event);
 	void OnRenameTable(wxCommandEvent& event);
@@ -191,6 +192,7 @@ enum
 	DecisionLogic_Undo = wxID_UNDO,
 	DecisionLogic_Redo = wxID_REDO,
 	DecisionLogic_NewTable = 0,
+	DecisionLogic_CloseTable,
 	DecisionLogic_InsertTable,
 	DecisionLogic_DeleteTable,
 	DecisionLogic_RenameTable,
@@ -219,7 +221,7 @@ enum
 	DecisionLogic_Log,
 	DecisionLogic_ClearLog,
 	DecisionLogic_Socket,
-	DecisionLogic_Server,	
+	DecisionLogic_Server,
 	APPEND_COL,
 	APPEND_ROW,
 	APPEND_COLS,
