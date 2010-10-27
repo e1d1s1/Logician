@@ -63,7 +63,7 @@ public:
 
 	//debugging
 	void SetProjectDebugging(bool enabled, int server_id);
-	void LogTextLine(wstring text) {m_gui->LogText(text); m_gui->LogText(L"\n");}	
+	void LogTextLine(wstring text) {m_gui->LogText(text); m_gui->LogText(L"\n");}
 
 	//pass through menu commands to child windows
 	void InsertCol();
@@ -79,6 +79,7 @@ public:
 	void Cut();
 	void Paste();
 	void EditCode();
+	void CloseTable();
 
 	wstring GetProjectName();
 	bool CheckSave();
@@ -89,19 +90,19 @@ public:
 	bool bIsSaved;
 	vector<OpenLogicTable> open_tables;
 
-private:	
+private:
 	void AddTableToProject(wstring name, bool bCreateNew, bool bSystemTable);
 	void GetSettings();
-	void SaveApplicationSettings();	
+	void SaveApplicationSettings();
 
 
-	ProjectManager m_pm;		
-	int m_orientation;	
+	ProjectManager m_pm;
+	int m_orientation;
 	DebugOptions m_debugOptions;
 	CompileOptions m_compileOptions;
 	bool m_debug_status;
 
-	GUIClass *m_gui;	
+	GUIClass *m_gui;
 };
 
 /*

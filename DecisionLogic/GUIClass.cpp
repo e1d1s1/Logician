@@ -37,11 +37,11 @@ wstring GUIClass::SaveDialog(string type, wstring defaultName)
 					filetype,
 					wxSAVE
 				 );
-	
+
 	saveFileDialog.CentreOnParent();
 
 	if (saveFileDialog.ShowModal() == wxID_OK)
-	{			
+	{
 		savePath = saveFileDialog.GetPath();
 	}
 	return savePath;
@@ -55,9 +55,9 @@ wstring GUIClass::GetTreeNodePath(void* nodePtr)
 	try
 	{
 		if (next.IsOk())
-		{			
+		{
 			wxTreeItemId targetItem = next;
-			wstring name = m_tree->GetItemText(next);
+			wstring name = m_tree->GetItemText(next).wc_str();
 			while (next != m_tree->GetRootItem())
 			{
 				next = m_tree->GetItemParent(next);
@@ -67,7 +67,7 @@ wstring GUIClass::GetTreeNodePath(void* nodePtr)
 
 				if (next != m_tree->GetRootItem() && m_tree->GetItemImage(next) != TreeCtrlIcon_File)
 				{
-					wstring pathPart = m_tree->GetItemText(next);
+					wstring pathPart = m_tree->GetItemText(next).wc_str();
 					if (pathPart != L"Root")
 						path.push_front(pathPart);
 					if (m_tree->GetItemText(next) == name)
@@ -86,7 +86,7 @@ wstring GUIClass::GetTreeNodePath(void* nodePtr)
 		}
 
 		if (retval.length() == 0)
-			retval += PATHSEP;		
+			retval += PATHSEP;
 	}
 	catch(...)
 	{
@@ -97,7 +97,7 @@ wstring GUIClass::GetTreeNodePath(void* nodePtr)
 
 wstring GUIClass::GetTreeNodePath(wstring name)
 {
-	wstring retval;	
+	wstring retval;
 
 	wxTreeItemId next = FindItemNamed(m_tree->GetRootItem(), name), targetItem = next;
 	retval = GetTreeNodePath((void*)next.m_pItem);
@@ -164,7 +164,7 @@ wxTreeItemId GUIClass::FindItemNamed(wxTreeItemId root, const wxString& sSearchF
 		wxString findtext(sSearchFor), itemtext;
 		bool bFound;
 		if(!bCaseSensitive) findtext.MakeLower();
-	 
+
 		while(item.IsOk())
 		{
 			itemtext = m_tree->GetItemText(item);
@@ -176,7 +176,7 @@ wxTreeItemId GUIClass::FindItemNamed(wxTreeItemId root, const wxString& sSearchF
 			if(child.IsOk()) return child;
 			item = m_tree->GetNextSibling(item);
 		}
-	 
+
 		return item;
 
 
@@ -191,7 +191,7 @@ wxTreeItemId GUIClass::FindItemNamed(wxTreeItemId root, const wxString& sSearchF
 
 void GUIClass::AddTreeNodeToActiveGroup(wstring preValue, wstring name, string type, bool bSelect)
 {
-	wstring active = m_tree->GetItemText(wxtid_active_group);
+	wstring active = m_tree->GetItemText(wxtid_active_group).wc_str();
 	wxTreeItemId locItem;
 	if (preValue.length() > 0)
 		locItem = FindItemNamed(wxtid_active_group, preValue);
@@ -218,7 +218,7 @@ void GUIClass::SelectAnItem(wstring name)
 	{
 		sel_item = FindItemNamed(m_tree->GetRootItem(), name);
 	}
-	
+
 	if (sel_item.IsOk())
 	{
 		if (m_tree->GetItemText(sel_item).c_str() != name)
@@ -244,7 +244,7 @@ void GUIClass::SelectAnItem(wstring name)
 	}
 	if (initial_sel != sel_item)
 		m_tree->SelectItem(sel_item);
-	wstring active = m_tree->GetItemText(wxtid_active_group);
+	wstring active = m_tree->GetItemText(wxtid_active_group).wc_str();
 }
 
 vector<wstring> GUIClass::GetChildrenOfGroup(wstring groupPath)
@@ -260,7 +260,7 @@ vector<wstring> GUIClass::GetChildrenOfGroup(wstring groupPath)
 		{
 			grpItem = FindItemNamed(grpItem, *it);
 		}
-	}	
+	}
 
 	if (grpItem.IsOk())
 	{
@@ -289,7 +289,7 @@ void GUIClass::SetActiveGroup(wstring groupPath)
 		{
 			grpItem = FindItemNamed(grpItem, *it);
 		}
-	}	
+	}
 	else
 		grpItem = m_tree->GetRootItem();
 
@@ -311,7 +311,7 @@ vector<wstring> GUIClass::GetChildrenOfActiveGroup()
 			wstring name = m_tree->GetItemText(nextChild).wc_str();
 			names.push_back(name);
 			nextChild = m_tree->GetNextSibling(nextChild);
-		}		
+		}
 	}
 	return names;
 }
@@ -328,7 +328,7 @@ vector<wstring> GUIClass::GetChildTablesOfActiveGroup()
 			wstring name = m_tree->GetItemText(nextChild).wc_str();
 			names.push_back(name);
 			nextChild = m_tree->GetNextSibling(nextChild);
-		}		
+		}
 	}
 	return names;
 }
@@ -406,7 +406,7 @@ bool GUIClass::BringWindowToFront(wstring name)
 }
 
 void GUIClass::CloseAllWindows()
-{	
+{
 	while (m_opened_windows->size() > 0)
 	{
 		OpenLogicTable current_table = m_opened_windows->at(m_opened_windows->size() - 1);
@@ -450,7 +450,7 @@ OpenLogicTable GUIClass::GetActiveChild()
 	active = m_parent->GetActiveChild();
 	if (!active)
 		return retval;
-	
+
 	for (vector<OpenLogicTable>::iterator it = m_opened_windows->begin(); it != m_opened_windows->end(); it++)
 	{
 		retval = *it;
@@ -476,15 +476,15 @@ void GUIClass::ChildWindowsHasClosed(wstring tableName)
 	m_tree->Unselect();
 	wxtid_active_group = parentId;
 	m_tree->SelectItem(parentId);
-	wstring active = m_tree->GetItemText(wxtid_active_group);
+	wstring active = m_tree->GetItemText(wxtid_active_group).wc_str();
 }
 
 void GUIClass::GenerateRecentFileList(wxMenu *listMenu, int RecentFile_ID_BEGIN, int RecentFile_ID_END)
 {
 	wstring str;
-	ReadConfig(L"RecentProjectList", &str);	
+	ReadConfig(L"RecentProjectList", &str);
 	vector<wstring> files = UTILS::Split((wstring)str, L";");
-	int cnt = RecentFile_ID_END - RecentFile_ID_BEGIN, index = 0;	
+	int cnt = RecentFile_ID_END - RecentFile_ID_BEGIN, index = 0;
 	for (vector<wstring>::iterator it = files.begin(); it != files.end(); it++)
 	{
 		if (cnt <= 1 || (*it).length() == 0) break;
@@ -736,7 +736,7 @@ void GUIClass::ServerEvent(wxSocketEvent& event, int socket_id)
   wstring msg;
   bool bSkipNotify = false;
   if (sock)
-  {    
+  {
     msg = L"Received debug info\n";
   }
   else
@@ -823,7 +823,7 @@ void GUIClass::DebugInfoReceived(wstring buff)
 					xmlNodePtr output = allOutputs->nodeTab[i];
 					wstring outputValue = UTILS::MBCStrToWStr(xmlGetProp(output, (xmlChar*)"value"));
 					string strSolutionIdx = UTILS::ToASCIIString(UTILS::MBCStrToWStr(xmlGetProp(output, (xmlChar*)"index")));
-					int iSolnIdx = atoi(strSolutionIdx.c_str());					
+					int iSolnIdx = atoi(strSolutionIdx.c_str());
 					if (outputValue.length() > 0)
 					{
 						logMessage += outputValue;

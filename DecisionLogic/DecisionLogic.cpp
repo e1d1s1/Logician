@@ -30,6 +30,9 @@
 #include <wx/fdrepdlg.h>
 #include <wx/utils.h>
 #include <wx/treectrl.h>
+#ifndef WIN32
+#include <wx/imaglist.h>
+#endif
 
 #include "file.xpm"
 #include "folder.xpm"
@@ -63,6 +66,7 @@ BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
 	EVT_MENU(DecisionLogic_NewProject, DecisionLogicFrame::OnNewProject)
 	EVT_MENU(DecisionLogic_OpenProject, DecisionLogicFrame::OnOpenProject)
 	EVT_MENU(DecisionLogic_SaveProject, DecisionLogicFrame::OnSaveProject)
+	EVT_MENU(DecisionLogic_CloseTable, DecisionLogicFrame::OnCloseTable)
 	EVT_MENU(DecisionLogic_Undo, DecisionLogicFrame::OnUndo)
 	EVT_MENU(DecisionLogic_Redo, DecisionLogicFrame::OnRedo)
 	EVT_MENU(DecisionLogic_Quit, DecisionLogicFrame::OnQuit)
@@ -126,7 +130,7 @@ BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
 	EVT_MENU(DecisionLogic_NewTable, DecisionLogicFrame::OnNewTable)
 	EVT_MENU(DecisionLogic_DeleteGroup, DecisionLogicFrame::OnDeleteGroup)
 	EVT_MENU(DecisionLogic_NewGroup, DecisionLogicFrame::OnNewGroup)
-	
+
 
 	//DEBUGGER//////////////////////////////////////////////////////////////////////
 	EVT_SOCKET(DecisionLogic_Server,  DecisionLogicFrame::OnServerEvent)
@@ -173,7 +177,7 @@ BEGIN_EVENT_TABLE(DebugOptionsDialog, wxPropertySheetDialog)
 	EVT_BUTTON(wxID_OK, DebugOptionsDialog::OnOK)
 	EVT_RADIOBOX(DEBUG_SCOPE, DebugOptionsDialog::OnScopeChanage)
 	EVT_LISTBOX_DCLICK(TABLELIST, DebugOptionsDialog::AddRemoveClick)
-	EVT_LISTBOX_DCLICK(DEBUGLIST, DebugOptionsDialog::AddRemoveClick) 
+	EVT_LISTBOX_DCLICK(DEBUGLIST, DebugOptionsDialog::AddRemoveClick)
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(CompileOptionsDialog, wxPropertySheetDialog)
@@ -238,6 +242,9 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	fileMenu->Append(DecisionLogic_NewProject, _T("&New Project\tCtrl-N"), _T("Start a new rules project"));
 	fileMenu->Append(DecisionLogic_OpenProject, _T("&Open Project\tCtrl-O"), _T("Open an existing rules project"));
 	fileMenu->Append(DecisionLogic_SaveProject, _T("&Save Project\tCtrl-S"), _T("Save project"));
+
+	fileMenu->AppendSeparator();
+	fileMenu->Append(DecisionLogic_CloseTable, _T("&Close Table\tCtrl-C"), _T("Close active table"));
 
 	fileMenu->AppendSeparator();
 	recentFileMenu = new wxMenu();
@@ -309,10 +316,10 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	compilerMenu->Append(DecisionLogic_Debug, _T("Debugging &Options"));
 	compilerMenu->AppendSeparator();
 	compilerMenu->Append(DecisionLogic_ClearLog, _T("&Clear Log Window"));
-	compilerMenu->AppendSeparator();	
+	compilerMenu->AppendSeparator();
 	compilerMenu->Append(DecisionLogic_CompileXML, _T("Compile to &XML"), _T("Compile rules as a single xml file"));
 	compilerMenu->Append(DecisionLogic_CompileCompressed, _T("Compile to Compressed &Archive"), _T("Compile rules as a gzip file"));
-	
+
 	compilerMenu->Enable(DecisionLogic_Debug, false);
 	tableMenu->Enable(DecisionLogic_CompileOptions, false);
 	compilerMenu->Enable(DecisionLogic_CompileXML, false);
@@ -360,13 +367,13 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	m_tree->AssignImageList(CreateImageList());
 
 	winTree->Show(true);
-	winLog->Show(true);	
+	winLog->Show(true);
 	m_dlgReplace = NULL;
-	m_last_find_pos = NULL;	
-	m_gui = new GUIClass(this, m_tree, txtLog, m_worker->GetProjectManager(), OpenTableCallback2);		
+	m_last_find_pos = NULL;
+	m_gui = new GUIClass(this, m_tree, txtLog, m_worker->GetProjectManager(), OpenTableCallback2);
 	m_worker = new WorkerClass(m_gui, DEFAULT_ORIENTATION);
 	m_gui->GenerateRecentFileList(recentFileMenu, DecisionLogic_RecentFile1, DecisionLogic_RecentFile1 + 5);
-	
+
 	pt2WorkerObject2 = (void*)this;
 }
 
@@ -423,13 +430,19 @@ void DecisionLogicFrame::OnSaveProject(wxCommandEvent& WXUNUSED(event))
 	wxEndBusyCursor();
 }
 
+void DecisionLogicFrame::OnCloseTable(wxCommandEvent& WXUNUSED(event))
+{
+    if (m_worker)
+        m_worker->CloseTable();
+}
+
 void DecisionLogicFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
 	if (m_worker)
 	{
 		SaveAndQuit();
 		delete m_worker;
-		m_worker = NULL;		
+		m_worker = NULL;
 	}
 	if (m_gui)
 	{
@@ -603,8 +616,10 @@ void DecisionLogicFrame::TreeItemSelected(wxTreeEvent& event)
 {
 	wxTreeItemId item = m_tree->GetSelection();
 	if (item.IsOk() && m_tree->GetItemImage(item) == TreeCtrlIcon_File)
-		if (!m_bBypassLoad) 
+	{
+		if (!m_bBypassLoad)
 			m_worker->LoadTable( ((wstring)(m_tree->GetItemText(m_tree->GetSelection()))) );
+	}
 	else
 		m_gui->SetActiveGroup(m_gui->GetTreeNodePath((void*)item.m_pItem));
 }
@@ -638,12 +653,12 @@ void DecisionLogicFrame::TreeOnEndDrag(wxTreeEvent& event)
 	if (newLoc != oldLoc)
 	{
 		if (m_draggedItem.IsOk() && m_tree->GetItemImage(m_draggedItem) == TreeCtrlIcon_File)
-		{		
+		{
 			if (itemDst.IsOk())
 			{
 				m_worker->MoveTable(m_draiggingName, oldLoc, newLoc);
 			}
-		}		
+		}
 	}
 
 	m_draiggingName = L"";
@@ -661,13 +676,13 @@ void DecisionLogicFrame::TreeOnBeginLabelEdit(wxTreeEvent& event)
 	{
 		m_lastName = event.GetLabel();
 	}
-    
+
 }
 
 void DecisionLogicFrame::TreeOnEndLabelEdit(wxTreeEvent& event)
 {
     // don't allow anything except letters in the labels
-	wstring newName = event.GetLabel();
+	wstring newName = event.GetLabel().wc_str();
     if (!m_worker->ValidateFolderName(newName))
     {
         event.Veto();
@@ -679,8 +694,8 @@ void DecisionLogicFrame::TreeOnEndLabelEdit(wxTreeEvent& event)
 	m_lastName = L"";
 }
 
-void DecisionLogicFrame::TreeOnKeyDownItem(wxTreeEvent& event)                        
-{                         
+void DecisionLogicFrame::TreeOnKeyDownItem(wxTreeEvent& event)
+{
 	if (event.GetKeyCode() == 127) //delete
 		m_worker->DeleteTable(m_tree->GetItemText(event.GetItem()).wc_str());
 }
@@ -770,7 +785,7 @@ void DecisionLogicFrame::OnAppendRows(wxCommandEvent& event)
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		int cnt = 0;
-		wstring val = dlg.GetValue();
+		wstring val = dlg.GetValue().wc_str();
 
 #ifdef _MSC_VER
 		cnt = _wtoi(val.c_str());
@@ -780,7 +795,7 @@ void DecisionLogicFrame::OnAppendRows(wxCommandEvent& event)
 #endif
 		for (int i = 0; i < cnt; i++)
 			m_worker->AppendRow();
-	}	
+	}
 }
 
 void DecisionLogicFrame::OnAppendColumn(wxCommandEvent& event)
@@ -794,7 +809,7 @@ void DecisionLogicFrame::OnAppendColumns(wxCommandEvent& event)
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		int cnt = 0;
-		wstring val = dlg.GetValue();
+		wstring val = dlg.GetValue().wc_str();
 
 #ifdef _MSC_VER
 		cnt = _wtoi(val.c_str());
@@ -946,7 +961,7 @@ void DecisionLogicFrame::OnTreeContextMenu(wxTreeEvent &event)
 	wxTreeItemId cur_sel = event.GetItem();
 	if (cur_sel.IsOk())
 	{
-		wstring name = m_tree->GetItemText(cur_sel);
+		wstring name = m_tree->GetItemText(cur_sel).wc_str();
 		m_bBypassLoad = true;
 		m_tree->SelectItem(cur_sel);
 		m_bBypassLoad = false;
@@ -962,7 +977,7 @@ void DecisionLogicFrame::OnTreeContextMenu(wxTreeEvent &event)
 			popupMenu.Append(DecisionLogic_NewGroup, _T("New Group"));
 			popupMenu.Append(DecisionLogic_DeleteGroup, _T("Delete Group"));
 			popupMenu.Append(DecisionLogic_RenameGroup, _T("Rename Group"));
-		}		
+		}
 		else if (m_tree->GetRootItem() == cur_sel)
 		{
 			popupMenu.Append(DecisionLogic_NewTable, _T("New Table"));

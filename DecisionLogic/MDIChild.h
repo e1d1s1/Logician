@@ -92,7 +92,7 @@ enum
 class LogicGrid: public wxGrid
 {
 public:
-	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void), bool(*ChildOpenTableCallback)(wstring), map<wstring, vector<wstring> > *gORs, 
+	LogicGrid(wxWindow *parent, int orient, wxWindowID id, int type, void(*updateCallback)(void), bool(*ChildOpenTableCallback)(wstring), map<wstring, vector<wstring> > *gORs,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = wxWANTS_CHARS,
 		const wxString& name = wxPanelNameStr):
@@ -194,9 +194,9 @@ public:
 					}
 				}
 			}
-						
+
 			if (formatDisabled)
-			{				
+			{
 				this->SetCellTextColour(row, col, wxColour(DARKGREEN));
 				if (m_orientation == wxHORIZONTAL && row == 0)
 				{
@@ -260,13 +260,13 @@ public:
 			}
 			else
 			{
-				//check for or				
-				wstring value = this->GetCellValue(row, col);
+				//check for or
+				wstring value = this->GetCellValue(row, col).wc_str();
 				if (m_ors != NULL && m_ors->size() > 0 && m_ors->find(value) != m_ors->end())
-				{					
+				{
 					cellFont.SetWeight(wxBOLD);
 					this->SetCellTextColour(row, col, wxColour(DARKRED));
-				}				
+				}
 			}
 
 			this->SetCellFont(row, col, cellFont);
@@ -419,7 +419,7 @@ public:
 		int startIndex = inputtable->Rows() + status_offset;
 
 		if (m_type == RULES_TABLE)
-		{	
+		{
 			if (outputtable != NULL)
 			{
 				for (size_t j = 0; j < outputtable->Rows(); j++)
@@ -433,9 +433,9 @@ public:
 					}
 				}
 			}
-		
+
 			this->SetCellRenderer(0, 0, new wxGridCellBoolRenderer());
-			this->SetCellEditor(0, 0, new wxGridCellBoolEditor());		
+			this->SetCellEditor(0, 0, new wxGridCellBoolEditor());
 			if (bGetAll)
 				this->SetCellValue(0,0,_T("1"));
 			else
@@ -496,7 +496,7 @@ public:
 			}
 
 			for (size_t ruleCnt = 0; ruleCnt < statustable->Columns(); ruleCnt++)
-			{				
+			{
 				wstring status = statustable->GetItem(0, ruleCnt);
 				if (m_orientation == wxVERTICAL)
 				{
@@ -514,14 +514,14 @@ public:
 			if (m_type == TRANSLATIONS_TABLE)
 				label = L"Language";
 			if (m_orientation == wxVERTICAL)
-			{		
+			{
 				this->SetRowLabelValue(0, label);
 				this->SetColLabelValue(0, _T("A"));
 				for (int i = 0; i < this->GetNumberCols(); i++)
-					this->SetColMinimalWidth(i, 100);				
+					this->SetColMinimalWidth(i, 100);
 			}
 			else
-			{				
+			{
 				this->SetRowLabelValue(0, _T("1"));
 				this->SetColLabelValue(0, label);
 				this->SetColMinimalWidth(0, 100);
@@ -701,7 +701,7 @@ public:
 				if (m_orientation == wxHORIZONTAL)
 					attrName = this->GetCellValue(j, name_idx);
 				for (i = 0; i < this->GetNumberCols(); i++)
-				{					
+				{
 					if (m_orientation == wxVERTICAL)
 						attrName = this->GetCellValue(name_idx, i);
 
@@ -749,8 +749,11 @@ public:
 	}
 
 	inline void SetOrientation(int orient) {m_orientation = orient;}
-
-	inline void OnInsertCol(wxCommandEvent& WXUNUSED(event))
+    inline void OnInsertCol(wxCommandEvent& WXUNUSED(event))
+    {
+        InsertCol();
+    }
+	inline void InsertCol()
 	{
 		int lowInsertPosition, highInsertPosition, min_i = 0;
 		GetSelectionRange(lowInsertPosition, highInsertPosition, true, INSERT);
@@ -791,7 +794,11 @@ public:
 		UpdateUndo();
 	}
 
-	inline void OnInsertRow(wxCommandEvent& WXUNUSED(event))
+    inline void OnInsertRow(wxCommandEvent& WXUNUSED(event))
+    {
+        InsertRow();
+    }
+	inline void InsertRow()
 	{
 		int lowInsertPosition, highInsertPosition, min_j = 0;
 		GetSelectionRange(lowInsertPosition, highInsertPosition, false, INSERT);
@@ -878,7 +885,11 @@ public:
 			UpdateUndo();
 	}
 
-	inline void OnDeleteCol(wxCommandEvent& event)
+    inline void OnDeleteCol(wxCommandEvent& event)
+    {
+        DeleteCol();
+    }
+	inline void DeleteCol()
 	{
 		int lowInsertPosition, highInsertPosition;
 		if(GetSelectionRange(lowInsertPosition, highInsertPosition, true, DEL))
@@ -888,7 +899,11 @@ public:
 		}
 	}
 
-	inline void OnDeleteRow(wxCommandEvent& event)
+    inline void OnDeleteRow(wxCommandEvent& event)
+    {
+        DeleteRow();
+    }
+	inline void DeleteRow()
 	{
 		int lowInsertPosition, highInsertPosition;
 		if(GetSelectionRange(lowInsertPosition, highInsertPosition, false, DEL))
@@ -898,7 +913,11 @@ public:
 		}
 	}
 
-	inline void OnClearCells(wxCommandEvent& event)
+    inline void OnClearCells(wxCommandEvent& event)
+    {
+        ClearCells();
+    }
+	inline void ClearCells()
 	{
 		//dont clear the IO row or col
 		int lowInsertPosition, highInsertPosition, min_j = 0, min_i = 0;
@@ -931,6 +950,9 @@ public:
 	inline void OnCut(wxCommandEvent& event) {PlaceSelectionOnClipboard(true);}
 	inline void OnCopy(wxCommandEvent& event) {PlaceSelectionOnClipboard(false);}
 	inline void OnPaste(wxCommandEvent& event) {GetSelectionFromClipboard();}
+	inline void Cut() {PlaceSelectionOnClipboard(true);}
+	inline void Copy() {PlaceSelectionOnClipboard(false);}
+	inline void Paste() {GetSelectionFromClipboard();}
 	inline void OnJump(wxCommandEvent& event)
 	{
 		wstring text = GetSelectionText();
@@ -951,7 +973,11 @@ public:
 		m_OpenTableCallback(GLOBALORS_TABLE_NAME);
 	}
 
-	inline void OnEditCode(wxCommandEvent& event)
+    inline void OnEditCode(wxCommandEvent& event)
+    {
+        EditCode();
+    }
+	inline void EditCode()
 	{
 		wstring text = GetSelectionText();
 		if (text.substr(0, 3) == L"py(" ||
@@ -977,7 +1003,7 @@ public:
 	}
 
 	inline void OnEditorHidden(wxGridEvent& event)
-	{		
+	{
 		event.Skip();
 	}
 
@@ -985,7 +1011,7 @@ public:
 	{
 		//event.Skip();
 		if (event.GetRow() == 0 && event.GetCol() == 0) // the GetAll checkbox
-		{			
+		{
 			if (this->GetCellValue(0, 0).length() == 0)
 				this->SetCellValue(0, 0, _T("1"));
 			else
@@ -1014,14 +1040,14 @@ private:
 		popupMenu.Append(INSERT_ROW, _T("Insert Row(s)"));
 		popupMenu.AppendSeparator();
 		popupMenu.Append(DELETE_COL, _T("Delete Column(s)"));
-		popupMenu.Append(DELETE_ROW, _T("Delete Row(s)"));	
-		
+		popupMenu.Append(DELETE_ROW, _T("Delete Row(s)"));
+
 		bool bSep = true;
 		bool bJumpTable = true;
 		bool bJumpOR = false;
 		bool bEditCode = false;
-		
-		if ((event.GetRow() > 1 && m_orientation == wxVERTICAL || 
+
+		if ((event.GetRow() > 1 && m_orientation == wxVERTICAL ||
 			event.GetCol() > 1 && m_orientation == wxHORIZONTAL) &&
 			this->GetCellTextColour(event.GetRow(), event.GetCol()) == DARKRED)
 		{
@@ -1033,7 +1059,7 @@ private:
 		if (text.substr(0, 3) == L"py(" ||
 			text.substr(0, 3) == L"js(")
 		{
-			bEditCode = true;			
+			bEditCode = true;
 		}
 		//else if (text.substr(0, 5) == L"eval(")
 		//{
@@ -1074,11 +1100,11 @@ private:
 			lowInsertPosition = this->GetNumberCols();
 		else
 			lowInsertPosition = this->GetNumberRows();
-		
+
 		wxArrayInt grpSelection;
 		if (isCol)
 			grpSelection = this->GetSelectedCols();
-		else 
+		else
 			grpSelection = this->GetSelectedRows();
 		wxGridCellCoordsArray cells = this->GetSelectedCells();
 		if (grpSelection.size() > 0)
@@ -1298,7 +1324,7 @@ private:
 							OnAppendRow(false);
 						for (size_t j = 0; j < rows.size(); j++)
 						{
-							vector<wstring> cells = UTILS::Split(rows[j], L"\t");							
+							vector<wstring> cells = UTILS::Split(rows[j], L"\t");
 							//expand table if cols too wide
 							while (cells.size() > (size_t)GetNumberCols() - i_offset)
 								OnAppendColumn(false);
@@ -1306,7 +1332,7 @@ private:
 							{
 								this->SetCellValue(j + j_offset, i + i_offset, cells[i]);
 								UpdateCellFormat(j + j_offset, i + i_offset);
-							}							
+							}
 						}
 					}
 					UpdateUndo();
@@ -1334,8 +1360,8 @@ private:
 class MDIChild: public wxMDIChildFrame
 {
 public:
-	MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(wstring), bool(*ChildOpenTableCallback)(wstring), 
-		bool(*ChildSaveTableCallback)(OpenLogicTable*),	int orient, int type, 
+	MDIChild(wxMDIParentFrame *parent, void(*ChildCloseCallback)(wstring), bool(*ChildOpenTableCallback)(wstring),
+		bool(*ChildSaveTableCallback)(OpenLogicTable*),	int orient, int type,
 		vector<OpenLogicTable> *open_tables, LogicTable logic,
 		ProjectManager *pm, const wxString& title, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, const long style = 0);
@@ -1345,7 +1371,7 @@ public:
 	void DisplayTableData(LogicTable table);
 	void DisplayRawTableData(StringTable<wstring> table);
 	void RepopulateTranslationsTable(set<wstring> *strings);
-	
+
 	void InsertCol();
 	void InsertRow();
 	void AppendRow();
@@ -1353,7 +1379,7 @@ public:
 	void DeleteCol();
 	void DeleteRow();
 	void ClearCells();
-	void Undo();	
+	void Undo();
 	void Redo();
 	void Cut();
 	void Copy();
@@ -1367,7 +1393,7 @@ public:
 	wxPoint FindText(wstring textToFind, wxPoint startPos, bool bMatchCase, bool bMatchWholeWord);
 	wxPoint FindAndReplaceText(wstring textToFind, wxPoint startPos, bool bMatchCase, bool bMatchWholeWord, wstring textToReplace = L"");
 	wxPoint GetNextCellPosition(wxPoint pos);
-	wxPoint GetPreviousCellPosition(wxPoint pos);	
+	wxPoint GetPreviousCellPosition(wxPoint pos);
 
 	vector<size_t> GetDisabledRules();
 	void SignalTableChangedCallback();
@@ -1377,8 +1403,8 @@ private:
 	void OnChildClose(wxCloseEvent& event);
 	bool TestCellTextMatch(int row, int col, wxString find, bool bMatchCase, bool bMatchWholeWord);
 	OpenLogicTable GetCurrentTable();
-	
-	
+
+
 
 	LogicGrid				*m_table;
 	ProjectManager			*m_pm;
