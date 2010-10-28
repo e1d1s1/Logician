@@ -84,7 +84,11 @@ int main(int argc, char* argv[])
 	TestResult res;
 	Log("Loading Test project");
 	//load up some sample table
+	#ifndef __GNUC__
 	EDS::CKnowledgeBase knowledge(L"../EDSEngineTestApp/test_project.xml");
+	#else
+	EDS::CKnowledgeBase knowledge(L"../../EDSEngineTestApp/test_project.xml");
+	#endif
 	if (!knowledge.IsOpen())
 	{
 		Log("Could not open rules file");
