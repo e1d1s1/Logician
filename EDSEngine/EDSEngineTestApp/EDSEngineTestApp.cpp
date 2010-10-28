@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 	#ifndef __GNUC__
 	EDS::CKnowledgeBase knowledge(L"../EDSEngineTestApp/test_project.xml");
 	#else
-	EDS::CKnowledgeBase knowledge(L"../../EDSEngineTestApp/test_project.xml");
+	EDS::CKnowledgeBase knowledge(L"test_project.xml");
 	#endif
 	if (!knowledge.IsOpen())
 	{
