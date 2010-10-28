@@ -26,7 +26,7 @@ CFLAGS = -Wall `wx-config --cflags` -DPOSIX
 INCLUDES = -I/usr/include/libxml2 
 LDFLAGS = `wx-config --libs`  -s
 RCFLAGS = 
-LDLIBS = $(T_LDLIBS) -llibxml2  -lstdc++
+LDLIBS = $(T_LDLIBS) -lstdc++ -lwx_baseu-2.8 -lwx_gtk2ud_stc-2.8 -lxml2
 
 LINK_exe = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)
 LINK_con = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)
@@ -59,9 +59,9 @@ clean :
 # -----------------------------------------
 # Debug_target
 
-Debug_target.BIN = bin/Debug/DecisionLogic.exe
-Debug_target.OBJ = DecisionLogic.o FindReplaceDialog.o LogicTable.o MDIChild.o ProjectManager.o WorkerClass.o stdafx.o utilities.o 
-DEP_FILES += DecisionLogic.d FindReplaceDialog.d LogicTable.d MDIChild.d ProjectManager.d WorkerClass.d stdafx.d utilities.d 
+Debug_target.BIN = bin/Debug/DecisionLogic
+Debug_target.OBJ = DecisionLogic.o FindReplaceDialog.o LogicTable.o MDIChild.o ProjectManager.o WorkerClass.o stdafx.o utilities.o CodeControl.o GUIClass.o EditorPrefs.o
+DEP_FILES += DecisionLogic.d FindReplaceDialog.d LogicTable.d MDIChild.d ProjectManager.d WorkerClass.d stdafx.d utilities.d CodeControl.d GUIClass.d EditorPrefs.d
 clean.OBJ += $(Debug_target.BIN) $(Debug_target.OBJ)
 
 Debug_target : Debug_target.before $(Debug_target.BIN) Debug_target.after_always
@@ -86,9 +86,9 @@ $(Debug_target.BIN) : $(Debug_target.OBJ)
 # -----------------------------------------
 # Release_target
 
-Release_target.BIN = bin/Release/DecisionLogic.exe
-Release_target.OBJ = DecisionLogic.o FindReplaceDialog.o LogicTable.o MDIChild.o ProjectManager.o WorkerClass.o stdafx.o utilities.o 
-DEP_FILES += DecisionLogic.d FindReplaceDialog.d LogicTable.d MDIChild.d ProjectManager.d WorkerClass.d stdafx.d utilities.d 
+Release_target.BIN = bin/Release/DecisionLogic
+Release_target.OBJ = DecisionLogic.o FindReplaceDialog.o LogicTable.o MDIChild.o ProjectManager.o WorkerClass.o stdafx.o utilities.o CodeControl.o GUIClass.o EditorPrefs.o
+DEP_FILES += DecisionLogic.d FindReplaceDialog.d LogicTable.d MDIChild.d ProjectManager.d WorkerClass.d stdafx.d utilities.d CodeControl.d GUIClass.d EditorPrefs.d
 clean.OBJ += $(Release_target.BIN) $(Release_target.OBJ)
 
 Release_target : Release_target.before $(Release_target.BIN) Release_target.after_always
