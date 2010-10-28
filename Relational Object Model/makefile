@@ -23,10 +23,10 @@ CFLAGS_C = $(filter-out -include "sdk.h",$(CFLAGS))
 # MAKE_DEP = -MMD -MT $@ -MF $(@:.o=.d)
 
 CFLAGS = -DUSE_LIBXML -DPOSIX -DUSE_PYTHON -DUSE_JAVASCRIPT -DCROSS_COMPILE 
-INCLUDES = -IC:/msys/1.0/local/include/libxml2 -IC:/msys/1.0/local/include/libxslt -I../EDSEngine -I/usr/include/libxml2 -I/usr/include/libxslt 
+INCLUDES = -I../EDSEngine -I/usr/include/libxml2 -I/usr/include/libxslt 
 LDFLAGS =  -s
 RCFLAGS = 
-LDLIBS = $(T_LDLIBS) -llibEDSEngine -llibuuid  -lstdc++
+LDLIBS = $(T_LDLIBS) -lEDSEngine -luuid  -lstdc++
 
 LINK_exe = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)
 LINK_con = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)
