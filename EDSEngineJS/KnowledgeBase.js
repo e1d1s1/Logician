@@ -1869,7 +1869,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
     return retval;
 }
 
-KnowledgeBase.prototype.EvaluateTableWithParam = function(tableName, param, bGetAll)
+KnowledgeBase.prototype.EvaluateTableWithParam = function(tableName, param)
 {
     try
     {
@@ -1929,7 +1929,21 @@ KnowledgeBase.prototype.ReverseEvaluateTable = function(tableName, bGetAll)
     return retval;
 }
 
-KnowledgeBase.prototype.ReverseEvaluateTableForAttr = function(tableName, outputAttr, bGetAll)
+KnowledgeBase.prototype.ReverseEvaluateTableForAttr = function(tableName, outputAttr)
+{
+    var retval = new Array();
+    try
+    {
+        retval = ReverseEvaluateTableForAttrGet(tableName, outputAttr, this.TableIsGetAll(tableName));
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+KnowledgeBase.prototype.ReverseEvaluateTableForAttrGet = function(tableName, outputAttr, bGetAll)
 {
     var retval = new Array();
     try
