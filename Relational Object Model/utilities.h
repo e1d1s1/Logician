@@ -42,6 +42,7 @@ namespace ROMUTIL
 		bool StringIsNumeric(wstring s);
 	wstring TrimString(wstring s);
 	string ToASCIIString(wstring s);
+	vector<string> WStrToMBCStrVector(vector<wstring> vectWS);
 	vector<string> ToASCIIStringVector(vector<wstring> vectWS);
 	vector<wstring> ToWStringVector(vector<string> vStr);
 	string stringify(double x);

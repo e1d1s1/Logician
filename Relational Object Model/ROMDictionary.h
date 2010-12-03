@@ -15,7 +15,7 @@ Copyright (C) 2009 Eric D. Schmidt
     You should have received a copy of the GNU Lesser General Public License
     along with Relational Object Model 2.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "ROMTree.h"
+#include "ROMNode.h"
 #include "ROMDictionaryAttribute.h"
 
 #pragma once
@@ -28,7 +28,7 @@ namespace ROM
 	{
 	friend class LinearEngine;
 	public:
-		ROMDictionary(ROMTree* tree, Node context);
+		ROMDictionary(ROMNode* context);
 		virtual ~ROMDictionary(void){}
 
 		void LoadDictionary(wstring dictionaryTable);
@@ -40,8 +40,13 @@ namespace ROM
 		ROMDictionaryAttribute* GetDictionaryAttr(string dictAttrName);
 
 	private:
-		ROMTree *m_tree;
-		Node m_context;
+		ROMNode *m_ROMContext;
+		//map<wstring, vector<wstring> > _evaluateTable(wstring evalTable, bool bGetAll = true);
+		//vector<wstring> m_ROMContext->EvaluateTableForAttr(wstring evalTable, wstring outputName, bool bGetAll = true);
+		//wstring m_ROMContext->GetAttribute(wstring name, bool bImmediate = false);
+		//void m_ROMContext->SetAttribute(wstring name, wstring value);
+		//vector<wstring> m_ROMContext->GetPossibleValues(wstring evalTable, wstring outputName);	
+		//EDS::CKnowledgeBase* _getKnowledgeBase();
 
 		map<wstring, ROMDictionaryAttribute> m_dict;
 	};

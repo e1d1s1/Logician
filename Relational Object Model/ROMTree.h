@@ -1,3 +1,7 @@
+
+//no longer used.  Allowing a XML parser to maintain the state is a bit too slow
+//kept for reference purposes
+
 /*
 This file is part of the Relational Object Model 2 Library.
 Copyright (C) 2009 Eric D. Schmidt
@@ -39,7 +43,7 @@ namespace ROM
 	friend class LinearEngine;
 	public:
 		ROMTree(wstring name);
-		virtual ~ROMTree(void);
+		virtual ~ROMTree(void);		
 
 		//relational interface
 		Node GetRoot();
@@ -52,14 +56,14 @@ namespace ROM
 		vector<Node> GetAllChildren(Node current) {return Find(current, L"Object");}
 
 		//attribute interface
-		wstring				GetAttribute(Node currentObject, wstring id, wstring name, bool recurs = true);
-		wstring				GetAttribute(Node currentObject, wstring id, bool recurs = true) {return GetAttribute(currentObject, id, L"value", recurs);}
+		wstring				GetAttribute(Node currentObject, wstring id, wstring name, bool immediate = false);
+		wstring				GetAttribute(Node currentObject, wstring id, bool immediate = false) {return GetAttribute(currentObject, id, L"value", immediate);}
 		bool				SetAttribute(Node currentObject, wstring id, wstring name, wstring value);
 		bool				SetAttribute(Node currentObject, wstring id, wstring value);
-		bool				SetAttributeValue(Node currentObject, wstring id, wstring value) {return SetAttribute(currentObject, id, value);}
+		bool				SetAttributeValue(Node currentObject, wstring id, wstring value) {SetAttribute(currentObject, id, value);}
 		bool				SetROMObjectValue(Node currentObject, wstring name, wstring value);
 		wstring				GetROMObjectValue(Node currentObject, wstring name);
-		bool				RemoveAttribute(Node current, wstring id);
+		bool				RemoveAttribute(Node current, wstring id);	
 		wstring				GetROMObjectName(Node current);
 		void				SetROMObjectName(Node current, wstring name);
 		map<wstring, map<wstring, wstring> > GetAllAttributes(Node current);
@@ -80,14 +84,14 @@ namespace ROM
 		//ASCII Overloads
 		ROMTree(string name);
 		vector<Node>		Find(Node current, string searchStr);
-		Node				CreateROMObject(string name);
-		string				GetAttribute(Node currentObject, string id, string name, bool recurs = true);
-		string				GetAttribute(Node currentObject, string id, bool recurs = true) {return GetAttribute(currentObject, id, "value", recurs);}
+		Node				CreateROMObject(string name);		
+		string				GetAttribute(Node currentObject, string id, string name, bool immediate = false);
+		string				GetAttribute(Node currentObject, string id, bool immediate = false) {return GetAttribute(currentObject, id, "value", immediate);}
 		bool				SetAttribute(Node currentObject, string id, string name, string value);
 		bool				SetAttribute(Node currentObject, string id, string value);
 		bool				SetROMObjectValue(Node currentObject, string name, string value);
 		string				GetROMObjectValue(Node currentObject, string name);
-		bool				RemoveAttribute(Node current, string id);
+		bool				RemoveAttribute(Node current, string id);	
 		string				GetROMObjectNameA(Node current);
 		void				SetROMObjectName(Node currrent, string name);
 		bool				LoadRules(string knowledge_file);
@@ -135,13 +139,9 @@ namespace ROM
 #ifdef USE_MSXML
 		Element				m_tree;
 #endif
-#ifdef USE_LIBXML
-		Node				m_tree;
+#ifdef USE_LIBXML			
+		Node				m_tree;	
 #endif
-		EDS::CKnowledgeBase		m_KnowledgeBase;
-	};
+		EDS::CKnowledgeBase		m_KnowledgeBase;	
+	};	
 }
-#define ATTRIBUTE_NODE L"Attribute"
-#define OBJECT_NODE L"Object"
-#define XSLT_TOP L"<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><xsl:output method=\"text\" omit-xml-declaration=\"yes\" encoding=\"UTF-8\"/>"
-#define XSLT_BOTTOM L"\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
