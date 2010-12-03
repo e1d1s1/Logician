@@ -55,9 +55,13 @@ Copyright (C) 2009 Eric D. Schmidt
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
-//#include "XMLWrapper.h"
 
 using namespace std;
+
+#define ATTRIBUTE_NODE L"Attribute"
+#define OBJECT_NODE L"Object"
+#define XSLT_TOP L"<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><xsl:output method=\"text\" omit-xml-declaration=\"yes\" encoding=\"UTF-8\"/>"
+#define XSLT_BOTTOM L"\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
 
 inline void ReportROMErrorW(std::wstring errorMsg)
 {

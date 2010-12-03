@@ -252,9 +252,10 @@ void ROMTree::SetROMObjectName(Node current, wstring name)
 
 //attribute interface
 //<current><Attribute id = "some_id" value = "val" some_other_name = "something"/></current>
-wstring	ROMTree::GetAttribute(Node currentObject, wstring id, wstring name, bool recurs)
+wstring	ROMTree::GetAttribute(Node currentObject, wstring id, wstring name, bool immediate)
 {
 	wstring retval = L"";
+	bool bFound = false;
 	if (!currentObject)
 		return retval;
 
@@ -278,6 +279,7 @@ wstring	ROMTree::GetAttribute(Node currentObject, wstring id, wstring name, bool
 							if (attr_data)
 							{
 								retval = ToWString(attr_data->nodeValue);
+								bFound = true;
 								break;
 							}
 						}
@@ -287,6 +289,7 @@ wstring	ROMTree::GetAttribute(Node currentObject, wstring id, wstring name, bool
 							if (attr_data)
 							{
 								retval = ToWString(attr_data->nodeValue);
+								bFound = true;
 								break;
 							}
 						}
@@ -295,7 +298,7 @@ wstring	ROMTree::GetAttribute(Node currentObject, wstring id, wstring name, bool
 			}
 		}
 
-		if (recurs && retval == L"")
+		if (!immediate && !bFound)
 		{
 			Element curEle = (Element)currentObject;
 			Element rootEle = (Element)this->GetRoot();
@@ -318,18 +321,20 @@ wstring	ROMTree::GetAttribute(Node currentObject, wstring id, wstring name, bool
 					if (name.length() > 0) //getting a sub attr
 					{
 						retval = MBCStrToWStr(xmlGetProp(childNode, (xmlChar*)WStrToMBCStr(name).c_str()));
+						bFound = true;
 						break;
 					}
 					else //get the main attr
 					{
 						retval = MBCStrToWStr(xmlGetProp(childNode, (xmlChar*)"value"));
+						bFound = true;
 						break;
 					}
 				}
 			}
 		}
 
-		if (recurs && retval == L"")
+		if (!immediate && !bFound)
 		{
 			Node rootNode = xmlDocGetRootElement(xmlDoc);
 			wstring rootGUID = MBCStrToWStr(xmlGetProp(rootNode, (xmlChar*)"guid"));
@@ -367,7 +372,6 @@ bool ROMTree::SetROMObjectValue(Node currentObject, wstring name, wstring value)
 		}
 	#endif
 	retval = true;
-	return retval;
 }
 
 wstring ROMTree::GetROMObjectValue(Node currentObject, wstring name)
@@ -581,7 +585,7 @@ map<wstring, map<wstring, wstring> > ROMTree::GetAllAttributes(Node currentObjec
 			{
 				NamedNodeMap attrNodeMap = res->item[i]->attributes;
 				wstring key = attrNodeMap->item[j]->nodeName;
-				wstring value = ToWString(attrNodeMap->item[j]->nodeValue);
+				wstring value = ToWString(attrNodeMap->item[j]->nodeValue);		
 				keysAndValues[key] = value;
 			}
 			retval[name] = keysAndValues;
@@ -643,13 +647,17 @@ bool ROMTree::LoadTree(wstring xmlStr)
 #ifdef USE_MSXML
 	retval = xmlDoc->loadXML(xmlStr.c_str());
 	xmlDoc->setProperty("SelectionLanguage", "XPath");
+	m_tree = xmlDoc->documentElement;
 #endif
 #ifdef USE_LIBXML
 	xmlDoc = NULL;
 	string buff = WStrToMBCStr(xmlStr);
 	xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
 	if (xmlDoc)
-		retval = true;
+	{
+		m_tree = xmlDocGetRootElement(xmlDoc);
+		retval = true;	
+	}
 #endif
 	return retval;
 }
@@ -761,9 +769,9 @@ Node ROMTree::CreateROMObject(string name)
 	return CreateROMObject(ROMUTIL::MBCStrToWStr(name));
 }
 
-string ROMTree::GetAttribute(Node currentObject, string id, string name, bool recurs)
+string ROMTree::GetAttribute(Node currentObject, string id, string name, bool immediate)
 {
-	return ToASCIIString(GetAttribute(currentObject, ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), recurs));
+	return ToASCIIString(GetAttribute(currentObject, ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), immediate));
 }
 
 bool ROMTree::SetAttribute(Node currentObject, string id, string name, string value)
@@ -830,5 +838,5 @@ bool ROMTree::LoadTree(string xmlStr)
 
 string ROMTree::EvaluateXPATH(Node current, string xpath)
 {
-	return ToASCIIString(EvaluateXPATH(current, ROMUTIL::MBCStrToWStr(xpath)));
+	return ROMUTIL::WStrToMBCStr(EvaluateXPATH(current, ROMUTIL::MBCStrToWStr(xpath)));
 }

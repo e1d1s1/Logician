@@ -294,7 +294,7 @@
 				>
 			</File>
 			<File
-				RelativePath="ROMTree.h"
+				RelativePath=".\ROMNode.h"
 				>
 			</File>
 			<File
@@ -330,7 +330,7 @@
 				>
 			</File>
 			<File
-				RelativePath="ROMTree.cpp"
+				RelativePath=".\ROMNode.cpp"
 				>
 			</File>
 			<File
