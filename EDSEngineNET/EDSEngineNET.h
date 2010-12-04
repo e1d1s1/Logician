@@ -22,6 +22,7 @@ Copyright (C) 2009 Eric D. Schmidt
 #include "KnowledgeBase.h"
 #include <vector>
 #include <map>
+#include "Marshal.h"
 using namespace std;
 
 #pragma managed

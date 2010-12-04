@@ -20,7 +20,6 @@ Copyright (C) 2009 Eric D. Schmidt
 #include "stdafx.h"
 
 #include "EDSEngineNET.h"
-#include "Marshal.h"
 #include <vector>
 #include <map>
 #include <hash_map>
