@@ -166,6 +166,18 @@ vector<string> ROMUTIL::WStrToMBCStrVector(vector<wstring> vectWS)
 	return retval;
 }
 
+map<string, vector<string> > WStrToMBCStrMapVector(map<wstring, vector<wstring> > mapVectWS)
+{
+	map<string, vector<string> > retval;	
+	for (map<wstring, vector<wstring> >::iterator it = mapVectWS.begin(); it != mapVectWS.end(); it++)
+	{
+		string key = ROMUTIL::WStrToMBCStr(it->first);
+		vector<string> vals = ROMUTIL::WStrToMBCStrVector(it->second);
+		retval[key] = vals;
+	}
+	return retval;
+}
+
 vector<wstring> ROMUTIL::ToWStringVector(vector<string> vStr)
 {
 	vector<wstring> retval;
@@ -284,3 +296,32 @@ string ROMUTIL::MakeGUID()
 			delete [] mbcstr;
 			return retval;
 		}
+
+#if USE_LIBXML
+		wstring ROMUTIL::MBCStrToWStr(const unsigned char* mbStr)
+		{
+			if (mbStr == NULL)
+				return L"";
+
+			size_t requiredSize = mbstowcs(NULL, (const char*)mbStr, 0) + 1;
+			wchar_t *wStr = new wchar_t[requiredSize];
+			mbstowcs(wStr, (const char*)mbStr, requiredSize);
+			wstring retval = wStr;
+			delete [] wStr;
+			return retval;
+		}
+
+		wstring ROMUTIL::MBCStrToWStr(unsigned char* mbStr)
+		{
+			if (mbStr == NULL)
+				return L"";
+
+			size_t requiredSize = mbstowcs(NULL, (const char*)mbStr, 0) + 1;
+			wchar_t *wStr = new wchar_t[requiredSize];
+			mbstowcs(wStr, (const char*)mbStr, requiredSize);
+			wstring retval = wStr;
+			delete [] wStr;
+			xmlFree(mbStr);
+			return retval;
+		}
+#endif

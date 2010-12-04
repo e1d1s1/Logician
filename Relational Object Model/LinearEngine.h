@@ -28,7 +28,9 @@ namespace ROM
 	class LinearEngine : public ROMDictionary
 	{
 	public:
-		LinearEngine(ROMNode* context, wstring dictionaryTable);
+		LinearEngine(){}
+		LinearEngine(ROMNode* context, wstring dictionaryTable):ROMDictionary(context) {CreateLinearEngine(context, dictionaryTable);}
+		void CreateLinearEngine(ROMNode* context, wstring dictionaryTable);
 		virtual ~LinearEngine(){}
 		void EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents = true);
 		void EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents = true);
@@ -37,7 +39,7 @@ namespace ROM
 		bool DictionaryIsValid();
 
 		//ASCII overloads
-		LinearEngine(ROMNode* tree, string dictionaryTable);
+		LinearEngine(ROMNode* context, string dictionaryTable);
 		void EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents = true);
 		void EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents = true);
 
