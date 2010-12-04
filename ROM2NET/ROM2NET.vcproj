@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="ROM2NET"
-	ProjectGUID="{FA2A8DF3-3CEE-4CE7-9EBD-45D2EAF1C004}"
+	ProjectGUID="{A2E7FF12-B9E7-4276-8120-407A812AC43B}"
 	RootNamespace="ROM2NET"
 	Keyword="ManagedCProj"
 	TargetFrameworkVersion="196613"
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;..\Relational Object Model\ROM&quot;;..\EDSEngine"
+				AdditionalIncludeDirectories="&quot;..\Relational Object Model&quot;;..\EDSEngine"
 				PreprocessorDefinitions="WIN32;_DEBUG;USE_MSXML"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
@@ -60,9 +60,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="EDSEngine.lib $(NOINHERIT)"
+				AdditionalDependencies="&quot;EDSEngine.lib&quot; &quot;Relational Object Model 2.lib&quot; $(NOINHERIT)"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML&quot;"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML&quot;;&quot;..\Relational Object Model\Debug MSXML&quot;;C:\boost_1_39_0\lib;C:\Python26\libs"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
@@ -115,7 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;..\Relational Object Model\ROM&quot;;..\EDSEngine"
+				AdditionalIncludeDirectories="&quot;..\Relational Object Model&quot;;..\EDSEngine"
 				PreprocessorDefinitions="WIN32;NDEBUG;USE_MSXML"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -133,9 +133,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="EDSEngine.lib $(NOINHERIT)"
+				AdditionalDependencies="&quot;EDSEngine.lib&quot; &quot;Relational Object Model 2.lib&quot; $(NOINHERIT)"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML&quot;"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML&quot;;&quot;..\Relational Object Model\Release MSXML&quot;;C:\boost_1_39_0\lib;C:\Python26\libs"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -190,19 +190,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LinearEngineNET.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Marshal.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\ROM2NET.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ROMDictionaryNET.cpp"
 				>
 			</File>
 			<File
@@ -232,10 +224,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\LinearEngineNET.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Marshal.h"
 				>
 			</File>
@@ -245,14 +233,6 @@
 			</File>
 			<File
 				RelativePath=".\ROM2NET.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ROMDictionaryAttributeNET.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ROMDictionaryNET.h"
 				>
 			</File>
 			<File

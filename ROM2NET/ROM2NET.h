@@ -1,115 +1,361 @@
-/*
-This file is part of ROM2NET.
-Copyright (C) 2009 Eric D. Schmidt
-
-    ROM2NET is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    ROM2NET is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with ROM2NET.  If not, see <http://www.gnu.org/licenses/>.
-*/
 // ROM2NET.h
+
 #pragma once
 #pragma unmanaged
-#include "KnowledgeBase.h"
+#include "ROMNode.h"
+#include "ROMDictionaryAttribute.h"
+#include "ROMDictionary.h"
+#include "LinearEngine.h"
 #include <vector>
 #include <map>
+#include "Marshal.h"
 using namespace std;
 
 #pragma managed
-//managed code
 #using <mscorlib.dll>
 #using <System.dll>
 #include <vcclr.h>
 using namespace System;
 using namespace System::Collections::Generic;
 
-namespace ROM2NET 
-{
-	public ref class ROMNode
+namespace ROM2NET {
+	public ref class ROMNodeNET
 	{
 	public:
-		ROMNode(System::Xml::XmlNode^ node) {m_Node = node;}
-		~ROMNode(){this->!ROMNode();}
-		!ROMNode() {}
-		void SetNode(System::Xml::XmlNode^ node);
-		System::Xml::XmlNode^ GetNode();
-	private:		
-		System::Xml::XmlNode^ m_Node;
-	};
+		ROMNodeNET() {m_ROMNode = NULL;}
+		ROMNodeNET(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer();}
+		ROMNodeNET(String^ id) {CreateROMNodeNET(id);}
+		bool CreateROMNodeNET(System::String^ id);
+		~ROMNodeNET() {DestroyROMObject(); this->!ROMNodeNET();}
+		!ROMNodeNET() {}
 
-	public ref class ROMNodeList
-	{
-	public:
-		ROMNodeList(System::Xml::XmlNodeList^ list){m_List = list;}
-		long Count();
-		~ROMNodeList(){this->!ROMNodeList();}
-		!ROMNodeList() {}
-		ROMNode^ GetItem(System::Int64 Idx);
-		void SetNodeList(System::Xml::XmlNodeList^ list);
-		System::Xml::XmlNodeList^ GetNodeList();
-	private:		
-		System::Xml::XmlNodeList^ m_List;
-	};
+		//some useful operators/casts for the managed/unmanaged boundry
+		static operator long(ROMNodeNET^ romObj)
+		{
+			if (Equals(romObj, nullptr))
+				return 0;
+			else if (romObj->m_ROMNode != NULL)
+				(long)romObj->m_ROMNode;
+			else
+				return 0;		
+		}
 
-	public ref class ROMTreeNET
-	{
-	public:
-		ROMTreeNET(String^ name);
-		~ROMTreeNET() {this->!ROMTreeNET();}		
-		!ROMTreeNET() {if (m_KnowledgeBase) delete m_KnowledgeBase;}
-		ROMNode^	GetRoot();
-		ROMNode^	Parent(ROMNode^ current);
-		array<ROMNode^>^ Find(ROMNode^ current, String^ searchStr);
-		ROMNode^	AddChildROMObject(ROMNode^ current, ROMNode^ child);
-		ROMNode^	CreateROMObject(String^ name);
-		ROMNode^	GetROMObject(Guid^ guid);
-		bool		DestoryROMObject(ROMNode^ current);
+		static bool operator ==(ROMNodeNET^ romObj, ROMNodeNET^ romObj2)
+		{
+			if (Equals(romObj, romObj2))
+				return true;
 
-		//attribute interface
-		String^		GetAttribute(ROMNode^ currentObject, String^ id, String^ name, bool recurs);
-		String^		GetAttribute(ROMNode^ currentObject, String^ id, bool recurs);
-		String^		GetAttribute(ROMNode^ currentObject, String^ id);
-		bool		SetAttribute(ROMNode^ currentObject, String^ id, String^ name, String^ value);
-		bool		SetAttribute(ROMNode^ currentObject, String^ id, String^ value);
-		bool		SetROMObjectValue(ROMNode^ currentObject, String^ name, String^ value);
-		String^		GetROMObjectValue(ROMNode ^currentObject, String ^name);
-		bool		RemoveAttribute(ROMNode^ currentObject, String^ id);	
-		String^		GetROMObjectName(ROMNode^ currentObject);
-		void		SetROMObjectName(ROMNode^ currentObject, String^ name);
+			if (!Equals(romObj, nullptr) && !Equals(romObj2, nullptr))
+				return romObj->m_ROMNode == romObj2->m_ROMNode;
+
+			return false;
+		}
+
+		static bool operator !=(ROMNodeNET^ romObj, ROMNodeNET^ romObj2)
+		{
+			if (Equals(romObj, romObj2))
+				return false;
+
+			if (!Equals(romObj, nullptr) && !Equals(romObj2, nullptr))
+				return romObj->m_ROMNode != romObj2->m_ROMNode;
+
+			return true;
+		}
+
+		//relational functions
+		ROMNodeNET^			GetRoot();
+		ROMNodeNET^			Parent();
+		array<ROMNodeNET^>^	GetAllChildren();
+		bool				AddChildROMObject(ROMNodeNET^ child);
+		bool				RemoveChildROMObject(ROMNodeNET^ child);
+		bool				DestroyROMObject();
+
+		//attribute functions
+		String^				GetAttribute(String^ id, String^ name, bool immediate);
+		String^				GetAttribute(String^ id, bool immediate) {return GetAttribute(id, "value", immediate);}
+		String^				GetAttribute(String^ id) {return GetAttribute(id, "value", false);}
+		bool				GetAttributeExists(String^ id, String^ name);
+		bool				GetAttributeExists(String^ id) {return GetAttributeExists(id, "value");}
+		bool				SetAttribute(String^ id, String^ name, String^ value);
+		bool				SetAttribute(String^ id, String^ value) {return SetAttribute(id, L"value", value);}
+		bool				SetAttributeValue(String^ id, String^ value) {return SetAttribute(id, value);}
+		bool				RemoveAttribute(String^ id, String^ name);
+		bool				RemoveAttribute(String^ id) {return RemoveAttribute(id, "value");} 	
+		bool				SetROMObjectValue(String^ name, String^ value);
+		String^				GetROMObjectValue(String^ name);
+		bool				RemoveROMObjectValue(String^ id);	
+		String^				GetROMObjectID();
+		void				SetROMObjectID(String^ name);
+		Dictionary<String^, Dictionary<String^, String^>^>^	GetAllAttributes();
 
 		//rules
-		bool		LoadRules(String^ knowledge_file);
-		array<String^>^	EvaluateTable(ROMNode^ currentObject, String^ evalTable, String^ output, bool bGetAll);
-		System::Collections::Generic::Dictionary<String^, array<String^>^>^ EvaluateTable(ROMNode^ currentObject, String^ evalTable, bool bGetAll);
+		bool				LoadRules(String^ knowledge_file);
+		array<String^>^		EvaluateTable(String^ evalTable, String^ output, bool bGetAll);
+		array<String^>^		EvaluateTable(String^ evalTable, String^ output);
+		array<String^>^		EvaluateTableForAttr(String^ evalTable, String^ output, bool bGetAll) {return EvaluateTable(evalTable, output, bGetAll);}
+		array<String^>^		EvaluateTableForAttr(String^ evalTable, String^ output) {return EvaluateTable(evalTable, output);}
+		Dictionary<String^, array<String^>^>^ EvaluateTable(String^ evalTable, bool bGetAll);
+		Dictionary<String^, array<String^>^>^ EvaluateTable(String^ evalTable);
 
 		//IO
-		String^		DumpTree();
-		bool		LoadTree(String^ xmlStr);
+		String^				DumpTree(bool indented);
+		bool				LoadTree(String^ xmlStr);
 
-		//Xpath
-		String^		EvaluateXPATH(ROMNode ^currentObject, String^ xpath);		
+		//XPATH
+		String^				EvaluateXPATH(String^ xpath);
 
-	internal:
-		array<String^>^	GetPossibleValues(ROMNode^ currentObject, String^ evalTable, String^ outputName);
-		void		LoadInputs(ROMNode^ currentObject, String^ evalTable);
-		String^ 	GetATableInputValue(ROMNode^ currentObject, String^ input);
-		System::Xml::XmlElement^				m_DOM;
-		System::Xml::XmlDataDocument^			m_DOC;
-		EDS::CKnowledgeBase						*m_KnowledgeBase;
+		IntPtr^				GetPtr() {return (IntPtr)m_ROMNode;}
+
+	private:
+		array<ROMNodeNET^>^ GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
+
+
+		ROM::ROMNode			*m_ROMNode;
+	};
+
+	public ref class ROMDictionaryAttributeNET
+	{
+	public:
+		ROMDictionaryAttributeNET() {m_ROMDictionaryAttribute = NULL;}
+		ROMDictionaryAttributeNET(IntPtr^ ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr->ToPointer();}
+		void CreateROMDictionaryAttributeNET() {m_ROMDictionaryAttribute = new ROM::ROMDictionaryAttribute();}
+		~ROMDictionaryAttributeNET() {if (m_ROMDictionaryAttribute) delete m_ROMDictionaryAttribute; this->!ROMDictionaryAttributeNET();}
+		!ROMDictionaryAttributeNET() {}
+
+		property String^ Name
+		{
+			virtual String^ get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return gcnew String(m_ROMDictionaryAttribute->Name.c_str());
+			}
+			virtual void set(String^ value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->Name = MarshalString(value);
+			}
+		}
+		property String^ Description
+		{
+			virtual String^ get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return gcnew String(m_ROMDictionaryAttribute->Description.c_str());
+			}
+			virtual void set(String^ value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->Description = MarshalString(value);
+			}
+		}
+		property String^ DefaultValue
+		{
+			virtual String^ get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return gcnew String(m_ROMDictionaryAttribute->DefaultValue.c_str());
+			}
+			virtual void set(String^ value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->DefaultValue = MarshalString(value);
+			}
+		}
+		property String^ RuleTable
+		{
+			virtual String^ get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return gcnew String(m_ROMDictionaryAttribute->RuleTable.c_str());
+			}
+			virtual void set(String^ value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->RuleTable = MarshalString(value);
+			}
+		}
+		property int AttributeType
+		{
+			virtual int get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return m_ROMDictionaryAttribute->AttributeType;
+			}
+			virtual void set(int value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->AttributeType = value;
+			}
+		}
+		property bool ValueChanged
+		{
+			virtual bool get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return m_ROMDictionaryAttribute->ValueChanged;
+			}
+			virtual void set(bool value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->ValueChanged = value;
+			}
+		}
+		property bool ChangedByUser
+		{
+			virtual bool get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return m_ROMDictionaryAttribute->ChangedByUser;
+			}
+			virtual void set(bool value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->ChangedByUser = value;
+			}
+		}
+		property bool Valid
+		{
+			virtual bool get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return m_ROMDictionaryAttribute->Valid;
+			}
+			virtual void set(bool value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->Valid = value;
+			}
+		}
+		property bool Visible
+		{
+			virtual bool get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return m_ROMDictionaryAttribute->Visible;
+			}
+			virtual void set(bool value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->Visible = value;
+			}
+		}
+		property bool Enabled
+		{
+			virtual bool get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return m_ROMDictionaryAttribute->Enabled;
+			}
+			virtual void set(bool value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->Enabled = value;
+			}
+		}
+		property array<String^>^ PossibleValues
+		{
+			virtual array<String^>^ get()
+			{
+				if (m_ROMDictionaryAttribute)				
+					return GetArrayFromVectorStrings(m_ROMDictionaryAttribute->PossibleValues);				
+			}
+			virtual void set(array<String^>^ value)
+			{
+				if (m_ROMDictionaryAttribute)
+				{
+					vector<wstring> vals(value->Length);
+					for each (String^ val in value)
+					{
+						wstring wsVal = MarshalString(val);
+						vals.push_back(wsVal);
+					}
+					m_ROMDictionaryAttribute->PossibleValues = vals;
+				}
+
+			}
+		}
+		property array<String^>^ AvailableValues
+		{
+			virtual array<String^>^ get()
+			{
+				if (m_ROMDictionaryAttribute)				
+					return GetArrayFromVectorStrings(m_ROMDictionaryAttribute->AvailableValues);				
+			}
+			virtual void set(array<String^>^ value)
+			{
+				if (m_ROMDictionaryAttribute)
+				{
+					vector<wstring> vals(value->Length);
+					for each (String^ val in value)
+					{
+						wstring wsVal = MarshalString(val);
+						vals.push_back(wsVal);
+					}
+					m_ROMDictionaryAttribute->AvailableValues = vals;
+				}
+			}
+		}
+
+	private:
+		ROM::ROMDictionaryAttribute* m_ROMDictionaryAttribute;
+	};
+
+	public ref class ROMDictionaryNET
+	{
+	public:
+		ROMDictionaryNET() {m_ROMDictionary = NULL;}		
+		ROMDictionaryNET(ROMNodeNET^ context) {CreateROMDictionaryNET(context);}
+		void CreateROMDictionaryNET(ROMNodeNET^ context) 
+		{
+			m_ROMDictionary = new ROM::ROMDictionary((ROM::ROMNode*)context->GetPtr()->ToPointer());
+		}
+		virtual ~ROMDictionaryNET() {if (m_ROMDictionary) delete m_ROMDictionary; this->!ROMDictionaryNET();}
+		!ROMDictionaryNET() {}
+
+		void						LoadDictionary(String^ dictionaryTable);
+		ROMDictionaryAttributeNET^	GetDictionaryAttr(String^ dictAttrName);
+		Dictionary<String^, ROMDictionaryAttributeNET^>^ GetAllDictionaryAttrs();
+
+	private:
+		ROMDictionaryNET(IntPtr^ ptr) {m_ROMDictionary = (ROM::ROMDictionary*)ptr->ToPointer();}
+		ROM::ROMDictionary *m_ROMDictionary;
+	};
+
+	public ref class LinearEngineNET
+	{
+	public:
+		LinearEngineNET() {m_LinearEngine = NULL;}		
+		LinearEngineNET(ROMNodeNET^ context, String^ dictionaryTable) {CreateLinearEngineNET(context, dictionaryTable);}
+		void CreateLinearEngineNET(ROMNodeNET^ context, String^ dictionaryTable) 
+		{
+			wstring dict = MarshalString(dictionaryTable);
+			m_LinearEngine = new ROM::LinearEngine((ROM::ROMNode*)context->GetPtr()->ToPointer(), dict);
+		}
+		virtual ~LinearEngineNET() {if (m_LinearEngine) delete m_LinearEngine; this->!LinearEngineNET();}
+		!LinearEngineNET() {}
+
+		void						LoadDictionary(String^ dictionaryTable);
+		ROMDictionaryAttributeNET^	GetDictionaryAttr(String^ dictAttrName);
+		Dictionary<String^, ROMDictionaryAttributeNET^>^ GetAllDictionaryAttrs();
+
+		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents);
+		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues) {EvaluateForAttribute(dictAttrName, newValues, true);}
+		void EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents);
+		void EvaluateForAttribute(String^ dictAttrName, String^ newValue) {EvaluateForAttribute(dictAttrName, newValue, true);}
+		void EvaluateAll() {if (m_LinearEngine) m_LinearEngine->EvaluateAll();}
+		array<ROMDictionaryAttributeNET^>^ GetEvalList();
+		property bool DictionaryIsValid
+		{
+			virtual bool get()
+			{
+				if (m_LinearEngine)
+					return m_LinearEngine->DictionaryIsValid();
+				else
+					return false;
+			}
+		}
+	private:
+		LinearEngineNET(IntPtr^ ptr) {m_LinearEngine = (ROM::LinearEngine*)ptr->ToPointer();}
+		ROM::LinearEngine *m_LinearEngine;
 	};
 }
-
-#define ATTRIBUTE_NODE L"Attribute"
-#define OBJECT_NODE L"Object"
-#define XSLT_TOP L"<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><xsl:output method=\"text\" encoding=\"UTF-8\"/>"
-#define XSLT_BOTTOM L"\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
-
-

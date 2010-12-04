@@ -18,6 +18,8 @@ Copyright (C) 2009 Eric D. Schmidt
 #pragma once
 #pragma unmanaged
 #include <vector>
+#include <map>
+#include <hash_map>
 #include <string>
 #include <iostream>
 #include <algorithm>
@@ -27,6 +29,12 @@ using namespace std;
 //managed code
 #using <System.dll>
 using namespace System; 
+using namespace System::Collections::Generic;
 
-void MarshalString ( String ^ s, string& os );
-void MarshalString ( String ^ s, wstring& os );
+string MarshalStringA ( String ^ s);
+wstring MarshalString ( String ^ s);
+stdext::hash_map<wstring, size_t> MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict);
+
+array<String^>^ GetArrayFromVectorStrings(vector<wstring> vect);
+vector<wstring> GetVectorFromArrayStrings(array<String^>^ arr);
+Dictionary<String^,	array<String^>^>^ GetDictionaryFromMapStrings(map<wstring, vector<wstring> > mp);
