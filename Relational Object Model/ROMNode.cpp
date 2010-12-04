@@ -34,6 +34,7 @@ void ROMNode::_init()
 	m_guid = MakeGUID();
 	m_parent = NULL;
 	m_xmlDoc = NULL;
+	m_KnowledgeBase = NULL;
 	m_children.reserve(256);
 	m_bChanged = true;
 }
@@ -57,9 +58,21 @@ ROMNode* ROMNode::GetRoot()
 	do 
 	{
 		if (nextParent != NULL)
-			nextParent = nextParent->Parent();		
+			nextParent = nextParent->GetParent();		
 	} while (nextParent != NULL);
 	return nextParent;
+}
+
+bool ROMNode::AddChildROMObject(ROMNode *child) 
+{
+	if (child->m_parent == NULL)
+	{
+		m_children.push_back(child);
+		child->m_parent = this;
+		return true;
+	}
+	else
+		return false;
 }
 
 bool ROMNode::RemoveChildROMObject(ROMNode *child)
@@ -87,16 +100,18 @@ bool ROMNode::DestroyROMObject()
 
 	m_attrs.clear();
 	m_nodeValues.clear();
-	m_name.clear();
+	m_id.clear();
 	m_parent = NULL;
 	m_bChanged = false;
-
 	//trigger downstream destructors
-	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
+	for (long i = m_children.size() - 1; i >= 0; i--)
 	{
-		ROMNode* node = *it;
-		node->DestroyROMObject();
-		delete node;
+		if (i < m_children.size())
+		{
+			ROMNode* node = m_children[i];
+			if (node)
+				delete node;
+		}
 	}
 	m_children.clear();	
 
@@ -121,7 +136,7 @@ wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
 
 	if (!immediate && !bFound)
 	{
-		ROMNode *parent = Parent();
+		ROMNode *parent = GetParent();
 		if (parent != NULL)
 		{
 			parent->GetAttribute(id, name, immediate);
@@ -129,6 +144,21 @@ wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
 	}
 
 	return retval;
+}
+
+bool ROMNode::GetAttributeExists(wstring id, wstring name)
+{
+	bool bFound = false;
+	FASTMAP_MAPS::iterator it = m_attrs.find(id);
+	if (it != m_attrs.end())
+	{
+		FASTMAP::iterator itValue = it->second.find(name);
+		if (itValue != it->second.end())
+		{
+			bFound = true;
+		}
+	}
+	return bFound;
 }
 
 bool ROMNode::SetAttribute(wstring id, wstring name, wstring value)
@@ -141,15 +171,27 @@ bool ROMNode::SetAttribute(wstring id, wstring name, wstring value)
 	return retval;
 }
 
-bool ROMNode::RemoveAttribute(wstring id)
+bool ROMNode::RemoveAttribute(wstring id, wstring name)
 {
 	bool retval = false;
 	
 	FASTMAP_MAPS::iterator it = m_attrs.find(id);
 	if (it != m_attrs.end())
-	{		
-		m_attrs.erase(it);
-		retval = true;
+	{
+		if (name.length() == 0 || name == L"value")
+		{
+			m_attrs.erase(it);
+			retval = true;
+		}
+		else
+		{
+			FASTMAP::iterator itValue = it->second.find(name);
+			if (itValue != it->second.end())
+			{
+				it->second.erase(itValue);
+				retval = true;
+			}
+		}
 	}
 	m_bChanged = retval;
 
@@ -179,7 +221,7 @@ wstring ROMNode::GetROMObjectValue(wstring name)
 	return retval;
 }
 
-bool ROMNode::RemoveROMObjectAttribute(wstring id)
+bool ROMNode::RemoveROMObjectValue(wstring id)
 {
 	bool retval = false;
 
@@ -195,32 +237,93 @@ bool ROMNode::RemoveROMObjectAttribute(wstring id)
 }
 
 //rules
+bool ROMNode::LoadRules(wstring knowledge_file)
+{
+	if (m_KnowledgeBase)
+		delete m_KnowledgeBase;
+	
+	if (m_parent == NULL) //only the root will have the reference to the rules
+	{
+		m_KnowledgeBase = new EDS::CKnowledgeBase();
+		return m_KnowledgeBase->CreateKnowledgeBase(knowledge_file);
+	}
+	else
+		return false;
+}
+
 vector<wstring> ROMNode::EvaluateTable(wstring evalTable, wstring output, bool bGetAll)
 {
-	LoadInputs(evalTable);
-	return m_KnowledgeBase.EvaluateTable(evalTable, output, bGetAll);
+	vector<wstring> retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		LoadInputs(evalTable);
+		retval = knowledge->EvaluateTable(evalTable, output, bGetAll);
+	}
+	return retval;
+}
+
+vector<wstring> ROMNode::EvaluateTable(wstring evalTable, wstring output)
+{
+	vector<wstring> retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		retval = EvaluateTable(evalTable, output, knowledge->TableIsGetAll(evalTable));
+	}
+	return retval;
 }
 
 map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable, bool bGetAll)
 {
-	LoadInputs(evalTable);
-	return m_KnowledgeBase.EvaluateTable(evalTable, bGetAll);
+	map<wstring, vector<wstring> > retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		LoadInputs(evalTable);
+		retval = knowledge->EvaluateTable(evalTable, bGetAll);
+	}
+	return retval;
 }
+
+map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable)
+{
+	map<wstring, vector<wstring> > retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		LoadInputs(evalTable);
+		retval = knowledge->EvaluateTable(evalTable, knowledge->TableIsGetAll(evalTable));
+	}
+	return retval;
+}
+
+
 
 vector<wstring> ROMNode::LoadInputs(wstring evalTable)
 {
-	vector<wstring> inputs = m_KnowledgeBase.GetInputDependencies(evalTable);
-	for (vector<wstring>::iterator it = inputs.begin(); it != inputs.end(); it++)
+	vector<wstring> inputs;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
 	{
-		wstring value = GetATableInputValue(*it);
-		m_KnowledgeBase.SetInputValue(*it, value);
+		inputs = knowledge->GetInputDependencies(evalTable);
+		for (vector<wstring>::iterator it = inputs.begin(); it != inputs.end(); it++)
+		{
+			wstring value = GetATableInputValue(*it);
+			knowledge->SetInputValue(*it, value);
+		}
 	}
 	return inputs;
 }
 
 vector<wstring> ROMNode::GetPossibleValues(wstring evalTable, wstring outputName)
 {
-	vector<wstring> outputs = m_KnowledgeBase.GetAllPossibleOutputs(evalTable, outputName);
+	vector<wstring> outputs;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		outputs = knowledge->GetAllPossibleOutputs(evalTable, outputName);
+	}
 	return outputs;
 }
 
@@ -296,7 +399,7 @@ wstring ROMNode::_generateXML(bool bRegen)
 		//this object
 		wstring beginObject = L"<Object";
 		beginObject+=L" id=\"";
-		beginObject+=m_name;
+		beginObject+=m_id;
 		beginObject+=L"\" guid=\"";
 		beginObject+=ROMUTIL::MBCStrToWStr(m_guid);
 		beginObject+=L"\"";
@@ -359,31 +462,33 @@ wstring ROMNode::_generateXML(bool bRegen)
 	return retval;
 }
 
-wstring ROMNode::DumpTree(int format)
+wstring ROMNode::DumpTree(bool indented)
 {
 	_createXMLDoc();	
-	return _convertXMLDocToString();	
+	return _convertXMLDocToString(indented);	
 }
 
 bool ROMNode::LoadTree(wstring xmlStr)
 {
 	bool retval = false;
 
-	Document xmlDoc;
 #ifdef USE_MSXML
-	xmlDoc.CreateInstance(__uuidof(MSXML2::DOMDocument));
-	xmlDoc->async = VARIANT_FALSE;
-	xmlDoc->resolveExternals = VARIANT_FALSE;
-	xmlDoc->setProperty("SelectionLanguage", "XPath");
-	xmlDoc->setProperty("SelectionNamespaces", "");
-	xmlDoc->setProperty("NewParser", VARIANT_TRUE);
+	if (m_xmlDoc != NULL)	
+		m_xmlDoc.Release();
+	
+	m_xmlDoc.CreateInstance(__uuidof(MSXML2::DOMDocument));
+	m_xmlDoc->async = VARIANT_FALSE;
+	m_xmlDoc->resolveExternals = VARIANT_FALSE;
+	m_xmlDoc->setProperty("SelectionLanguage", "XPath");
+	m_xmlDoc->setProperty("SelectionNamespaces", "");
+	m_xmlDoc->setProperty("NewParser", VARIANT_TRUE);
 	
 	try
 	{
-		VARIANT_BOOL ok = xmlDoc->loadXML(xmlStr.c_str());
+		VARIANT_BOOL ok = m_xmlDoc->loadXML(xmlStr.c_str());
 		if (ok)
 		{			
-			Node objectNode = xmlDoc->selectSingleNode("Object");
+			Node objectNode = m_xmlDoc->selectSingleNode("Object");
 			_buildObject(objectNode, NULL);			
 		}
 	}
@@ -396,15 +501,30 @@ bool ROMNode::LoadTree(wstring xmlStr)
 
 
 #ifdef USE_LIBXML
-	xmlDoc = NULL;
-	string buff = WStrToMBCStr(xmlStr);
-	xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
+	try
+	{
+		m_xmlDoc = NULL;
+		string buff = WStrToMBCStr(xmlStr);
+		m_xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
 
-	//create object
-
-	//set object values
-
-	//set object attributes
+		xmlXPathContextPtr xpathCtx = xmlXPathNewContext(m_xmlDoc);
+		xmlChar* objXPath = (xmlChar*)"Object";
+		xmlXPathObjectPtr xpathObjs = xmlXPathEvalExpression(objXPath, xpathCtx);
+		NodeList allObjs = xpathObjs->nodesetval;
+		if (allObjs != NULL)
+		{
+			for (int i = 0; i < allObjs->nodeNr; i++)
+			{
+				Node objectNode = allObjs->nodeTab[i];
+				_buildObject(objectNode, NULL);
+			}
+		}
+	}
+	catch(...)
+	{
+		ReportROMError("Problem parsing XML");
+	}
+	
 
 #endif
 
@@ -415,11 +535,13 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 {
 	//create object
 	ROMNode* newNode = NULL;
+
+#ifdef USE_MSXML
 	wstring id = objectNode->attributes->getNamedItem("id")->nodeValue.bstrVal;
 	if (parent == NULL)
 	{
 		DestroyROMObject();
-		m_name = id;
+		m_id = id;
 		newNode = this;
 	}
 	else
@@ -435,8 +557,8 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 			newNode->SetROMObjectValue(objAttr->nodeName.GetBSTR(), objAttr->nodeValue.bstrVal);		
 	}
 
-	NodeList attrNodes = objectNode->selectNodes("Attribute");
 	//set object attributes
+	NodeList attrNodes = objectNode->selectNodes("Attribute");	
 	for (long attrCnt = 0; attrCnt < attrNodes->Getlength(); attrCnt++)
 	{
 		Node attrNode = attrNodes->item[attrCnt];
@@ -460,7 +582,73 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 			newNode->AddChildROMObject(newChildObject);
 		}
 	}
+#endif
 
+#ifdef USE_LIBXML
+	wstring id = MBCStrToWStr(xmlGetProp(objectNode, (xmlChar*)"id"));
+	if (parent == NULL)
+	{
+		DestroyROMObject();
+		m_id = id;
+		newNode = this;
+	}
+	else
+	{
+		newNode = new ROMNode(id);
+	}
+
+	//set object values	
+	for (Attribute objValue = objectNode->properties; objValue != NULL; objValue = objValue->next)
+	{
+		wstring id = MBCStrToWStr(objValue->name);
+		if (id != L"id")
+		{
+			wstring value = MBCStrToWStr(xmlGetProp(objectNode, (xmlChar*)WStrToMBCStr(id).c_str()));
+			newNode->SetROMObjectValue(id, value);
+		}
+	}	
+
+	//set object attributes
+	xmlXPathContextPtr xpathCtx = xmlXPathNewContext(m_xmlDoc);
+	xmlChar* attrXPath = (xmlChar*)"Attribute";
+	xmlXPathObjectPtr xpathAttrs = xmlXPathEvalExpression(attrXPath, xpathCtx);
+	NodeList allAttrs = xpathAttrs->nodesetval;
+	if (allAttrs != NULL)
+	{		
+		for (int i = 0; i < allAttrs->nodeNr; i++)
+		{
+			Node attrNode = allAttrs->nodeTab[i];
+			wstring idAttr = MBCStrToWStr(xmlGetProp(attrNode, (xmlChar*)"id"));
+			for (Attribute attr = attrNode->properties; attr != NULL; attr = attr->next)
+			{
+				wstring name = MBCStrToWStr(attr->name);
+				if (name != L"id")
+				{
+					wstring value = MBCStrToWStr(xmlGetProp(attrNode, (xmlChar*)WStrToMBCStr(name).c_str()));
+					newNode->SetAttribute(idAttr, name, value);
+				}
+			}
+		}
+	}
+
+	//children recursivley
+	xmlChar* objXPath = (xmlChar*)"Object";
+	xmlXPathObjectPtr xpathObjects = xmlXPathEvalExpression(objXPath, xpathCtx);
+	NodeList allObjs = xpathObjects->nodesetval;
+	if (allObjs != NULL)
+	{
+		for (int i = 0; i < allObjs->nodeNr; i++)
+		{
+			Node childNode = allObjs->nodeTab[i];
+			ROMNode *newChildObject = _buildObject(childNode, parent);
+			if (newChildObject != NULL && newNode != NULL)
+			{
+				newNode->AddChildROMObject(newChildObject);
+			}
+		}
+	}
+
+#endif
 	return newNode;
 }
 
@@ -510,7 +698,7 @@ wstring	ROMNode::EvaluateXPATH(wstring xpath)
 	return retval;
 }
 
-wstring ROMNode::_convertXMLDocToString()
+wstring ROMNode::_convertXMLDocToString(bool indented)
 {
 	wstring retval;
 	retval.reserve(BIGSTRING);
@@ -523,9 +711,25 @@ wstring ROMNode::_convertXMLDocToString()
 #ifdef USE_LIBXML
 		xmlChar *xmlbuff;
 		int buffersize = 0;
-		xmlDocDumpFormatMemory(xmlDoc, &xmlbuff, &buffersize, format);
+		int format = 0;
+		if (indented) 
+			format = 1;
+		xmlDocDumpFormatMemory(m_xmlDoc, &xmlbuff, &buffersize, format);
 		retval = MBCStrToWStr(xmlbuff);
 #endif
 	}
 	return retval;
+}
+
+EDS::CKnowledgeBase* ROMNode::_getKnowledge()
+{
+	EDS::CKnowledgeBase *knowledge = NULL;
+	if (m_KnowledgeBase != NULL)
+		knowledge = m_KnowledgeBase;
+	else
+	{
+		if (GetRoot()->m_KnowledgeBase)
+			knowledge = GetRoot()->m_KnowledgeBase;
+	}
+	return knowledge;
 }

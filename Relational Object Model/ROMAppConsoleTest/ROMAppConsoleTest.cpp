@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 {
 	long start = 0, elapsed = 0, testROMTreeStart = 0, testROMTreeEnd = 0, testROMNodeStart = 0, testROMNodeEnd = 0;
 	string msg;
-	const int iMax = 10000;
+	const int iMax = 1000;
 	char time[32] = "";
 	char temp[32] = "";
 	wstring path;
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 		childNode->SetROMObjectValue(L"valueTest", L"myValue");
 
 		Log("Dump current xml state");
-		wstring result = rootNode->DumpTree(1);
+		wstring result = rootNode->DumpTree(true);
 		string s(result.begin(), result.end());
 		Log(s);
 
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 		rootNode->SetAttribute(L"inputAttr2", L"1");
 
 		Log("New xml state");
-		result = rootNode->DumpTree(1);
+		result = rootNode->DumpTree(true);
 		string s2(result.begin(), result.end());
 		Log(s2);
 

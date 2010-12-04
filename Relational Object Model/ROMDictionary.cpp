@@ -23,7 +23,7 @@ Copyright (C) 2009 Eric D. Schmidt
 using namespace ROM;
 using namespace ROMUTIL;
 
-ROMDictionary::ROMDictionary(ROMNode* context)
+void ROMDictionary::CreateROMDictionary(ROMNode* context)
 {
 	m_ROMContext = context;
 }

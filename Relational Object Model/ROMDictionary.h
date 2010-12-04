@@ -28,7 +28,9 @@ namespace ROM
 	{
 	friend class LinearEngine;
 	public:
-		ROMDictionary(ROMNode* context);
+		ROMDictionary(ROMNode* context) {CreateROMDictionary(context);}
+		ROMDictionary() {}
+		void CreateROMDictionary(ROMNode* context);
 		virtual ~ROMDictionary(void){}
 
 		void LoadDictionary(wstring dictionaryTable);

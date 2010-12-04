@@ -22,8 +22,9 @@ namespace ROM
 	class ROMDictionaryAttribute
 	{
 	public:
-		ROMDictionaryAttribute() {Visible = true; Valid = false; ValueChanged = false; ChangedByUser = false; Enabled = true;}
+		ROMDictionaryAttribute() {CreateROMDictionaryAttribute();}
 		~ROMDictionaryAttribute() {}
+		void CreateROMDictionaryAttribute() {Visible = true; Valid = false; ValueChanged = false; ChangedByUser = false; Enabled = true;}
 		wstring Name;
 		wstring Description;
 		wstring DefaultValue;

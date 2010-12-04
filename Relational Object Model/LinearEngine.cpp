@@ -21,49 +21,53 @@ Copyright (C) 2009 Eric D. Schmidt
 
 namespace ROM
 {
-	LinearEngine::LinearEngine(ROMNode* context, wstring dictionaryTable):ROMDictionary(context)
+	void LinearEngine::CreateLinearEngine(ROMNode* context, wstring dictionaryTable)
 	{
-		InitializeEngine(dictionaryTable);
+		InitializeEngine(dictionaryTable);		
 	}
 
 	void LinearEngine::InitializeEngine(wstring dictionaryTable)
 	{
-		INVISPREFIX = L"^";
-		DEFAULTPREFIX = L"@";
-		DISABLEPREFIX = L"#";
-
-		m_vEvalList.clear();
-		m_mapTriggers.clear();
-		LoadDictionary(dictionaryTable);
-
-		//open each attr in dict, load its dependency info to create m_vEvalList, m_mapTriggers
-		//build an initial list that matches the dictionary order
-		for (map<wstring, ROMDictionaryAttribute>::iterator it = m_dict.begin(); it != m_dict.end(); it++)
+		EDS::CKnowledgeBase *knowledge = m_ROMContext->_getKnowledge();
+		if (knowledge)
 		{
-			m_vEvalList.push_back(&it->second);
-			//triggers
-			vector<wstring> deps = m_ROMContext->m_KnowledgeBase.GetInputDependencies(it->second.RuleTable);
-			for (vector<wstring>::iterator itDeps = deps.begin(); itDeps != deps.end(); itDeps++)
+			INVISPREFIX = L"^";
+			DEFAULTPREFIX = L"@";
+			DISABLEPREFIX = L"#";
+
+			m_vEvalList.clear();
+			m_mapTriggers.clear();
+			LoadDictionary(dictionaryTable);
+
+			//open each attr in dict, load its dependency info to create m_vEvalList, m_mapTriggers
+			//build an initial list that matches the dictionary order
+			for (map<wstring, ROMDictionaryAttribute>::iterator it = m_dict.begin(); it != m_dict.end(); it++)
 			{
-				if (m_mapTriggers.find(*itDeps) != m_mapTriggers.end())
+				m_vEvalList.push_back(&it->second);
+				//triggers			
+				vector<wstring> deps = knowledge->GetInputDependencies(it->second.RuleTable);
+				for (vector<wstring>::iterator itDeps = deps.begin(); itDeps != deps.end(); itDeps++)
 				{
-					if (find(m_mapTriggers[*itDeps].begin(), m_mapTriggers[*itDeps].end(), it->second.Name) == m_mapTriggers[*itDeps].end())
-						m_mapTriggers[*itDeps].push_back(it->second.Name);
-				}
-				else if (m_dict.find(*itDeps) != m_dict.end())
-				{
-					vector<wstring> newVect;
-					newVect.push_back(it->second.Name);
-					m_mapTriggers[*itDeps] = newVect;
+					if (m_mapTriggers.find(*itDeps) != m_mapTriggers.end())
+					{
+						if (find(m_mapTriggers[*itDeps].begin(), m_mapTriggers[*itDeps].end(), it->second.Name) == m_mapTriggers[*itDeps].end())
+							m_mapTriggers[*itDeps].push_back(it->second.Name);
+					}
+					else if (m_dict.find(*itDeps) != m_dict.end())
+					{
+						vector<wstring> newVect;
+						newVect.push_back(it->second.Name);
+						m_mapTriggers[*itDeps] = newVect;
+					}
 				}
 			}
-		}
 
-		//based on the triggers, re-order the dictionary
-		m_CurrentRecursion = 0;
-		m_EvalInternal = false;
-		OrderDictionary();
-		m_vEvalListRecursChecker.clear();
+			//based on the triggers, re-order the dictionary
+			m_CurrentRecursion = 0;
+			m_EvalInternal = false;
+			OrderDictionary();
+			m_vEvalListRecursChecker.clear();
+		}
 	}
 
 	void LinearEngine::OrderDictionary()

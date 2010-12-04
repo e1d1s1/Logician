@@ -47,74 +47,86 @@ namespace ROM
 	friend class ROMDictionary;
 	friend class LinearEngine;
 	public:
-		ROMNode(wstring id) {m_name = id; _init();}
-		ROMNode(string id) {m_name = ROMUTIL::MBCStrToWStr(id); _init();}
 		~ROMNode(void);
+		ROMNode(){m_KnowledgeBase = NULL;}
+		ROMNode(wstring id) {CreateROMNode(id);}
+		ROMNode(string id) {CreateROMNode(id);}
+		void CreateROMNode(wstring id) {m_id = id; _init();}
+		void CreateROMNode(string id) {m_id = ROMUTIL::MBCStrToWStr(id); _init();}
+		
 
-		//relational interface
+		//relational functions
 		ROMNode*			GetRoot();
-		ROMNode*			Parent() {return m_parent;}
+		ROMNode*			GetParent() {return m_parent;}
 		vector<ROMNode*>	GetAllChildren() {return m_children;}
-		bool				AddChildROMObject(ROMNode *child) {m_children.push_back(child); return true;}
+		bool				AddChildROMObject(ROMNode *child);
 		bool				RemoveChildROMObject(ROMNode *child);
 		bool				DestroyROMObject();
 
-		//attribute interface
+		//attribute functions
 		wstring				GetAttribute(wstring id, wstring name, bool immediate = false);
 		wstring				GetAttribute(wstring id, bool immediate = false) {return GetAttribute(id, L"value", immediate);}
+		bool				GetAttributeExists(wstring id, wstring name = L"value");
 		bool				SetAttribute(wstring id, wstring name, wstring value);
 		bool				SetAttribute(wstring id, wstring value) {return SetAttribute(id, L"value", value);}
 		bool				SetAttributeValue(wstring id, wstring value) {return SetAttribute(id, value);}
-		bool				RemoveAttribute(wstring id);	
+		bool				RemoveAttribute(wstring id, wstring name = L"value");	
 		bool				SetROMObjectValue(wstring name, wstring value);
 		wstring				GetROMObjectValue(wstring name);
-		bool				RemoveROMObjectAttribute(wstring id);	
-		wstring				GetROMObjectName() {return m_name;}
-		void				SetROMObjectName(wstring name) {m_name = name;}
+		bool				RemoveROMObjectValue(wstring id);	
+		wstring				GetROMObjectID() {return m_id;}
+		void				SetROMObjectID(wstring id) {m_id = id;}
 		FASTMAP_MAPS		GetAllAttributes() {return m_attrs;}
 
 		//rules
-		bool				LoadRules(wstring knowledge_file) {return m_KnowledgeBase.CreateKnowledgeBase(knowledge_file);}
-		vector<wstring>		EvaluateTable(wstring evalTable, wstring output, bool bGetAll = true);
-		vector<wstring>		EvaluateTableForAttr(wstring evalTable, wstring output, bool bGetAll = true) {return EvaluateTable(evalTable, output, bGetAll);}
-		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable, bool bGetAll = true);
+		bool				LoadRules(wstring knowledge_file);
+		vector<wstring>		EvaluateTable(wstring evalTable, wstring output, bool bGetAll);
+		vector<wstring>		EvaluateTable(wstring evalTable, wstring output);
+		vector<wstring>		EvaluateTableForAttr(wstring evalTable, wstring output, bool bGetAll) {return EvaluateTable(evalTable, output, bGetAll);}
+		vector<wstring>		EvaluateTableForAttr(wstring evalTable, wstring output) {return EvaluateTable(evalTable, output);}
+		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable, bool bGetAll);
+		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable);
 
 		//IO
-		wstring				DumpTree(int format);
+		wstring				DumpTree(bool indented);
 		bool				LoadTree(wstring xmlStr);			
 
 		//XPATH
 		wstring				EvaluateXPATH(wstring xpath);
 
 		//ascii overloads
+		string				GetNameA() {return ROMUTIL::WStrToMBCStr(m_id);}
 		string				GetAttribute(string id, string name, bool immediate = false) {return ROMUTIL::WStrToMBCStr(GetAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), immediate));}
 		string				GetAttribute(string id, bool immediate = false) {return GetAttribute(id, "value", immediate);}
+		bool				GetAttributeExists(string id, string name = "value") {return GetAttributeExists(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name));}
 		bool				SetAttribute(string id, string name, string value) {return SetAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), ROMUTIL::MBCStrToWStr(value));}
 		bool				SetAttribute(string id, string value) {return SetAttribute(id, "value", value);}
-		bool				RemoveAttribute(string id) {return RemoveAttribute(ROMUTIL::MBCStrToWStr(id));}
+		bool				RemoveAttribute(string id, string name = "value") {return RemoveAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name));}
 		bool				SetROMObjectValue(string name, string value) {return SetROMObjectValue(ROMUTIL::MBCStrToWStr(name), ROMUTIL::MBCStrToWStr(value));}
 		string				GetROMObjectValue(string name) {return ROMUTIL::WStrToMBCStr(GetROMObjectValue(ROMUTIL::MBCStrToWStr(name)));}
-		bool				RemoveROMObjectAttribute(string id) {return RemoveROMObjectAttribute(ROMUTIL::MBCStrToWStr(id));}
-		string				GetROMObjectNameA() {return ROMUTIL::ToASCIIString(m_name);}
-		void				SetROMObjectName(string name) {m_name = ROMUTIL::MBCStrToWStr(name);}
+		bool				RemoveROMObjectValue(string id) {return RemoveROMObjectValue(ROMUTIL::MBCStrToWStr(id));}
+		string				GetROMObjectIDA() {return ROMUTIL::ToASCIIString(m_id);}
+		void				SetROMObjectID(string name) {m_id = ROMUTIL::MBCStrToWStr(name);}
 		bool				LoadRules(string knowledge_file) {return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file));}
-		vector<string>		EvaluateTable(string evalTable, string output, bool bGetAll = true) {LoadInputs(ROMUTIL::MBCStrToWStr(evalTable)); return m_KnowledgeBase.EvaluateTable(evalTable, output, bGetAll);}
-		map<string, vector<string> > EvaluateTable(string evalTable, bool bGetAll = true) {LoadInputs(ROMUTIL::MBCStrToWStr(evalTable)); return m_KnowledgeBase.EvaluateTable(evalTable, bGetAll);}
+		vector<string>		EvaluateTable(string evalTable, string output, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll));}
+		vector<string>		EvaluateTable(string evalTable, string output) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output)));}
+		map<string, vector<string> > EvaluateTable(string evalTable) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable)));}
 		string				EvaluateXPATH(string xpath) {return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath)));}
 
 	private:
-		vector<wstring>		LoadInputs(wstring evalTable);
-		vector<wstring>		GetPossibleValues(wstring evalTable, wstring outputName);
-		wstring				GetATableInputValue(wstring input);
-		bool				_anyHasChanged();
-		void				_setAllUnchanged();
-		wstring				_generateXML(bool bRegen);
-		ROMNode*			_buildObject(Node objectNode, ROMNode* parent);
-		void				_createXMLDoc();
-		wstring				_convertXMLDocToString();
-		void				_init();
+		vector<wstring>			LoadInputs(wstring evalTable);
+		vector<wstring>			GetPossibleValues(wstring evalTable, wstring outputName);
+		wstring					GetATableInputValue(wstring input);
+		bool					_anyHasChanged();
+		void					_setAllUnchanged();
+		wstring					_generateXML(bool bRegen);
+		ROMNode*				_buildObject(Node objectNode, ROMNode* parent);
+		void					_createXMLDoc();
+		wstring					_convertXMLDocToString(bool indented);
+		EDS::CKnowledgeBase*	_getKnowledge();
+		void					_init();
 
-		wstring m_name;
+		wstring m_id;
 		string m_guid;
 		bool m_bChanged;
 		Document m_xmlDoc;
@@ -125,6 +137,6 @@ namespace ROM
 		FASTMAP_MAPS m_attrs;
 		FASTMAP m_nodeValues;
 
-		EDS::CKnowledgeBase		m_KnowledgeBase;
+		EDS::CKnowledgeBase		*m_KnowledgeBase;
 	};
 }

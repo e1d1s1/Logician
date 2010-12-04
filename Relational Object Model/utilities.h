@@ -22,6 +22,7 @@ Copyright (C) 2009 Eric D. Schmidt
 
 #include <string>
 #include <vector>
+#include <map>
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -43,6 +44,7 @@ namespace ROMUTIL
 	wstring TrimString(wstring s);
 	string ToASCIIString(wstring s);
 	vector<string> WStrToMBCStrVector(vector<wstring> vectWS);
+	map<string, vector<string> > WStrToMBCStrMapVector(map<wstring, vector<wstring> >);
 	vector<string> ToASCIIStringVector(vector<wstring> vectWS);
 	vector<wstring> ToWStringVector(vector<string> vStr);
 	string stringify(double x);
@@ -53,6 +55,10 @@ namespace ROMUTIL
 #endif
 	wstring MBCStrToWStr(string mbStr);
 	string WStrToMBCStr(wstring wstr);
+#if USE_LIBXML
+	wstring MBCStrToWStr(const unsigned char* mbStr);
+	wstring MBCStrToWStr(unsigned char* mbStr);
+#endif
 	
 }
 #endif
