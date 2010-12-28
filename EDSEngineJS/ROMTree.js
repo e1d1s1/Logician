@@ -82,404 +82,373 @@ var ATTRIBUTE_NODE = "Attribute";
 var OBJECT_NODE  = "Object";
 var XSLT_TOP = "<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><xsl:output method=\"text\" omit-xml-declaration=\"yes\" encoding=\"UTF-8\"/>"
 var XSLT_BOTTOM = "\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
-//Main ROMTree class////////////////////////////////////////////////////////////////
-function ROMTree(name) 
+function ROMNode(id)
 {
-    this.xmlDoc = null;
-    this.m_tree = null;
+    this.m_xmlDoc = null;
     this.m_KnowledgeBase = null;
-
-    var guid = MakeGUID();
-    name = name.replace(" ", "_");
-    var text = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Object id=\"" + name + "\" guid=\"" + guid + "\"/>";
-    if (IsIE()) 
-    {
-        this.xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-        this.xmlDoc.async = "false";
-        this.xmlDoc.setProperty("SelectionLanguage", "XPath");
-        this.xmlDoc.loadXML(text);
-    }
-    else 
-    {
-        var parser = new DOMParser();
-        this.xmlDoc = parser.parseFromString(text, "text/xml");
-    }
-
-    this.m_tree = this.xmlDoc.documentElement;
+    id = id.replace(" ", "_");
+    this.m_id = id;
+    this.m_guid = MakeGUID();
+    this.m_parent = null;
+    this.m_children = new Array();
+    this.m_bChanged = true;
+    this.m_lastContents = "";
+    this.m_lastAttrContents = "";
+    this.m_attrs = new Array();
+    this.m_nodeValues = new Array();
 }
 
-ROMTree.prototype.GetRoot = function()
+ROMNode.prototype.GetRoot = function()
 {
     try
     {
-        return this.m_tree;
+        var nextParent = this;
+	    do 
+	    {
+		    if (nextParent != NULL)
+			    nextParent = nextParent.GetParent();		
+	    } while (nextParent != NULL);
+	    return nextParent;
     }
-    catch (err)
+    catch (err) 
     {
         ReportError(err);
     }
+    return null;
 }
 
-ROMTree.prototype.Parent = function(current)
+ROMNode.prototype.GetParent = function() 
 {
-    var retval = null;
-    try
-    {        
-        if (current)
-        {
-            return current.parentNode;
-        }        
-    }
-    catch (err)
+    return this.m_parent;
+}
+
+ROMNode.prototype.AddChildROMObject = function(child) 
+{
+    try 
     {
-        ReportError(err);
-    }
-    return retval;
-}
-
-ROMTree.prototype.Find = function(current, searchStr)
-{
-    var retval = new Array();
-    try
-    {        
-        if (!currrent)
+        if (child.m_parent == null)
         {
-            return retval;
-        }
-        
-        if (IsIE())
-        {
-            var nodes = currrent.selectNodes(searchStr);
-            for (var i = 0; i < nodes.length; i++)
-            {
-                retval.push(nodes[i]);
-            }
-        }
-        else
-        {
-            var nodes = this.xmlDoc.evaluate(searchStr, currrent, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-            for (var i = 0; i < nodes.snapshotLength; i++)
-            {
-                retval.push(nodes.snapshotItem(i));
-            }
+            child.m_parent = this;
+            this.m_children.push(child);
+            return true;
         }
     }
-    catch (err)
+    catch (err) 
     {
         ReportError(err);
     }
-    return retval;
+    return false;
 }
 
-ROMTree.prototype.AddChildROMObject = function(current, child)
-{
-    try
-    {
-        current.appendChild(child);
-        return child;
-    }
-    catch (err)
-    {
-        ReportError(err);
-    }
-}
-
-ROMTree.prototype.CreateROMObject = function(name)
-{
-    var retval = null;
-    try
-    {        
-        var guid = MakeGUID();
-        
-        if (!this.xmlDoc)
-            return retval;
-           
-        var elem = this.xmlDoc.createElement(OBJECT_NODE);
-        elem.setAttribute("id", name);
-        elem.setAttribute("guid", guid);
-        retval = elem;        
-    }
-    catch (err)
-    {
-        ReportError(err);
-    }
-    return retval;
-}
-
-ROMTree.prototype.DestroyROMObject = function(current)
-{
-    try
-    {       
-        if (!current)
-            return false;
-            
-        var parent = current.parentNode;
-        parent.removeChild(current);
-        delete current;
-        
-        return true;
-    }
-    catch (err)
-    {
-        ReportError(err);
-    }
-}
-
-ROMTree.prototype.GetAttributeValue = function(currentObject, id, recurs)
-{
-    try
-    {
-        return this.GetAttribute(currentObject, id, "value", recurs);
-    }
-    catch(err)
-    {
-        ReportError(err);
-    }
-}
-
-ROMTree.prototype.GetAttribute = function(currentObject, id, name, recurs)
-{
-    var retval = "";
-    try
-    {        
-        if (!currentObject)
-            return retval;
-            
-        if (currentObject.hasChildNodes())
-        {
-            var nodes = currentObject.childNodes;
-            for (var i = 0; i < nodes.length; i++)
-            {
-                var attrNode = nodes.item(i);
-                if (attrNode.nodeName == ATTRIBUTE_NODE)
-                {
-                    var data = attrNode.attributes.getNamedItem("id");          
-                    if (data != null && data.nodeValue == id)
-                    {
-                        if (name.length > 0)
-                        {
-                            var attr_data = attrNode.attributes.getNamedItem(name);
-                            if (attr_data != null)
-                            {
-                                retval = attr_data.nodeValue;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            var attr_data = attrNode.attributes.getNamedItem("value");
-                            if (attr_data != null)
-                            {
-                                retval = attr_data.nodeValue;
-                                break;
-                            }
-                        }
-                    }
-                    
-                }
-            }
-        }
-        
-        if (recurs && retval.length == 0)
-        {
-            var curEle = currentObject;
-            var rootEle = this.GetRoot();
-            if (curEle.getAttribute("guid") != rootEle.getAttribute("guid"))
-            {   //recrsively search
-                var parent = currentObject.parentNode;
-                retval = this.GetAttribute(parent, id, name, true);
-            }
-        }        
-        
-    }
-    catch (err)
-    {
-        ReportError(err);
-    }
-    return retval; 
-}
-
-ROMTree.prototype.SetAttribute = function(currentObject, id, value)
-{
-    try
-    {
-        return this.SetAttributeValue(currentObject, id, "value", value);
-    }
-    catch (err)
-    {
-        ReportError(err);
-    }
-}
-
-ROMTree.prototype.SetAttributeValue = function(currentObject, id, name, value)
+ROMNode.prototype.RemoveChildROMObject = function(child) 
 {
     var retval = false;
-    try
-    {   
-        if (!currentObject)
-            return retval;            
-        
-        if (currentObject.hasChildNodes())
+    try 
+    {
+        var i = GetIndexOfItem(this.m_children, child);
+        if (i >= 0)
         {
-            var nodes = currentObject.childNodes;
-            for (var i = 0; i < nodes.length; i++)
-            {
-                var attrNode = nodes.item(i);
-                if (attrNode.nodeName == ATTRIBUTE_NODE)
-                {
-                    var attrs = attrNode.attributes;
-                    if (attrs)
-                    {
-                        var data = attrs.getNamedItem("id");
-                        if (data != null && data.nodeValue == id)
-                        {
-                            var elem = attrNode;
-                            if (name.length == 0)
-                            {//primary attr value                                
-                                elem.setAttribute("value", value);
-                                retval = true;
-                                break;
-                            }
-                            else
-                            {//set another attr
-                                elem.setAttribute(name, value);
-                                retval = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        if (retval == false && name == "value")
-        {   //create new main attribute
-            var elem = this.xmlDoc.createElement(ATTRIBUTE_NODE);
-            elem.setAttribute("id", id);
-            elem.setAttribute("value", value);
-            currentObject.appendChild(elem);
+            this.m_children.splice(i, 1);
             retval = true;
-        }       
+        }
+        this.m_bChanged = retval;
     }
-    catch (err)
+    catch (err) 
     {
         ReportError(err);
     }
     return retval;
 }
 
-ROMTree.prototype.SetROMObjectValue = function(currentObject, name, value)
-{
-    try
-    {       
-        if (!currentObject)
-            return false;
-            
-        var elem = currentObject;
-        elem.setAttribute(name, value);
-        return true;
-    }
-    catch (err)
-    {
-        ReportError(err);
-        return false;
-    }
-}
-
-ROMTree.prototype.GetROMObjectValue = function(currentObject, name)
-{
-    var retval = "";
-    try
-    {        
-        if (!currentObject)
-            return retval;
-        
-        var elem = currentObject;
-        retval = elem.getAttribute(name);        
-    }
-    catch (err)
-    {
-        ReportError(err);
-    }
-    return retval;
-}
-
-ROMTree.prototype.RemoveAttribute = function(currentObject, id)
+ROMNode.prototype.DestroyROMObject = function() 
 {
     var retval = false;
+    try 
+    {
+        //remove any references to self in parent node
+        if (this.m_parent != NULL)
+	    {
+		    retval = this.m_parent.RemoveChildROMObject(this);
+	    }
+	    
+	    this.m_attrs.clear();
+	    this.m_nodeValues.clear();
+	    this.m_id = "";
+	    this.m_parent = NULL;
+	    this.m_bChanged = false;
+	    //trigger downstream destructors
+	    for (var i = this.m_children.length - 1; i >= 0; i--)
+	    {
+		    if (i < this.m_children.length)
+		    {
+			    var node = m_children[i];
+			    if (node)
+				    delete node;
+		    }
+	    }
+	    this.m_children.clear();	
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+ROMNode.prototype.Clone = function()
+{
+    var newNode = null;
     try
-    {   
-        if (!currentObject)
-            return retval;
-        
-        if (currentObject.hasChildNodes())
+    {
+        newNode = new ROMNode(this.m_id);
+        newNode.m_attrs = this.m_attrs.slice(0);
+        newNode.m_nodeValues = this.m_nodeValues.slice(0);
+        newNode.m_bChanged = false;
+        for (var i = this.m_children.length - 1; i >= 0; i--)
         {
-            var nodes = currentObject.childNodes;
-            for (var i = 0; i < nodes.length; i++)
+            if (i < this.m_children.length)
             {
-                var attrNode = nodes.item(i);
-                if (attrNode.nodeName == ATTRIBUTE_NODE)
+                var node = this.m_children[i];
+                if (node != null)
                 {
-                    var attrs = attrNode.attributes;
-                    var data = attrs.getNamedItem(id);                    
-                    if (data)
-                    {
-                        currentObject.removeChild(attrNode);
-                        retval = true;
-                        break;
-                    }
+                    var newChild = node.Clone();
+                    newNode.AddChildROMObject(newChild);
                 }
             }
-        }       
+        }
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return newNode;
+}
+
+ROMNode.prototype.GetAttributeValue = function(id, name, immediate) 
+{
+    var retval = "";
+    try 
+    {
+        var bFound = false;
+        if (this.m_attrs[id] != null)
+        {
+            if (this.m_attrs[id][name] != null)
+            {
+                retval = this.m_attrs[id][name];
+                bFound = true;
+            }
+        }
         
+        if (!immediate && !bFound)
+        {
+            if (this.m_parent != null)
+            {
+                retval = this.m_parent.GetAttributeValue(id, name, immediate);
+            }
+        }
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+ROMNode.prototype.GetAttribute = function(id, immediate) 
+{
+    var retval = "";
+    try 
+    {
+        retval = this.GetAttributeValue(id, "value", immediate);
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+ROMNode.prototype.GetAttributeExists = function(id) 
+{
+    var retval = false;
+    try 
+    {
+        retval = this.GetAttributeValueExists(id, "value");
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+ROMNode.prototype.GetAttributeValueExists = function(id, name) 
+{
+    var retval = false;
+    try 
+    {
+        if (this.m_attrs[id] != null)
+        {
+            if (this.m_attrs[id][name] != null)
+            {
+                retval = true;
+            }
+        }
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+ROMNode.prototype.SetAttribute = function(id, value)
+{
+    try
+    {
+        return this.SetAttributeValue(id, "value", value);
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+}
+
+ROMNode.prototype.SetAttributeValue = function(id, name, value)
+{
+
+    try
+    {   
+        if (this.m_attrs[id] === undefined)
+            this.m_attrs[id] = new Array();
+        
+        this.m_attrs[id][name] = value;
+        this.m_bChanged = true;
     }
     catch (err)
     {
         ReportError(err);
         return false;
     }
+    return true;
+}
+
+ROMNode.prototype.RemoveAttribute = function(id) 
+{
+    var retval = false;
+    try 
+    {
+        retval = this.RemoveAttributeValue(id, "value");
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
     return retval;
 }
 
-ROMTree.prototype.GetROMObjectName = function(current)
+ROMNode.prototype.RemoveAttributeValue = function(id, name) 
+{
+    var retval = false;
+    try 
+    {
+        if (this.m_attrs[id] != null)
+        {
+            if (name == null || name.length == 0 || name == "value")
+            {
+                var i = GetIndexOfItem(this.m_attrs, id);
+                this.m_attrs.splice(i, 1);
+                retval = true;
+            }
+            else
+            {
+                if (this.m_attrs[id][name] != null)
+                {
+                    var j = GetIndexOfItem(this.m_attrs[id], name);
+                    this.m_attrs[id].splice(j, 1);
+                    retval = true;
+                }
+            }
+        }
+        this.m_bChanged = retval;
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+ROMNode.prototype.SetROMObjectValue = function(id, value) 
+{
+    try 
+    {
+        this.m_nodeValues[id] = value;
+        this.m_bChanged = true;
+        return true;
+    }
+    catch (err) 
+    {
+        ReportError(err);
+        return false;
+    }
+}
+
+ROMNode.prototype.GetROMObjectValue = function(id) 
 {
     var retval = "";
-    try
-    {        
-        if (!current)
-            return retval;
-            
-        var attrs = current.attributes;
-        var data = attrs.getNamedItem("id");
-        
-        if (data)
-            retval = data.nodeValue;
+    try 
+    {
+        if (this.m_nodeValues[id] != null)
+            retval = this.m_nodeValues[id];
     }
-    catch (err)
+    catch (err) 
     {
         ReportError(err);
     }
     return retval;
 }
 
-ROMTree.prototype.SetROMObjectName = function(current, name)
+ROMNode.prototype.RemoveROMObjectValue = function(id)
 {
-    try
+    var retval = false;
+    try 
     {
-        var attrs = current.attributes;
-        var data = attrs.getNamedItem("id");
-        
-        if (data)
-            data.nodeValue = name;
+        if (this.m_nodeValues[id] != null)
+        {
+            var i = GetIndexOfItem(this.m_nodeValues, id)
+            if (i >= 0)
+            {
+                this.m_nodeValues.splice(i, 1);
+                retval = true;
+                this.m_bChanged = retval;
+            }            
+        }
     }
-    catch(err)
+    catch (err) 
     {
         ReportError(err);
     }
 }
+
+ROMNode.prototype.GetROMObjectID = function() 
+{
+    return this.m_id;
+}
+
+ROMNode.prototype.SetROMObjectID = function(id) 
+{
+    this.m_id = id;
+}
+
+ROMNode.prototype.GetAllAttributes = function() 
+{
+    return this.m_attrs;
+}
+
 
 //rules
-ROMTree.prototype.LoadRules = function(knowledge_file) 
+ROMNode.prototype.LoadRules = function(knowledge_file) 
 {
     try 
     {
@@ -495,19 +464,25 @@ ROMTree.prototype.LoadRules = function(knowledge_file)
     }
 }
 
-ROMTree.prototype.SetRulesDebugHandler = function(func)
+ROMNode.prototype.SetRulesDebugHandler = function(func)
 {
     if (this.m_KnowledgeBase != null)
         this.m_KnowledgeBase.SetDebugHandler(func);
 }
 
-ROMTree.prototype.EvaluateTableForAttr = function(currentObject, evalTable, output, bGetAll)
+ROMNode.prototype.EvaluateTableForAttr = function(evalTable, output, bGetAll)
 {
     try
-    {
-        this.LoadInputs(currentObject, evalTable);
-        var retval = this.m_KnowledgeBase.EvaluateTableForAttr(evalTable, output, bGetAll);
-        return retval;
+    {        
+        var knowledge = this._getKnowledge();
+        if (knowledge != null)
+        {
+            if (bGetAll === undefined)
+                bGetAll = knowledge.TableIsGetAll(evalTable);
+            this.LoadInputs(evalTable);
+            var retval = knowledge.EvaluateTableForAttr(evalTable, output, bGetAll);
+            return retval;
+        }
     }
     catch (err)
     {
@@ -516,13 +491,19 @@ ROMTree.prototype.EvaluateTableForAttr = function(currentObject, evalTable, outp
     }
 }
 
-ROMTree.prototype.EvaluateTable = function(currentObject, evalTable, bGetAll)
+ROMNode.prototype.EvaluateTable = function(evalTable, bGetAll)
 {
     try
     {
-        this.LoadInputs(currentObject, evalTable);
-        var retval = this.m_KnowledgeBase.EvaluateTable(evalTable, bGetAll);   
-        return retval;     
+        var knowledge = this._getKnowledge();
+        if (knowledge != null)
+        {
+            if (bGetAll === undefined)
+                bGetAll = knowledge.TableIsGetAll(evalTable);
+            this.LoadInputs(evalTable);
+            var retval = knowledge.EvaluateTable(evalTable, bGetAll);   
+            return retval;    
+        } 
     }
     catch (err)
     {
@@ -531,95 +512,154 @@ ROMTree.prototype.EvaluateTable = function(currentObject, evalTable, bGetAll)
     }
 }
 
-//IO
-ROMTree.prototype.DumpTree = function()
+ROMNode.prototype.ReverseEvaluateTable = function(evalTable, bGetAll)
 {
-    var retval = "";  
     try
-    {              
-        if (IsIE())
+    {
+        var knowledge = this._getKnowledge();
+        if (knowledge != null)
         {
-            retval = this.xmlDoc.xml;
-        }
-        else
+            if (bGetAll === undefined)
+                bGetAll = knowledge.TableIsGetAll(evalTable);
+            this.LoadOutputs(evalTable);
+            var retval = knowledge.ReverseEvaluateTable(evalTable, bGetAll);   
+            return retval;    
+        } 
+    }
+    catch (err)
+    {
+        ReportError(err);
+        return null;
+    }
+}
+
+ROMNode.prototype.ReverseEvaluateTableForAttr = function(evalTable, output, bGetAll)
+{
+    try
+    {
+        var knowledge = this._getKnowledge();
+        if (knowledge != null)
         {
-            retval = (new XMLSerializer()).serializeToString(this.xmlDoc);
+            if (bGetAll === undefined)
+                bGetAll = knowledge.TableIsGetAll(evalTable);
+            this.LoadOutputs(evalTable);
+            var retval = knowledge.ReverseEvaluateTableForAttr(evalTable, output, bGetAll);
+            return retval;
         }
     }
     catch (err)
     {
         ReportError(err);
-        return "";
+        return null;
     }
-    return retval;
 }
 
-ROMTree.prototype.LoadTree = function(xmlStr)
+ROMNode.prototype._getKnowledge = function()
 {
+    var knowledge = null;
     try
     {
-        if (IsIE())
-        {
-            var doc = new ActiveXObject("Microsoft.XMLDOM");
-            this.xmlDoc.async = "false";
-            this.xmlDoc.setProperty("SelectionLanguage", "XPath");
-            this.xmlDoc.loadXML(xmlStr); 
-        }
+        var current = this;
+        if (current.m_KnowledgeBase != null)
+            knowledge = current.m_KnowledgeBase;
         else
         {
-            var parser = new DOMParser();
-            this.xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+            while (knowledge == null)
+		    {
+			    var parent = current.GetParent();
+			    if (parent != null)
+			    {
+				    if (parent.m_KnowledgeBase != null)
+				    {
+					    knowledge = parent.m_KnowledgeBase;
+					    break;
+				    }
+				    else
+					    current = parent;
+			    }
+			    else
+				    return null;		
+		    }
         }
-        
-        return this.xmlDoc;
     }
     catch (err)
     {
         ReportError(err);
+        return null;
     }
+    return knowledge;
 }
 
-ROMTree.prototype.LoadInputs = function(currentObject, evalTable) {
-    try {
-        var inputs = this.m_KnowledgeBase.GetInputDependencies(evalTable);
-        if (inputs != null) for (var i = 0; i < inputs.length; i++) {			
-            var value = this.GetATableInputValue(currentObject, inputs[i]);            
-            this.m_KnowledgeBase.SetInputValue(inputs[i], value);
-        }       
+ROMNode.prototype.LoadInputs = function(evalTable) {
+    try 
+    {
+        var knowledge = this._getKnowledge();
+        if (knowledge != null)
+        {
+            var inputs = knowledge.GetInputDependencies(evalTable);
+            if (inputs != null) for (var i = 0; i < inputs.length; i++) {			
+                var value = this.GetATableInputValue(inputs[i]);            
+                knowledge.SetInputValue(inputs[i], value);
+            }  
+        }     
     }
-    catch (err) {
+    catch (err) 
+    {
         ReportError(err);
     }
 }
 
-ROMTree.prototype.EvaluateXPATH = function(currentObject, xpath)
-{
+ROMNode.prototype.LoadOutputs = function(evalTable) {
+    try 
+    {
+        var knowledge = this._getKnowledge();
+        if (knowledge != null)
+        {
+            var outputs = knowledge.GetOutputAttrs(evalTable);
+            if (outputs != null) for (var i = 0; i < outputs.length; i++) {			
+                var value = this.GetATableInputValue(inputs[i]);            
+                knowledge.SetInputValue(inputs[i], value);
+            }  
+        }     
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+}
+
+ROMNode.prototype.EvaluateXPATH = function(xpath, guid)
+{    
     var retval = "";
     try
     {
-        var guidNode = currentObject.attributes.getNamedItem("guid");
-        var currentGUID = guidNode.nodeValue;
+        if (guid === undefined)
+            guid = this.m_guid;
         var match = "<xsl:template match=\"/\"><xsl:for-each select=\"//Object[@guid=\'";
-	    match += currentGUID + "\']\"><xsl:value-of select=\"";
+	    match += guid + "\']\"><xsl:value-of select=\"";
 	    var xslt_text = XSLT_TOP + match + xpath + XSLT_BOTTOM;
 	    
-	    var xsltDoc = null;            
-        if (IsIE())
-        {
-            xsltDoc = new ActiveXObject("Microsoft.XMLDOM");
-            xsltDoc.async = "false";
-            xsltDoc.loadXML(xslt_text);  
-            retval = this.xmlDoc.transformNode(xsltDoc);
-        }
-        else
-        {
-            var parser = new DOMParser();
-            xsltDoc = parser.parseFromString(xslt_text, "text/xml");
-            var xsltProcessor = new XSLTProcessor();
-            xsltProcessor.importStylesheet(xsltDoc);
-            var ownerDocument = document.implementation.createDocument("", "xsltDoc", null);
-            var solnNode = xsltProcessor.transformToFragment(this.xmlDoc, ownerDocument);
-            retval = solnNode.firstChild.textContent;
+	    var xsltDoc = null;   
+	    this._createXMLDoc();  
+	    if (this.m_xmlDoc != null)
+	    {
+            if (IsIE())
+            {
+                xsltDoc = new ActiveXObject("Microsoft.XMLDOM");
+                xsltDoc.async = "false";
+                xsltDoc.loadXML(xslt_text);  
+                retval = this.m_xmlDoc.transformNode(xsltDoc);
+            }
+            else
+            {
+                var parser = new DOMParser();
+                xsltDoc = parser.parseFromString(xslt_text, "text/xml");
+                var xsltProcessor = new XSLTProcessor();
+                xsltProcessor.importStylesheet(xsltDoc);
+                var ownerDocument = document.implementation.createDocument("", "xsltDoc", null);
+                var solnNode = xsltProcessor.transformToFragment(this.m_xmlDoc, ownerDocument);
+                retval = solnNode.firstChild.textContent;
+            }
         }
     }
     catch(err)
@@ -629,7 +669,7 @@ ROMTree.prototype.EvaluateXPATH = function(currentObject, xpath)
     return retval;
 }
 
-ROMTree.prototype.GetATableInputValue = function(currentObject, input)
+ROMNode.prototype.GetATableInputValue = function(input)
 {
     var retval = "";    
     try
@@ -638,27 +678,229 @@ ROMTree.prototype.GetATableInputValue = function(currentObject, input)
         if (xpathIndex >= 0)
         {
             var cmdArg = input.substr(xpathIndex + 6, input.length - 7);
-            retval = this.EvaluateXPATH(currentObject, cmdArg);
+            retval = this.EvaluateXPATH(cmdArg, this.m_guid);
         }
         else
         {
-            retval = this.GetAttributeValue(currentObject, input, true);
+            retval = this.GetAttribute(input, false);
         }
     }
     catch (err)
     {
-        ReportError(err);
-        
+        ReportError(err);        
     }
     return retval;
 }
 
-ROMTree.prototype.GetPossibleValues = function(currentObject, evalTable, outputName)
+ROMNode.prototype.GetPossibleValues = function(currentObject, evalTable, outputName)
 {
-    var res = this.m_KnowledgeBase.GetAllPossibleOutputs(evalTable, outputName);
-    var retval = new Array();
-    for (var i = 0; i < res.length; i++)
-        retval.push(res[i]);
+    try 
+    {
+        var knowledge = this._getKnowledge();
+        if (knowledge != null)
+        {
+            var res = knowledge.GetAllPossibleOutputs(evalTable, outputName);
+            var retval = new Array();
+            for (var i = 0; i < res.length; i++)
+                retval.push(res[i]);
+            return retval;
+        }
+    }
+    catch (err)
+    {
+        ReportError(err);        
+    }
+    return null;
+}
+
+//IO
+ROMNode.prototype.DumpTree = function(indented)
+{
+    var retval = "";
+    try
+    {
+        this._createXMLDoc();
+        retval = this._convertXMLDocToString(indented);
+    }
+    catch (err)
+    {
+        ReportError(err);        
+    }
+    return retval;
+}
+
+ROMNode.prototype._convertXMLDocToString = function(indented)
+{
+    var retval = "";
+    try
+    {
+        if (this.m_xmlDoc != null)
+        {
+            if (IsIE())
+            {
+                retval = this.m_xmlDoc.xml;
+            }
+            else
+            {
+                retval = (new XMLSerializer()).serializeToString(this.m_xmlDoc);
+            }
+        }
+    }
+    catch (err)
+    {
+        ReportError(err);        
+    }
+    return retval;
+}
+
+ROMNode.prototype._createXMLDoc = function()
+{
+    try
+    {
+        var bChanged = this._anyHasChanged();
+        if (bChanged)
+        {
+            var genXML = this._generateXML(bChanged);
+            if (IsIE()) 
+            {
+                this.m_xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+                this.m_xmlDoc.async = "false";
+                this.m_xmlDoc.setProperty("SelectionLanguage", "XPath");
+                this.m_xmlDoc.loadXML(genXML);
+            }
+            else 
+            {
+                var parser = new DOMParser();
+                this.m_xmlDoc = parser.parseFromString(genXML, "text/xml");
+            }
+            
+            this._setAllUnchanged();
+        }
+    }
+    catch (err)
+    {
+        ReportError(err);        
+    }
+}
+
+ROMNode.prototype._setAllUnchanged = function()
+{
+    try
+    {
+        this.m_bChanged = false;
+        for (var itNode in this.m_children)
+        {
+            itNode.m_bChanged = false;
+        }
+    }
+    catch (err)
+    {
+        ReportError(err);        
+    }
+}
+    
+
+ROMNode.prototype._anyHasChanged = function()
+{
+    var retval = false;
+    try
+    {
+        if (this.m_bChanged)
+            retval = true;
+        if (!retval)
+        {
+            for (var itNode in this.m_children)
+            {
+                if (itNode.m_bChanged)
+                {
+                    retval = true;
+                    break;                    
+                }
+            }
+        }
+    }
+    catch (err)
+    {
+        ReportError(err);        
+    }
+    return retval;
+}
+
+ROMNode.prototype._generateXML = function(bRegen)
+{
+    var retval = "";
+    try
+    {
+        if (bRegen)
+	    {
+		    //this object
+		    var beginObject = "<Object";
+		    beginObject+=" id=\"";
+		    beginObject+=this.m_id;
+		    beginObject+="\" guid=\"";
+		    beginObject+=this.m_guid;
+		    beginObject+="\"";
+
+		    //object values
+		    var objAttrs = " ";
+		    for (var itObjValue in this.m_nodeValues)
+		    {
+			    objAttrs+= itObjValue;
+			    objAttrs+="=\"";
+			    objAttrs+=this.m_nodeValues[itObjValue];
+			    objAttrs+="\" ";
+		    }
+		    beginObject+=objAttrs;
+		    beginObject+=">";
+		    retval += beginObject;
+
+		    if (this.m_bChanged)
+		    {
+			    var allAttrs = "";
+			    //attributes of this object
+			    for (var it in this.m_attrs)
+			    {
+				    var attrObject = "<Attribute id=\"";
+				    attrObject+=it;
+				    attrObject+="\" ";
+				    for (var itValue in this.m_attrs[it])
+				    {
+					    attrObject+=itValue;
+					    attrObject+="=\"";
+					    attrObject+=this.m_attrs[it][itValue];
+					    attrObject+="\" ";
+				    }
+				    attrObject+="/>";
+				    allAttrs += attrObject;
+			    }
+			    retval += allAttrs;
+			    m_lastAttrContents = allAttrs;
+		    }
+		    else
+		    {
+			    retval += m_lastAttrContents;
+		    }
+
+		    //child objects
+		    for (var itNode in this.m_children)
+		    {
+		        var node = this.m_children[itNode];
+		        if (node != null)
+			        retval += node._generateXML(node.m_bChanged);
+		    }
+
+		    retval+="</Object>";
+		    m_lastContents = retval;
+	    }
+	    else
+	    {
+		    retval = m_lastContents;
+	    }
+    }
+    catch (err)
+    {
+        ReportError(err);        
+    }
     return retval;
 }
 
@@ -685,9 +927,8 @@ function ROMDictionaryAttribute()
 }
 
 // ROMDictionary class////////////////////////////////////////////////////////////////
-function ROMDictionary(tree, node)
+function ROMDictionary(node)
 {
-    this.m_tree = tree;
     this.m_context = node;
     this.m_dict = new Array();
 }
@@ -697,7 +938,7 @@ ROMDictionary.prototype.LoadDictionary = function(dictionaryTable)
     try 
     {
         this.m_dict = new Array();
-        var res = this.m_tree.EvaluateTable(this.m_context, dictionaryTable, true);
+        var res = this.m_context.EvaluateTable(dictionaryTable, true);
         var allNames = res["Name"];
 
         for (var i = 0; i < ArraySize(allNames); i++) 
@@ -736,14 +977,14 @@ ROMDictionary.prototype.LoadDictionary = function(dictionaryTable)
 		    
 		    //on load, just set default values and possibilities
 		    //only set a default if there is no rules table and no current value
-		    var value = this.m_tree.GetAttributeValue(this.m_context, dictAttr.Name, false);
+		    var value = this.m_context.GetAttribute(dictAttr.Name, false);
 		    if (((value.length == 0 && dictAttr.RuleTable.length == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length > 0)
 		    {
-			    this.m_tree.SetAttribute(this.m_context, dictAttr.Name, dictAttr.DefaultValue);
+			    this.m_context.SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
 		    }
 
 		    if (dictAttr.RuleTable.length > 0)
-			    dictAttr.PossibleValues = this.m_tree.GetPossibleValues(this.m_context, dictAttr.RuleTable, dictAttr.Name);
+			    dictAttr.PossibleValues = this.m_context.GetPossibleValues(dictAttr.RuleTable, dictAttr.Name);
 
 		    this.m_dict[dictAttr.Name] = dictAttr;
         }        
@@ -785,13 +1026,13 @@ ROMDictionary.prototype.GetAllDictionaryAttrs = function()
 }
 
 // LinearEngine class////////////////////////////////////////////////////////////////
-function LinearEngine(tree, context, dictionaryTable)
+function LinearEngine(context, dictionaryTable)
 {
     this.INVISPREFIX = "^";
     this.DEFAULTPREFIX = "@";
     this.DISABLEPREFIX = "#";
     
-    this.base = new ROMDictionary(tree, context);
+    this.base = new ROMDictionary(context);
     
     this.m_EvalList = new Array();
     this.m_mapTriggers = new Array();
@@ -806,8 +1047,8 @@ function LinearEngine(tree, context, dictionaryTable)
     {
         this.m_EvalList.push(this.base.m_dict[attr]);
         //triggers
-        var r = new ROMTree("a");
-        var deps = this.base.m_tree.m_KnowledgeBase.GetInputDependencies(this.base.m_dict[attr].RuleTable);
+        var knowledge = this.base.m_context._getKnowledge();
+        var deps = knowledge.GetInputDependencies(this.base.m_dict[attr].RuleTable);
         if (deps != null) for (var i = 0; i < deps.length; i++)
         {
             var key = deps[i];
@@ -1037,7 +1278,7 @@ LinearEngine.prototype.EvalBoolean = function(dictAttrName, newValue)
 {
     try
     {
-        var res = this.base.m_tree.EvaluateTableForAttr(this.base.m_context, this.base.m_dict[dictAttrName].RuleTable, dictAttrName, false);
+        var res = this.base.m_context.EvaluateTableForAttr(this.base.m_dict[dictAttrName].RuleTable, dictAttrName);
 	    var availableValues = new Array();
 
 	    var prefixes = this.ParseOutPrefixes(res, availableValues);
@@ -1048,7 +1289,7 @@ LinearEngine.prototype.EvalBoolean = function(dictAttrName, newValue)
 	    else
 		    this.base.m_dict[dictAttrName].Visible = true;
 
-	    var currentValue = this.base.m_tree.GetAttributeValue(this.base.m_context, dictAttrName, false);
+	    var currentValue = this.base.m_context.GetAttributeValue(dictAttrName, false);
 	    this.base.m_dict[dictAttrName].Valid = true;
 	    this.base.m_dict[dictAttrName].Enabled = true;
 	    
@@ -1061,7 +1302,7 @@ LinearEngine.prototype.EvalBoolean = function(dictAttrName, newValue)
 
 	    if (availableValues == null || availableValues.length == 0)
 	    {
-		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "N");
+		    this.base.m_context.SetAttribute(dictAttrName, "N");
 		    this.base.m_dict[dictAttrName].ChangedByUser = false;
 		    return;
 	    }
@@ -1069,31 +1310,31 @@ LinearEngine.prototype.EvalBoolean = function(dictAttrName, newValue)
 	    {			
 		    if (availableValues[0].length == 0 || availableValues[0] == "N")
 		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "N");
+			    this.base.m_context.SetAttribute(dictAttrName, "N");
 			    return;
 		    }
 		    else if (availableValues[0] == "YN") //allow Yes or No with a default of Y
 		    {
 			    if (currentValue.length == 0)
 			    {
-				    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "Y");					
+				    this.base.m_context.SetAttribute(dictAttrName, "Y");					
 			    }
 		    }
 		    else if (availableValues[0] == "YY") //force Yes, no other choice
 		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "Y");
+			    this.base.m_context.SetAttribute(dictAttrName, "Y");
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
 			    this.base.m_dict[dictAttrName].Enabled = false;
 		    }
 		    else if (availableValues[0] == "NN") //force No, no other choice
 		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "N");
+			    this.base.m_context.SetAttribute(dictAttrName, "N");
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
 			    this.base.m_dict[dictAttrName].Enabled = false;
 		    }
 		    else if (newValue.length == 1) //Y or N
 		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
+			    this.base.m_context.SetAttribute(dictAttrName, newValue);
 		    }
 	    }
 	
@@ -1108,7 +1349,7 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 {
     try
     {
-      var res = this.base.m_tree.EvaluateTableForAttr(this.base.m_context, this.base.m_dict[dictAttrName].RuleTable, dictAttrName, true);
+      var res = this.base.m_context.EvaluateTableForAttr(this.base.m_dict[dictAttrName].RuleTable, dictAttrName);
 	    var availableValues = new Array();
 
 	    var prefixes = this.ParseOutPrefixes(res, availableValues);
@@ -1116,7 +1357,7 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 	    this.base.m_dict[dictAttrName].Enabled = true;
 	    this.base.m_dict[dictAttrName].Valid = true;
 
-	    var currentValue = this.base.m_tree.GetAttributeValue(this.base.m_context, dictAttrName, false);
+	    var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
 
 	    //set the dictionary default on load
 	    if (newValue.length == 0)
@@ -1131,7 +1372,7 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 		    {
 			    this.base.m_dict[dictAttrName].Enabled = false;
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, prefixes[0]);	
+			    this.base.m_context.SetAttribute(dictAttrName, prefixes[0]);	
 			    return;
 		    }
 		    else
@@ -1152,60 +1393,60 @@ LinearEngine.prototype.EvalEdit = function(dictAttrName, newValue)
 
 			    if (dNewValue <= dMax && dNewValue >= dMin)
 			    {
-				    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);	
+				    this.base.m_context.SetAttribute(dictAttrName, newValue);	
 			    }
 			    else if (dNewValue > dMax)
 			    {
 				    var wstrMax = vals[1];
-				    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, wstrMax);
+				    this.base.m_context.SetAttribute(dictAttrName, wstrMax);
 			    }
 			    else if (dNewValue < dMin)
 			    {
 				    var wstrMin = vals[0];
-				    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, wstrMin);
+				    this.base.m_context.SetAttribute(dictAttrName, wstrMin);
 			    }
 		    }
 		    else if (availableValues[0].length == 1 && availableValues[0][0] == 'Y')
 		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
+			    this.base.m_context.SetAttribute(dictAttrName, newValue);
 		    }		
 		    else if (availableValues[0].length == 1 && availableValues[0][0] == 'N')
 		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "");
+			    this.base.m_context.SetAttribute(dictAttrName, "");
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
 			    this.base.m_dict[dictAttrName].Enabled = false;
 		    }
 		    else if (availableValues[0].length == 2 && availableValues[0] == "YY") //user must enter something
 	        {
-		        this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
+		        this.base.m_context.SetAttribute(dictAttrName, newValue);
 		        this.base.m_dict[dictAttrName].Valid = newValue.length > 0;
 	        }
 		    else
 		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, availableValues[0]);
+			    this.base.m_context.SetAttribute(dictAttrName, availableValues[0]);
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
 		    }
 	    }	    
 	    else if (availableValues.length == 0)
 	    {		
-		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "");
+		    this.base.m_context.SetAttribute(dictAttrName, "");
 		    this.base.m_dict[dictAttrName].ChangedByUser = false;
 		    this.base.m_dict[dictAttrName].Enabled = false;
 	    }
 	    else if (availableValues.length == 1 && availableValues[0].length > 0)
 	    {
-		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, availableValues[0]);
+		    this.base.m_context.SetAttribute(dictAttrName, availableValues[0]);
 		    this.base.m_dict[dictAttrName].ChangedByUser = false;
 	    }
 	    else if (availableValues.length > 0)
 	    {
 		    if (GetIndexOfItem(availableValues, newValue) >= 0)
 		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
+			    this.base.m_context.SetAttribute(dictAttrName, newValue);
 		    }
 		    else 
 		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "");
+			    this.base.m_context.SetAttribute(dictAttrName, "");
 			    this.base.m_dict[dictAttrName].ChangedByUser = false;
 		    }
 	    }
@@ -1230,7 +1471,7 @@ LinearEngine.prototype.EvalMultiSelect = function(dictAttrName, newValues)
     try
     {
         //multi-select lists, checkbox lists
-	    var res = this.base.m_tree.EvaluateTableForAttr(this.base.m_context, this.base.m_dict[dictAttrName].RuleTable, dictAttrName, true);
+	    var res = this.base.m_context.EvaluateTableForAttr(this.base.m_dict[dictAttrName].RuleTable, dictAttrName);
 	    var availableValues = new Array();	    
 
 	    var prefixes = this.ParseOutPrefixes(res, availableValues);
@@ -1238,7 +1479,7 @@ LinearEngine.prototype.EvalMultiSelect = function(dictAttrName, newValues)
 	    this.base.m_dict[dictAttrName].Enabled = true;
 	    this.base.m_dict[dictAttrName].Valid = true;
 
-	    var currentValue = this.base.m_tree.GetAttributeValue(this.base.m_context, dictAttrName, false);
+	    var currentValue = this.base.m_context.GetAttributeValue(dictAttrName, false);
 	    var currentValues = currentValue.split("|");
 	    var selectedValues = new Array();
 	    
@@ -1299,7 +1540,7 @@ LinearEngine.prototype.EvalMultiSelect = function(dictAttrName, newValues)
 
 	    if (finalValue != currentValue)
 	    {
-		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, finalValue);
+		    this.base.m_context.SetAttribute(dictAttrName, finalValue);
 		}
     }
     catch (err)
@@ -1312,7 +1553,7 @@ LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
 {
     try
     {
-        var res = this.base.m_tree.EvaluateTableForAttr(this.base.m_context, this.base.m_dict[dictAttrName].RuleTable, dictAttrName, true);
+        var res = this.base.m_context.EvaluateTableForAttr(this.base.m_dict[dictAttrName].RuleTable, dictAttrName);
         var availableValues = new Array();
         this.base.m_dict[dictAttrName].Enabled = true;
         this.base.m_dict[dictAttrName].Valid = true;
@@ -1321,7 +1562,7 @@ LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
         var prefixes = this.ParseOutPrefixes(res, availableValues);        
         this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
 
-        var currentValue = this.base.m_tree.GetAttributeValue(this.base.m_context, dictAttrName, false);
+        var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
         
         //set the dictionary default on load
 	    if (newValue.length == 0)
@@ -1366,14 +1607,14 @@ LinearEngine.prototype.EvalSingleSelect = function(dictAttrName, newValue)
 	    {
 		    if (currentValue != newValue)
 		    {
-			    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, newValue);
+			    this.base.m_context.SetAttribute(dictAttrName, newValue);
 		    }
 	    }
 	    else
 	    {
 	        if (this.base.m_dict[dictAttrName].Enabled == true)
 		        this.base.m_dict[dictAttrName].Valid = false;
-		    this.base.m_tree.SetAttribute(this.base.m_context, dictAttrName, "");
+		    this.base.m_context.SetAttribute(dictAttrName, "");
 		    this.base.m_dict[dictAttrName].ChangedByUser = false;
 	    }
     }
@@ -1478,7 +1719,7 @@ LinearEngine.prototype.GetSelectedValues = function(attr)
     var retval = new Array();
     try
     {        
-	    var currentValue = this.base.m_tree.GetAttributeValue(this.base.m_context, attr.Name, false); 
+	    var currentValue = this.base.m_context.GetAttribute(attr.Name, false); 
 	    switch (attr.AttributeType)
 	    {
 	    case SINGLESELECT:

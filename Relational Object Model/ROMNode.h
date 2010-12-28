@@ -56,12 +56,13 @@ namespace ROM
 		
 
 		//relational functions
-		ROMNode*			GetRoot();
+		ROMNode*			GetRoot();		
 		ROMNode*			GetParent() {return m_parent;}
 		vector<ROMNode*>	GetAllChildren() {return m_children;}
 		bool				AddChildROMObject(ROMNode *child);
 		bool				RemoveChildROMObject(ROMNode *child);
 		bool				DestroyROMObject();
+		ROMNode*			Clone();
 
 		//attribute functions
 		wstring				GetAttribute(wstring id, wstring name, bool immediate = false);
@@ -86,13 +87,19 @@ namespace ROM
 		vector<wstring>		EvaluateTableForAttr(wstring evalTable, wstring output) {return EvaluateTable(evalTable, output);}
 		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable, bool bGetAll);
 		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable);
+		vector<wstring>		ReverseEvaluateTable(wstring evalTable, wstring inputAttr, bool bGetAll);
+		vector<wstring>		ReverseEvaluateTable(wstring evalTable, wstring inputAttr);
+		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring evalTable, bool bGetAll);
+		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring evalTable);
+
 
 		//IO
 		wstring				DumpTree(bool indented);
 		bool				LoadTree(wstring xmlStr);			
 
 		//XPATH
-		wstring				EvaluateXPATH(wstring xpath);
+		wstring				EvaluateXPATH(wstring xpath, string guid);
+		wstring				EvaluateXPATH(wstring xpath) {return EvaluateXPATH(xpath, m_guid);}
 
 		//ascii overloads
 		string				GetNameA() {return ROMUTIL::WStrToMBCStr(m_id);}
@@ -110,11 +117,18 @@ namespace ROM
 		bool				LoadRules(string knowledge_file) {return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file));}
 		vector<string>		EvaluateTable(string evalTable, string output, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll));}
 		vector<string>		EvaluateTable(string evalTable, string output) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output)));}
+		map<string, vector<string> > EvaluateTable(string evalTable, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable), bGetAll));}
 		map<string, vector<string> > EvaluateTable(string evalTable) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable)));}
-		string				EvaluateXPATH(string xpath) {return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath)));}
+		vector<string>		ReverseEvaluateTable(string evalTable, string inputAttr, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr), bGetAll));}
+		vector<string>		ReverseEvaluateTable(string evalTable, string inputAttr) {return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr)));}
+		map<string, vector<string> > ReverseEvaluateTable(string evalTable, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), bGetAll));}
+		map<string, vector<string> > ReverseEvaluateTable(string evalTable) {return ROMUTIL::WStrToMBCStrMapVector(ReverseEvaluateTable(MBCStrToWStr(evalTable)));}
+		string				EvaluateXPATH(string xpath, string guid) {return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath), guid));}
+		string				EvaluateXPATH(string xpath) {return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath), m_guid));}
 
 	private:
 		vector<wstring>			LoadInputs(wstring evalTable);
+		vector<wstring>			LoadOutputs(wstring evalTable);
 		vector<wstring>			GetPossibleValues(wstring evalTable, wstring outputName);
 		wstring					GetATableInputValue(wstring input);
 		bool					_anyHasChanged();
