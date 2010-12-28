@@ -55,7 +55,7 @@
   <ItemGroup>
     <Content Include="KnowledgeBase.js" />
     <Content Include="NoServerCallback.htm" />
-    <Content Include="ROMTree.js" />
+    <Content Include="ROMNode.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
