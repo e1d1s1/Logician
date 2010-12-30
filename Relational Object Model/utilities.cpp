@@ -18,6 +18,7 @@ Copyright (C) 2009 Eric D. Schmidt
 #include "stdafx.h"
 #include "utilities.h"
 #include <sstream>
+#include <string.h>
 #if defined(POSIX)
 #include <uuid/uuid.h>
 #else
@@ -25,7 +26,7 @@ Copyright (C) 2009 Eric D. Schmidt
 	#include "Objbase.h"
 	#else
 	#include <cstdlib>
-	#endif	
+	#endif
 #endif
 #ifdef USE_LIBXML
 #include <libxml/tree.h>
@@ -171,7 +172,7 @@ vector<string> ROMUTIL::WStrToMBCStrVector(vector<wstring> vectWS)
 
 map<string, vector<string> > WStrToMBCStrMapVector(map<wstring, vector<wstring> > mapVectWS)
 {
-	map<string, vector<string> > retval;	
+	map<string, vector<string> > retval;
 	for (map<wstring, vector<wstring> >::iterator it = mapVectWS.begin(); it != mapVectWS.end(); it++)
 	{
 		string key = ROMUTIL::WStrToMBCStr(it->first);
@@ -269,7 +270,7 @@ string ROMUTIL::MakeGUID()
 	return guid;
 }
 
-#ifdef USE_MSXML	
+#ifdef USE_MSXML
 		wstring ROMUTIL::ToWString(_variant_t str)
 		{
 			return (wstring)str.bstrVal;
@@ -330,7 +331,7 @@ string ROMUTIL::MakeGUID()
 			return retval;
 		}
 
-#if USE_LIBXML		
+#if USE_LIBXML
 		wstring ROMUTIL::XMLStrToWStr(const unsigned char* mbStr)
 		{
 			if (mbStr == NULL)
