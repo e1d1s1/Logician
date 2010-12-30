@@ -32,7 +32,7 @@ void ROMDictionary::CreateROMDictionary(ROMNode* context)
 Name - ROM attribute name
 Description - Visible attribute description in UI
 DefaultValue - The initial value to set
-AttributeType - default empty value(SINGLESELECT), SINGLESELECT, MULTISELECT, BOOLEAN, EDIT
+AttributeType - default empty value(SINGLESELECT), SINGLESELECT, MULTISELECT, BOOLEAN, EDIT, STATIC
 RuleTable - table to evaluate to obtain the value (will override default if exists). Each rule table should have
 	an output column name that matches the attribute name
 */
@@ -111,74 +111,4 @@ ROMDictionaryAttribute* ROMDictionary::GetDictionaryAttr(string dictAttrName)
 {
 	return GetDictionaryAttr(ROMUTIL::MBCStrToWStr(dictAttrName));
 }
-
-//map<wstring, vector<wstring> > ROMDictionary::_evaluateTable(wstring evalTable, bool bGetAll)
-//{
-//	map<wstring, vector<wstring> > retval;
-//	if (m_ROMContext != NULL)
-//	{
-//		retval = m_ROMContext->EvaluateTable(evalTable, bGetAll);
-//	}
-//	else if (m_tree != NULL && m_treeContext != NULL)
-//	{
-//		retval = m_tree->EvaluateTable(m_treeContext, evalTable, bGetAll);
-//	}
-//	return retval;
-//}
-//
-//wstring ROMDictionary::m_ROMContext->GetAttribute(wstring name, bool bImmediate)
-//{
-//	wstring retval = L"";
-//	if (m_ROMContext != NULL)
-//	{
-//		retval = m_ROMContext->GetAttribute(name, bImmediate);
-//	}
-//	else if (m_tree != NULL && m_treeContext != NULL)
-//	{
-//		retval = m_tree->GetAttribute(m_treeContext, name, bImmediate);
-//	}
-//	return retval;
-//}
-//
-//void ROMDictionary::m_ROMContext->SetAttribute(wstring name, wstring value)
-//{
-//	if (m_ROMContext != NULL)
-//	{
-//		m_ROMContext->SetAttribute(name, value);
-//	}
-//	else if (m_tree != NULL && m_treeContext != NULL)
-//	{
-//		m_tree->SetAttribute(m_treeContext, name, value);
-//	}
-//}
-//
-//vector<wstring> ROMDictionary::m_ROMContext->GetPossibleValues(wstring evalTable, wstring outputName)
-//{
-//	vector<wstring> retval;
-//	if (m_ROMContext != NULL)
-//	{
-//		retval = m_ROMContext->GetPossibleValues(evalTable, outputName);
-//	}
-//	return retval;
-//}
-//
-//vector<wstring> ROMDictionary::m_ROMContext->EvaluateTableForAttr(wstring evalTable, wstring outputName, bool bGetAll)
-//{
-//	vector<wstring> retval;	
-//	if (m_ROMContext != NULL)
-//	{
-//		retval = m_ROMContext->EvaluateTableForAttr(evalTable, outputName, bGetAll);
-//	}
-//	return retval;
-//}
-//
-//EDS::CKnowledgeBase* ROMDictionary::_getKnowledgeBase()
-//{
-//	EDS::CKnowledgeBase* retval = NULL;	
-//	if (m_ROMContext != NULL)
-//	{
-//		retval = &m_ROMContext->m_KnowledgeBase;
-//	}
-//	return retval;
-//}
 

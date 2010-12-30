@@ -536,7 +536,7 @@ bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring 
 			{
 				for (int i = 0; i < attrNodes->nodeNr; i++)
 				{
-					wstring innerText = UTILS::MBCStrToWStr(xmlNodeGetContent(attrNodes->nodeTab[i]));
+					wstring innerText = UTILS::XMLStrToWStr(xmlNodeGetContent(attrNodes->nodeTab[i]));
 					if (TestStringTextMatch(innerText, strToFind, bMatchCase, bMatchWholeWord))
 					{
 						bFoundInTable = true;
@@ -549,7 +549,7 @@ bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring 
 			{
 				for (int i = 0; i < valueNodes->nodeNr; i++)
 				{
-					wstring innerText = UTILS::MBCStrToWStr(xmlNodeGetContent(valueNodes->nodeTab[i]));
+					wstring innerText = UTILS::XMLStrToWStr(xmlNodeGetContent(valueNodes->nodeTab[i]));
 					if (TestStringTextMatch(innerText, strToFind, bMatchCase, bMatchWholeWord))
 					{
 						bFoundInTable = true;
@@ -789,8 +789,8 @@ void GUIClass::DebugInfoReceived(wstring buff)
 		xmlXPathContextPtr xpathCtx = xmlXPathNewContext(xmlDoc);
 		xmlXPathObjectPtr xpathInputs = xmlXPathEvalExpression((xmlChar*)"//Input", xpathCtx);
 		xmlXPathObjectPtr xpathOutputs = xmlXPathEvalExpression((xmlChar*)"//Output", xpathCtx);
-		wstring tableName = UTILS::MBCStrToWStr(xmlGetProp(xmlDocGetRootElement(xmlDoc), (xmlChar*)"name"));
-		wstring outputName = UTILS::MBCStrToWStr(xmlGetProp(xmlDocGetRootElement(xmlDoc), (xmlChar*)"output"));
+		wstring tableName = UTILS::XMLStrToWStr(xmlGetProp(xmlDocGetRootElement(xmlDoc), (xmlChar*)"name"));
+		wstring outputName = UTILS::XMLStrToWStr(xmlGetProp(xmlDocGetRootElement(xmlDoc), (xmlChar*)"output"));
 		logMessage += L"Table: ";
 		logMessage += tableName;
 
@@ -809,8 +809,8 @@ void GUIClass::DebugInfoReceived(wstring buff)
 				for (int i = 0; i < allInputs->nodeNr; i++)
 				{
 					xmlNodePtr input = allInputs->nodeTab[i];
-					wstring inputName = UTILS::MBCStrToWStr(xmlGetProp(input, (xmlChar*)"name"));
-					wstring inputValue = UTILS::MBCStrToWStr(xmlGetProp(input, (xmlChar*)"value"));
+					wstring inputName = UTILS::XMLStrToWStr(xmlGetProp(input, (xmlChar*)"name"));
+					wstring inputValue = UTILS::XMLStrToWStr(xmlGetProp(input, (xmlChar*)"value"));
 					logMessage += inputName;
 					logMessage += L": ";
 					logMessage += inputValue;
@@ -821,8 +821,8 @@ void GUIClass::DebugInfoReceived(wstring buff)
 				for (int i = 0; i < allOutputs->nodeNr; i++)
 				{
 					xmlNodePtr output = allOutputs->nodeTab[i];
-					wstring outputValue = UTILS::MBCStrToWStr(xmlGetProp(output, (xmlChar*)"value"));
-					string strSolutionIdx = UTILS::ToASCIIString(UTILS::MBCStrToWStr(xmlGetProp(output, (xmlChar*)"index")));
+					wstring outputValue = UTILS::XMLStrToWStr(xmlGetProp(output, (xmlChar*)"value"));
+					string strSolutionIdx = UTILS::ToASCIIString(UTILS::XMLStrToWStr(xmlGetProp(output, (xmlChar*)"index")));
 					int iSolnIdx = atoi(strSolutionIdx.c_str());
 					if (outputValue.length() > 0)
 					{

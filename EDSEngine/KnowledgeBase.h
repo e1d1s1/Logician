@@ -21,6 +21,23 @@ Copyright (C) 2009 Eric D. Schmidt
 #include "RuleTable.h"
 #include "TableSet.h"
 #include "XMLWrapper.h"
+#ifdef WIN32
+#include <comutil.h>
+#endif
+
+static const unsigned char firstByteMark[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
+static const char trailingBytesForUTF8[256] = {
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5 };
+static const unsigned long offsetsFromUTF8[6] = {
+	0x00000000UL, 0x00003080UL, 0x000E2080UL,
+	0x03C82080UL, 0xFA082080UL, 0x82082080UL };
 
 using namespace std;
 
@@ -136,7 +153,7 @@ namespace EDS
 
 
 	//helper functions
-	#ifdef USE_MSXML
+	#ifdef WIN32
 	wstring VariantToWStr(const _variant_t mVar)
 	{
 		wstring retval = mVar.bstrVal;
@@ -144,26 +161,31 @@ namespace EDS
 	}
 	#endif
 
-	wstring MBCStrToWStr(const char * mbStr)
-	{
-		if (mbStr == NULL)
-			return L"";
-
-		size_t requiredSize = mbstowcs(NULL, mbStr, 0) + 1;
-		wchar_t *wStr = new wchar_t[requiredSize];
-		mbstowcs(wStr, mbStr, requiredSize);
-		wstring retval = wStr;
-		delete [] wStr;
-		return retval;
-	}
-
 	string WStrToMBCStr(wstring wstr)
 	{
-		const size_t MAX_SIZE = 4*wstr.length() + 1; //should handle UTF-8 largest char????
-		char *mbcstr = new char[MAX_SIZE];
-		size_t finalSize = wcstombs(mbcstr, wstr.c_str(), MAX_SIZE);
-		string retval = mbcstr;
-		delete [] mbcstr;
+		string retval ="";
+		for (size_t i = 0; i < wstr.length(); ++i)
+		{
+			unsigned short bytesToWrite;
+			wchar_t ch = wstr[i];
+
+			if (ch < 0x80) bytesToWrite = 1;
+			else if (ch < 0x800) bytesToWrite = 2;
+			else if (ch < 0x10000) bytesToWrite = 3;
+			else if (ch < 0x110000) bytesToWrite = 4;
+			else bytesToWrite = 3, ch = 0xFFFD; // replacement character
+
+			char buf[4];
+			char* target = &buf[bytesToWrite];
+			switch (bytesToWrite)
+			{
+			case 4: *--target = ((ch | 0x80) & 0xBF); ch >>= 6;
+			case 3: *--target = ((ch | 0x80) & 0xBF); ch >>= 6;
+			case 2: *--target = ((ch | 0x80) & 0xBF); ch >>= 6;
+			case 1: *--target = (char)(ch | firstByteMark[bytesToWrite]);
+			}
+			retval += std::string(buf, bytesToWrite);
+		}
 		return retval;
 	}
 
@@ -180,32 +202,42 @@ namespace EDS
 		return retval;
 	}
 
-	#ifdef USE_LIBXML
-	wstring MBCStrToWStr(const xmlChar* mbStr)
+	#ifdef USE_LIBXML	
+	wstring XMLStrToWStr(const xmlChar* mbStr)
 	{
 		if (mbStr == NULL)
 			return L"";
 
-		size_t requiredSize = mbstowcs(NULL, (const char*)mbStr, 0) + 1;
-		wchar_t *wStr = new wchar_t[requiredSize];
-		mbstowcs(wStr, (const char*)mbStr, requiredSize);
-		wstring retval = wStr;
-		delete [] wStr;
-		return retval;
+		std::wstring result;
+		const xmlChar* source = mbStr;
+		const xmlChar* sourceEnd = mbStr + strlen((const char*)mbStr);
+		while (source < sourceEnd)
+		{
+			unsigned long ch = 0;
+			int extraBytesToRead = trailingBytesForUTF8[*source];
+			assert(source + extraBytesToRead < sourceEnd);
+			switch (extraBytesToRead)
+			{
+			case 5: ch += *source++; ch <<= 6;
+			case 4: ch += *source++; ch <<= 6;
+			case 3: ch += *source++; ch <<= 6;
+			case 2: ch += *source++; ch <<= 6;
+			case 1: ch += *source++; ch <<= 6;
+			case 0: ch += *source++;
+			}
+			ch -= offsetsFromUTF8[extraBytesToRead];
+			// Make sure it fits in a 16-bit wchar_t
+			if (ch > 0xFFFF)
+				ch = 0xFFFD;
+
+			result += (wchar_t)ch;
+		}
+		return result;
 	}
 
-	wstring MBCStrToWStr(xmlChar* mbStr)
+	wstring XMLStrToWStr(xmlChar* mbStr)
 	{
-		if (mbStr == NULL)
-			return L"";
-
-		size_t requiredSize = mbstowcs(NULL, (const char*)mbStr, 0) + 1;
-		wchar_t *wStr = new wchar_t[requiredSize];
-		mbstowcs(wStr, (const char*)mbStr, requiredSize);
-		wstring retval = wStr;
-		delete [] wStr;
-		xmlFree(mbStr);
-		return retval;
+		return XMLStrToWStr((const xmlChar*)mbStr);
 	}
 	#endif
 	};

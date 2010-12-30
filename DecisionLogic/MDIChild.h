@@ -1308,12 +1308,27 @@ private:
 					vector<wstring> rows = UTILS::Split(val, L"\n");
 					if (rows.size() == 1)
 					{
-						for (size_t x = i_offset; x <= m_sel_range.GetRight(); x++)
+						vector<wstring> cells = UTILS::Split(rows[0], L"\t");
+						if (cells.size() == 1)
 						{
-							for (size_t y = j_offset; y <= m_sel_range.GetBottom(); y++)
+							for (size_t x = i_offset; x <= m_sel_range.GetRight(); x++)
 							{
-								this->SetCellValue(y, x, rows[0]);
-								UpdateCellFormat(y, x);
+								for (size_t y = j_offset; y <= m_sel_range.GetBottom(); y++)
+								{
+									this->SetCellValue(y, x, rows[0]);
+									UpdateCellFormat(y, x);
+								}
+							}
+						}
+						else
+						{
+							//expand table if cols too wide
+							while (cells.size() > (size_t)GetNumberCols() - i_offset)
+								OnAppendColumn(false);
+							for (size_t i = 0; i < cells.size(); i++)
+							{
+								this->SetCellValue(j_offset, i + i_offset, cells[i]);
+								UpdateCellFormat(j_offset, i + i_offset);
 							}
 						}
 					}

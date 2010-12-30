@@ -244,7 +244,7 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	fileMenu->Append(DecisionLogic_SaveProject, _T("&Save Project\tCtrl-S"), _T("Save project"));
 
 	fileMenu->AppendSeparator();
-	fileMenu->Append(DecisionLogic_CloseTable, _T("&Close Table\tCtrl-C"), _T("Close active table"));
+	fileMenu->Append(DecisionLogic_CloseTable, _T("&Close Table\tCtrl-T"), _T("Close active table"));
 
 	fileMenu->AppendSeparator();
 	recentFileMenu = new wxMenu();

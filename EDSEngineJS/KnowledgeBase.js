@@ -779,10 +779,8 @@ RuleTable.prototype.EvaluateTableForAttr = function(outputAttr, bGetAll, bForwar
 
 	    //for the give output, the reuslts are
 	    var results = new Array();
-	    for (var result = 0; result < this.m_Tests; result++)
+	    for (var result = 0; result < ArraySize(outputCollection); result++)
 	    {
-		    if (result >= ArraySize(outputCollection))
-			    break;
 		    if (outputCollection[result].first == outputAttr)
 		    {
 			    results = outputCollection[result].second;

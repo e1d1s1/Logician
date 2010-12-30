@@ -182,6 +182,10 @@ namespace ROM
 			case EDIT:
 				EvalEdit(dictAttrName, newValues[0]);
 				break;
+
+			default: //STATIC
+				EvalSingleSelect(dictAttrName, newValues[0]);				
+				break;
 			}
 
 			if (bEvalDependents)

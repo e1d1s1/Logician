@@ -276,24 +276,41 @@ namespace ROM2NET
 	}
 
 	//IO
-	String^ ROMNodeNET::DumpTree(bool indented)
+	String^ ROMNodeNET::SaveXML(bool indented)
 	{
 		String^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring res = m_ROMNode->DumpTree(indented);
+			wstring res = m_ROMNode->SaveXML(indented);
 			retval = gcnew String(res.c_str());
+			#ifdef USE_MSXML
+			//fix the indentation limitation of MSXML DOM
+			if (indented)
+			{
+				System::Xml::XmlDocument^ doc = gcnew System::Xml::XmlDocument();
+				doc->LoadXml(retval);
+				System::IO::MemoryStream^ ms = gcnew System::IO::MemoryStream(); 			
+				System::Xml::XmlWriterSettings^ settings = gcnew System::Xml::XmlWriterSettings();
+				settings->Encoding = System::Text::Encoding::UTF8;
+				settings->Indent = true;
+				System::Xml::XmlWriter^ writer = System::Xml::XmlWriter::Create(ms, settings);
+				doc->Save(writer);
+				writer->Flush();
+				writer->Close();
+				retval = System::Text::Encoding::UTF8->GetString(ms->ToArray());
+			}
+			#endif
 		}
 		return retval;
 	}
 
-	bool ROMNodeNET::LoadTree(String^ xmlStr)
+	bool ROMNodeNET::LoadXML(String^ xmlStr)
 	{
 		bool retval = false;
 		if (m_ROMNode)
 		{
 			wstring wsXML = MarshalString(xmlStr);
-			retval = m_ROMNode->LoadTree(wsXML);
+			retval = m_ROMNode->LoadXML(wsXML);
 		}
 		return retval;
 	}

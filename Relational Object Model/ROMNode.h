@@ -94,15 +94,14 @@ namespace ROM
 
 
 		//IO
-		wstring				DumpTree(bool indented);
-		bool				LoadTree(wstring xmlStr);			
+		wstring				SaveXML(bool indented);
+		bool				LoadXML(wstring xmlStr);			
 
 		//XPATH
 		wstring				EvaluateXPATH(wstring xpath, string guid);
 		wstring				EvaluateXPATH(wstring xpath) {return EvaluateXPATH(xpath, m_guid);}
 
 		//ascii overloads
-		string				GetNameA() {return ROMUTIL::WStrToMBCStr(m_id);}
 		string				GetAttribute(string id, string name, bool immediate = false) {return ROMUTIL::WStrToMBCStr(GetAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), immediate));}
 		string				GetAttribute(string id, bool immediate = false) {return GetAttribute(id, "value", immediate);}
 		bool				GetAttributeExists(string id, string name = "value") {return GetAttributeExists(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name));}
