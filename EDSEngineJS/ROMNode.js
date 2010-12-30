@@ -104,9 +104,9 @@ ROMNode.prototype.GetRoot = function()
         var nextParent = this;
 	    do 
 	    {
-		    if (nextParent != NULL)
+		    if (nextParent != null)
 			    nextParent = nextParent.GetParent();		
-	    } while (nextParent != NULL);
+	    } while (nextParent != null);
 	    return nextParent;
     }
     catch (err) 
@@ -165,15 +165,19 @@ ROMNode.prototype.DestroyROMObject = function()
     try 
     {
         //remove any references to self in parent node
-        if (this.m_parent != NULL)
+        if (this.m_parent != null)
 	    {
 		    retval = this.m_parent.RemoveChildROMObject(this);
 	    }
 	    
-	    this.m_attrs.clear();
-	    this.m_nodeValues.clear();
+	    if (this.m_attrs != null)
+	        delete this.m_attrs;
+	    this.m_attrs = new Array();
+	    if (this.m_nodeValues != null)
+	        delete this.m_nodeValues;
+	    this.m_nodeValues = new Array();
 	    this.m_id = "";
-	    this.m_parent = NULL;
+	    this.m_parent = null;
 	    this.m_bChanged = false;
 	    //trigger downstream destructors
 	    for (var i = this.m_children.length - 1; i >= 0; i--)
@@ -185,7 +189,9 @@ ROMNode.prototype.DestroyROMObject = function()
 				    delete node;
 		    }
 	    }
-	    this.m_children.clear();	
+	    if (this.m_children != null)
+	        delete this.m_children;
+	    this.m_children = new Array();
     }
     catch (err) 
     {
@@ -757,7 +763,17 @@ ROMNode.prototype.LoadXML = function(xmlStr)
         
         if (rootNode != null)
         {
-            if (_buildObject(objectNode, null) != null)
+            var objectNode = null;
+            if (IsIE())
+                objectNode = this.m_xmlDoc.selectSingleNode("Object");
+            else
+            {
+                var objectNodeSnap = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                if (objectNodeSnap != null && objectNodeSnap.snapshotLength == 1)
+                    objectNode = objectNodeSnap.snapshotItem(0);
+            }
+            
+            if (objectNode != null && this._buildObject(objectNode, null) != null)
                 retval = true;
         }
     }
@@ -770,31 +786,39 @@ ROMNode.prototype.LoadXML = function(xmlStr)
 
 ROMNode.prototype._buildObject = function(objectNode, parent)
 {
-    var newNode = NULL;
+    var newNode = null;
     try
     {
         var id = "";
+        var guid = "";
         if (IsIE())
+        {
             id = objectNode.attributes.getNamedItem("id").nodeValue;
+            guid = objectNode.attributes.getNamedItem("guid").nodeValue;
+        }
         else
+        {
             id = objectNode.getAttribute("id");
+        }
             
         if (parent == null)
         {
             this.DestroyROMObject();
             this.m_id = id;
+            this.m_guid = guid;
             newNode = this;
         }
         else
         {
             newNode = new ROMNode(id);
+            newNode.m_guid = guid;
         }
         
         //set object values
         for (var i = 0; i < objectNode.attributes.length; i++)
         {
-	        var objAttr = objectNode.attributes.Getitem(i);
-	        if (objAttr.nodeName != "id")
+	        var objAttr = objectNode.attributes[i];
+	        if (objAttr.nodeName != "id" && objAttr.nodeName != "guid")
 		        newNode.SetROMObjectValue(objAttr.nodeName, objAttr.nodeValue);
         }
         
@@ -806,17 +830,19 @@ ROMNode.prototype._buildObject = function(objectNode, parent)
 	        {
 		        var attrNode = attrNodes[attrCnt];
 		        var idAttr = attrNode.attributes.getNamedItem("id").nodeValue;
-		        for (var i = 0; i < objectNode.attributes.length; i++)
+		        for (var i = 0; i < attrNode.attributes.length; i++)
 		        {
-			        var attr = objectNode.attributes[i];
-			        if (attr.nodeName != "id")
-				        newNode.SetAttribute(idAttr, attr.nodeName, attr.nodeValue);
+			        var attr = attrNode.attributes[i];
+			        var attrName = attr.nodeName;
+			        var attrValue = attr.nodeValue;
+			        if (attrName != "id")
+				        newNode.SetAttributeValue(idAttr, attrName, attrValue);
 		        }
 	        }
 
 	        //children recursivley
 	        var childNodes = objectNode.selectNodes("Object");
-	        for (var childCnt = 0; childCnt < childNode.length; childCnt++)
+	        if (childNodes != null) for (var childCnt = 0; childCnt < childNodes.length; childCnt++)
 	        {
 		        var childNode = childNodes[childCnt];
 		        var newChildObject = this._buildObject(childNode, this);
@@ -829,22 +855,24 @@ ROMNode.prototype._buildObject = function(objectNode, parent)
         else
         {
 	        //set object attributes
-	        var attrNodes = this.m_xmlDoc.evaluate("Attribute", this.m_xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	        var attrNodes = this.m_xmlDoc.evaluate("Attribute", objectNode, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 	        for (var attrCnt = 0; attrCnt < attrNodes.snapshotLength; attrCnt++)
 	        {
 		        var attrNode = attrNodes.snapshotItem(attrCnt);
 		        var idAttr = attrNode.getAttribute("id");
-		        for (var i = 0; i < objectNode.attributes.length; i++)
+		        for (var i = 0; i < attrNode.attributes.length; i++)
 		        {
-			        var attr = objectNode.attributes[i];
-			        if (attr.nodeName != "id")
-				        newNode.SetAttribute(idAttr, attr.nodeName, attr.nodeValue);
+			        var attr = attrNode.attributes[i];
+			        var attrName = attr.nodeName;
+			        var attrValue = attr.nodeValue;
+			        if (attrName != "id")
+				        newNode.SetAttributeValue(idAttr, attrName, attrValue);
 		        }
 	        }
 
 	        //children recursivley
-	        var childNodes = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-	        for (var childCnt = 0; childCnt < childNode.snapshotLength; childCnt++)
+	        var childNodes = this.m_xmlDoc.evaluate("Object", objectNode, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	        if (childNodes != null) for (var childCnt = 0; childCnt < childNodes.snapshotLength; childCnt++)
 	        {
 		        var childNode = childNodes.snapshotItem(childCnt);
 		        var newChildObject = this._buildObject(childNode, this);
