@@ -132,6 +132,7 @@ namespace EDS
 		vector<pair<wstring, vector<CRuleCell> > > GetTableRowFromXML(NodeList nodes, Document xmlDocument);
 		void SendToDebugServer(wstring msg);
 		wstring XMLSafe(wstring str);
+		bool DebugThisTable(wstring tableName);
 	#ifdef _MSC_VER
 		stdext::hash_map<wstring, size_t> m_GlobalInputAttrsValues;
 	#else
@@ -141,6 +142,7 @@ namespace EDS
 		CTableSet m_TableSet;
 		int iRecursingDepth;
 		bool m_DEBUGGING_MSGS;
+		vector<wstring> m_DebugTables;
 		wstring m_DEBUGGING_CON;
 		bool m_IsOpen;
 		wstring m_jsCode, m_pyCode;

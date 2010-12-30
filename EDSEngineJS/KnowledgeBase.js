@@ -1347,11 +1347,13 @@ function KnowledgeBase(xmlPath)
         this.iRecursingDepth = 0;
         this.m_IsOpen = false;
         this.m_DEBUGGING_MSGS = false;
+        this.m_DebugTables = new Array();
         this.m_DebugHandlerFunct = null;
         xmlDoc = loadXMLDoc(xmlPath);
         
         //fill up the tableset
         var debug;
+        var debugTables;
         var allTables;
         var inputList;
         var inputAttrsTests;
@@ -1365,6 +1367,7 @@ function KnowledgeBase(xmlPath)
         if (IsIE() == false)
         {            
             debug = xmlDoc.evaluate("Tables/@debug", xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
+            debugTables = xmlDoc.evaluate("Tables/@debugtables", xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
             allTables = xmlDoc.evaluate("Tables/Table", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
             
             for (var i = 0; i < allTables.snapshotLength; i++)
@@ -1431,7 +1434,8 @@ function KnowledgeBase(xmlPath)
         }
         else // Internet Explorer
         {
-            debug = xmlDoc.selectSingleNode("Tables/@debug").value;    		
+            debug = xmlDoc.selectSingleNode("Tables/@debug").value; 
+            debugTables = xmlDoc.selectSingleNode("Tables/@debugtables").value;
             allTables = xmlDoc.selectNodes("Tables/Table");
             
             for (var i = 0; i < allTables.length; i++)
@@ -1498,7 +1502,10 @@ function KnowledgeBase(xmlPath)
         
         if (debug == "true")
 	    {
-		    this.m_DEBUGGING_MSGS = true;    		    
+		    this.m_DEBUGGING_MSGS = true;
+		    
+		    if (debugTables != null && debugTables.length > 0)
+				this.m_DebugTables = debugTables.split(",");		    
 	    }
         
         this.m_TableSet.Initialize();  
@@ -1512,6 +1519,30 @@ function KnowledgeBase(xmlPath)
 KnowledgeBase.prototype.SetDebugHandler = function(func)
 {
     this.m_DebugHandlerFunct = func;
+}
+
+KnowledgeBase.prototype.DebugThisTable = function(tableName)
+{
+    try
+    {
+        if (this.m_DEBUGGING_MSGS == true)
+        {
+            if (ArraySize(this.m_DebugTables) > 0)
+            {
+                if (GetIndexOfItem(this.m_DebugTables, tableName) >= 0)
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return true;
+        }
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+    return false;
 }
 
 KnowledgeBase.prototype.IsOpen = function()
@@ -1730,7 +1761,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
         this.iRecursingDepth++;
         
         var table = this.m_TableSet.GetTable(tableName);
-        table.EnableDebugging(this.m_DEBUGGING_MSGS);
+        table.EnableDebugging(this.DebugThisTable(tableName));
 
         table.SetInputValues(this.m_GlobalInputAttrsValues);
         
@@ -1760,7 +1791,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
 					    {
 					        var result = chainedResults[j];
 						    newResults.push(result);
-						    if (this.m_DEBUGGING_MSGS)
+						    if (this.DebugThisTable(chainTableName))
 						    {
 							    if (debugVals.length > 0)
 								    debugVals+="|";
@@ -1772,7 +1803,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
 					    }
 				    }
 				    
-				    if (this.m_DEBUGGING_MSGS && chainedResults.length > 0)
+				    if (this.DebugThisTable(tableName) && chainedResults.length > 0)
 				    {   //replace the eval( string with the actual value
 					    table.DebugMessage = table.DebugMessage.replace(text, text + debugVals);					
 				    }
@@ -1830,7 +1861,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
                     this.m_StateParameter = getparam();
                     RemoveScriptTag(scriptTag);
                     newResults.push(val);                                    
-                    if (this.m_DEBUGGING_MSGS)
+                    if (this.DebugThisTable(tableName))
 				    {	
 				        var debugVals = ":" + XMLSafe(val);  
 				        //replace the js( string with the actual value
@@ -1853,7 +1884,7 @@ KnowledgeBase.prototype.EvaluateTableForAttrWithParamGet = function(tableName, o
 	    
 	    this.iRecursingDepth--;
 	    
-	    if (this.m_DEBUGGING_MSGS == true && this.m_DebugHandlerFunct != null)
+	    if (this.DebugThisTable(tableName) == true && this.m_DebugHandlerFunct != null)
 	    {
 		    this.m_DebugHandlerFunct(table.DebugMessage);
 	    }
@@ -1908,7 +1939,7 @@ KnowledgeBase.prototype.ReverseEvaluateTable = function(tableName, bGetAll)
     try
     {
         var table = this.m_TableSet.GetTable(tableName);
-        table.EnableDebugging(this.m_DEBUGGING_MSGS);
+        table.EnableDebugging(this.DebugThisTable(tableName));
         table.SetInputValues(this.m_GlobalInputAttrsValues);
         var outputCollection = table.GetInputAttrsTests();
         //for all the outputs get the results
@@ -1948,7 +1979,7 @@ KnowledgeBase.prototype.ReverseEvaluateTableForAttrGet = function(tableName, out
     {
         //no chaining or scripting in reverse        
         var table = this.m_TableSet.GetTable(tableName);
-        table.EnableDebugging(this.m_DEBUGGING_MSGS);
+        table.EnableDebugging(this.DebugThisTable(tableName));
         table.SetInputValues(this.m_GlobalInputAttrsValues);
         retval = table.EvaluateTableForAttr(outputAttr, bGetAll, false);
     }
