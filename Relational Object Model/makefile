@@ -60,8 +60,8 @@ clean :
 # Debug_target
 
 Debug_target.BIN = bin/Debug/libROM.a
-Debug_target.OBJ = LinearEngine.o ROM.o ROMDictionary.o ROMTree.o stdafx.o utilities.o 
-DEP_FILES += LinearEngine.d ROM.d ROMDictionary.d ROMTree.d stdafx.d utilities.d 
+Debug_target.OBJ = LinearEngine.o ROM.o ROMDictionary.o ROMNode.o stdafx.o utilities.o 
+DEP_FILES += LinearEngine.d ROM.d ROMDictionary.d ROMNode.d stdafx.d utilities.d 
 clean.OBJ += $(Debug_target.BIN) $(Debug_target.OBJ)
 
 Debug_target : Debug_target.before $(Debug_target.BIN) Debug_target.after_always
@@ -87,8 +87,8 @@ $(Debug_target.BIN) : $(Debug_target.OBJ)
 # Release_target
 
 Release_target.BIN = bin/Release/libROM.a
-Release_target.OBJ = LinearEngine.o ROM.o ROMDictionary.o ROMTree.o stdafx.o utilities.o 
-DEP_FILES += LinearEngine.d ROM.d ROMDictionary.d ROMTree.d stdafx.d utilities.d 
+Release_target.OBJ = LinearEngine.o ROM.o ROMDictionary.o ROMNode.o stdafx.o utilities.o 
+DEP_FILES += LinearEngine.d ROM.d ROMDictionary.d ROMNode.d stdafx.d utilities.d 
 clean.OBJ += $(Release_target.BIN) $(Release_target.OBJ)
 
 Release_target : Release_target.before $(Release_target.BIN) Release_target.after_always
