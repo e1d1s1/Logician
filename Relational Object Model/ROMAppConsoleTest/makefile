@@ -1,6 +1,6 @@
 # -*- mode: Makefile; -*-
 # -----------------------------------------
-# project EDSEngine
+# project ROMAppConsoleTest
 
 
 export PATH := /opt/wx/2.8/bin:$(PATH)
