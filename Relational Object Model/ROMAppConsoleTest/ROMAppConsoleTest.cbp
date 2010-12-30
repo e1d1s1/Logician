@@ -52,7 +52,7 @@
 			<Add library="libxslt" />
 			<Add library="libpython2.6" />
 			<Add library="libboost_system-mt" />
-			<Add library="libboost_python-mt" />
+			<Add library="libboost_python-mt-py26" />
 			<Add library="libmozjs" />
 			<Add library="libuuid" />
 			<Add library="libROM" />
