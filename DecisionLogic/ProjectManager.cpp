@@ -172,7 +172,7 @@ void ProjectManager::SaveStringDefs(xmlDocPtr doc)
 			for (int i = 0; i < ORs->nodeNr; i++)
 			{
 				xmlNodePtr currentOR = ORs->nodeTab[i];
-				wstring ORName = UTILS::MBCStrToWStr(xmlNodeGetContent(currentOR));
+				wstring ORName = UTILS::XMLStrToWStr(xmlNodeGetContent(currentOR));
 				xpathCtx->node = currentOR->parent;
 				xpathObj = xmlXPathEvalExpression((xmlChar*)"Value", xpathCtx);
 				xmlNodeSetPtr OR_Values = xpathObj->nodesetval;
@@ -182,7 +182,7 @@ void ProjectManager::SaveStringDefs(xmlDocPtr doc)
 					for (int j = 0; j < OR_Values->nodeNr; j++)
 					{
 						xmlNodePtr currentValue = OR_Values->nodeTab[j];
-						wstring ORValue = UTILS::MBCStrToWStr(xmlNodeGetContent(currentValue));
+						wstring ORValue = UTILS::XMLStrToWStr(xmlNodeGetContent(currentValue));
 						if (ORValue.length() > 0)
 							values.push_back(ORValue);
 					}
@@ -218,7 +218,7 @@ void ProjectManager::SaveStringDefs(xmlDocPtr doc)
 			for (int nodeCnt = 0; nodeCnt < values->nodeNr; nodeCnt++)
 			{
 				xmlNodePtr valueNode = values->nodeTab[nodeCnt];
-				wstring value = UTILS::MBCStrToWStr(xmlNodeGetContent(valueNode));
+				wstring value = UTILS::XMLStrToWStr(xmlNodeGetContent(valueNode));
 				//check for ors
 				vector<wstring> values = CheckForOrs(value);
 				for (vector<wstring>::iterator it = values.begin(); it != values.end(); it++)
@@ -715,7 +715,7 @@ StringTable<wstring>* ProjectManager::ReadProjectFile(wstring path)
 
 			xmlXPathContextPtr xpathCtx = xmlXPathNewContext(xmlDoc);
 			xmlNodePtr rootNode = xmlDocGetRootElement(xmlDoc);
-			m_DebugConnection = UTILS::MBCStrToWStr(xmlGetProp(rootNode, (xmlChar*)"connection"));
+			m_DebugConnection = UTILS::XMLStrToWStr(xmlGetProp(rootNode, (xmlChar*)"connection"));
 			xmlChar* itemsXPath = (xmlChar*)"//DataSet";
 			xmlXPathObjectPtr xpathItems = xmlXPathEvalExpression(itemsXPath, xpathCtx);
 			xmlNodeSetPtr allItems = xpathItems->nodesetval;
@@ -732,13 +732,13 @@ StringTable<wstring>* ProjectManager::ReadProjectFile(wstring path)
 					xmlNodePtr nodeName = xpathObjDataSet->nodesetval->nodeTab[0];
 					xmlNodePtr nodePath = xpathObjPath->nodesetval->nodeTab[0];
 
-					wstring name = UTILS::MBCStrToWStr(xmlNodeGetContent(nodeName));
+					wstring name = UTILS::XMLStrToWStr(xmlNodeGetContent(nodeName));
 					char cDebugStatus = '0';
 					if (xmlHasProp(datasetNode, (xmlChar*)"debug"))
-						cDebugStatus = UTILS::MBCStrToWStr(xmlGetProp(datasetNode, (xmlChar*)"debug")).at(0);
+						cDebugStatus = UTILS::XMLStrToWStr(xmlGetProp(datasetNode, (xmlChar*)"debug")).at(0);
 					if (cDebugStatus == '1')
 						m_SelectedTables.push_back(UTILS::FindAndReplace(name, L".xml", L""));
-					wstring path = UTILS::MBCStrToWStr(xmlNodeGetContent(nodePath));
+					wstring path = UTILS::XMLStrToWStr(xmlNodeGetContent(nodePath));
 					//saved unix style so well formed
 					wstring pathSep; pathSep+=PATHSEP;
 					path = UTILS::FindAndReplace(path, L"/", pathSep);
@@ -753,9 +753,9 @@ StringTable<wstring>* ProjectManager::ReadProjectFile(wstring path)
 			xmlXPathObjectPtr xpathJS = xmlXPathEvalExpression((xmlChar*)"//Javascript", xpathCtx);
 			xmlXPathObjectPtr xpathPY = xmlXPathEvalExpression((xmlChar*)"//Python", xpathCtx);
 			if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathJS->nodesetval->nodeNr == 1)
-				m_jsCode = UTILS::MBCStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0]));
+				m_jsCode = UTILS::XMLStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0]));
 			if (xpathPY != NULL && xpathPY->nodesetval != NULL && xpathPY->nodesetval->nodeNr == 1)
-				m_pyCode = UTILS::MBCStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0]));
+				m_pyCode = UTILS::XMLStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0]));
 
 			xmlXPathFreeObject(xpathJS);
 			xmlXPathFreeObject(xpathPY);
@@ -967,7 +967,7 @@ bool ProjectManager::TableIsGetAll(wstring name)
 			if (allRes != NULL && allRes->nodeNr == 1)
 			{
 				xmlNodePtr TableNode = allRes->nodeTab[0];
-				wstring sGetAll = UTILS::MBCStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
+				wstring sGetAll = UTILS::XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
 				if (sGetAll.length() > 0 && sGetAll[0] == 't')
 					retval = true;
 			}
@@ -1179,7 +1179,7 @@ StringTable<wstring> ProjectManager::CreateDataTableFromNodes(string nodeName, x
 				vector<wstring> newRow = retval.NewRow();
 				for (int i = 0; i < nodes->nodeNr; i++)
 				{
-					wstring status = UTILS::MBCStrToWStr(xmlGetProp(nodes->nodeTab[i], (xmlChar*)"enabled"));
+					wstring status = UTILS::XMLStrToWStr(xmlGetProp(nodes->nodeTab[i], (xmlChar*)"enabled"));
 
 					if (status == L"true")
 					{
@@ -1227,12 +1227,12 @@ StringTable<wstring> ProjectManager::CreateDataTableFromNodes(string nodeName, x
 						{
 							if (childNode->type == XML_ELEMENT_NODE)
 							{
-								wstring innerText = UTILS::MBCStrToWStr(xmlNodeGetContent(childNode));
+								wstring innerText = UTILS::XMLStrToWStr(xmlNodeGetContent(childNode));
 								if (colIndex == 0)
 									newRow[colIndex] = innerText;
 								else
 								{
-									wstring wsOper = UTILS::MBCStrToWStr(xmlGetProp(childNode, (xmlChar*)"operation"));
+									wstring wsOper = UTILS::XMLStrToWStr(xmlGetProp(childNode, (xmlChar*)"operation"));
 									long operation = EQUALS;
 									if (wsOper.length() > 0)
 									{

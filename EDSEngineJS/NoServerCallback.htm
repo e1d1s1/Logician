@@ -22,9 +22,9 @@
             }
                         
             var cnt = knowledge.TableCount();
-            if (cnt == 11)
+            if (cnt == 12)
             {
-                write_result("OK: 11 Tables loaded");
+                write_result("OK: 12 Tables loaded");
             }
             else
             {
@@ -270,8 +270,21 @@
 	        }
 	        else
 	        {
-	            write_result("FAILURE: Did not get proper eval result on NULL test");
+	            write_result("FAILURE: Did not get proper eval result on NULL test #1");
 	        }
+	        
+	        knowledge.SetInputValue("inputAttr1", "blah");
+	        knowledge.SetInputValue("c", "");
+            result7 = knowledge.EvaluateTableForAttr("testtable4", "outputAttr1", true);
+            if (result7.length == 2 && result7[0] == "inputAttr2 is NULL")
+            {
+                write_result("OK: " + result7[0] + "\n" +
+                result7[1]);
+            }
+            else
+            {
+                write_result("FAILURE: Did not get proper eval result on NULL test #2");
+            }
 
 	        knowledge.SetInputValue("inputAttr1", "blah");
 	        knowledge.SetInputValue("c", "");
@@ -349,7 +362,7 @@
 	            childNode.SetROMObjectValue("valueTest", "myValue");
 
 	            write_result("Dump current xml state");
-	            var result = rootNode.DumpTree();
+	            var result = rootNode.SaveXML(true);
 	            write_result(result);
 
 	            write_result("Setting attrs to test eval, inputAttr1 = A, inputAttr2 = 1");
@@ -357,7 +370,7 @@
 	            rootNode.SetAttribute("inputAttr2", "1");
     	
 	            write_result("New xml state");
-	            result = rootNode.DumpTree();
+	            result = rootNode.SaveXML(true);
 	            write_result(result);
     	        
 	            write_result("Getting attribute list on the base object");

@@ -143,6 +143,37 @@ namespace EDSNET
 		return retval;
 	}
 
+	array<String^>^	EDSEngineNET::ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll)
+	{
+		array<String^>^ retval = nullptr;
+
+		if (m_KnowledgeBase)
+		{
+			wstring table, input;
+			MarshalString(tableName, table);
+			MarshalString(inputAttr, input);
+			vector<wstring> res = m_KnowledgeBase->ReverseEvaluateTable(table, input, bGetAll);
+			retval = GetArrayFromVectorStrings(res);
+		}
+
+		return retval;
+	}
+
+	Dictionary<String^,	array<String^>^>^ EDSEngineNET::ReverseEvaluateTable(String^ tableName, bool bGetAll)
+	{
+		Dictionary<String^,	array<String^>^>^ retval = nullptr;
+
+		if (m_KnowledgeBase)
+		{
+			wstring table;
+			MarshalString(tableName, table);
+			map<wstring, vector<wstring> > res = m_KnowledgeBase->ReverseEvaluateTable(table, bGetAll);
+			retval = GetDictionaryFromMapStrings(res);
+		}
+
+		return retval;
+	}
+
 	String^	EDSEngineNET::GetEvalParameter()
 	{
 		String^ retval = nullptr;

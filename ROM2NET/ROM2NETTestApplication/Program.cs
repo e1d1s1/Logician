@@ -38,7 +38,7 @@ namespace ROM2NETTestApplication
             childNode.SetROMObjectValue("valueTest", "myValue");
 
             Log("Dump current xml state");
-            string s = rootNode.DumpTree(true);
+            string s = rootNode.SaveXML(true);
             Log(s);
 
             Log("Setting attrs to test eval, inputAttr1 = A, inputAttr2 = 10, outsideAttr1 = 28");

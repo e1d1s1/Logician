@@ -59,7 +59,7 @@ using boost::asio::ip::tcp;
 
 EDS::CKnowledgeBase::~CKnowledgeBase(void)
 {
-#ifdef USE_MSXML
+#ifdef WIN32
 	CoUninitialize();
 #endif
 }
@@ -71,7 +71,7 @@ EDS::CKnowledgeBase::CKnowledgeBase()
 	m_IsOpen = false;
 	mapBaseIDtoTranslations.clear();
 
-#ifdef USE_MSXML
+#ifdef WIN32
 	HRESULT hr = CoInitialize(NULL);
 #endif
 }
@@ -597,7 +597,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 	m_GlobalInputAttrsValues.clear();
 	m_GlobalInputAttrsValues[L""] = EMPTY_STRING;
 	m_GlobalInputAttrsValues[L"NULL"] = EXPLICIT_NULL_STRING;
-#ifdef USE_MSXML
+#ifdef WIN32
 	HRESULT hr = CoInitialize(NULL);
 #endif
 
@@ -769,7 +769,6 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 						m_jsCode = nodeJS->Gettext() + L"\n";
 					if (nodePY != NULL)
 						m_pyCode = nodePY->Gettext() + L"\n";
-
 				}
 			}
 			catch(const _com_error& e)
@@ -792,11 +791,11 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 				xmlChar* tablesXPath = (xmlChar*)"//Tables";
 				xmlXPathObjectPtr xpathTables = xmlXPathEvalExpression(tablesXPath, xpathCtx);
 				Node tablesNode = xpathTables->nodesetval->nodeTab[0];
-				wstring debug = MBCStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debug"));
+				wstring debug = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debug"));
 				if (debug == L"true")
 				{
 					m_DEBUGGING_MSGS = true;
-					wstring con = MBCStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"connection"));
+					wstring con = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"connection"));
 					if (con.length() > 0)
 					{
 						m_DEBUGGING_CON = con;
@@ -822,8 +821,8 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 						NodeList inputList = xpathObjInputs->nodesetval;
 						NodeList outputList = xpathObjOutputs->nodesetval;
 
-						wstring name = MBCStrToWStr(xmlGetProp(TableNode, (xmlChar*)"name"));
-						wstring sGetAll = MBCStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
+						wstring name = XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"name"));
+						wstring sGetAll = XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
 						bool bGetAll = false;
 						if (sGetAll.length() > 0 && sGetAll[0] == L't')
 							bGetAll = true;
@@ -833,7 +832,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 						for (int j = 0; j < formulaInputNodes->nodeNr; j++)
 						{
 							Node formulaInputNode = formulaInputNodes->nodeTab[j];
-							FormulaInputs.push_back(MBCStrToWStr(xmlNodeGetContent(formulaInputNode)));
+							FormulaInputs.push_back(XMLStrToWStr(xmlNodeGetContent(formulaInputNode)));
 						}
 
 						vector<pair<wstring, vector<CRuleCell> > > InputAttrsTests = GetTableRowFromXML(inputList, xmlDocument);
@@ -862,14 +861,14 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 						for (int i = 0; i < allTranslations->nodeNr; i++)
 						{
 							Node StringNode = allTranslations->nodeTab[i];
-							size_t id = atoull(EDSUTIL::ToASCIIString(MBCStrToWStr(xmlGetProp(StringNode, (xmlChar*)"id"))).c_str());
+							size_t id = atoull(EDSUTIL::ToASCIIString(XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)"id"))).c_str());
 							for (Attribute childAttr = StringNode->properties; childAttr != NULL; childAttr = childAttr->next)
 							{
-                                wstring name = MBCStrToWStr(childAttr->name);
+                                wstring name = XMLStrToWStr(childAttr->name);
                                 if (name != L"id")
                                 {
                                     wstring langType = name;
-                                    wstring langValue = MBCStrToWStr(xmlGetProp(StringNode, (xmlChar*)WStrToMBCStr(name).c_str()));
+                                    wstring langValue = XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)WStrToMBCStr(name).c_str()));
                                     pair<wstring, wstring> kvp;
                                     kvp.first = langType;
                                     kvp.second = langValue;
@@ -913,9 +912,10 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 				xmlXPathObjectPtr xpathJS = xmlXPathEvalExpression((xmlChar*)"//Javascript", xpathCtx);
 				xmlXPathObjectPtr xpathPY = xmlXPathEvalExpression((xmlChar*)"//Python", xpathCtx);
 				if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathJS->nodesetval->nodeNr == 1)
-					m_jsCode = MBCStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0])) + L"\n";
+					m_jsCode = XMLStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0])) + L"\n";
 				if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathPY->nodesetval->nodeNr == 1)
-					m_pyCode = MBCStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0])) + L"\n";
+					m_pyCode = XMLStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0])) + L"\n";
+				
 				xmlXPathFreeObject(xpathJS);
 				xmlXPathFreeObject(xpathPY);
 				xmlXPathFreeObject(xpathTables);
@@ -1018,19 +1018,19 @@ vector<pair<wstring, vector<CRuleCell> > > EDS::CKnowledgeBase::GetTableRowFromX
 			NodeList values = xmlXPathObjValues->nodesetval;
 			Node attrNode = xmlXPathObjAttr->nodesetval->nodeTab[0];
 
-			wstring attrName = MBCStrToWStr(xmlNodeGetContent(attrNode));
+			wstring attrName = XMLStrToWStr(xmlNodeGetContent(attrNode));
 			currentAttrRow.first = attrName;
 			if (values != NULL)
 			{
 				for (int j = 0; j < values->nodeNr; j++)
 				{
 					Node currentValue = values->nodeTab[j];
-					wstring wsIDs = MBCStrToWStr(xmlGetProp(currentValue, (xmlChar*)"id"));
+					wstring wsIDs = XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"id"));
 
 					CRuleCell cell;
 					if (wsIDs.length() > 0)
 					{
-						vector<wstring> cellValues = Split(MBCStrToWStr(xmlNodeGetContent(currentValue)), L"|");
+						vector<wstring> cellValues = Split(XMLStrToWStr(xmlNodeGetContent(currentValue)), L"|");
 						string sIDs(wsIDs.begin(), wsIDs.end()); //contains numerical so this ok
 						vector<string> ids = Split(sIDs, ",");
 						if (ids.size() != cellValues.size())
@@ -1045,7 +1045,7 @@ vector<pair<wstring, vector<CRuleCell> > > EDS::CKnowledgeBase::GetTableRowFromX
 						}
 					}
 
-					wstring wsOper = MBCStrToWStr(xmlGetProp(currentValue, (xmlChar*)"operation"));
+					wstring wsOper = XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"operation"));
 					long lOper = 0;
 					if (wsOper.length() > 0)
 					{

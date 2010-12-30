@@ -23,9 +23,9 @@ namespace EDSEngineNETTestApp
             }
 
             var cnt = knowledge.TableCount();
-            if (cnt == 3)
+            if (cnt == 12)
             {
-                write_result("OK: 3 Tables loaded");
+                write_result("OK: 12 Tables loaded");
             }
             else
             {
@@ -94,7 +94,9 @@ namespace EDSEngineNETTestApp
                 allOutputs[3] == "4" &&
                 allOutputs[4] == "5" &&
                 allOutputs[5] == "py(get(outsideAttr1) + 2)" &&
-                allOutputs[6] == "js(get(outsideAttr1) + 2)")
+                allOutputs[6] == "js(get(outsideAttr1) + 2)" &&
+                allOutputs[7] == "js(alterparameter())" &&
+		        allOutputs[8] == "py(alterparameter())")
             {
                 write_result("OK");
             }
@@ -222,7 +224,36 @@ namespace EDSEngineNETTestApp
                 write_result("FAILURE: Did not get proper eval result on get() test");
             }
 
-            write_result("testing translation of: A");
+            write_result("testing NULL conditions");
+            knowledge.SetInputValue("inputAttr1", "");
+            knowledge.SetInputValue("inputAttr2", "");
+            var result7 = knowledge.EvaluateTable("testtable4", "outputAttr1", true);
+            if (result7.Length == 4 && result7[2] == "both attrs are NULL")
+	        {
+                write_result(result7[0]);
+                write_result(result7[1]);
+                write_result(result7[2]);
+                write_result(result7[3]);
+	        }
+	        else
+	        {
+                write_result("FAILURE: Did not get proper eval result on NULL test #1");
+	        }
+
+            knowledge.SetInputValue("inputAttr1", "blah");
+	        knowledge.SetInputValue("c", "");
+            result7 = knowledge.EvaluateTable("testtable4", "outputAttr1", true);
+            if (result7.Length == 2 && result7[0] == "inputAttr2 is NULL")
+            {
+                write_result(result7[0]);
+                write_result(result7[1]);
+            }
+            else
+            {
+                write_result("FAILURE: Did not get proper eval result on NULL test #2");
+            }
+
+            write_result("testing translation of: A");            
             var localeValue = knowledge.Localize("A", "en-US");
             var reverse = knowledge.DeLocalize(localeValue);
             write_result(localeValue + ":" + reverse);
@@ -230,6 +261,19 @@ namespace EDSEngineNETTestApp
                 write_result("OK");
             else
                 write_result("FAILURE: translation failed");
+
+            write_result("testing reverse evaluation of ReverseTest table");
+            knowledge.SetInputValue("OutColor", "green");
+            var result8 = knowledge.ReverseEvaluateTable("ReverseTest", true);
+            if (result8.Count == 2 && result8["Color1"][0] == "blue" &&
+		        result8["Color2"][0] == "yellow")
+	        {
+                write_result("OK");
+	        }
+	        else
+	        {
+                write_result("FAILURE: reverse evaluation failed");
+	        }
 
             Quit();
         }

@@ -165,10 +165,8 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 
 	//for the give output, the reuslts are
 	vector<CRuleCell> results;
-	for (size_t result = 0; result < m_Tests; result++)
+	for (size_t result = 0; result < outputCollection.size(); result++)
 	{
-		if (result >= outputCollection.size())
-			break;
 		if (outputCollection[result].first == outputAttr)
 		{
 			results = outputCollection[result].second;

@@ -47,8 +47,7 @@ function IsIE() {
 }
 
 function IsMoz() {
-    var moz = (typeof document.implementation != 'undefined') && (typeof 
-        document.implementation.createDocument != 'undefined');
+    var moz = (navigator.userAgent.indexOf('Firefox') >= 0);
     //alert("Moz=" + moz);
     return moz;
 }
@@ -680,6 +679,10 @@ ROMNode.prototype.GetATableInputValue = function(input)
             var cmdArg = input.substr(xpathIndex + 6, input.length - 7);
             retval = this.EvaluateXPATH(cmdArg, this.m_guid);
         }
+        else if (input == "CLASSID")
+        {
+            retval = this.GetROMObjectID();
+        }
         else
         {
             retval = this.GetAttribute(input, false);
@@ -714,9 +717,11 @@ ROMNode.prototype.GetPossibleValues = function(currentObject, evalTable, outputN
 }
 
 //IO
-ROMNode.prototype.DumpTree = function(indented)
+ROMNode.prototype.SaveXML = function(indented)
 {
     var retval = "";
+    if (indented === undefined)
+        indented = false;
     try
     {
         this._createXMLDoc();
@@ -727,6 +732,134 @@ ROMNode.prototype.DumpTree = function(indented)
         ReportError(err);        
     }
     return retval;
+}
+
+ROMNode.prototype.LoadXML = function(xmlStr)
+{
+    var retval = false;
+    try
+    {
+        var rootNode = null;
+        if (IsIE()) 
+        {
+            this.m_xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+            this.m_xmlDoc.async = "false";
+            this.m_xmlDoc.setProperty("SelectionLanguage", "XPath");
+            this.m_xmlDoc.loadXML(xmlStr);
+            rootNode = this.m_xmlDoc.selectSingleNode("Object");            
+        }
+        else 
+        {
+            var parser = new DOMParser();
+            this.m_xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+            rootNode = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+        }
+        
+        if (rootNode != null)
+        {
+            if (_buildObject(objectNode, null) != null)
+                retval = true;
+        }
+    }
+    catch (err)
+    {
+        ReportError(err);        
+    }
+    return retval;
+}
+
+ROMNode.prototype._buildObject = function(objectNode, parent)
+{
+    var newNode = NULL;
+    try
+    {
+        var id = "";
+        if (IsIE())
+            id = objectNode.attributes.getNamedItem("id").nodeValue;
+        else
+            id = objectNode.getAttribute("id");
+            
+        if (parent == null)
+        {
+            this.DestroyROMObject();
+            this.m_id = id;
+            newNode = this;
+        }
+        else
+        {
+            newNode = new ROMNode(id);
+        }
+        
+        //set object values
+        for (var i = 0; i < objectNode.attributes.length; i++)
+        {
+	        var objAttr = objectNode.attributes.Getitem(i);
+	        if (objAttr.nodeName != "id")
+		        newNode.SetROMObjectValue(objAttr.nodeName, objAttr.nodeValue);
+        }
+        
+        if (IsIE())
+        {
+	        //set object attributes
+	        var attrNodes = objectNode.selectNodes("Attribute");
+	        for (var attrCnt = 0; attrCnt < attrNodes.length; attrCnt++)
+	        {
+		        var attrNode = attrNodes[attrCnt];
+		        var idAttr = attrNode.attributes.getNamedItem("id").nodeValue;
+		        for (var i = 0; i < objectNode.attributes.length; i++)
+		        {
+			        var attr = objectNode.attributes[i];
+			        if (attr.nodeName != "id")
+				        newNode.SetAttribute(idAttr, attr.nodeName, attr.nodeValue);
+		        }
+	        }
+
+	        //children recursivley
+	        var childNodes = objectNode.selectNodes("Object");
+	        for (var childCnt = 0; childCnt < childNode.length; childCnt++)
+	        {
+		        var childNode = childNodes[childCnt];
+		        var newChildObject = this._buildObject(childNode, this);
+		        if (newChildObject != null && newNode != null)
+		        {
+			        newNode.AddChildROMObject(newChildObject);
+		        }
+	        }
+        }
+        else
+        {
+	        //set object attributes
+	        var attrNodes = this.m_xmlDoc.evaluate("Attribute", this.m_xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	        for (var attrCnt = 0; attrCnt < attrNodes.snapshotLength; attrCnt++)
+	        {
+		        var attrNode = attrNodes.snapshotItem(attrCnt);
+		        var idAttr = attrNode.getAttribute("id");
+		        for (var i = 0; i < objectNode.attributes.length; i++)
+		        {
+			        var attr = objectNode.attributes[i];
+			        if (attr.nodeName != "id")
+				        newNode.SetAttribute(idAttr, attr.nodeName, attr.nodeValue);
+		        }
+	        }
+
+	        //children recursivley
+	        var childNodes = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	        for (var childCnt = 0; childCnt < childNode.snapshotLength; childCnt++)
+	        {
+		        var childNode = childNodes.snapshotItem(childCnt);
+		        var newChildObject = this._buildObject(childNode, this);
+		        if (newChildObject != null && newNode != null)
+		        {
+			        newNode.AddChildROMObject(newChildObject);
+		        }
+	        }
+        }
+    }
+    catch (err)
+    {
+        ReportError(err);        
+    }
+    return newNode;
 }
 
 ROMNode.prototype._convertXMLDocToString = function(indented)
@@ -742,7 +875,11 @@ ROMNode.prototype._convertXMLDocToString = function(indented)
             }
             else
             {
-                retval = (new XMLSerializer()).serializeToString(this.m_xmlDoc);
+                var serializer = new XMLSerializer();
+                if (indented && IsMoz())
+                    retval = XML(serializer.serializeToString(this.m_xmlDoc)).toXMLString();
+                else
+                    retval = serializer.serializeToString(this.m_xmlDoc);
             }
         }
     }
@@ -1128,6 +1265,10 @@ LinearEngine.prototype.EvaluateForAttribute = function(dictAttrName, newValues, 
 
 		        case EDIT:
 			        this.EvalEdit(dictAttrName, newVals[0]);
+			        break;
+			        
+			    default: //STATIC
+			        this.EvalSingleSelect(dictAttrName, newVals[0]);
 			        break;
 		    }
 

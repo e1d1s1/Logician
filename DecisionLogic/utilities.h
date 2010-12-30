@@ -48,7 +48,7 @@ namespace UTILS
 	string stringify(size_t x);
 	wstring ToWString(string s);
 	string WStrToMBCStr(wstring wstr);
-	wstring MBCStrToWStr(xmlChar* mbStr);
+	wstring XMLStrToWStr(xmlChar* mbStr);
 	bool FileExists(const std::wstring& fileName);
 }
 #endif

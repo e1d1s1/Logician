@@ -56,8 +56,8 @@ namespace ROMUTIL
 	wstring MBCStrToWStr(string mbStr);
 	string WStrToMBCStr(wstring wstr);
 #if USE_LIBXML
-	wstring MBCStrToWStr(const unsigned char* mbStr);
-	wstring MBCStrToWStr(unsigned char* mbStr);
+	wstring XMLStrToWStr(const unsigned char* mbStr);
+	wstring XMLStrToWStr(unsigned char* mbStr);
 #endif
 	
 }

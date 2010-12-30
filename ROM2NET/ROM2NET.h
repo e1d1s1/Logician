@@ -98,8 +98,8 @@ namespace ROM2NET {
 		Dictionary<String^, array<String^>^>^ EvaluateTable(String^ evalTable);
 
 		//IO
-		String^				DumpTree(bool indented);
-		bool				LoadTree(String^ xmlStr);
+		String^				SaveXML(bool indented);
+		bool				LoadXML(String^ xmlStr);
 
 		//XPATH
 		String^				EvaluateXPATH(String^ xpath);

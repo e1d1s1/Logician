@@ -19,7 +19,7 @@
       <Attr>out1</Attr>
       <Value/>
       <Value operation="4096">eval(testtable1, outputAttr1)</Value>
-      <Value operation="1">XPATH Worked</Value>
+      <Value operation="1">XPATH Worked and UNICODE check:些些些 3 simplifed chinese U+4E9B</Value>
       <Value/>
     </Outputs>
     <Status>
