@@ -178,7 +178,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 		}
 		iRecursingDepth++;
 
-		table->EnbleDebugging(m_DEBUGGING_MSGS);
+		table->EnbleDebugging(DebugThisTable(tableName));
 
 		table->SetInputValues(m_GlobalInputAttrsValues);
 
@@ -205,7 +205,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 						for (vector<wstring>::iterator itRes = chainedResults.begin(); itRes != chainedResults.end(); itRes++)
 						{
 							newResults.push_back((*itRes));
-							if (m_DEBUGGING_MSGS)
+							if (DebugThisTable(chainTableName))
 							{
 								if (debugVals.size() > 0)
 									debugVals+=L"|";
@@ -216,7 +216,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 							}
 						}
 					}
-					if (m_DEBUGGING_MSGS && chainedResults.size() > 0)
+					if (DebugThisTable(tableName) && chainedResults.size() > 0)
 					{ //replace the eval( string with the actual value
 						table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + debugVals);
 					}
@@ -365,7 +365,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 					#endif
 					newResults.push_back(val);
 
-					if (m_DEBUGGING_MSGS)
+					if (DebugThisTable(tableName))
 					{ //replace the js( string with the actual value
 						table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + L":" + XMLSafe(val));
 					}
@@ -439,7 +439,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 					}
 					newResults.push_back(val);
 
-					if (m_DEBUGGING_MSGS)
+					if (DebugThisTable(tableName))
 					{	//replace the py( string with the actual value
 						table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + L":" + XMLSafe(val));
 					}
@@ -460,7 +460,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 
 		iRecursingDepth--;
 
-		if (m_DEBUGGING_MSGS == true)
+		if (DebugThisTable(tableName) == true)
 		{
 			SendToDebugServer(table->DebugMessage);
 		}
@@ -481,7 +481,7 @@ vector<wstring> EDS::CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wst
 	try
 	{
 		CRuleTable *table = m_TableSet.GetTable(tableName);
-		table->EnbleDebugging(m_DEBUGGING_MSGS);
+		table->EnbleDebugging(DebugThisTable(tableName));
 		table->SetInputValues(m_GlobalInputAttrsValues);
 		retval = table->EvaluateTable(inputAttr, bGetAll, false);
 	}
@@ -499,7 +499,7 @@ map<wstring, vector<wstring> > EDS::CKnowledgeBase::ReverseEvaluateTable(wstring
 	try
 	{
 		CRuleTable *table = m_TableSet.GetTable(tableName);
-		table->EnbleDebugging(m_DEBUGGING_MSGS);
+		table->EnbleDebugging(DebugThisTable(tableName));
 		table->SetInputValues(m_GlobalInputAttrsValues);
 		vector<pair<wstring, vector<CRuleCell> > > outputCollection = table->GetInputAttrsTests();
 		//for all the outputs get the results
@@ -549,6 +549,23 @@ void EDS::CKnowledgeBase::SendToDebugServer(wstring msg)
 	}
 }
 
+bool EDS::CKnowledgeBase::DebugThisTable(wstring tableName)
+{
+	if (m_DEBUGGING_MSGS)
+	{
+		if (m_DebugTables.size() > 0)
+		{
+			vector<wstring>::iterator it = find(m_DebugTables.begin(), m_DebugTables.end(), tableName);
+			if (it != m_DebugTables.end())
+				return true;
+			else
+				return false;
+		}
+		else
+			return true;
+	}
+	return false;
+}
 
 map<wstring, vector<wstring> > EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring param, bool bGetAll)
 {
@@ -665,7 +682,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 			xmlDocument->resolveExternals = VARIANT_FALSE;
 			xmlDocument->setProperty("SelectionLanguage", "XPath");
 			xmlDocument->setProperty("SelectionNamespaces", "");
-			//// Turn on the new parser in MSXML6 for better standards compliance (leadding whitespaces in attr values);
+			//// Turn on the new parser in MSXML6 for better standards compliance (leading whitespaces in attr values);
 			////this must be done prior to loading the document
 			xmlDocument->setProperty("NewParser", VARIANT_TRUE);
 
@@ -678,6 +695,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 					m_IsOpen = true;
 					Node TablesNode = xmlDocument->selectSingleNode("//Tables");
 					wstring debug = VariantToWStr(TablesNode->attributes->getNamedItem("debug")->nodeValue);
+					wstring debugTables = VariantToWStr(TablesNode->attributes->getNamedItem("debugtables")->nodeValue);
 					if (debug == L"true")
 					{
 						m_DEBUGGING_MSGS = true;
@@ -686,6 +704,9 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 						{
 							m_DEBUGGING_CON = con;
 						}
+
+						if (debugTables.length() > 0)
+							m_DebugTables = EDSUTIL::Split(debugTables, L",");
 					}
 					else
 						m_DEBUGGING_MSGS = false;
@@ -792,6 +813,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 				xmlXPathObjectPtr xpathTables = xmlXPathEvalExpression(tablesXPath, xpathCtx);
 				Node tablesNode = xpathTables->nodesetval->nodeTab[0];
 				wstring debug = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debug"));
+				wstring debugTables = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debugtables"));
 				if (debug == L"true")
 				{
 					m_DEBUGGING_MSGS = true;
@@ -800,6 +822,9 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 					{
 						m_DEBUGGING_CON = con;
 					}
+					
+					if (debugTables.length() > 0)
+						m_DebugTables = EDSUTIL::Split(debugTables, L",");
 				}
 				else
 					m_DEBUGGING_MSGS = false;
@@ -1116,7 +1141,7 @@ vector<string> EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, strin
 {
 	//no chaining or scripting in reverse
 	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
-	table->EnbleDebugging(m_DEBUGGING_MSGS);
+	table->EnbleDebugging(DebugThisTable(MBCStrToWStr(tableName)));
 	table->SetInputValues(m_GlobalInputAttrsValues);
 	return ToASCIIStringVector(table->EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false));
 }
