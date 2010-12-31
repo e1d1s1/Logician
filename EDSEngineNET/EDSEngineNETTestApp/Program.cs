@@ -22,6 +22,8 @@ namespace EDSEngineNETTestApp
                 write_result("OK: File opened");
             }
 
+            knowledge.DebugDelegate = write_debug;
+
             var cnt = knowledge.TableCount();
             if (cnt == 12)
             {
@@ -275,12 +277,19 @@ namespace EDSEngineNETTestApp
                 write_result("FAILURE: reverse evaluation failed");
 	        }
 
+#if DEBUG
             Quit();
+#endif
         }
 
         static void write_result(string s)
         {
             Console.WriteLine(s);
+        }
+
+        static void write_debug(string s)
+        {
+            Console.WriteLine("DEBUGGING: " + s);
         }
 
         static void Quit()
