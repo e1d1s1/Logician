@@ -4,7 +4,7 @@
 // Author:      Eric D. Schmidt
 // Modified by:
 // Created:     07/01/2010
-// Copyright:   (c) 2010 Eric D. Schmidt
+// Copyright:   (c) 2009 - 2011 Eric D. Schmidt
 // Licence:     GNU GPLv3
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
