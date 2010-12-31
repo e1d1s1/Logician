@@ -1,9 +1,9 @@
 /*
 This file is part of EDSEngineNET.
-Copyright (C) 2009 Eric D. Schmidt
+Copyright (C) 2009 - 2011 Eric D. Schmidt
 
     EDSEngineNET is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@ Copyright (C) 2009 Eric D. Schmidt
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
+    You should have received a copy of the GNU General Public License
     along with EDSEngineNET.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "stdafx.h"
@@ -31,9 +31,9 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("EDSEngineNET")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("")];
+[assembly:AssemblyCompanyAttribute("eLogician, LLC")];
 [assembly:AssemblyProductAttribute("EDSEngineNET")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) 2009 Eric D. Schmidt")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c) 2009-2011 Eric D. Schmidt")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 

@@ -1,9 +1,9 @@
 /*
 This file is part of EDSEngineNET.
-Copyright (C) 2009 Eric D. Schmidt
+Copyright (C) 2009 - 2011 Eric D. Schmidt
 
     EDSEngineNET is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@ Copyright (C) 2009 Eric D. Schmidt
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
+    You should have received a copy of the GNU General Public License
     along with EDSEngineNET.  If not, see <http://www.gnu.org/licenses/>.
 */
 // EDSEngineNET.h
@@ -32,16 +32,19 @@ using namespace std;
 using namespace System;
 using namespace System::Collections::Generic;
 
-namespace EDSNET {
+namespace EDSNET {	
+
+	public delegate void DebugHandlerDelegate(String^ msg);
 
 	public ref class EDSEngineNET
 	{
 	public:
-		EDSEngineNET() {}
+		EDSEngineNET() {DebugDelegate = nullptr;}
 		EDSEngineNET(String^ knowledge_file) {CreateKnowledgeBase(knowledge_file);}
 		bool CreateKnowledgeBase(String^ knowledge_file);
 		~EDSEngineNET() {this->!EDSEngineNET();}		
 		!EDSEngineNET() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = NULL;}
+		DebugHandlerDelegate^					DebugDelegate;
 
 		size_t									TableCount();
 		bool									IsOpen();		
@@ -75,6 +78,7 @@ namespace EDSNET {
 		String^									Translate(String^ source, String^ sourceLocale, String^ destLocale);
 
 	private:
-		EDS::CKnowledgeBase						*m_KnowledgeBase;
+		void									Debug();
+		EDS::CKnowledgeBase						*m_KnowledgeBase;							
 	};
 }

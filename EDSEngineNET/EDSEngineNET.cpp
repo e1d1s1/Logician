@@ -1,9 +1,9 @@
 /*
 This file is part of EDSEngineNET.
-Copyright (C) 2009 Eric D. Schmidt
+Copyright (C) 2009 - 2011 Eric D. Schmidt
 
     EDSEngineNET is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@ Copyright (C) 2009 Eric D. Schmidt
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
+    You should have received a copy of the GNU General Public License
     along with EDSEngineNET.  If not, see <http://www.gnu.org/licenses/>.
 */
 // This is the main DLL file.
@@ -28,12 +28,13 @@ using namespace std;
 
 namespace EDSNET
 {
-
 	bool EDSEngineNET::CreateKnowledgeBase(System::String ^knowledge_file)
 	{
 		wstring file;
 		MarshalString(knowledge_file, file);
+		DebugDelegate = nullptr;
 		m_KnowledgeBase = new EDS::CKnowledgeBase(file);
+		m_KnowledgeBase->GenerateDebugMessages(true);
 		if (m_KnowledgeBase)
 			return true;
 		else
@@ -93,6 +94,7 @@ namespace EDSNET
 			MarshalString(param, para);
 			vector<wstring> res = m_KnowledgeBase->EvaluateTableWithParam(table, output, para, bGetAll);
 			retval = GetArrayFromVectorStrings(res);
+			Debug();
 		}
 
 		return retval;
@@ -108,6 +110,7 @@ namespace EDSNET
 			MarshalString(param, para);
 			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTableWithParam(table, para, bGetAll);
 			retval = GetDictionaryFromMapStrings(res);
+			Debug();
 		}
 		return retval;
 	}
@@ -123,6 +126,7 @@ namespace EDSNET
 			MarshalString(outputAttr, output);
 			vector<wstring> res = m_KnowledgeBase->EvaluateTable(table, output, bGetAll);
 			retval = GetArrayFromVectorStrings(res);
+			Debug();
 		}
 
 		return retval;
@@ -138,6 +142,7 @@ namespace EDSNET
 			MarshalString(tableName, table);
 			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTable(table, bGetAll);
 			retval = GetDictionaryFromMapStrings(res);
+			Debug();
 		}
 
 		return retval;
@@ -154,6 +159,7 @@ namespace EDSNET
 			MarshalString(inputAttr, input);
 			vector<wstring> res = m_KnowledgeBase->ReverseEvaluateTable(table, input, bGetAll);
 			retval = GetArrayFromVectorStrings(res);
+			Debug();
 		}
 
 		return retval;
@@ -169,6 +175,7 @@ namespace EDSNET
 			MarshalString(tableName, table);
 			map<wstring, vector<wstring> > res = m_KnowledgeBase->ReverseEvaluateTable(table, bGetAll);
 			retval = GetDictionaryFromMapStrings(res);
+			Debug();
 		}
 
 		return retval;
@@ -309,5 +316,15 @@ namespace EDSNET
 		}
 
 		return retval;
+	}
+
+	void EDSEngineNET::Debug()
+	{
+		if (m_KnowledgeBase != NULL && DebugDelegate != nullptr)
+		{
+			wstring msg = m_KnowledgeBase->GetDebugMessages();
+			if (msg.length() > 0)
+				DebugDelegate(gcnew String(msg.c_str()));
+		}
 	}
 }
