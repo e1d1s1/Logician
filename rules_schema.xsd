@@ -70,7 +70,7 @@
         </xs:element>
       </xs:sequence>
       <xs:attribute name="debug" type="xs:boolean" use="required" />
-	  <xs:attribute name="debugtables" type="xs:string" use="required" />
+	    <xs:attribute name="debugtables" type="xs:string" use="required" />
       <xs:attribute name="connection" type="xs:string" use="required" />
     </xs:complexType>
   </xs:element>
