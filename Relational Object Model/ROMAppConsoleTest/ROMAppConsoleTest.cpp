@@ -70,7 +70,7 @@ long getTickCount()
     #endif
 }
 
-char *cvtInt(long num, char *str)
+void cvtInt(long num, char *str)
 {
     sprintf( str, "%d", num );
 }

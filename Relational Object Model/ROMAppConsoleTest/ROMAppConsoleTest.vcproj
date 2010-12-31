@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="&quot;Relational Object Model 2.lib&quot; &quot;EDSEngine.lib&quot;"
+				AdditionalDependencies="&quot;Relational Object Model.lib&quot; &quot;EDSEngine.lib&quot;"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="&quot;..\Debug MSXML&quot;;&quot;..\..\EDSEngine\Debug MSXML&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
 				IgnoreDefaultLibraryNames="MSVCRT;MSVCR90"
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="&quot;Relational Object Model 2.lib&quot; &quot;EDSEngine.lib&quot;"
+				AdditionalDependencies="&quot;Relational Object Model.lib&quot; &quot;EDSEngine.lib&quot;"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="&quot;..\Release MSXML&quot;;&quot;..\..\EDSEngine\Release MSXML&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
 				GenerateDebugInformation="true"
@@ -217,7 +217,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="&quot;Relational Object Model 2.lib&quot; &quot;EDSEngine.lib&quot;"
+				AdditionalDependencies="&quot;Relational Object Model.lib&quot; &quot;EDSEngine.lib&quot;"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="&quot;..\Debug Libxml&quot;;&quot;..\..\EDSEngine\Debug Libxml&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
 				IgnoreDefaultLibraryNames="MSVCRT;MSVCR90"
@@ -293,7 +293,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="&quot;Relational Object Model 2.lib&quot; &quot;EDSEngine.lib&quot;"
+				AdditionalDependencies="&quot;Relational Object Model.lib&quot; &quot;EDSEngine.lib&quot;"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="&quot;..\Release Libxml&quot;;&quot;..\..\EDSEngine\Release Libxml&quot;;C:\Python26\libs;C:\boost_1_39_0\lib"
 				GenerateDebugInformation="true"
