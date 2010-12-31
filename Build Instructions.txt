@@ -1,6 +1,6 @@
 Build Instructions for client-based tools:
 
-Logician relies upon open source and freely available cross-platform tools, so you shouldn't have too much trouble putting it together no matter your OS.  Visual Studio and Code::Blocks project files are provided for your compiling convenience on your platform of choice, as well as GNU C Makefiles.
+Logician relies upon open source and freely available cross-platform tools, so you shouldn't have too much trouble putting it together no matter your OS.  Visual Studio and Code::Blocks project files are provided for your compiling convenience on your platform of choice, as well as GNU C++ Makefiles.
 
 Prerequisites:
 Rules Engine: EDSEngine
@@ -35,18 +35,20 @@ Linux (Ubuntu 9.10+):
 - uuid-dev 1.2+
 
 Windows .NET tools:
-.NET EDSEngine Wrapper: ROM2NET (C++/CLI wrapper implementation)
+.NET Rules Enginer: EDSEngineNET (C++/CLI wrapper implementation)
 - .NET 3.5+
 - EDSEngine v1.0
 
-C# Dynamic application modeler: ROM2NET
+.NET Relational Object Model Wrapper: ROMNET (C++/CLI wrapper implementation)
 - .NET 3.5+
+- EDSEngine v1.0
+- Relation Object Model v1.0
 
 Build Instructions
 Important pre-processor defines for EDSEngine/Relational Object Model:
 USE_MSXML: on widows platform, enables use of MSXML 6.0
 USE_LIBXML: optional on windows, required on all other platforms to enable use of libxml2 and libxslt.
-USE_PYTHON: enables python runtime scripting support in rules
+USE_PYTHON: enables python runtime scripting support in rules.  You will need the Python and Boost libraries.
 USE_JAVASCRIPT: enables javascript runtime scripting support in rules
 USE_WINDOWS_SCRIPTING: on windows when javascript support is enabled, uses the windows scripting host for processing instead of spidermonkey, thereby eliminating that dependency.
 POSIX: compliant (Linux) environments should enable this define
@@ -54,7 +56,7 @@ POSIX: compliant (Linux) environments should enable this define
 Windows:
 Visual Studio 2008 project files are included.  Configurations for both MSXML and libxml2 based builds are included.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.
 
-Linux: (Ubuntu 9.10)
+Linux: (Ubuntu 9.10+)
 All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu has been tested.  A makefile and Code::Blocks project files are provided.
 
 Apple OSX:
@@ -62,4 +64,4 @@ Coming soon...should work since all the same *nix tools are available.  Need to 
 
 Notes for web tools:
 
-The javascript components have been testing against IE6 and up, Firefox 3.5 (Gecko), and Safari 4.0.3 (Webkit).  A sample test page with Logician scripting tools is available in the source repository.
+The javascript components have been testing against IE6 and up, Firefox 3.5 (Gecko), Google Chrome 8 and Safari 4.0.3 (Webkit).  A sample test page with Logician scripting tools is available in the source repository.
