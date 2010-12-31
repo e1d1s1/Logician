@@ -1,6 +1,6 @@
 /*
 This file is part of the EDSEngine Library.
-Copyright (C) 2009 Eric D. Schmidt
+Copyright (C) 2009 - 2011 Eric D. Schmidt
 
     EDSEngine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ static const unsigned long offsetsFromUTF8[6] = {
 
 using namespace std;
 
+typedef void (*DebugHandler) (wstring); 
+
 namespace EDS
 {
 	class CKnowledgeBase
@@ -52,6 +54,9 @@ namespace EDS
 		bool CreateKnowledgeBase(wstring knowledge_file);
 		size_t TableCount() {return m_TableSet.Count();}
 		bool IsOpen() {return m_IsOpen;}
+		void SetDebugHandler(DebugHandler debugger) {m_DebugHandlerPtr = debugger;}
+		void GenerateDebugMessages(bool bGenerate) {m_DEBUGGING_MSGS = bGenerate; m_bGenerateMsg = bGenerate;}
+		wstring GetDebugMessages() {return m_LastDebugMessage; m_LastDebugMessage.clear();}
 
 		bool TableHasScript(wstring tableName);
 		bool TableIsGetAll(wstring tableName);
@@ -142,7 +147,10 @@ namespace EDS
 		CTableSet m_TableSet;
 		int iRecursingDepth;
 		bool m_DEBUGGING_MSGS;
+		bool m_bGenerateMsg;
+		wstring m_LastDebugMessage;
 		vector<wstring> m_DebugTables;
+		DebugHandler m_DebugHandlerPtr; //to do in-application table debugging
 		wstring m_DEBUGGING_CON;
 		bool m_IsOpen;
 		wstring m_jsCode, m_pyCode;

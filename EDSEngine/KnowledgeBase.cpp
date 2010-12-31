@@ -1,6 +1,6 @@
 /*
 This file is part of the EDSEngine Library.
-Copyright (C) 2009 Eric D. Schmidt
+Copyright (C) 2009 - 2011 Eric D. Schmidt
 
     EDSEngine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -532,14 +532,24 @@ void EDS::CKnowledgeBase::SendToDebugServer(wstring msg)
 {
 	try
 	{
-		boost::asio::io_service io_service;
-		tcp::resolver resolver(io_service);
-		vector<string> con = EDSUTIL::Split(EDSUTIL::ToASCIIString(m_DEBUGGING_CON), ":");
-		tcp::resolver::query query(tcp::v4(), con[0], con[1]);
-		tcp::resolver::iterator iterator = resolver.resolve(query);
-		tcp::socket sock(io_service);
-		sock.connect(*iterator);
-		boost::asio::write(sock, boost::asio::buffer(msg.c_str(), msg.length()*sizeof(wchar_t)));
+		if (m_bGenerateMsg)
+			m_LastDebugMessage += msg + L"\n";
+		else
+		{
+			if (m_DebugHandlerPtr)
+			{
+				(*m_DebugHandlerPtr)(msg);
+			}
+			
+			boost::asio::io_service io_service;
+			tcp::resolver resolver(io_service);
+			vector<string> con = EDSUTIL::Split(EDSUTIL::ToASCIIString(m_DEBUGGING_CON), ":");
+			tcp::resolver::query query(tcp::v4(), con[0], con[1]);
+			tcp::resolver::iterator iterator = resolver.resolve(query);
+			tcp::socket sock(io_service);
+			sock.connect(*iterator);
+			boost::asio::write(sock, boost::asio::buffer(msg.c_str(), msg.length()*sizeof(wchar_t)));
+		}
 	}
 	catch (std::exception& e)
 	{
@@ -610,6 +620,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 	bool retval = false;
 	m_IsOpen = false;
 	iRecursingDepth = 0;
+	m_DebugHandlerPtr = NULL;
 	mapBaseIDtoTranslations.clear();
 	m_GlobalInputAttrsValues.clear();
 	m_GlobalInputAttrsValues[L""] = EMPTY_STRING;

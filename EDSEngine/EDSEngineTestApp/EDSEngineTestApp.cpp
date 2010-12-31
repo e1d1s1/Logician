@@ -78,6 +78,11 @@ void pause()
 
 vector<TestResult> testResults;
 
+void DebugMessage(wstring msg)
+{
+	Log(L"DEBUGGER: " + msg);
+}
+
 int main(int argc, char* argv[])
 {
 	//Loading
@@ -95,6 +100,11 @@ int main(int argc, char* argv[])
 		pause();
 		return 0;
 	}
+
+	//push-style callback debugging
+	knowledge.SetDebugHandler(DebugMessage);
+	//pull-style debugging
+	//knowledge.GenerateDebugMessages(true);
 
 	string s = stringifyDouble(knowledge.TableCount());
 	Log("# of Tables loaded: " + s);
@@ -425,6 +435,8 @@ int main(int argc, char* argv[])
 	{
 		res.SetResult(false, "reverse evaluation failed");
 	}
+
+	//Log(L"Debugging output:\n" + knowledge.GetDebugMessages());
 	pause();
 
 	return 0;
