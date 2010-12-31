@@ -301,7 +301,7 @@ int main(int argc, char* argv[])
 	{
 		res.SetResult(false, "Problem with Javascript state parameter");
 	}
-
+#ifndef NOPYTHON
 	res.Reset();
 	Log("testing evaluation (Python) with state parameter on testtable1 with inputAttr1 = 'TestParameterPY' and inputAttr2 = 'TestParameterPY'");
 	knowledge.SetInputValue(L"inputAttr1", L"TestParameterPY");
@@ -344,9 +344,12 @@ int main(int argc, char* argv[])
 	{
 		res.SetResult(false, "Did not get proper eval result");
 	}
-
+#endif
 
 	res.Reset();
+	knowledge.SetInputValue(L"inputAttr1", L"C");
+	knowledge.SetInputValue(L"inputAttr2", L"58");
+	knowledge.SetInputValue(L"outsideAttr1", L"28");
 	Log("testing table chaining");
 	vector<wstring> result5 = knowledge.EvaluateTable(L"testtable2", L"out1", true);
 	if (result5.size() == results4[L"outputAttr1"].size() &&
@@ -354,7 +357,11 @@ int main(int argc, char* argv[])
 		result5.at(1) == L"28 with concat" &&
 		result5.at(2) == L"4" &&
 		result5.at(3) == L"5" &&
+#ifndef NOPYTHON
 		result5.at(4) == L"30") //28 + 2
+#else
+		result5.at(4) == L"py(28 + 2)")
+#endif
 	{
 		Log(result5.at(0));
 		Log(result5.at(1));

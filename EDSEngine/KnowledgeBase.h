@@ -54,9 +54,9 @@ namespace EDS
 		bool CreateKnowledgeBase(wstring knowledge_file);
 		size_t TableCount() {return m_TableSet.Count();}
 		bool IsOpen() {return m_IsOpen;}
-		void SetDebugHandler(DebugHandler debugger) {m_DebugHandlerPtr = debugger;}
-		void GenerateDebugMessages(bool bGenerate) {m_DEBUGGING_MSGS = bGenerate; m_bGenerateMsg = bGenerate;}
-		wstring GetDebugMessages() {return m_LastDebugMessage; m_LastDebugMessage.clear();}
+		void SetDebugHandler(DebugHandler debugger);
+		void GenerateDebugMessages(bool bGenerate);
+		wstring GetDebugMessages();
 
 		bool TableHasScript(wstring tableName);
 		bool TableIsGetAll(wstring tableName);

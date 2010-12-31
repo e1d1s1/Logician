@@ -48,7 +48,7 @@ Build Instructions
 Important pre-processor defines for EDSEngine/Relational Object Model:
 USE_MSXML: on widows platform, enables use of MSXML 6.0
 USE_LIBXML: optional on windows, required on all other platforms to enable use of libxml2 and libxslt.
-USE_PYTHON: enables python runtime scripting support in rules.  You will need the Python and Boost libraries.
+USE_PYTHON: enables python runtime scripting support in rules.  You will need the Python and Boost libraries.  On Windows this may mean you will have to distribute the boost-python DLL along with your compiled code.
 USE_JAVASCRIPT: enables javascript runtime scripting support in rules
 USE_WINDOWS_SCRIPTING: on windows when javascript support is enabled, uses the windows scripting host for processing instead of spidermonkey, thereby eliminating that dependency.
 POSIX: compliant (Linux) environments should enable this define
@@ -64,4 +64,4 @@ Coming soon...should work since all the same *nix tools are available.  Need to 
 
 Notes for web tools:
 
-The javascript components have been testing against IE6 and up, Firefox 3.5 (Gecko), Google Chrome 8 and Safari 4.0.3 (Webkit).  A sample test page with Logician scripting tools is available in the source repository.
+The javascript components have been testing against IE6 and up, Firefox 3.5 (Gecko), Google Chrome 8 and Safari 4 (Webkit).  A sample test page with Logician scripting tools is available in the source repository.

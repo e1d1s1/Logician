@@ -153,6 +153,26 @@ ROMNode* ROMNode::Clone()
 	return newNode;
 }
 
+void ROMNode::SetTableDebugHandler(DebugHandler debugger)
+{
+	if (m_KnowledgeBase) 
+		m_KnowledgeBase->SetDebugHandler(debugger);
+}
+
+void ROMNode::GenerateTableDebugMessages(bool bGenerate)
+{
+	if (m_KnowledgeBase) 
+		m_KnowledgeBase->GenerateDebugMessages(bGenerate);
+}
+
+wstring ROMNode::GetTableDebugMessages()
+{
+	if (m_KnowledgeBase) 
+		return m_KnowledgeBase->GetDebugMessages(); 
+	else 
+		return L"";
+}
+
 wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
 {
 	wstring retval = L"";
