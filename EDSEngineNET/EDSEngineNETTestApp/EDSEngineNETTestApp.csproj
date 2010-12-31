@@ -33,7 +33,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EDSEngineNET, Version=1.0.3594.15006, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="EDSEngineNET, Version=1.0.4017.9026, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Release\EDSEngineNET.dll</HintPath>
     </Reference>

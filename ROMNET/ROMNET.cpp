@@ -251,6 +251,7 @@ namespace ROMNET
 			wstring wsOutput = MarshalString(output);
 			vector<wstring> res = m_ROMNode->EvaluateTable(wsTable, wsOutput, bGetAll);
 			retval = GetArrayFromVectorStrings(res);
+			PumpDebugMessages();
 		}
 		return retval;
 	}
@@ -264,6 +265,7 @@ namespace ROMNET
 			wstring wsOutput = MarshalString(output);
 			vector<wstring> res = m_ROMNode->EvaluateTable(wsTable, wsOutput);
 			retval = GetArrayFromVectorStrings(res);
+			PumpDebugMessages();
 		}
 		return retval;
 	}
@@ -276,6 +278,7 @@ namespace ROMNET
 			wstring wsTable = MarshalString(evalTable);
 			map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTable(wsTable, bGetAll);
 			retval = GetDictionaryFromMapStrings(res);
+			PumpDebugMessages();
 		}		
 		return retval;
 	}
@@ -288,6 +291,7 @@ namespace ROMNET
 			wstring wsTable = MarshalString(evalTable);
 			map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTable(wsTable);
 			retval = GetDictionaryFromMapStrings(res);
+			PumpDebugMessages();
 		}		
 		return retval;
 	}
@@ -356,6 +360,16 @@ namespace ROMNET
 		return arr;
 	}
 
+	void ROMNodeNET::PumpDebugMessages()
+	{
+		if (m_ROMNode != NULL && DebugDelegate != nullptr)
+		{
+			wstring msg = m_ROMNode->GetTableDebugMessages();
+			if (msg.length() > 0)
+				DebugDelegate(gcnew String(msg.c_str()));
+		}
+	}
+
 
 
 	//dictionary
@@ -365,6 +379,7 @@ namespace ROMNET
 		{
 			wstring wsDict = MarshalString(dictionaryTable);
 			m_ROMDictionary->LoadDictionary(wsDict);
+			PumpDebugMessages();
 		}
 	}
 
@@ -397,6 +412,16 @@ namespace ROMNET
 			}
 		}
 		return retval;
+	}
+
+	void ROMDictionaryNET::PumpDebugMessages()
+	{
+		if (m_ROMDictionary != NULL && DebugDelegate != nullptr)
+		{
+			wstring msg = m_ROMDictionary->GetTableDebugMessages();
+			if (msg.length() > 0)
+				DebugDelegate(gcnew String(msg.c_str()));
+		}
 	}
 
 	//LinearEngine
@@ -447,6 +472,7 @@ namespace ROMNET
 			wstring name = MarshalString(dictAttrName);
 			vector<wstring> vals = GetVectorFromArrayStrings(newValues);
 			m_LinearEngine->EvaluateForAttribute(name, vals, bEvalDependents);
+			PumpDebugMessages();
 		}
 	}
 
@@ -457,6 +483,7 @@ namespace ROMNET
 			wstring name = MarshalString(dictAttrName);
 			wstring val = MarshalString(newValue);
 			m_LinearEngine->EvaluateForAttribute(name, val, bEvalDependents);
+			PumpDebugMessages();
 		}
 	}
 
@@ -480,5 +507,13 @@ namespace ROMNET
 		return retval;
 	}
 
-	
+	void LinearEngineNET::PumpDebugMessages()
+	{
+		if (m_LinearEngine != NULL && DebugDelegate != nullptr)
+		{
+			wstring msg = m_LinearEngine->GetTableDebugMessages();
+			if (msg.length() > 0)
+				DebugDelegate(gcnew String(msg.c_str()));
+		}
+	}
 }

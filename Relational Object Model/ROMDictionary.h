@@ -32,6 +32,8 @@ namespace ROM
 		ROMDictionary() {}
 		void CreateROMDictionary(ROMNode* context);
 		virtual ~ROMDictionary(void){}
+		wstring	GetTableDebugMessages() {if (m_ROMContext != NULL) return m_ROMContext->GetTableDebugMessages();}
+		void GenerateTableDebugMessages(bool bGenerate) {if (m_ROMContext != NULL) m_ROMContext->GenerateTableDebugMessages(bGenerate);}
 
 		void LoadDictionary(wstring dictionaryTable);
 		ROMDictionaryAttribute* GetDictionaryAttr(wstring dictAttrName);
@@ -43,12 +45,6 @@ namespace ROM
 
 	private:
 		ROMNode *m_ROMContext;
-		//map<wstring, vector<wstring> > _evaluateTable(wstring evalTable, bool bGetAll = true);
-		//vector<wstring> m_ROMContext->EvaluateTableForAttr(wstring evalTable, wstring outputName, bool bGetAll = true);
-		//wstring m_ROMContext->GetAttribute(wstring name, bool bImmediate = false);
-		//void m_ROMContext->SetAttribute(wstring name, wstring value);
-		//vector<wstring> m_ROMContext->GetPossibleValues(wstring evalTable, wstring outputName);	
-		//EDS::CKnowledgeBase* _getKnowledgeBase();
 
 		map<wstring, ROMDictionaryAttribute> m_dict;
 	};

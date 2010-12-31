@@ -33,8 +33,7 @@ namespace EDSNET
 		wstring file;
 		MarshalString(knowledge_file, file);
 		DebugDelegate = nullptr;
-		m_KnowledgeBase = new EDS::CKnowledgeBase(file);
-		m_KnowledgeBase->GenerateDebugMessages(true);
+		m_KnowledgeBase = new EDS::CKnowledgeBase(file);		
 		if (m_KnowledgeBase)
 			return true;
 		else

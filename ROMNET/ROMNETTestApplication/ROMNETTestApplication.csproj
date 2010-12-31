@@ -8,8 +8,8 @@
     <ProjectGuid>{7367F92B-5BCB-42F2-A2E4-CBC585A70B7C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ROM2NETTestApplication</RootNamespace>
-    <AssemblyName>ROM2NETTestApplication</AssemblyName>
+    <RootNamespace>ROMNETTestApplication</RootNamespace>
+    <AssemblyName>ROMNETTestApplication</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,8 +33,8 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ROM2NET, Version=1.0.3657.20896, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\Release\ROM2NET.dll</HintPath>
+    <Reference Include="ROMNET, Version=1.0.3657.20896, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\Release\ROMNET.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />

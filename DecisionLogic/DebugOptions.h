@@ -100,7 +100,7 @@ public:
 	{
 		m_options->selectedTables.clear();
 
-		for (unsigned int i = 0; i < selectedList->GetCount(); i++)
+		if (debugChoice->GetSelection() != 0) for (unsigned int i = 0; i < selectedList->GetCount(); i++)
 		{
 			m_options->selectedTables.push_back((wstring)selectedList->GetString(i));
 		}

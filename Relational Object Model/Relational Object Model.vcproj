@@ -17,7 +17,7 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug MSXML|Win32"
+			Name="Debug MSXML Python|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\EDSEngine&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL2_EXPORTS;USE_MSXML"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_MSXML"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -63,7 +63,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
-				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML&quot;"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML Python&quot;"
 				IgnoreDefaultLibraryNames="dwmapi.dll"
 			/>
 			<Tool
@@ -83,7 +83,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release MSXML|Win32"
+			Name="Release MSXML Python|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
@@ -107,7 +107,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;..\EDSEngine&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL2_EXPORTS;USE_MSXML"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_MSXML"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -126,7 +126,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
-				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML&quot;"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML Python&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -170,7 +170,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\EDSEngine;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\libxslt-1.1.24.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL2_EXPORTS;USE_LIBXML"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_LIBXML"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -235,7 +235,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;..\EDSEngine&quot;;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\libxslt-1.1.24.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL2_EXPORTS;USE_MSXML"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_MSXML"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -255,6 +255,134 @@
 				Name="VCLibrarianTool"
 				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
 				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxslt-1.1.24.win32\lib&quot;;&quot;..\EDSEngine\Debug Libxml&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug MSXML|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="&quot;..\EDSEngine&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_MSXML"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="4"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML&quot;"
+				IgnoreDefaultLibraryNames="dwmapi.dll"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release MSXML|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;..\EDSEngine&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_MSXML"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"

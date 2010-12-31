@@ -23,6 +23,7 @@ namespace EDSEngineNETTestApp
             }
 
             knowledge.DebugDelegate = write_debug;
+            knowledge.SetDebugging(true);
 
             var cnt = knowledge.TableCount();
             if (cnt == 12)
@@ -89,7 +90,7 @@ namespace EDSEngineNETTestApp
             {
                 write_result(allOutputs[i]);
             }
-            if (allOutputs.Length == 7 &&
+            if (allOutputs.Length == 9 &&
                 allOutputs[0] == "1" &&
                 allOutputs[1] == "2" &&
                 allOutputs[2] == "get(outsideAttr1) with concat" &&
@@ -179,7 +180,11 @@ namespace EDSEngineNETTestApp
                 results4["outputAttr1"][1] == "28 with concat" && //empty becuase we never fed it outsideAttr1
                 results4["outputAttr1"][2] == "4" &&
                 results4["outputAttr1"][3] == "5" &&
+#if PYTHON
                 results4["outputAttr1"][4] == "30")
+#else
+                results4["outputAttr1"][4] == "py(28 + 2)")
+#endif
             {
                 write_result("OK: " + results4["outputAttr1"][0] + "\n" +
                 results4["outputAttr1"][1] + "\n" +
@@ -200,7 +205,11 @@ namespace EDSEngineNETTestApp
                 result5[1] == "28 with concat" && //empty becuase we never fed it outsideAttr1
                 result5[2] == "4" &&
                 result5[3] == "5" &&
+#if PYTHON
                 result5[4] == "30")
+#else
+                result5[4] == "py(28 + 2)")
+#endif
             {
                 write_result("OK: " + result5[0] + "\n" +
                 result5[1] + "\n" +

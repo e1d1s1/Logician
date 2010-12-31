@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using ROM2NET;
+using ROMNET;
 
 namespace ROM2NETTestApplication
 {
@@ -48,6 +48,8 @@ namespace ROM2NETTestApplication
             Log("loading rules: " + rulesPath);
             if (rootNode.LoadRules(rulesPath))
             {
+                rootNode.DebugDelegate = DebugMessage;
+                rootNode.SetDebugging(true);
                 Log("...loaded");
                 Log("Evaluating table testtable1");
                 string[] res = rootNode.EvaluateTable("testtable1", "outputAttr1", true);
@@ -232,6 +234,11 @@ namespace ROM2NETTestApplication
         static void Log(string s)
         {
             Console.WriteLine(s);
+        }
+
+        static void DebugMessage(string msg)
+        {
+	        Log("DEBUGGER: " + msg);
         }
     }
 }

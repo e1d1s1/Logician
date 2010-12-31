@@ -1306,16 +1306,15 @@ void ProjectManager::WriteAllDataSetsToXMLFile(wstring savePath)
 
 		string strDebug = "false";
 		if (m_deubgStaus) strDebug = "true";
+		wstring tables;
 		if (m_SelectedTables.size() > 0)
-		{
-			wstring tables;
+		{			
 			for (vector<wstring>::iterator it = m_SelectedTables.begin(); it != m_SelectedTables.end(); it++)
 				tables += *it + L",";
 			if (tables.length() > 0)
-				tables = tables.substr(0, tables.length() - 1);
-			xmlSetProp(tablesRootNode, (xmlChar*)"debugtables", (xmlChar*)UTILS::WStrToMBCStr(tables).c_str());
+				tables = tables.substr(0, tables.length() - 1);			
 		}
-
+		xmlSetProp(tablesRootNode, (xmlChar*)"debugtables", (xmlChar*)UTILS::WStrToMBCStr(tables).c_str());
 		xmlSetProp(tablesRootNode, (xmlChar*)"debug", (xmlChar*)strDebug.c_str());
 		xmlSetProp(tablesRootNode, (xmlChar*)"connection", (xmlChar*)UTILS::WStrToMBCStr(m_DebugConnection).c_str());
 		xmlDocSetRootElement(xmlDoc, tablesRootNode);

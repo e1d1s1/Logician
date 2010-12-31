@@ -32,8 +32,7 @@ using namespace std;
 using namespace System;
 using namespace System::Collections::Generic;
 
-namespace EDSNET {	
-
+namespace EDSNET {
 	public delegate void DebugHandlerDelegate(String^ msg);
 
 	public ref class EDSEngineNET
@@ -45,6 +44,7 @@ namespace EDSNET {
 		~EDSEngineNET() {this->!EDSEngineNET();}		
 		!EDSEngineNET() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = NULL;}
 		DebugHandlerDelegate^					DebugDelegate;
+		void SetDebugging(bool set) {if (m_KnowledgeBase) m_KnowledgeBase->GenerateDebugMessages(set);}
 
 		size_t									TableCount();
 		bool									IsOpen();		

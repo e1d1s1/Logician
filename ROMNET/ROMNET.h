@@ -35,6 +35,8 @@ using namespace System;
 using namespace System::Collections::Generic;
 
 namespace ROMNET {
+	public delegate void DebugHandlerDelegate(String^ msg);
+
 	public ref class ROMNodeNET
 	{
 	public:
@@ -77,6 +79,11 @@ namespace ROMNET {
 
 			return true;
 		}
+
+		//debugger
+		DebugHandlerDelegate^	DebugDelegate;
+		void					SetDebugging(bool set) {if (m_ROMNode) m_ROMNode->GenerateTableDebugMessages(set);}
+		void					PumpDebugMessages();
 
 		//relational functions
 		ROMNodeNET^			GetRoot();
@@ -122,11 +129,10 @@ namespace ROMNET {
 
 		IntPtr^				GetPtr() {return (IntPtr)m_ROMNode;}
 
-	private:
+	private:		
 		array<ROMNodeNET^>^ GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
 
-
-		ROM::ROMNode			*m_ROMNode;
+		ROM::ROMNode		*m_ROMNode;
 	};
 
 	public ref class ROMDictionaryAttributeNET
@@ -328,6 +334,11 @@ namespace ROMNET {
 		virtual ~ROMDictionaryNET() {if (m_ROMDictionary) delete m_ROMDictionary; this->!ROMDictionaryNET();}
 		!ROMDictionaryNET() {}
 
+		//debugger
+		DebugHandlerDelegate^	DebugDelegate;
+		void					SetDebugging(bool set) {if (m_ROMDictionary) m_ROMDictionary->GenerateTableDebugMessages(set);}
+		void					PumpDebugMessages();
+
 		void						LoadDictionary(String^ dictionaryTable);
 		ROMDictionaryAttributeNET^	GetDictionaryAttr(String^ dictAttrName);
 		Dictionary<String^, ROMDictionaryAttributeNET^>^ GetAllDictionaryAttrs();
@@ -349,6 +360,11 @@ namespace ROMNET {
 		}
 		virtual ~LinearEngineNET() {if (m_LinearEngine) delete m_LinearEngine; this->!LinearEngineNET();}
 		!LinearEngineNET() {}
+
+		//debugger
+		DebugHandlerDelegate^	DebugDelegate;
+		void					SetDebugging(bool set) {if (m_LinearEngine) m_LinearEngine->GenerateTableDebugMessages(set);}
+		void					PumpDebugMessages();
 
 		void						LoadDictionary(String^ dictionaryTable);
 		ROMDictionaryAttributeNET^	GetDictionaryAttr(String^ dictAttrName);

@@ -75,6 +75,11 @@ void cvtInt(long num, char *str)
     sprintf( str, "%d", num );
 }
 
+void DebugMessage(wstring msg)
+{
+	Log(L"DEBUGGER: " + msg);
+}
+
 int main(int argc, char* argv[])
 {
 	long start = 0, elapsed = 0, testROMTreeStart = 0, testROMTreeEnd = 0, testROMNodeStart = 0, testROMNodeEnd = 0;
@@ -95,7 +100,7 @@ int main(int argc, char* argv[])
 		Log("Testing ROMNode Objects");
 		Log("Creating root node");
 		ROMNode* rootNode = new ROMNode(L"TestApplication");
-		Log("Root ROMNode created");
+		Log("Root ROMNode created");		
 
 		Log("Setting some attributes");
 		rootNode->SetAttribute(L"inputAttr1", L"some value of test1");
@@ -145,6 +150,7 @@ int main(int argc, char* argv[])
 		Log("loading rules");
 		if (rootNode->LoadRules(path))
 		{
+			rootNode->SetTableDebugHandler(DebugMessage);
 			Log("...loaded");
 			Log("Evaluating table testtable1");
 			vector<wstring> res = rootNode->EvaluateTable(L"testtable1", L"outputAttr1", true);

@@ -53,6 +53,9 @@ namespace ROM
 		ROMNode(string id) {CreateROMNode(id);}
 		void CreateROMNode(wstring id) {m_id = id; _init();}
 		void CreateROMNode(string id) {m_id = ROMUTIL::MBCStrToWStr(id); _init();}
+		void				SetTableDebugHandler(DebugHandler debugger);
+		void				GenerateTableDebugMessages(bool bGenerate);
+		wstring				GetTableDebugMessages();
 		
 
 		//relational functions

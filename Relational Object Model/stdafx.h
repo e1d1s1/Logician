@@ -46,8 +46,8 @@ Copyright (C) 2009-2011 Eric D. Schmidt
 #include <windows.h>
 #endif
 
-#ifndef ROM2
-#define ROM2 1
+#ifndef ROMISDEF
+#define ROMISDEF 1
 #endif
 
 // TODO: reference additional headers your program requires here

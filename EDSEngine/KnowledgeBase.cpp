@@ -67,6 +67,7 @@ EDS::CKnowledgeBase::~CKnowledgeBase(void)
 EDS::CKnowledgeBase::CKnowledgeBase()
 {
 	m_DEBUGGING_MSGS = false;
+	m_bGenerateMsg = false;
 	m_DEBUGGING_CON = L"localhost:11000";
 	m_IsOpen = false;
 	mapBaseIDtoTranslations.clear();
@@ -74,6 +75,23 @@ EDS::CKnowledgeBase::CKnowledgeBase()
 #ifdef WIN32
 	HRESULT hr = CoInitialize(NULL);
 #endif
+}
+
+void EDS::CKnowledgeBase::SetDebugHandler(DebugHandler debugger) 
+{
+	m_DebugHandlerPtr = debugger;
+}
+
+void EDS::CKnowledgeBase::GenerateDebugMessages(bool bGenerate)
+{
+	m_DEBUGGING_MSGS = bGenerate;
+	m_bGenerateMsg = bGenerate;
+}
+
+wstring EDS::CKnowledgeBase::GetDebugMessages() 
+{
+	return m_LastDebugMessage;
+	m_LastDebugMessage.clear();
 }
 
 wstring EDS::CKnowledgeBase::DeLocalize(wstring localeValue)
@@ -621,6 +639,8 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 	m_IsOpen = false;
 	iRecursingDepth = 0;
 	m_DebugHandlerPtr = NULL;
+	m_DEBUGGING_MSGS = false;
+	m_bGenerateMsg = false;
 	mapBaseIDtoTranslations.clear();
 	m_GlobalInputAttrsValues.clear();
 	m_GlobalInputAttrsValues[L""] = EMPTY_STRING;
