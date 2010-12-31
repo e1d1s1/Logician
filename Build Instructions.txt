@@ -13,7 +13,7 @@ All platforms:
 - Python 2.6 (optional compile-time switch)
 - Mozilla Spidermonkey Javascript engine 1.8 (optional compile-time switch)
 Windows:
-- MSXML v6.0 (optional in lieu of libxml, libxslt, and iconv)
+- MSXML v6.0 (preferred build in lieu of libxml, libxslt, and iconv)
 
 Rule Table Builder GUI: DecisionLogic
 All platforms:
@@ -30,7 +30,7 @@ All platforms:
 - libxslt v1.1.24 
 - EDSEngine v1.0
 Windows:
-- MSXML v6.0 (optional in lieu of libxml, libxslt, and iconv)
+- MSXML v6.0 (preferred build in lieu of libxml, libxslt, and iconv)
 Linux (Ubuntu 9.10+):
 - uuid-dev 1.2+
 
@@ -54,7 +54,7 @@ USE_WINDOWS_SCRIPTING: on windows when javascript support is enabled, uses the w
 POSIX: compliant (Linux) environments should enable this define
 
 Windows:
-Visual Studio 2008 project files are included.  Configurations for both MSXML and libxml2 based builds are included.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.
+Visual Studio 2008 project files are included.  Configurations for both MSXML and libxml2 based builds are included, MSXML is recommended at this time.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.
 
 Linux: (Ubuntu 9.10+)
 All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu has been tested.  A makefile and Code::Blocks project files are provided.
