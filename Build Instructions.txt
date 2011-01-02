@@ -1,6 +1,6 @@
 Build Instructions for client-based tools:
 
-Logician relies upon open source and freely available cross-platform tools, so you shouldn't have too much trouble putting it together no matter your OS.  Visual Studio and Code::Blocks project files are provided for your compiling convenience on your platform of choice, as well as GNU C++ Makefiles.
+Logician relies upon open source and freely available cross-platform tools, so you shouldn't have too much trouble compiling it regardless of your OS.  Visual Studio and Code::Blocks project files are provided for your compiling convenience on your platform of choice, as well as GNU C++ Makefiles.
 
 Prerequisites:
 Rules Engine: EDSEngine
@@ -11,7 +11,7 @@ All platforms:
 - libxml2 v2.7.3 
 - libxslt v1.1.24 
 - Python 2.6 (optional compile-time switch)
-- Mozilla Spidermonkey Javascript engine 1.8 (optional compile-time switch)
+- Mozilla Spidermonkey Javascript engine 1.8 (optional compile-time switch).  Windows can use the integrated Windows Scripting host instead.
 Windows:
 - MSXML v6.0 (preferred build in lieu of libxml, libxslt, and iconv)
 
@@ -52,6 +52,7 @@ USE_PYTHON: enables python runtime scripting support in rules.  You will need th
 USE_JAVASCRIPT: enables javascript runtime scripting support in rules
 USE_WINDOWS_SCRIPTING: on windows when javascript support is enabled, uses the windows scripting host for processing instead of spidermonkey, thereby eliminating that dependency.
 POSIX: compliant (Linux) environments should enable this define
+DISABLE_DECISIONLOGIC_INTEGRATION: In the EDSEngine build, adding this define to a build will disable intergrated DeicisionLogic debugging over a TCP Socket connection.  It's a handy feature to keep around, but you can eliminate this boost library dependency if you wish.
 
 Windows:
 Visual Studio 2008 project files are included.  Configurations for both MSXML and libxml2 based builds are included, MSXML is recommended at this time.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.

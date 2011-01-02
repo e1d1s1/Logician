@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="HydraulicCylinderDictionary" getall="true">
+    <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>Name</Attr>
+      <Value operation="1">CylinderSeries</Value>
+      <Value operation="1">MountingStyle</Value>
+      <Value operation="1">BoreDiameter</Value>
+      <Value operation="1">RodDiameter</Value>
+      <Value operation="1">RodEndTypes</Value>
+      <Value operation="1">SealingSystem</Value>
+      <Value operation="1">Ports</Value>
+      <Value operation="1">PortLocationHead</Value>
+      <Value operation="1">PortLocationCap</Value>
+      <Value operation="1">CushionHead</Value>
+      <Value operation="1">CushionCap</Value>
+      <Value operation="1">CylinderStroke</Value>
+      <Value operation="1">CylinderStrokeWhole</Value>
+      <Value operation="1">CylinderStrokeFraction</Value>
+      <Value operation="1">AdditionalOption</Value>
+      <Value operation="1">ExtraRodProtection</Value>
+      <Value operation="1">ExtraRodProtectionWhole</Value>
+      <Value operation="1">ExtraRodProtectionFraction</Value>
+      <Value operation="1">OptionHead</Value>
+      <Value operation="1">OptionCap</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>Description</Attr>
+      <Value operation="1">Mill Cylinder Series</Value>
+      <Value operation="1">Mounting Style</Value>
+      <Value operation="1">Bore (inches)</Value>
+      <Value operation="1">Rod (inches)</Value>
+      <Value operation="1">Rod End Types</Value>
+      <Value operation="1">Sealing System</Value>
+      <Value operation="1">Ports</Value>
+      <Value operation="1">Port Head</Value>
+      <Value operation="1">Port Cap</Value>
+      <Value operation="1">Cushion Head</Value>
+      <Value operation="1">Cushion Cap</Value>
+      <Value operation="1">Cylinder Stroke (1 - 99 15/16)</Value>
+      <Value operation="1">CylinderStrokeWhole (Hidden)</Value>
+      <Value operation="1">CylinderStrokeFraction (Hidden)</Value>
+      <Value operation="1">Additional Options</Value>
+      <Value operation="1">Extra Rod Protection (up to 9 inches)</Value>
+      <Value operation="1">ExtraRodProtectionWhole (Hidden)</Value>
+      <Value operation="1">ExtraRodProtectionFraction (Hidden)</Value>
+      <Value operation="1">Option Head</Value>
+      <Value operation="1">Option Cap</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>DefaultValue</Attr>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>AttributeType</Attr>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">EDIT</Value>
+      <Value operation="1">STATIC</Value>
+      <Value operation="1">STATIC</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">EDIT</Value>
+      <Value operation="1">STATIC</Value>
+      <Value operation="1">STATIC</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>RuleTable</Attr>
+      <Value operation="1">CylinderSeries</Value>
+      <Value operation="1">MountingStyle</Value>
+      <Value operation="1">BoreDiameter</Value>
+      <Value operation="1">RodDiameter</Value>
+      <Value operation="1">RodEndTypes</Value>
+      <Value operation="1">SealingSystem</Value>
+      <Value operation="1">Ports</Value>
+      <Value operation="1">PortLocationHead</Value>
+      <Value operation="1">PortLocationCap</Value>
+      <Value operation="1">CushionHead</Value>
+      <Value operation="1">CushionCap</Value>
+      <Value operation="1">CylinderStroke</Value>
+      <Value operation="1">CylinderStrokeWhole</Value>
+      <Value operation="1">CylinderStrokeFraction</Value>
+      <Value operation="1">AdditionalOption</Value>
+      <Value operation="1">ExtraRodProtection</Value>
+      <Value operation="1">ExtraRodProtectionWhole</Value>
+      <Value operation="1">ExtraRodProtectionFraction</Value>
+      <Value operation="1">OptionHead</Value>
+      <Value operation="1">OptionCap</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

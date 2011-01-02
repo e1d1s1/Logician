@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="RodEndCat" getall="false">
+    <Inputs>
+      <Attr>RodEndTypes</Attr>
+      <Value operation="1">Short Female UN Thread</Value>
+      <Value operation="1">Small Male UN Thread</Value>
+      <Value operation="1">Plain - No Attachment</Value>
+      <Value operation="1">Int. Male UN Thread</Value>
+      <Value operation="1">Grooved End</Value>
+      <Value operation="1">Extended Small Male UN Thd.</Value>
+      <Value operation="1">Extended Int. Male UN Thd.</Value>
+      <Value operation="1">Male Thread</Value>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>Code</Attr>
+      <Value operation="1">2</Value>
+      <Value operation="1">5</Value>
+      <Value operation="1">6</Value>
+      <Value operation="1">9</Value>
+      <Value operation="1">G</Value>
+      <Value operation="1">K</Value>
+      <Value operation="1">M</Value>
+      <Value operation="1">R</Value>
+      <Value operation="1">X</Value>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

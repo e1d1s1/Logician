@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="CylinderSeries" getall="false">
+    <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>CylinderSeries</Attr>
+      <Value operation="1">3000 psi Hydraulic|2000 psi Hydraulic|250 psi Pneumatic</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

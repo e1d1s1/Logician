@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DecisionLogicProject connection="localhost:11000">
+  <DataSet debug="0">
+    <DataSetName>ColorMixingTable.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <Compiler>
+    <Javascript></Javascript>
+    <Python></Python>
+  </Compiler>
+  <Tokens>
+    <Token id="9">Combination Not Specified</Token>
+    <Token id="4">blue</Token>
+    <Token id="8">green</Token>
+    <Token id="7">orange</Token>
+    <Token id="6">purple</Token>
+    <Token id="3">red</Token>
+    <Token id="5">yellow</Token>
+  </Tokens>
+</DecisionLogicProject>

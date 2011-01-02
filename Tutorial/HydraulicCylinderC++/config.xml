@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<Object id="HydraulicCylinder" guid="8360b919-1f73-4450-bacb-3feec32b80d0">
+  <Attribute id="OptionHead" value="3"/>
+  <Attribute id="PortLocationCap" value="4"/>
+  <Attribute id="SealingSystem" value="High Temperature"/>
+  <Attribute id="RodEndTypes" value="Grooved End"/>
+  <Attribute id="RodDiameter" value="2"/>
+  <Attribute id="CushionHead" value="3"/>
+  <Attribute id="CushionCap" value="2"/>
+  <Attribute id="CylinderStrokeFraction" value="0.125"/>
+  <Attribute id="CylinderStroke" value="22 1/8"/>
+  <Attribute id="CylinderSeries" value="2000 psi Hydraulic"/>
+  <Attribute id="BoreDiameter" value="5"/>
+  <Attribute id="OptionCap" value="3"/>
+  <Attribute id="AdditionalOption" value="Air Bleed"/>
+  <Attribute id="PortLocationHead" value="3"/>
+  <Attribute id="Ports" value="Oversize SAE/UN O-Ring"/>
+  <Attribute id="ExtraRodProtectionWhole" value=""/>
+  <Attribute id="CylinderStrokeWhole" value="22"/>
+  <Attribute id="ExtraRodProtectionFraction" value=""/>
+  <Attribute id="ExtraRodProtection" value=""/>
+  <Attribute id="MountingStyle" value="Spherical Bearing"/>
+</Object>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="BoreRodCat" getall="true">
+    <Inputs>
+      <Attr>BoreDiameter</Attr>
+      <Value operation="1">2</Value>
+      <Value operation="1">2</Value>
+      <Value operation="1">3</Value>
+      <Value operation="1">3</Value>
+      <Value operation="1">3</Value>
+      <Value operation="1">4</Value>
+      <Value operation="1">4</Value>
+      <Value operation="1">4</Value>
+      <Value operation="1">5</Value>
+      <Value operation="1">5</Value>
+      <Value operation="1">5</Value>
+      <Value operation="1">6</Value>
+      <Value operation="1">6</Value>
+      <Value operation="1">6</Value>
+      <Value operation="1">7</Value>
+      <Value operation="1">7</Value>
+      <Value operation="1">7</Value>
+      <Value operation="1">8</Value>
+      <Value operation="1">8</Value>
+      <Value operation="1">8</Value>
+      <Value operation="1">10</Value>
+      <Value operation="1">10</Value>
+      <Value operation="1">10</Value>
+      <Value operation="1">10</Value>
+      <Value operation="1">12</Value>
+      <Value operation="1">12</Value>
+      <Value operation="1">12</Value>
+      <Value operation="1">14</Value>
+      <Value operation="1">14</Value>
+      <Value operation="1">16</Value>
+      <Value operation="1">16</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Inputs>
+      <Attr>RodDiameter</Attr>
+      <Value operation="1">1</Value>
+      <Value operation="1">1-3/8</Value>
+      <Value operation="1">1-3/8</Value>
+      <Value operation="1">1-3/4</Value>
+      <Value operation="1">2</Value>
+      <Value operation="1">1-3/4</Value>
+      <Value operation="1">2</Value>
+      <Value operation="1">2-1/2</Value>
+      <Value operation="1">2</Value>
+      <Value operation="1">2-1/2</Value>
+      <Value operation="1">3-1/2</Value>
+      <Value operation="1">2-1/2</Value>
+      <Value operation="1">3</Value>
+      <Value operation="1">4</Value>
+      <Value operation="1">3</Value>
+      <Value operation="1">3-1/2</Value>
+      <Value operation="1">5</Value>
+      <Value operation="1">3-1/2</Value>
+      <Value operation="1">4</Value>
+      <Value operation="1">5-1/2</Value>
+      <Value operation="1">4</Value>
+      <Value operation="1">5</Value>
+      <Value operation="1">5-1/2</Value>
+      <Value operation="1">7</Value>
+      <Value operation="1">5-1/2</Value>
+      <Value operation="1">7</Value>
+      <Value operation="1">8</Value>
+      <Value operation="1">7</Value>
+      <Value operation="1">9</Value>
+      <Value operation="1">9</Value>
+      <Value operation="1">10</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>Code</Attr>
+      <Value operation="1">DE</Value>
+      <Value operation="1">DH</Value>
+      <Value operation="1">FH</Value>
+      <Value operation="1">FL</Value>
+      <Value operation="1">FM</Value>
+      <Value operation="1">HL</Value>
+      <Value operation="1">HM</Value>
+      <Value operation="1">HP</Value>
+      <Value operation="1">KM</Value>
+      <Value operation="1">KP</Value>
+      <Value operation="1">KV</Value>
+      <Value operation="1">LP</Value>
+      <Value operation="1">LU</Value>
+      <Value operation="1">LW</Value>
+      <Value operation="1">MU</Value>
+      <Value operation="1">MV</Value>
+      <Value operation="1">MZ</Value>
+      <Value operation="1">NV</Value>
+      <Value operation="1">NW</Value>
+      <Value operation="1">N1</Value>
+      <Value operation="1">RW</Value>
+      <Value operation="1">RZ</Value>
+      <Value operation="1">R1</Value>
+      <Value operation="1">R4</Value>
+      <Value operation="1">S1</Value>
+      <Value operation="1">S4</Value>
+      <Value operation="1">S6</Value>
+      <Value operation="1">T4</Value>
+      <Value operation="1">T7</Value>
+      <Value operation="1">U7</Value>
+      <Value operation="1">U8</Value>
+      <Value operation="1">XX</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

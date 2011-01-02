@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="ExtraRodProtectionWhole" getall="true">
+    <Inputs>
+      <Attr>ExtraRodProtection</Attr>
+      <Value operation="16">0</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>ExtraRodProtectionWhole</Attr>
+      <Value operation="10241">js(getIntegerPart("get(ExtraRodProtection)"))</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <FormulaInput>ExtraRodProtection</FormulaInput>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

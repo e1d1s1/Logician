@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="ExtraCat" getall="true">
+    <Inputs>
+      <Attr>ExtraRodProtectionWhole</Attr>
+      <Value operation="16">0</Value>
+      <Value operation="1">We should handle the next 2 in our js code and avoid them, but leaving here just in case</Value>
+      <Value operation="1">NULL</Value>
+      <Value operation="1">0</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Inputs>
+      <Attr>ExtraRodProtectionFraction</Attr>
+      <Value/>
+      <Value/>
+      <Value operation="16">0</Value>
+      <Value operation="16">0</Value>
+      <Value operation="16">0</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Inputs>
+      <Attr>AdditionalOption</Attr>
+      <Value operation="1">Extra Rod Protection</Value>
+      <Value/>
+      <Value operation="1">Extra Rod Protection</Value>
+      <Value operation="1">Extra Rod Protection</Value>
+      <Value operation="1">Extra Rod Protection</Value>
+      <Value operation="1">Air Bleed</Value>
+      <Value operation="1">Gland Drain</Value>
+      <Value operation="1">Proximity Sensor</Value>
+      <Value operation="2">NULL</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>Code</Attr>
+      <Value operation="2049">get(ExtraRodProtectionWhole)</Value>
+      <Value/>
+      <Value operation="1">0</Value>
+      <Value operation="1">0</Value>
+      <Value operation="4096">eval(RodFractionCat, Code)</Value>
+      <Value operation="1">H</Value>
+      <Value operation="1">G</Value>
+      <Value operation="1">P</Value>
+      <Value operation="4096">eval(AdditionalCat, Code)</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <FormulaInput>ExtraRodProtectionWhole</FormulaInput>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

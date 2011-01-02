@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="MountingStyle" getall="true">
+    <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>MountingStyle</Attr>
+      <Value operation="1">Side Lug (Foot)</Value>
+      <Value operation="1">Head Rectangular</Value>
+      <Value operation="1">Cap Clevis</Value>
+      <Value operation="1">Spherical Bearing</Value>
+      <Value operation="1">Cap Rectangular</Value>
+      <Value operation="1">Intermediate Trunnion</Value>
+      <Value operation="1">No Mount</Value>
+      <Value operation="1">Double Rod Side Lug</Value>
+      <Value operation="1">Double Rod, Rectangular</Value>
+      <Value operation="1">Double Rod, Intermediate Trunnion</Value>
+      <Value operation="1">Double Rod, No Mount</Value>
+      <Value operation="1">Custom</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

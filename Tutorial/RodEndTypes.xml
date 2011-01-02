@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="RodEndTypes" getall="true">
+    <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>RodEndTypes</Attr>
+      <Value operation="1">Short Female UN Thread</Value>
+      <Value operation="1">Small Male UN Thread</Value>
+      <Value operation="1">Plain - No Attachment</Value>
+      <Value operation="1">Int. Male UN Thread</Value>
+      <Value operation="1">Grooved End</Value>
+      <Value operation="1">Extended Small Male UN Thd.</Value>
+      <Value operation="1">Extended Int. Male UN Thd.</Value>
+      <Value operation="1">Male Thread</Value>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>
