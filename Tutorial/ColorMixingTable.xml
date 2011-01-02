@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="ColorMixingTable" getall="false">
+    <Inputs>
+      <Attr>PaintColor1</Attr>
+      <Value operation="1">red</Value>
+      <Value operation="1">red</Value>
+      <Value operation="1">blue</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Inputs>
+      <Attr>PaintColor2</Attr>
+      <Value operation="1">blue</Value>
+      <Value operation="1">yellow</Value>
+      <Value operation="1">yellow</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>ResultColor</Attr>
+      <Value operation="1">purple</Value>
+      <Value operation="1">orange</Value>
+      <Value operation="1">green</Value>
+      <Value operation="1">Combination Not Specified</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

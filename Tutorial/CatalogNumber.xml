@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="CatalogNumber" getall="true">
+    <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>Code</Attr>
+      <Value operation="4096">eval(CylinderCat, Code)</Value>
+      <Value operation="4096">eval(MountingCat, Code)</Value>
+      <Value operation="4096">eval(BoreRodCat, Code)</Value>
+      <Value operation="4096">eval(RodEndCat, Code)</Value>
+      <Value operation="4096">eval(SealingCat, Code)</Value>
+      <Value operation="4096">eval(PortStyleCat, Code)</Value>
+      <Value operation="4096">eval(PortLocationCat, Code)</Value>
+      <Value operation="4096">eval(CushionCat, Code)</Value>
+      <Value operation="2049">get(CylinderStrokeFraction)</Value>
+      <Value operation="4096">eval(StrokeFractionCat, Code)</Value>
+      <Value operation="4096">eval(ExtraCat, Code)</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <FormulaInput>CylinderStrokeFraction</FormulaInput>
+    <Status>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="false"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

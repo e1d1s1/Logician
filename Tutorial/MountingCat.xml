@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="MountingCat" getall="true">
+    <Inputs>
+      <Attr>MountingStyle</Attr>
+      <Value operation="1">Side Lug (Foot)</Value>
+      <Value operation="1">Head Rectangular</Value>
+      <Value operation="1">Cap Clevis</Value>
+      <Value operation="1">Spherical Bearing</Value>
+      <Value operation="1">Cap Rectangular</Value>
+      <Value operation="1">Intermediate Trunnion</Value>
+      <Value operation="1">No Mount</Value>
+      <Value operation="1">Double Rod Side Lug</Value>
+      <Value operation="1">Double Rod, Rectangular</Value>
+      <Value operation="1">Double Rod, Intermediate Trunnion</Value>
+      <Value operation="1">Double Rod, No Mount</Value>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>Code</Attr>
+      <Value operation="1">01</Value>
+      <Value operation="1">09</Value>
+      <Value operation="1">10</Value>
+      <Value operation="1">11</Value>
+      <Value operation="1">14</Value>
+      <Value operation="1">15</Value>
+      <Value operation="1">24</Value>
+      <Value operation="1">25</Value>
+      <Value operation="1">33</Value>
+      <Value operation="1">34</Value>
+      <Value operation="1">41</Value>
+      <Value operation="1">XX</Value>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="GlobalORs" getall="true">
+    <Inputs>
+      <Attr>OR:LocationNeeded</Attr>
+      <Value operation="1">Air Bleed</Value>
+      <Value operation="1">Gland Drain</Value>
+      <Value operation="1">Proximity Sensor</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+  </Table>
+</Tables>

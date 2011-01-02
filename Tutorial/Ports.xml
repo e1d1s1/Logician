@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="Ports" getall="true">
+    <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>Ports</Attr>
+      <Value operation="1">NPTF</Value>
+      <Value operation="1">Oversize NPTF</Value>
+      <Value operation="1">SAE/UN Straight Thread O-Ring</Value>
+      <Value operation="1">Oversize SAE/UN O-Ring</Value>
+      <Value operation="1">SAE 4-Bolt Flange</Value>
+      <Value operation="1">BSPP (British Parallel Thread)</Value>
+      <Value operation="1">Oversize BSPP</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

@@ -26,7 +26,10 @@ Copyright (C) 2009 - 2011 Eric D. Schmidt
 #include <locale.h>
 #include <wchar.h>
 #include <string>
+#ifndef DISABLE_DECISIONLOGIC_INTEGRATION
 #include <boost/asio.hpp>
+using boost::asio::ip::tcp;
+#endif
 #ifdef USE_PYTHON
 #include <boost/python.hpp>
 #endif
@@ -55,7 +58,6 @@ unsigned long long atoull(const char *str){
 
 using namespace std;
 using namespace EDSUTIL;
-using boost::asio::ip::tcp;
 
 EDS::CKnowledgeBase::~CKnowledgeBase(void)
 {
@@ -86,6 +88,8 @@ void EDS::CKnowledgeBase::GenerateDebugMessages(bool bGenerate)
 {
 	m_DEBUGGING_MSGS = bGenerate;
 	m_bGenerateMsg = bGenerate;
+	if (!m_bGenerateMsg)
+		m_LastDebugMessage.clear();
 }
 
 wstring EDS::CKnowledgeBase::GetDebugMessages() 
@@ -558,7 +562,7 @@ void EDS::CKnowledgeBase::SendToDebugServer(wstring msg)
 			{
 				(*m_DebugHandlerPtr)(msg);
 			}
-			
+#ifndef DISABLE_DECISIONLOGIC_INTEGRATION
 			boost::asio::io_service io_service;
 			tcp::resolver resolver(io_service);
 			vector<string> con = EDSUTIL::Split(EDSUTIL::ToASCIIString(m_DEBUGGING_CON), ":");
@@ -567,6 +571,7 @@ void EDS::CKnowledgeBase::SendToDebugServer(wstring msg)
 			tcp::socket sock(io_service);
 			sock.connect(*iterator);
 			boost::asio::write(sock, boost::asio::buffer(msg.c_str(), msg.length()*sizeof(wchar_t)));
+#endif
 		}
 	}
 	catch (std::exception& e)

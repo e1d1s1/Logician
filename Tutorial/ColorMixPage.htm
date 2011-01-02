@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="KnowledgeBase.js" type="text/javascript"></script>
+    <style type="text/css">
+        .style1
+        {
+            width: 175px;
+        }
+        #PaintColor1
+        {
+            width: 130px;
+        }
+        #PaintColor2
+        {
+            width: 130px;
+        }
+        #txtResult
+        {
+            width: 250px;
+        }
+    </style>
+    <script>
+        var m_TableEvaluator = new KnowledgeBase("ColorRules.xml");
+        var mAppData = new Array();
+
+        function GetSingleSolution(tableToEvaluate, nameOfOutput) { //could reuse this function for all similar aplication events
+            var inputsNeeded = m_TableEvaluator.GetInputDependencies(tableToEvaluate);
+            //from our application data, obtain the values
+            for (var i = 0; i < inputsNeeded.length; i++)
+                m_TableEvaluator.SetInputValue(inputsNeeded[i], mAppData[inputsNeeded[i]]);
+
+            var results = m_TableEvaluator.EvaluateTableForAttr(tableToEvaluate, nameOfOutput);
+            //supports returning multiple true results on a sigle line, but in this case we just want a single result (the first one it finds)
+
+            if (results.length > 0)
+                return results[0];
+            else
+                return ""; //shouldn't happen since we have a "fallout" rule at the end of the table for unspecified combos
+        }
+        
+        function GetResultingColor()
+        {
+            return GetSingleSolution("ColorMixingTable", "ResultColor");
+        }
+        
+        function Evaluate() {
+            var res;
+            var txtResult = document.getElementById("txtResult");            
+
+            if (m_TableEvaluator.IsOpen() == true) {
+                res = GetResultingColor();
+            }
+            else {
+                res = "Could not load the rules file";
+            }                
+            
+            txtResult.value = res;
+        }
+
+        function ColorChanged(id) {
+            var colorPick = document.getElementById(id);
+            mAppData[id] = colorPick.value;
+
+            var txtResult = document.getElementById("txtResult");
+            txtResult.value = ""; 
+        }
+    </script>
+</head>
+<body>
+    <p>A very simplistic demonstration of evaluating decision tables in Javascript just like we can in C++/C#.</p>
+    <table style="width:100%;">
+        <tr>
+            <td class="style1">
+                first paint color:
+            </td>
+            <td>
+                <select id="PaintColor1" onchange="ColorChanged('PaintColor1')">
+                    <option value=""></option>
+                    <option value="red">red</option>
+                    <option value="blue">blue</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="style1">
+                second paint color:</td>
+            <td>
+                <select id="PaintColor2" onchange="ColorChanged('PaintColor2')">
+                    <option value=""></option>
+                    <option value="yellow">yellow</option>
+                    <option value="blue">blue</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="style1">
+                <input id="btnEvaluate" type="button" value="Evaluate" onclick="Evaluate()"/></td>
+            <td>
+                <input id="txtResult" type="text" /></td>
+        </tr>
+    </table>
+
+</body>
+</html>

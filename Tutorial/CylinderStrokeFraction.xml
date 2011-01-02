@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="CylinderStrokeFraction" getall="true">
+    <Inputs>
+      <Attr>CylinderStroke</Attr>
+      <Value operation="16">0</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>CylinderStrokeFraction</Attr>
+      <Value operation="10241">js(getFractionalPart("get(CylinderStroke)"))</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <FormulaInput>CylinderStroke</FormulaInput>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>
