@@ -78,7 +78,7 @@ void ROMDictionary::LoadDictionary(wstring dictionaryTable)
 		//on load, just set default values and possibilities
 		//only set a default if there is no rules table and no current value		
 		wstring value = m_ROMContext->GetAttribute(dictAttr.Name);
-		if (((value.length() == 0 && dictAttr.RuleTable.length() == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length() > 0)
+		if (((value.length() == 0 && dictAttr.RuleTable.length() == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length() > 0 && dictAttr.DefaultValue != L"~")
 		{
 			m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
 		}

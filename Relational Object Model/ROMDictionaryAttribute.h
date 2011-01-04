@@ -50,8 +50,3 @@ namespace ROM
 		STATIC = 4
 	};
 }
-
-//const short SINGLESELECT = 0;
-//const short MULTISELECT = 1;
-//const short BOOLEANSELECT = 2;
-//const short EDIT = 3;

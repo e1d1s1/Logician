@@ -119,6 +119,12 @@ int main(int argc, char* argv[])
 		childNode->SetAttribute(L"childAttr", L"some value of value");
 		//setting a value on the Object Node
 		childNode->SetROMObjectValue(L"valueTest", L"myValue");
+		vector<ROMNode*> findTest = rootNode->FindAllObjectsOfID("ChildObject", true);
+		if (findTest.size() == 1)
+			Log("OK");
+		else
+			Log("FAILURE creating/obtaining child object");
+
 
 		Log("Dump current xml state");
 		wstring result = rootNode->SaveXML(true);
@@ -178,16 +184,25 @@ int main(int argc, char* argv[])
 			else
 				Log("FAILURE loading dictionary");
 
-			vector<ROMDictionaryAttribute*>* order = engine2.GetEvalList();
-			if (order != NULL && order->size() == 5 &&
-				order->at(0)->Name == L"cDictAttr1" &&
-				order->at(1)->Name == L"dDictAttr2" &&
-				order->at(2)->Name == L"aDictAttr3" &&
-				order->at(3)->Name == L"bDictAttr4" &&
-				order->at(4)->Name == L"eDictAttr5")
+			vector<ROMDictionaryAttribute*> order = engine2.GetEvalList();
+			if (order.size() == 5 &&
+				order.at(0)->Name == L"cDictAttr1" &&
+				order.at(1)->Name == L"dDictAttr2" &&
+				order.at(2)->Name == L"aDictAttr3" &&
+				order.at(3)->Name == L"bDictAttr4" &&
+				order.at(4)->Name == L"eDictAttr5")
 				Log("Order OK");
 			else
 				Log("FAILURE to assess the evaluation order");
+
+			map<wstring, vector<wstring> > triggers = engine2.GetTriggers();
+			if (triggers.size() == 3 &&
+				triggers[L"aDictAttr3"].size() == 2 &&
+				triggers[L"aDictAttr3"].at(0) == L"bDictAttr4" &&
+				triggers[L"aDictAttr3"].at(1) == L"eDictAttr5")
+				Log("Triggers OK");
+			else
+				Log("FAILURE to assess the triggers");
 
 			Log("Testing evaluation");
 			engine2.EvaluateAll();

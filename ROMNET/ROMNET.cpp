@@ -60,12 +60,25 @@ namespace ROMNET
 		return retval;
 	}
 
-	array<ROMNodeNET^>^ ROMNodeNET::GetAllChildren()
+	array<ROMNodeNET^>^ ROMNodeNET::GetAllChildren(bool recurs)
 	{
 		array<ROMNodeNET^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			vector<ROM::ROMNode*> vChildren = m_ROMNode->GetAllChildren();
+			vector<ROM::ROMNode*> vChildren = m_ROMNode->GetAllChildren(recurs);
+			retval = GetArrayFromVectorROM(vChildren);
+		}
+		
+		return retval;
+	}
+
+	array<ROMNodeNET^>^ ROMNodeNET::FindAllObjectsOfID(String^ id, bool recurs)
+	{
+		array<ROMNodeNET^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			wstring wsID = MarshalString(id);
+			vector<ROM::ROMNode*> vChildren = m_ROMNode->FindAllObjectsOfID(wsID, recurs);
 			retval = GetArrayFromVectorROM(vChildren);
 		}
 		
@@ -492,17 +505,36 @@ namespace ROMNET
 		array<ROMDictionaryAttributeNET^>^ retval = nullptr;
 		if (m_LinearEngine)
 		{
-			vector<ROM::ROMDictionaryAttribute*>* res = m_LinearEngine->GetEvalList();
-			if (res)
+			vector<ROM::ROMDictionaryAttribute*> res = m_LinearEngine->GetEvalList();
+			retval = gcnew array<ROMDictionaryAttributeNET^>(res.size());
+			size_t i = 0;
+			for (vector<ROM::ROMDictionaryAttribute*>::iterator it = res.begin(); it != res.end(); it++)
 			{
-				retval = gcnew array<ROMDictionaryAttributeNET^>(res->size());
+				retval[i] = gcnew ROMDictionaryAttributeNET((IntPtr)(*it));
+				i++;
+			}			
+		}
+		return retval;
+	}
+
+	Dictionary<String^, array<String^>^>^ LinearEngineNET::GetTriggers()
+	{
+		Dictionary<String^, array<String^>^>^ retval = nullptr;
+		if (m_LinearEngine)
+		{
+			map<wstring, vector<wstring> > res = m_LinearEngine->GetTriggers();
+			retval = gcnew Dictionary<String^, array<String^>^>();
+			for (map<wstring, vector<wstring> >::iterator it = res.begin(); it != res.end(); it++)
+			{
+				array<String^>^ attrs = gcnew array<String^>(it->second.size());
 				size_t i = 0;
-				for (vector<ROM::ROMDictionaryAttribute*>::iterator it = res->begin(); it != res->end(); it++)
+				for (vector<wstring>::iterator itAttr = it->second.begin(); itAttr != it->second.end(); itAttr++)
 				{
-					retval[i] = gcnew ROMDictionaryAttributeNET((IntPtr)(*it));
+					attrs[i] = gcnew String((*itAttr).c_str());
 					i++;
 				}
-			}
+				retval->Add(gcnew String(it->first.c_str()), attrs);
+			}			
 		}
 		return retval;
 	}

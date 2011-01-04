@@ -36,6 +36,11 @@ namespace ROM2NETTestApplication
             childNode.SetAttribute("childAttr", "some value of value");
             //setting a value on the Object Node
             childNode.SetROMObjectValue("valueTest", "myValue");
+            ROMNodeNET[] findTest = rootNode.FindAllObjectsOfID("ChildObject", true);
+            if (findTest.Length == 1)
+                Log("OK");
+            else
+                Log("FAILURE creating/obtaining child object");
 
             Log("Dump current xml state");
             string s = rootNode.SaveXML(true);
@@ -87,6 +92,15 @@ namespace ROM2NETTestApplication
                     Log("Order OK");
                 else
                     Log("FAILURE to assess the evaluation order");
+
+                Dictionary<string, string[]> triggers = engine.GetTriggers();
+                if (triggers.Count == 3 &&
+				triggers["aDictAttr3"].Length == 2 &&
+				triggers["aDictAttr3"][0] == "bDictAttr4" &&
+				triggers["aDictAttr3"][1] == "eDictAttr5")
+				Log("Triggers OK");
+			    else
+				    Log("FAILURE to assess the triggers");
 
                 Log("Testing evaluation");
                 engine.EvaluateAll();
