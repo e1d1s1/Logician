@@ -93,26 +93,26 @@
     </Outputs>
     <Outputs>
       <Attr>DefaultValue</Attr>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
       <Value/>
       <Value/>
       <Value/>

@@ -34,6 +34,13 @@ Copyright (C) 2009-2011 Eric D. Schmidt
 using namespace std;
 using namespace ROM;
 
+void ROMNode::CreateROMNode(wstring id)
+{
+	id = FindAndReplace(id, L" ", L"_");
+	m_id = id;
+	_init();
+}
+
 void ROMNode::_init()
 {
 #ifdef USE_LIBXML
@@ -103,9 +110,29 @@ bool ROMNode::RemoveChildROMObject(ROMNode *child)
 	return retval;
 }
 
+vector<ROMNode*> ROMNode::GetAllChildren(bool recurs)
+{
+	vector<ROMNode*> retval;
+	if (!recurs)
+		retval = m_children;
+	else
+		_findAllChildObjects(&retval);
+
+	return retval;
+}
+
+vector<ROMNode*> ROMNode::FindAllObjectsOfID(wstring id, bool recurs)
+{
+	vector<ROMNode*> retval;
+	
+	_findObjects(id, recurs, &retval);
+
+	return retval;
+}
+
 bool ROMNode::DestroyROMObject()
 {
-	bool retval = false;
+	bool retval = true;
 	//remove any references to self in parent node
 	if (m_parent != NULL)
 	{
@@ -151,6 +178,32 @@ ROMNode* ROMNode::Clone()
 		}
 	}
 	return newNode;
+}
+
+void ROMNode::_findObjects(wstring id, bool recurs, vector<ROMNode*>* res)
+{
+	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
+	{
+		if (recurs && (*it)->m_id == id && res != NULL)
+		{
+			res->push_back(*it);
+			if ((*it)->m_children.size() > 0)
+				(*it)->_findObjects(id, recurs, res);
+		}
+	}
+}
+
+void ROMNode::_findAllChildObjects(vector<ROMNode*>* res)
+{
+	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
+	{
+		if (res != NULL)
+		{
+			res->push_back(*it);
+			if ((*it)->m_children.size() > 0)
+				(*it)->_findAllChildObjects(res);
+		}
+	}
 }
 
 void ROMNode::SetTableDebugHandler(DebugHandler debugger)
@@ -257,6 +310,7 @@ bool ROMNode::SetROMObjectValue(wstring name, wstring value)
 {
 	bool retval = true;
 
+	name = FindAndReplace(name, L" ", L"_");
 	m_nodeValues[name] = value;
 	m_bChanged = retval;
 
@@ -478,8 +532,11 @@ void ROMNode::_createXMLDoc()
 		if (m_xmlDoc != NULL)
 			m_xmlDoc.Release();
 		m_xmlDoc.CreateInstance(__uuidof(MSXML2::DOMDocument));
+		m_xmlDoc->async = VARIANT_FALSE;
+		m_xmlDoc->resolveExternals = VARIANT_FALSE;
 		m_xmlDoc->setProperty("SelectionLanguage", "XPath");
-		m_xmlDoc->loadXML(genXML.c_str());
+		m_xmlDoc->setProperty("SelectionNamespaces", "");
+		VARIANT_BOOL res = m_xmlDoc->loadXML(genXML.c_str()); //-1 is true
 #endif
 #ifdef USE_LIBXML
 		m_xmlDoc = NULL;
@@ -859,21 +916,25 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 	if (m_xmlDoc != NULL)
 	{
 #ifdef USE_MSXML
-		if (m_xmlDoc != NULL)
+		//By default it is writing the encoding = UTF-16. Change the encoding to UTF-8
+		// <?xml version="1.0" encoding="UTF-8"?>
+		MSXML2::IXMLDOMNodePtr pXMLFirstChild = m_xmlDoc->GetfirstChild();
+		MSXML2::IXMLDOMNodePtr pXMLEncodNode = NULL;
+		// A map of the a attributes (vesrsion, encoding) values (1.0, UTF-8) pair
+		MSXML2::IXMLDOMNamedNodeMapPtr pXMLAttributeMap =  NULL;	
+		
+		if (pXMLFirstChild != NULL)
 		{
-			
-
-			//By default it is writing the encoding = UTF-16. Change the encoding to UTF-8
-			// <?xml version="1.0" encoding="UTF-8"?>
-			MSXML2::IXMLDOMNodePtr pXMLFirstChild = m_xmlDoc->GetfirstChild();
-			// A map of the a attributes (vesrsion, encoding) values (1.0, UTF-8) pair
-			MSXML2::IXMLDOMNamedNodeMapPtr pXMLAttributeMap =  pXMLFirstChild->Getattributes();
-			MSXML2::IXMLDOMNodePtr pXMLEncodNode = pXMLAttributeMap->getNamedItem(bstr_t("encoding"));    
-			if (pXMLEncodNode != NULL)
-				pXMLEncodNode->PutnodeValue(bstr_t("utf-8")); //encoding = UTF-8. Serializer usually omits it in output, it is the default encoding
-			else
+			pXMLAttributeMap = pXMLFirstChild->Getattributes();
+			pXMLAttributeMap->getNamedItem(bstr_t("encoding")); 			
+		}
+		if (pXMLEncodNode != NULL)
+			pXMLEncodNode->PutnodeValue(bstr_t("utf-8")); //encoding = UTF-8. Serializer usually omits it in output, it is the default encoding
+		else
+		{
+			MSXML2::IXMLDOMElementPtr pXMLRootElem = m_xmlDoc->GetdocumentElement();
+			if (pXMLRootElem != NULL)
 			{
-				MSXML2::IXMLDOMElementPtr pXMLRootElem = m_xmlDoc->GetdocumentElement();
 				MSXML2::IXMLDOMProcessingInstructionPtr pXMLProcessingNode =    
 					m_xmlDoc->createProcessingInstruction("xml", " version='1.0' encoding='UTF-8'");
 				_variant_t vtObject;
@@ -883,10 +944,8 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 
 				m_xmlDoc->insertBefore(pXMLProcessingNode,vtObject);
 			}
-			retval = (wstring)m_xmlDoc->Getxml();
 		}
-		
-
+		retval = (wstring)m_xmlDoc->Getxml();		
 #endif
 #ifdef USE_LIBXML
 		xmlChar *xmlbuff;

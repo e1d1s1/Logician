@@ -326,7 +326,7 @@
         
         function debugHandler(str)
         {
-            alert(str);
+            alert("DEBUGGING:\n" + str);
         }
 
         function btnTest2_onclick() 
@@ -360,6 +360,11 @@
 	            childNode.SetAttribute("childAttr", "some value of value");
 	            //setting a value on the Object Node
 	            childNode.SetROMObjectValue("valueTest", "myValue");
+	            var findTest = rootNode.FindAllObjectsOfID("ChildObject", true);
+                if (findTest.length == 1)
+                    write_result("OK");
+                else
+                    write_result("FAILURE creating/obtaining child object"); 
 
 	            write_result("Dump current xml state");
 	            var result = rootNode.SaveXML(true);
@@ -409,70 +414,79 @@
 		            write_result("Evaluation complete");
     	        
     	        
-//	                write_result("Testing the LinearEngine object");
-//                    var engine = new LinearEngine(myBaseObject, myRootNode, "Dictionary");
+	                write_result("Testing the LinearEngine object");
+                    var engine = new LinearEngine(rootNode, "Dictionary");
 
-//                    write_result("Checking dictionary size");
-//                    var attrs = engine.GetAllDictionaryAttrs();
-//                    if (ArraySize(attrs) == 5)
-//                        write_result("size ok");
-//                    else
-//                        write_result("FAILURE loading dictionary:" + ArraySize(attrs));
+                    write_result("Checking dictionary size");
+                    var attrs = engine.GetAllDictionaryAttrs();
+                    if (ArraySize(attrs) == 5)
+                        write_result("size ok");
+                    else
+                        write_result("FAILURE loading dictionary:" + ArraySize(attrs));
 
-//                    var order = engine.GetEvalList();
-//                    if (order != null && order.length == 5 &&
-//                        order[0].Name == "cDictAttr1" &&
-//                        order[1].Name == "dDictAttr2" &&
-//                        order[2].Name == "aDictAttr3" &&
-//                        order[3].Name == "bDictAttr4" &&
-//                        order[4].Name == "eDictAttr5")
-//                        write_result("Order OK");
-//                    else
-//                        write_result("FAILURE to assess the evaluation order:" + order.length + order[0].Name);
+                    var order = engine.GetEvalList();
+                    if (order != null && order.length == 5 &&
+                        order[0].Name == "cDictAttr1" &&
+                        order[1].Name == "dDictAttr2" &&
+                        order[2].Name == "aDictAttr3" &&
+                        order[3].Name == "bDictAttr4" &&
+                        order[4].Name == "eDictAttr5")
+                        write_result("Order OK");
+                    else
+                        write_result("FAILURE to assess the evaluation order:" + order.length + order[0].Name);
 
-//                    write_result("Testing evaluation");
-//                    engine.EvaluateAll();
-//                    var attr1 = engine.GetDictionaryAttr("cDictAttr1");
-//                    var attr2 = engine.GetDictionaryAttr("dDictAttr2");
-//                    if (attr2.AvailableValues.length == 0 && attr2.PossibleValues.length == 3 &&
-//                        attr1.AvailableValues.length == 4)
-//                        write_result("Default Eval OK");
-//                    else
-//                        write_result("FAILURE to initially evaluate an attribute");
+                    var triggers = engine.GetTriggers();
+                    if (ArraySize(triggers) == 3 &&
+				        triggers["aDictAttr3"].length == 2 &&
+				        triggers["aDictAttr3"][0] == "bDictAttr4" &&
+				        triggers["aDictAttr3"][1] == "eDictAttr5")
+				        write_result("Triggers OK");
+			        else
+				        write_result("FAILURE to assess the triggers");
+				    
+                    write_result("Testing evaluation");
+                    engine.EvaluateAll();
+                    var attr1 = engine.GetDictionaryAttr("cDictAttr1");
+                    var attr2 = engine.GetDictionaryAttr("dDictAttr2");
+                    if (attr2.AvailableValues.length == 0 && attr2.PossibleValues.length == 3 &&
+                        attr1.AvailableValues.length == 4)
+                        write_result("Default Eval OK");
+                    else
+                        write_result("FAILURE to initially evaluate an attribute");
 
-//                    engine.EvaluateForAttribute("cDictAttr1", attr1.AvailableValues[0], true);
-//                    var val_pick1 = myBaseObject.GetAttributeValue(myRootNode, "dDictAttr2", true);
-//                    var val_bool1 = myBaseObject.GetAttributeValue(myRootNode, "aDictAttr3", true);
-//                    var val_multi1 = myBaseObject.GetAttributeValue(myRootNode, "bDictAttr4", true);
-//                    var edit1 = myBaseObject.GetAttributeValue(myRootNode, "eDictAttr5", true);
-//                    engine.EvaluateForAttribute("cDictAttr1", attr1.AvailableValues[1], true);
-//                    var val_pick2 = myBaseObject.GetAttributeValue(myRootNode, "dDictAttr2", true);
-//                    var val_bool2 = myBaseObject.GetAttributeValue(myRootNode, "aDictAttr3", true);
-//                    engine.EvaluateForAttribute("cDictAttr1", attr1.AvailableValues[2], true);            
-//                    var val_bool3 = myBaseObject.GetAttributeValue(myRootNode, "aDictAttr3", true);
-//                    var val_multi3 = myBaseObject.GetAttributeValue(myRootNode, "bDictAttr4", true);
-//                    engine.EvaluateForAttribute("eDictAttr5", "999", true);
-//                    var edit4 = myBaseObject.GetAttributeValue(myRootNode, "eDictAttr5", true);
-//                    if (val_pick1 == "ResultByOption1" && val_pick2 == "Result2" &&
-//                        val_bool1 == "Y" && val_bool2 == "Y" && val_bool3 == "N" &&
-//                        val_multi1 == "Selection2|Selection3" && val_multi3 == "Selection2" &&
-//                        edit1 == "10" && edit4 == "50")
-//                    {
-//                        write_result("Evaluation of attributes ok");
-//                    }
-//                    else
-//                    {
-//                        write_result("FAILURE to evaluate an attribute");
-//                        write_result("val_pick1:" + val_pick1 + " should be ResultByOption1");
-//                        write_result("val_bool1:" + val_bool1 + " should be Y");
-//                        write_result("val_multi1:" + val_multi1 + " should be Selection2|Selection3");
-//                        write_result("edit1:" + edit1 + " should be 10");
-//                        write_result("val_pick2:" + val_pick2 + " should be Result2");
-//                        write_result("val_bool2:" + val_bool2 + " should be Y");
-//                        write_result("val_bool3:" + val_bool3 + " should be N");
-//                        write_result("val_multi3:" + val_multi3 + " should be Selection2");
-//                        write_result("edit4:" + edit4 + " should be 50");
-//                    }
+                    engine.EvaluateForAttribute("cDictAttr1", attr1.AvailableValues[0], true);
+                    var val_pick1 = rootNode.GetAttribute("dDictAttr2", true);
+                    var val_bool1 = rootNode.GetAttribute("aDictAttr3", true);
+                    var val_multi1 = rootNode.GetAttribute("bDictAttr4", true);
+                    var edit1 = rootNode.GetAttribute("eDictAttr5", true);
+                    engine.EvaluateForAttribute("cDictAttr1", attr1.AvailableValues[1], true);
+                    var val_pick2 = rootNode.GetAttribute("dDictAttr2", true);
+                    var val_bool2 = rootNode.GetAttribute("aDictAttr3", true);
+                    engine.EvaluateForAttribute("cDictAttr1", attr1.AvailableValues[2], true);            
+                    var val_bool3 = rootNode.GetAttribute( "aDictAttr3", true);
+                    var val_multi3 = rootNode.GetAttribute( "bDictAttr4", true);
+                    engine.EvaluateForAttribute("eDictAttr5", "999", true);
+                    var edit4 = rootNode.GetAttribute("eDictAttr5", true);
+                    if (val_pick1 == "ResultByOption1" && val_pick2 == "Result2" &&
+                        val_bool1 == "Y" && val_bool2 == "Y" && val_bool3 == "N" &&
+                        val_multi1 == "Selection2|Selection3" && val_multi3 == "Selection2" &&
+                        edit1 == "10" && edit4 == "50")
+                    {
+                        write_result("Evaluation of attributes ok");
+                    }
+                    else
+                    {
+                        write_result("FAILURE to evaluate an attribute");
+                        write_result("val_pick1:" + val_pick1 + " should be ResultByOption1");
+                        write_result("val_bool1:" + val_bool1 + " should be Y");
+                        write_result("val_multi1:" + val_multi1 + " should be Selection2|Selection3");
+                        write_result("edit1:" + edit1 + " should be 10");
+                        write_result("val_pick2:" + val_pick2 + " should be Result2");
+                        write_result("val_bool2:" + val_bool2 + " should be Y");
+                        write_result("val_bool3:" + val_bool3 + " should be N");
+                        write_result("val_multi3:" + val_multi3 + " should be Selection2");
+                        write_result("edit4:" + edit4 + " should be 50");
+                    }
                 }
                 else 
                 {

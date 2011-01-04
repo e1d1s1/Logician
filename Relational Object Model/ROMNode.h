@@ -51,7 +51,7 @@ namespace ROM
 		ROMNode(){m_KnowledgeBase = NULL;}
 		ROMNode(wstring id) {CreateROMNode(id);}
 		ROMNode(string id) {CreateROMNode(id);}
-		void CreateROMNode(wstring id) {m_id = id; _init();}
+		void CreateROMNode(wstring id);
 		void CreateROMNode(string id) {m_id = ROMUTIL::MBCStrToWStr(id); _init();}
 		void				SetTableDebugHandler(DebugHandler debugger);
 		void				GenerateTableDebugMessages(bool bGenerate);
@@ -61,7 +61,8 @@ namespace ROM
 		//relational functions
 		ROMNode*			GetRoot();		
 		ROMNode*			GetParent() {return m_parent;}
-		vector<ROMNode*>	GetAllChildren() {return m_children;}
+		vector<ROMNode*>	GetAllChildren(bool recurs);
+		vector<ROMNode*>	FindAllObjectsOfID(wstring id, bool recurs);
 		bool				AddChildROMObject(ROMNode *child);
 		bool				RemoveChildROMObject(ROMNode *child);
 		bool				DestroyROMObject();
@@ -105,6 +106,7 @@ namespace ROM
 		wstring				EvaluateXPATH(wstring xpath) {return EvaluateXPATH(xpath, m_guid);}
 
 		//ascii overloads
+		vector<ROMNode*>	FindAllObjectsOfID(string id, bool recurs){return FindAllObjectsOfID(MBCStrToWStr(id), recurs);}
 		string				GetAttribute(string id, string name, bool immediate = false) {return ROMUTIL::WStrToMBCStr(GetAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), immediate));}
 		string				GetAttribute(string id, bool immediate = false) {return GetAttribute(id, "value", immediate);}
 		bool				GetAttributeExists(string id, string name = "value") {return GetAttributeExists(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name));}
@@ -133,6 +135,8 @@ namespace ROM
 		vector<wstring>			LoadOutputs(wstring evalTable);
 		vector<wstring>			GetPossibleValues(wstring evalTable, wstring outputName);
 		wstring					GetATableInputValue(wstring input);
+		void					_findAllChildObjects(vector<ROMNode*>* res);
+		void					_findObjects(wstring id, bool recurs, vector<ROMNode*>* res);
 		bool					_anyHasChanged();
 		void					_setAllUnchanged();
 		wstring					_generateXML(bool bRegen);

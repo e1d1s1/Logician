@@ -35,7 +35,8 @@ namespace ROM
 		void EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents = true);
 		void EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents = true);
 		void EvaluateAll();
-		vector<ROMDictionaryAttribute*>* GetEvalList() {return &m_vEvalList;}
+		vector<ROMDictionaryAttribute*> GetEvalList() {return m_vEvalList;}
+		map<wstring, vector<wstring> > GetTriggers() {return m_mapTriggers;}
 		bool DictionaryIsValid();
 
 		//ASCII overloads

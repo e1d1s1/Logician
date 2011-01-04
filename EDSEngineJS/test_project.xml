@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Tables debug="false" connection="localhost:3000">
+<Tables debugtables="testtable2" debug="true" connection="localhost:3000">
   <Table name="ClassDictionary" getall="false">
     <Inputs>
       <Attr>CLASSID</Attr>

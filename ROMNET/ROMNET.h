@@ -88,7 +88,8 @@ namespace ROMNET {
 		//relational functions
 		ROMNodeNET^			GetRoot();
 		ROMNodeNET^			Parent();
-		array<ROMNodeNET^>^	GetAllChildren();
+		array<ROMNodeNET^>^	GetAllChildren(bool recurs);
+		array<ROMNodeNET^>^ FindAllObjectsOfID(String^ id, bool recurs);
 		bool				AddChildROMObject(ROMNodeNET^ child);
 		bool				RemoveChildROMObject(ROMNodeNET^ child);
 		bool				DestroyROMObject();
@@ -376,6 +377,7 @@ namespace ROMNET {
 		void EvaluateForAttribute(String^ dictAttrName, String^ newValue) {EvaluateForAttribute(dictAttrName, newValue, true);}
 		void EvaluateAll() {if (m_LinearEngine) m_LinearEngine->EvaluateAll();}
 		array<ROMDictionaryAttributeNET^>^ GetEvalList();
+		Dictionary<String^, array<String^>^>^ GetTriggers();
 		property bool DictionaryIsValid
 		{
 			virtual bool get()

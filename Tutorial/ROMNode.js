@@ -140,6 +140,59 @@ ROMNode.prototype.AddChildROMObject = function(child)
     return false;
 }
 
+ROMNode.prototype.GetAllChildren = function(recurs)
+{
+    var retval = new Array();
+    try 
+    {
+        if (!recurs)
+            retval = this.m_children;
+        else
+        {
+            this._findAllChildObjects(retval);
+        }
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+ROMNode.prototype.FindAllObjectsOfID = function(id, recurs)
+{
+    var retval = new Array();
+    try 
+    {
+        this._findObjects(retval, recurs, retval);
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+ROMNode.prototype._findObjects = function(id, recurs, resObject)
+{
+    for (var child in this.m_children)
+    {
+        resObject.push(child);
+        if (this.m_children[child].m_children.length > 0)
+            this.m_children[child]._findObjects(resObject, recurs, resObject);
+    }
+}     
+
+ROMNode.prototype._findAllChildObjects = function(resObject)
+{
+    for (var child in this.m_children)
+    {
+        resObject.push(child);
+        if (this.m_children[child].m_children.length > 0)
+            this.m_children[child]._findAllChildObjects(resObject);
+    }
+}       
+
 ROMNode.prototype.RemoveChildROMObject = function(child) 
 {
     var retval = false;
@@ -162,7 +215,7 @@ ROMNode.prototype.RemoveChildROMObject = function(child)
 
 ROMNode.prototype.DestroyROMObject = function() 
 {
-    var retval = false;
+    var retval = true;
     try 
     {
         //remove any references to self in parent node
@@ -197,6 +250,7 @@ ROMNode.prototype.DestroyROMObject = function()
     catch (err) 
     {
         ReportError(err);
+        retval = false;
     }
     return retval;
 }
@@ -235,6 +289,8 @@ ROMNode.prototype.GetAttributeValue = function(id, name, immediate)
     var retval = "";
     try 
     {
+        if (immediate === undefined)
+            immediate = false;
         var bFound = false;
         if (this.m_attrs[id] != null)
         {
@@ -265,6 +321,8 @@ ROMNode.prototype.GetAttribute = function(id, immediate)
     var retval = "";
     try 
     {
+        if (immediate === undefined)
+            immediate = false;
         retval = this.GetAttributeValue(id, "value", immediate);
     }
     catch (err) 
@@ -274,31 +332,24 @@ ROMNode.prototype.GetAttribute = function(id, immediate)
     return retval;
 }
 
-ROMNode.prototype.GetAttributeExists = function(id) 
+ROMNode.prototype.GetAttributeExists = function(id, name) 
 {
     var retval = false;
     try 
     {
-        retval = this.GetAttributeValueExists(id, "value");
-    }
-    catch (err) 
-    {
-        ReportError(err);
-    }
-    return retval;
-}
-
-ROMNode.prototype.GetAttributeValueExists = function(id, name) 
-{
-    var retval = false;
-    try 
-    {
+        if (name === undefined)
+            name = "value";
         if (this.m_attrs[id] != null)
         {
-            if (this.m_attrs[id][name] != null)
+            if (name != "value")
             {
-                retval = true;
+                if (this.m_attrs[id][name] != null)
+                {
+                    retval = true;
+                }
             }
+            else
+                retval = true;                
         }
     }
     catch (err) 
@@ -322,7 +373,6 @@ ROMNode.prototype.SetAttribute = function(id, value)
 
 ROMNode.prototype.SetAttributeValue = function(id, name, value)
 {
-
     try
     {   
         if (this.m_attrs[id] === undefined)
@@ -389,6 +439,7 @@ ROMNode.prototype.SetROMObjectValue = function(id, value)
 {
     try 
     {
+        id = id.replace(" ", "_");
         this.m_nodeValues[id] = value;
         this.m_bChanged = true;
         return true;
@@ -486,7 +537,7 @@ ROMNode.prototype.EvaluateTableForAttr = function(evalTable, output, bGetAll)
             if (bGetAll === undefined)
                 bGetAll = knowledge.TableIsGetAll(evalTable);
             this.LoadInputs(evalTable);
-            var retval = knowledge.EvaluateTableForAttr(evalTable, output, bGetAll);
+            var retval = knowledge.EvaluateTableForAttrGet(evalTable, output, bGetAll);
             return retval;
         }
     }
@@ -507,7 +558,7 @@ ROMNode.prototype.EvaluateTable = function(evalTable, bGetAll)
             if (bGetAll === undefined)
                 bGetAll = knowledge.TableIsGetAll(evalTable);
             this.LoadInputs(evalTable);
-            var retval = knowledge.EvaluateTable(evalTable, bGetAll);   
+            var retval = knowledge.EvaluateTableGet(evalTable, bGetAll);   
             return retval;    
         } 
     }
@@ -702,7 +753,7 @@ ROMNode.prototype.GetATableInputValue = function(input)
     return retval;
 }
 
-ROMNode.prototype.GetPossibleValues = function(currentObject, evalTable, outputName)
+ROMNode.prototype.GetPossibleValues = function(evalTable, outputName)
 {
     try 
     {
@@ -1144,7 +1195,7 @@ ROMDictionary.prototype.LoadDictionary = function(dictionaryTable)
 		    //on load, just set default values and possibilities
 		    //only set a default if there is no rules table and no current value
 		    var value = this.m_context.GetAttribute(dictAttr.Name, false);
-		    if (((value.length == 0 && dictAttr.RuleTable.length == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length > 0)
+		    if (((value.length == 0 && dictAttr.RuleTable.length == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length > 0 && dictAttr.DefaultValue != "~")
 		    {
 			    this.m_context.SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
 		    }
@@ -1189,6 +1240,12 @@ ROMDictionary.prototype.GetAllDictionaryAttrs = function()
         ReportError(err);        
     }
     return null;
+}
+
+ROMDictionary.prototype.SetRulesDebugHandler = function(func)
+{
+    if (this.m_context != null && this.m_context.m_KnowledgeBase != null)
+        this.m_context.m_KnowledgeBase.SetDebugHandler(func);
 }
 
 // LinearEngine class////////////////////////////////////////////////////////////////
@@ -1335,6 +1392,18 @@ LinearEngine.prototype.GetEvalList = function()
     try
     {
         return this.m_EvalList;
+    }
+    catch (err)
+    {
+        ReportError(err);
+    }
+}
+
+LinearEngine.prototype.GetTriggers = function()
+{
+    try
+    {
+        return this.m_mapTriggers;
     }
     catch (err)
     {
@@ -1919,4 +1988,10 @@ LinearEngine.prototype.GetSelectedValues = function(attr)
     }
     
     return retval;
+}
+
+LinearEngine.prototype.SetRulesDebugHandler = function(func)
+{
+    if (this.base.m_context != null && this.base.m_context.m_KnowledgeBase != null)
+        this.base.m_context.m_KnowledgeBase.SetDebugHandler(func);
 }
