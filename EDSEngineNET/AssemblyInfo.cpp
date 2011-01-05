@@ -1,19 +1,19 @@
 /*
-This file is part of EDSEngineNET.
+This file is part of EDSEngine.
 Copyright (C) 2009 - 2011 Eric D. Schmidt
 
-    EDSEngineNET is free software: you can redistribute it and/or modify
+    EDSEngine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    EDSEngineNET is distributed in the hope that it will be useful,
+    EDSEngine is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with EDSEngineNET.  If not, see <http://www.gnu.org/licenses/>.
+    along with EDSEngine.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "stdafx.h"
 
@@ -28,11 +28,11 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("EDSEngineNET")];
+[assembly:AssemblyTitleAttribute("EDSEngine")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("eLogician, LLC")];
-[assembly:AssemblyProductAttribute("EDSEngineNET")];
+[assembly:AssemblyProductAttribute("EDSEngine")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c) 2009-2011 Eric D. Schmidt")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];

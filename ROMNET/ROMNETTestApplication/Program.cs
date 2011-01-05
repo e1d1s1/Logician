@@ -19,7 +19,7 @@ namespace ROM2NETTestApplication
                 rulesPath = args[0];
 
             Log("Creating the root node");
-            ROMNodeNET rootNode = new ROMNodeNET("Test_Application");
+            ROMNode rootNode = new ROMNode("Test_Application");
             Log("Root created");	
 
             Log("Setting some attributes");
@@ -31,16 +31,16 @@ namespace ROM2NETTestApplication
             Log("Attrs set");
 
             Log("Creating a child object");
-            ROMNodeNET childNode = new ROMNodeNET("ChildObject");
+            ROMNode childNode = new ROMNode("ChildObject");
             rootNode.AddChildROMObject(childNode);
             childNode.SetAttribute("childAttr", "some value of value");
             //setting a value on the Object Node
             childNode.SetROMObjectValue("valueTest", "myValue");
-            ROMNodeNET childOfChild = new ROMNodeNET("ChildObject2");
+            ROMNode childOfChild = new ROMNode("ChildObject2");
             childNode.AddChildROMObject(childOfChild);
-            ROMNodeNET[] findTest = rootNode.FindAllObjectsByID("ChildObject", true);
-            ROMNodeNET[] findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
-            ROMNodeNET[] findTestXPATH2 = rootNode.FindObjects("//Object[@id='ChildObject2']");
+            ROMNode[] findTest = rootNode.FindAllObjectsByID("ChildObject", true);
+            ROMNode[] findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
+            ROMNode[] findTestXPATH2 = rootNode.FindObjects("//Object[@id='ChildObject2']");
             if (findTest.Length == 1 && findTestXPATH.Length == 1 && findTestXPATH2.Length == 1 &&
                 findTest[0].GetROMGUID() == findTestXPATH[0].GetROMGUID() &&
                 findTestXPATH2[0].GetROMObjectID() == "ChildObject2")
@@ -79,16 +79,16 @@ namespace ROM2NETTestApplication
                 Log("Evaluation complete");
 
                 Log("Testing the LinearEngine class");
-                LinearEngineNET engine = new LinearEngineNET(rootNode, "Dictionary");
+                LinearEngine engine = new LinearEngine(rootNode, "Dictionary");
 
                 Log("Checking dictionary size");
-                Dictionary<string, ROMDictionaryAttributeNET> attrs = engine.GetAllDictionaryAttrs();
+                Dictionary<string, ROMDictionaryAttribute> attrs = engine.GetAllDictionaryAttrs();
                 if (attrs.Count == 5)
                     Log("size ok");
                 else
                     Log("FAILURE loading dictionary");
 
-                ROMDictionaryAttributeNET[] order = engine.GetEvalList();
+                ROMDictionaryAttribute[] order = engine.GetEvalList();
                 if (order != null && order.Length == 5 &&
                     order[0].Name == "cDictAttr1" &&
                     order[1].Name == "dDictAttr2" &&
@@ -110,8 +110,8 @@ namespace ROM2NETTestApplication
 
                 Log("Testing evaluation");
                 engine.EvaluateAll();
-                ROMDictionaryAttributeNET attr1 = engine.GetDictionaryAttr("cDictAttr1");
-                ROMDictionaryAttributeNET attr2 = engine.GetDictionaryAttr("dDictAttr2");
+                ROMDictionaryAttribute attr1 = engine.GetDictionaryAttr("cDictAttr1");
+                ROMDictionaryAttribute attr2 = engine.GetDictionaryAttr("dDictAttr2");
                 if (attr2.AvailableValues.Length == 0 && attr2.PossibleValues.Length == 3 &&
                     attr1.AvailableValues.Length == 4)
                     Log("Default Eval OK");
@@ -168,12 +168,12 @@ namespace ROM2NETTestApplication
                 {
                     string objectToCreate = "SubLevel1Object";
                     objectToCreate += i.ToString();
-                    ROMNodeNET newNode = new ROMNodeNET(objectToCreate);
+                    ROMNode newNode = new ROMNode(objectToCreate);
                     rootNode.AddChildROMObject(newNode);
 
                     objectToCreate = "SubLevel2Object";
                     objectToCreate += i.ToString();
-                    ROMNodeNET newNode2 = new ROMNodeNET(objectToCreate);
+                    ROMNode newNode2 = new ROMNode(objectToCreate);
                     newNode.AddChildROMObject(newNode2);
                     newNode2.SetAttribute("sumtester", "1");
                     newNode2.SetAttribute("sumtester2", "2");

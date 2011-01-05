@@ -360,9 +360,14 @@
 	            childNode.SetAttribute("childAttr", "some value of value");
 	            //setting a value on the Object Node
 	            childNode.SetROMObjectValue("valueTest", "myValue");
+	            var childOfChild = new ROMNode("ChildObject2");
+	            childNode.AddChildROMObject(childOfChild);
 	            var findTest = rootNode.FindAllObjectsByID("ChildObject", true);
 	            var findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
-                if (ArraySize(findTest) == 1 && ArraySize(findTestXPATH) == 1 && findTest[0].GetROMGUID() == findTestXPATH[0].GetROMGUID())
+	            var findTestXPATH2 = rootNode.FindObjects("//Object[@id='ChildObject2']");
+                if (ArraySize(findTest) == 1 && ArraySize(findTestXPATH) == 1 && ArraySize(findTestXPATH2) == 1 &&
+                    findTest[0].GetROMGUID() == findTestXPATH[0].GetROMGUID() &&
+                    findTestXPATH2[0].GetROMObjectID() == "ChildObject2")
                     write_result("OK");
                 else
                     write_result("FAILURE creating/obtaining child object"); 

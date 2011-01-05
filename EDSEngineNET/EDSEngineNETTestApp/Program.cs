@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using EDSNET;
 
-namespace EDSEngineNETTestApp
+namespace EDSEngineTestApp
 {
     class Program
     {
@@ -12,7 +12,7 @@ namespace EDSEngineNETTestApp
         {
             string dir = System.IO.Directory.GetCurrentDirectory();
             string filename = "..\\..\\..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.xml";
-            EDSEngineNET knowledge = new EDSEngineNET(filename);
+            EDSEngine knowledge = new EDSEngine(filename);
             if (knowledge.IsOpen() == false)
             {
                 write_result("FAILURE: Could not open rules xml file: " + filename);
