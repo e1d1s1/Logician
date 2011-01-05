@@ -89,7 +89,9 @@ namespace ROMNET {
 		ROMNodeNET^			GetRoot();
 		ROMNodeNET^			Parent();
 		array<ROMNodeNET^>^	GetAllChildren(bool recurs);
-		array<ROMNodeNET^>^ FindAllObjectsOfID(String^ id, bool recurs);
+		array<ROMNodeNET^>^ FindObjects(String^ xpath);
+		array<ROMNodeNET^>^ FindAllObjectsByID(String^ id, bool recurs);
+		ROMNodeNET^			FindObjectByGUID(String^ guid);
 		bool				AddChildROMObject(ROMNodeNET^ child);
 		bool				RemoveChildROMObject(ROMNodeNET^ child);
 		bool				DestroyROMObject();
@@ -110,6 +112,7 @@ namespace ROMNET {
 		bool				RemoveROMObjectValue(String^ id);	
 		String^				GetROMObjectID();
 		void				SetROMObjectID(String^ name);
+		String^				GetROMGUID();
 		Dictionary<String^, Dictionary<String^, String^>^>^	GetAllAttributes();
 
 		//rules

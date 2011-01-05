@@ -121,11 +121,21 @@ vector<ROMNode*> ROMNode::GetAllChildren(bool recurs)
 	return retval;
 }
 
-vector<ROMNode*> ROMNode::FindAllObjectsOfID(wstring id, bool recurs)
+vector<ROMNode*> ROMNode::FindAllObjectsByID(wstring id, bool recurs)
 {
 	vector<ROMNode*> retval;
 	
 	_findObjects(id, recurs, &retval);
+
+	return retval;
+}
+
+ROMNode* ROMNode::FindObjectByGUID(string guid)
+{
+	ROMNode* retval = NULL;
+
+	ROMNode* rootNode = GetRoot();
+	retval = rootNode->_findObjectGUID(guid);
 
 	return retval;
 }
@@ -178,6 +188,82 @@ ROMNode* ROMNode::Clone()
 		}
 	}
 	return newNode;
+}
+
+vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
+{
+	_createXMLDoc();
+	vector<ROMNode*> retval;
+	vector<Node> nodes;
+#ifdef USE_MSXML
+	NodeList res = m_xmlDoc->selectNodes(xpath.c_str());
+	if (res != NULL)
+	{
+		for (long i = 0; i < res->length; i++)
+		{
+			nodes.push_back(res->item[i]);
+		}
+	}
+
+	for (vector<Node>::iterator it = nodes.begin(); it != nodes.end(); it++)
+	{		
+		Node objNode = (*it);
+		wstring guid = objNode->attributes->getNamedItem("guid")->nodeValue.bstrVal;
+		if (guid.length() > 0)
+		{
+			ROMNode* node = FindObjectByGUID(guid);
+			if (node != NULL)
+				retval.push_back(node);
+		}
+	}
+#endif
+#ifdef USE_LIBXML
+	xmlXPathContextPtr xpathCtx = xmlXPathNewContext(m_xmlDoc);
+	xmlXPathObjectPtr xpathObjSearch = xmlXPathEvalExpression((xmlChar*)WStrToMBCStr(xpath).c_str(), xpathCtx);
+	NodeList res = xpathObjSearch->nodesetval;
+	if (res != NULL)
+	{
+		for (int i = 0; i < res->nodeNr; i++)
+		{
+			nodes.push_back(res->nodeTab[i]);
+		}
+	}
+	xmlXPathFreeObject(xpathObjSearch);
+	xmlXPathFreeContext(xpathCtx);
+
+	for (vector<Node>::iterator it = nodes.begin(); it != nodes.end(); it++)
+	{		
+		Node objNode = (*it);
+		wstring guid = XMLStrToWStr(xmlGetProp(objNode, (xmlChar*)"guid"));
+		if (guid.length() > 0)
+		{
+			ROMNode* node = FindObjectByGUID(guid);
+			if (node != NULL)
+				retval.push_back(node);
+		}
+	}
+#endif
+	return retval;
+}
+
+ROMNode* ROMNode::_findObjectGUID(string guid)
+{
+	ROMNode* retval = NULL;
+	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
+	{
+		if ((*it)->m_guid == guid)
+		{
+			retval = *it;
+			break;
+		}
+		else
+		{
+			retval = (*it)->_findObjectGUID(guid);
+			if (retval != NULL)
+				break;
+		}
+	}
+	return retval;
 }
 
 void ROMNode::_findObjects(wstring id, bool recurs, vector<ROMNode*>* res)
