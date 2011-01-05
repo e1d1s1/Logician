@@ -36,9 +36,14 @@ namespace ROM2NETTestApplication
             childNode.SetAttribute("childAttr", "some value of value");
             //setting a value on the Object Node
             childNode.SetROMObjectValue("valueTest", "myValue");
+            ROMNodeNET childOfChild = new ROMNodeNET("ChildObject2");
+            childNode.AddChildROMObject(childOfChild);
             ROMNodeNET[] findTest = rootNode.FindAllObjectsByID("ChildObject", true);
             ROMNodeNET[] findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
-            if (findTest.Length == 1 && findTestXPATH.Length == 1 && findTest[0].GetROMGUID() == findTestXPATH[0].GetROMGUID())
+            ROMNodeNET[] findTestXPATH2 = rootNode.FindObjects("//Object[@id='ChildObject2']");
+            if (findTest.Length == 1 && findTestXPATH.Length == 1 && findTestXPATH2.Length == 1 &&
+                findTest[0].GetROMGUID() == findTestXPATH[0].GetROMGUID() &&
+                findTestXPATH2[0].GetROMObjectID() == "ChildObject2")
                 Log("OK");
             else
                 Log("FAILURE creating/obtaining child object");

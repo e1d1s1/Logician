@@ -119,9 +119,14 @@ int main(int argc, char* argv[])
 		childNode->SetAttribute(L"childAttr", L"some value of value");
 		//setting a value on the Object Node
 		childNode->SetROMObjectValue(L"valueTest", L"myValue");
+		ROMNode *childOfChild = new ROMNode(L"ChildObject2");
+		childNode->AddChildROMObject(childOfChild);
 		vector<ROMNode*> findTest = rootNode->FindAllObjectsByID("ChildObject", true);
 		vector<ROMNode*> findTestXPATH = rootNode->FindObjects("//Object[@id='ChildObject']");
-		if (findTest.size() == 1 && findTestXPATH.size() == 1 && findTestXPATH[0]->GetROMGUID() == findTest[0]->GetROMGUID())
+		vector<ROMNode*> findTestXPATH2 = rootNode->FindObjects("//Object[@id='ChildObject2']");
+		if (findTest.size() == 1 && findTestXPATH.size() == 1 && findTestXPATH2.size() == 1 &&
+			findTestXPATH[0]->GetROMGUID() == findTest[0]->GetROMGUID() &&
+			findTestXPATH2[0]->GetROMObjectID() == L"ChildObject2")
 			Log("OK");
 		else
 			Log("FAILURE creating/obtaining child object");
