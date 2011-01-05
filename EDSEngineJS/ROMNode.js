@@ -108,7 +108,10 @@ ROMNode.prototype.GetRoot = function()
 		    if (nextParent != null)
 			    nextParent = nextParent.GetParent();		
 	    } while (nextParent != null);
-	    return nextParent;
+	    
+	    if (nextParent == null)	    
+	        nextParent = this;
+	    return nextParent;   
     }
     catch (err) 
     {
@@ -159,7 +162,62 @@ ROMNode.prototype.GetAllChildren = function(recurs)
     return retval;
 }
 
-ROMNode.prototype.FindAllObjectsOfID = function(id, recurs)
+ROMNode.prototype.FindObjects = function(xpath)
+{
+    var retval = new Array();
+    try
+    {
+        this._createXMLDoc();
+        var nodes = new Array();
+        if (IsIE())
+        {
+            var res = this.m_xmlDoc.selectNodes(xpath);
+	        for (var i = 0; i < res.length; i++)
+	        {
+		        nodes.push(res[i]);
+		    }
+		    
+		    for (var nodeItr in nodes)
+		    {
+		        var objNode = nodes[nodeItr];
+		        var guid = objNode.attributes.getNamedItem("guid").nodeValue;
+		        if (guid.length > 0)
+		        {
+		            var node = this.FindObjectByGUID(guid);
+		            if (node != null)
+		                retval.push(node);
+		        }
+		    }
+        }
+        else
+        {
+            var res = this.m_xmlDoc.evaluate(xpath, this.m_xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	        for (var i = 0; i < res.snapshotLength; i++)
+	        {
+		        nodes.push(res.snapshotItem(i));
+		    }
+		    
+		    for (var nodeItr in nodes)
+		    {
+		        var objNode = nodes[nodeItr];
+		        var guid = objNode.getAttribute("guid");
+		        if (guid.length > 0)
+		        {
+		            var node = this.FindObjectByGUID(guid);
+		            if (node != null)
+		                retval.push(node);
+		        }
+		    }
+        }
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+ROMNode.prototype.FindAllObjectsByID = function(id, recurs)
 {
     var retval = new Array();
     try 
@@ -173,11 +231,53 @@ ROMNode.prototype.FindAllObjectsOfID = function(id, recurs)
     return retval;
 }
 
+ROMNode.prototype.FindObjectByGUID = function(guid)
+{
+    var retval = null;
+    try 
+    {
+        var rootNode = this.GetRoot();
+        retval = rootNode._findObjectGUID(guid);
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
+ROMNode.prototype._findObjectGUID = function(guid)
+{
+    var retval = null;
+    try
+    {
+        for (var child in this.m_children)
+        {
+            if (this.m_children[child].m_guid == guid)
+            {
+                retval = this.m_children[child];
+                break;
+            }
+            else
+            {
+                retval = this.m_children[child]._findObjectGUID(guid);
+                if (retval != null)
+                    break;
+            }
+        }
+    }
+    catch (err) 
+    {
+        ReportError(err);
+    }
+    return retval;
+}
+
 ROMNode.prototype._findObjects = function(id, recurs, resObject)
 {
     for (var child in this.m_children)
     {
-        resObject.push(child);
+        resObject.push(this.m_children[child]);
         if (this.m_children[child].m_children.length > 0)
             this.m_children[child]._findObjects(resObject, recurs, resObject);
     }
@@ -496,6 +596,11 @@ ROMNode.prototype.GetROMObjectID = function()
 ROMNode.prototype.SetROMObjectID = function(id) 
 {
     this.m_id = id;
+}
+
+ROMNode.prototype.GetROMGUID = function()
+{
+    return this.m_guid;
 }
 
 ROMNode.prototype.GetAllAttributes = function() 

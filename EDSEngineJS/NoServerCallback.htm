@@ -352,7 +352,7 @@
                 write_result("Attrs Set");
     		    
                 write_result("Testing what we have set");
-                write_result("inputAttr1 = " + rootNode.GetAttributeValue("inputAttr1", true));
+                write_result("inputAttr1 = " + rootNode.GetAttribute("inputAttr1", true));
 
 	            write_result("Creating a child object");
 	            var childNode = new ROMNode("ChildObject");
@@ -360,8 +360,9 @@
 	            childNode.SetAttribute("childAttr", "some value of value");
 	            //setting a value on the Object Node
 	            childNode.SetROMObjectValue("valueTest", "myValue");
-	            var findTest = rootNode.FindAllObjectsOfID("ChildObject", true);
-                if (findTest.length == 1)
+	            var findTest = rootNode.FindAllObjectsByID("ChildObject", true);
+	            var findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
+                if (ArraySize(findTest) == 1 && ArraySize(findTestXPATH) == 1 && findTest[0].GetROMGUID() == findTestXPATH[0].GetROMGUID())
                     write_result("OK");
                 else
                     write_result("FAILURE creating/obtaining child object"); 
