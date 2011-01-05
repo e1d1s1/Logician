@@ -72,16 +72,42 @@ namespace ROMNET
 		return retval;
 	}
 
-	array<ROMNodeNET^>^ ROMNodeNET::FindAllObjectsOfID(String^ id, bool recurs)
+	array<ROMNodeNET^>^ ROMNodeNET::FindObjects(String^ xpath)
+	{
+		array<ROMNodeNET^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			wstring wsxpath = MarshalString(xpath);
+			vector<ROM::ROMNode*> vChildren = m_ROMNode->FindObjects(wsxpath);
+			retval = GetArrayFromVectorROM(vChildren);
+		}
+
+		return retval;
+	}
+
+	array<ROMNodeNET^>^ ROMNodeNET::FindAllObjectsByID(String^ id, bool recurs)
 	{
 		array<ROMNodeNET^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsID = MarshalString(id);
-			vector<ROM::ROMNode*> vChildren = m_ROMNode->FindAllObjectsOfID(wsID, recurs);
+			vector<ROM::ROMNode*> vChildren = m_ROMNode->FindAllObjectsByID(wsID, recurs);
 			retval = GetArrayFromVectorROM(vChildren);
 		}
 		
+		return retval;
+	}
+
+	ROMNodeNET^ ROMNodeNET::FindObjectByGUID(String^ guid)
+	{
+		ROMNodeNET^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			string sguid = MarshalStringA(guid);
+			ROM::ROMNode* node = m_ROMNode->FindObjectByGUID(sguid);
+			retval = gcnew ROMNodeNET((IntPtr)node);
+		}
+
 		return retval;
 	}
 
@@ -221,6 +247,17 @@ namespace ROMNET
 			wstring wsID = MarshalString(id);
 			m_ROMNode->SetROMObjectID(wsID);
 		}
+	}
+
+	String^ ROMNodeNET::GetROMGUID()
+	{
+		String^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			string res = m_ROMNode->GetROMGUID();
+			retval = gcnew String(res.c_str());
+		}
+		return retval;
 	}
 
 	Dictionary<String^, Dictionary<String^, String^>^>^	ROMNodeNET::GetAllAttributes()
