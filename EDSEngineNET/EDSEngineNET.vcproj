@@ -190,7 +190,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\EDSEngineNET.cpp"
+				RelativePath=".\EDSEngine.cpp"
 				>
 			</File>
 			<File
@@ -224,7 +224,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\EDSEngineNET.h"
+				RelativePath=".\EDSEngine.h"
 				>
 			</File>
 			<File

@@ -1,7 +1,7 @@
 EDSEngine
-EDSEngine is the decision table evaluator of the Logician suite.  It can be used independently of the other libraries.  EDSEngineNET is the managed .NET wrapper for the C++ engine, and there is a javascript implementation as well in the Knowledgebase.js file.
+EDSEngine is the decision table evaluator of the Logician suite.  It can be used independently of the other libraries.  EDSEngine is the managed .NET wrapper for the C++ engine, and there is a javascript implementation as well in the Knowledgebase.js file.
 
-All of the language ports of the EDSEngine library have a similar interface.  The main class names are slightly alterted to prevent confusion when inheriting the unmanaged C++ libraries in the managed C++ CLI/C# libraries.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
+All of the language ports of the EDSEngine library have a similar interface.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
 
 Constructors
 The constructor for EDSEngine simply requires a path string to the souce rules xml or zipped xml file.  Zipped xml files are not supported in javascript.
@@ -11,9 +11,9 @@ The constructor for EDSEngine simply requires a path string to the souce rules x
 		CKonweldegeBase();
 		bool CreateKnowledgeBase(wstring knowledge_file);
 	C#:
-		EDSEngineNET(string knowledge_file);
+		EDSEngine(string knowledge_file);
 		//optional 2-step C#:
-		EDSEngineNET();
+		EDSEngine();
 		bool CreateKnowledgeBase(string knowledge_file);
 	Javascript:
 		KnowledgeBase(xmlPath);
@@ -292,10 +292,10 @@ The constructor for Relational Object Model simply requires a path string to the
 		ROMNode();
 		bool CreateROMNode(wstring id);
 	C#:
-		ROMNodeNET(string id);
+		ROMNode(string id);
 		//optional 2-step C#:
-		ROMNodeNET();
-		bool CreateROMNodeNET(string id);
+		ROMNode();
+		bool CreateROMNode(string id);
 	Javascript:
 		ROMNode(id);
 		
@@ -594,12 +594,12 @@ The constructor for LinearEngine simply requires a path string to the souce rule
 		LinearEngine();
 		bool CreateLinearEngine(wstring knowledge_file);
 	C#:
-		LinearEngineNET(string knowledge_file);
+		LinearEngine(string knowledge_file);
 		//optional 2-step C#:
-		LinearEngineNET();
+		LinearEngine();
 		bool CreateLinearEngine(string knowledge_file);
 	Javascript:
-		LinearEngineNET(xmlPath);
+		LinearEngine(xmlPath);
 		
 LoadDictionary - Loads a group of attribues and sets some defualt values based on the evaluation of a rules table.  
 Requirsed table outputs:
@@ -635,7 +635,7 @@ Requirsed table outputs:
 	C++:
 		ROMDictionaryAttribute* GetDictionaryAttr(wstring dictAttrName);
 	C#:
-		ROMDictionaryAttributeNET GetDictionaryAttr(string dictAttrName);
+		ROMDictionaryAttribute GetDictionaryAttr(string dictAttrName);
 	Javascript:
 		ROMDictionaryAttribute GetDictionaryAttr(dictAttrName);
 		
@@ -643,7 +643,7 @@ Requirsed table outputs:
 	C++:
 		map<wstring, ROMDictionaryAttribute*> GetAllDictionaryAttrs(wstring dictAttrName);
 	C#:
-		Dictionary<string, ROMDictionaryAttributeNET> GetAllDictionaryAttrs(string dictAttrName);
+		Dictionary<string, ROMDictionaryAttribute> GetAllDictionaryAttrs(string dictAttrName);
 	Javascript:
 		array GetAllDictionaryAttrs(dictAttrName); //array of ROMDictionaryAttribute keyed by attribute name
 	
@@ -699,7 +699,7 @@ Requirsed table outputs:
 	C++:
 		vector<ROMDictionaryAttribute*>* GetEvalList();
 	C#:
-		array<ROMDictionaryAttributeNET> GetEvalList();
+		array<ROMDictionaryAttribute> GetEvalList();
 	Javascript:
 		array GetEvalList();
 	

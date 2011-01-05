@@ -22,7 +22,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt
 
 namespace ROMNET
 {
-	bool ROMNodeNET::CreateROMNodeNET(System::String^ id)
+	bool ROMNode::CreateROMNode(System::String^ id)
 	{
 		wstring wsID = MarshalString(id);
 		m_ROMNode = new ROM::ROMNode(wsID);
@@ -32,37 +32,37 @@ namespace ROMNET
 			return false;
 	}
 
-	ROMNodeNET^ ROMNodeNET::GetRoot()
+	ROMNode^ ROMNode::GetRoot()
 	{
-		ROMNodeNET^ retval = nullptr;
+		ROMNode^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			ROM::ROMNode *rootNode = m_ROMNode->GetRoot();
 			if (rootNode)
 			{
-				retval = gcnew ROMNodeNET((IntPtr)rootNode);
+				retval = gcnew ROMNode((IntPtr)rootNode);
 			}
 		}
 		return retval;
 	}
 
-	ROMNodeNET^	ROMNodeNET::Parent()
+	ROMNode^	ROMNode::Parent()
 	{
-		ROMNodeNET^ retval = nullptr;
+		ROMNode^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			ROM::ROMNode *parentNode = m_ROMNode->GetParent();
 			if (parentNode)
 			{
-				retval = gcnew ROMNodeNET(gcnew String(parentNode->GetROMObjectID().c_str()));
+				retval = gcnew ROMNode(gcnew String(parentNode->GetROMObjectID().c_str()));
 			}
 		}
 		return retval;
 	}
 
-	array<ROMNodeNET^>^ ROMNodeNET::GetAllChildren(bool recurs)
+	array<ROMNode^>^ ROMNode::GetAllChildren(bool recurs)
 	{
-		array<ROMNodeNET^>^ retval = nullptr;
+		array<ROMNode^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			vector<ROM::ROMNode*> vChildren = m_ROMNode->GetAllChildren(recurs);
@@ -72,9 +72,9 @@ namespace ROMNET
 		return retval;
 	}
 
-	array<ROMNodeNET^>^ ROMNodeNET::FindObjects(String^ xpath)
+	array<ROMNode^>^ ROMNode::FindObjects(String^ xpath)
 	{
-		array<ROMNodeNET^>^ retval = nullptr;
+		array<ROMNode^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsxpath = MarshalString(xpath);
@@ -85,9 +85,9 @@ namespace ROMNET
 		return retval;
 	}
 
-	array<ROMNodeNET^>^ ROMNodeNET::FindAllObjectsByID(String^ id, bool recurs)
+	array<ROMNode^>^ ROMNode::FindAllObjectsByID(String^ id, bool recurs)
 	{
-		array<ROMNodeNET^>^ retval = nullptr;
+		array<ROMNode^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsID = MarshalString(id);
@@ -98,20 +98,20 @@ namespace ROMNET
 		return retval;
 	}
 
-	ROMNodeNET^ ROMNodeNET::FindObjectByGUID(String^ guid)
+	ROMNode^ ROMNode::FindObjectByGUID(String^ guid)
 	{
-		ROMNodeNET^ retval = nullptr;
+		ROMNode^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			string sguid = MarshalStringA(guid);
 			ROM::ROMNode* node = m_ROMNode->FindObjectByGUID(sguid);
-			retval = gcnew ROMNodeNET((IntPtr)node);
+			retval = gcnew ROMNode((IntPtr)node);
 		}
 
 		return retval;
 	}
 
-	bool ROMNodeNET::AddChildROMObject(ROMNodeNET^ child)
+	bool ROMNode::AddChildROMObject(ROMNode^ child)
 	{
 		bool retval = false;
 		if (m_ROMNode)
@@ -121,7 +121,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	bool ROMNodeNET::RemoveChildROMObject(ROMNodeNET^ child)
+	bool ROMNode::RemoveChildROMObject(ROMNode^ child)
 	{
 		bool retval = false;
 		if (m_ROMNode)
@@ -131,7 +131,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	bool ROMNodeNET::DestroyROMObject()
+	bool ROMNode::DestroyROMObject()
 	{
 		bool retval = false;
 		if (m_ROMNode)
@@ -144,7 +144,7 @@ namespace ROMNET
 	}
 
 	//attribute functions
-	String^ ROMNodeNET::GetAttribute(String^ id, String^ name, bool immediate)
+	String^ ROMNode::GetAttribute(String^ id, String^ name, bool immediate)
 	{
 		String^ retval = nullptr;
 		if (m_ROMNode)
@@ -157,7 +157,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	bool ROMNodeNET::GetAttributeExists(String^ id, String^ name)
+	bool ROMNode::GetAttributeExists(String^ id, String^ name)
 	{
 		bool retval = false;
 		if (m_ROMNode)
@@ -169,7 +169,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	bool ROMNodeNET::SetAttribute(String^ id, String^ name, String^ value)
+	bool ROMNode::SetAttribute(String^ id, String^ name, String^ value)
 	{
 		bool retval = false;
 		if (m_ROMNode)
@@ -182,7 +182,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	bool ROMNodeNET::RemoveAttribute(String^ id, String^ name)
+	bool ROMNode::RemoveAttribute(String^ id, String^ name)
 	{
 		bool retval = false;
 		if (m_ROMNode)
@@ -194,7 +194,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	bool ROMNodeNET::SetROMObjectValue(String^ name, String^ value)
+	bool ROMNode::SetROMObjectValue(String^ name, String^ value)
 	{
 		bool retval = false;
 		if (m_ROMNode)
@@ -206,7 +206,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	String^ ROMNodeNET::GetROMObjectValue(String^ name)
+	String^ ROMNode::GetROMObjectValue(String^ name)
 	{
 		String^ retval = nullptr;
 		if (m_ROMNode)
@@ -218,7 +218,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	bool ROMNodeNET::RemoveROMObjectValue(String^ id)
+	bool ROMNode::RemoveROMObjectValue(String^ id)
 	{
 		bool retval = false;
 		if (m_ROMNode)
@@ -229,7 +229,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	String^ ROMNodeNET::GetROMObjectID()
+	String^ ROMNode::GetROMObjectID()
 	{
 		String^ retval = nullptr;
 		if (m_ROMNode)
@@ -240,7 +240,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	void ROMNodeNET::SetROMObjectID(String^ id)
+	void ROMNode::SetROMObjectID(String^ id)
 	{
 		if (m_ROMNode)
 		{
@@ -249,7 +249,7 @@ namespace ROMNET
 		}
 	}
 
-	String^ ROMNodeNET::GetROMGUID()
+	String^ ROMNode::GetROMGUID()
 	{
 		String^ retval = nullptr;
 		if (m_ROMNode)
@@ -260,7 +260,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	Dictionary<String^, Dictionary<String^, String^>^>^	ROMNodeNET::GetAllAttributes()
+	Dictionary<String^, Dictionary<String^, String^>^>^	ROMNode::GetAllAttributes()
 	{
 		Dictionary<String^, Dictionary<String^, String^>^>^ retval = gcnew Dictionary<String^, Dictionary<String^, String^>^>();
 		if (m_ROMNode)
@@ -281,7 +281,7 @@ namespace ROMNET
 	}
 
 	//rules
-	bool ROMNodeNET::LoadRules(String^ knowledge_file)
+	bool ROMNode::LoadRules(String^ knowledge_file)
 	{
 		bool retval = false;
 		if (m_ROMNode)
@@ -292,7 +292,7 @@ namespace ROMNET
 		return retval;
 	}
 		
-	array<String^>^ ROMNodeNET::EvaluateTable(String^ evalTable, String^ output, bool bGetAll)
+	array<String^>^ ROMNode::EvaluateTable(String^ evalTable, String^ output, bool bGetAll)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
@@ -306,7 +306,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	array<String^>^ ROMNodeNET::EvaluateTable(String^ evalTable, String^ output)
+	array<String^>^ ROMNode::EvaluateTable(String^ evalTable, String^ output)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
@@ -320,7 +320,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	Dictionary<String^, array<String^>^>^ ROMNodeNET::EvaluateTable(String^ evalTable, bool bGetAll)
+	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTable(String^ evalTable, bool bGetAll)
 	{
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
@@ -333,7 +333,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	Dictionary<String^, array<String^>^>^ ROMNodeNET::EvaluateTable(String^ evalTable)
+	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTable(String^ evalTable)
 	{
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
@@ -347,7 +347,7 @@ namespace ROMNET
 	}
 
 	//IO
-	String^ ROMNodeNET::SaveXML(bool indented)
+	String^ ROMNode::SaveXML(bool indented)
 	{
 		String^ retval = nullptr;
 		if (m_ROMNode)
@@ -375,7 +375,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	bool ROMNodeNET::LoadXML(String^ xmlStr)
+	bool ROMNode::LoadXML(String^ xmlStr)
 	{
 		bool retval = false;
 		if (m_ROMNode)
@@ -387,7 +387,7 @@ namespace ROMNET
 	}
 
 	//XPATH
-	String^ ROMNodeNET::EvaluateXPATH(String^ xpath)
+	String^ ROMNode::EvaluateXPATH(String^ xpath)
 	{
 		String^ retval = nullptr;
 		if (m_ROMNode)
@@ -400,17 +400,17 @@ namespace ROMNET
 	}
 
 
-	array<ROMNodeNET^>^ ROMNodeNET::GetArrayFromVectorROM(vector<ROM::ROMNode*> vect)
+	array<ROMNode^>^ ROMNode::GetArrayFromVectorROM(vector<ROM::ROMNode*> vect)
 	{
-		array<ROMNodeNET^>^ arr = gcnew array<ROMNodeNET^>(vect.size());
+		array<ROMNode^>^ arr = gcnew array<ROMNode^>(vect.size());
 		for (size_t i = 0; i < vect.size(); i++)
 		{
-			arr[i] = gcnew ROMNodeNET((IntPtr)vect[i]);
+			arr[i] = gcnew ROMNode((IntPtr)vect[i]);
 		}
 		return arr;
 	}
 
-	void ROMNodeNET::PumpDebugMessages()
+	void ROMNode::PumpDebugMessages()
 	{
 		if (m_ROMNode != NULL && DebugDelegate != nullptr)
 		{
@@ -423,7 +423,7 @@ namespace ROMNET
 
 
 	//dictionary
-	void ROMDictionaryNET::LoadDictionary(String^ dictionaryTable)
+	void ROMDictionary::LoadDictionary(String^ dictionaryTable)
 	{
 		if (m_ROMDictionary)
 		{
@@ -433,38 +433,38 @@ namespace ROMNET
 		}
 	}
 
-	ROMDictionaryAttributeNET^ ROMDictionaryNET::GetDictionaryAttr(String^ dictAttrName)
+	ROMDictionaryAttribute^ ROMDictionary::GetDictionaryAttr(String^ dictAttrName)
 	{
-		ROMDictionaryAttributeNET^ retval = nullptr;
+		ROMDictionaryAttribute^ retval = nullptr;
 		if (m_ROMDictionary)
 		{
 			wstring wsName = MarshalString(dictAttrName);
 			ROM::ROMDictionaryAttribute* attr = m_ROMDictionary->GetDictionaryAttr(wsName);
 			if (attr)
 			{
-				retval = gcnew ROMDictionaryAttributeNET((IntPtr)attr);
+				retval = gcnew ROMDictionaryAttribute((IntPtr)attr);
 			}
 		}
 		return retval;
 	}
 
-	Dictionary<String^, ROMDictionaryAttributeNET^>^ ROMDictionaryNET::GetAllDictionaryAttrs()
+	Dictionary<String^, ROMDictionaryAttribute^>^ ROMDictionary::GetAllDictionaryAttrs()
 	{
-		Dictionary<String^, ROMDictionaryAttributeNET^>^ retval = gcnew Dictionary<String^, ROMDictionaryAttributeNET^>();
+		Dictionary<String^, ROMDictionaryAttribute^>^ retval = gcnew Dictionary<String^, ROMDictionaryAttribute^>();
 		if (m_ROMDictionary)
 		{
 			map<wstring, ROM::ROMDictionaryAttribute>* allAttrs = m_ROMDictionary->GetAllDictionaryAttrs();
 			for (map<wstring, ROM::ROMDictionaryAttribute>::iterator it = allAttrs->begin(); it != allAttrs->end(); it++)
 			{
 				String^ key = gcnew String(it->first.c_str());
-				ROMDictionaryAttributeNET^ value = gcnew ROMDictionaryAttributeNET((IntPtr)(&(it->second)));
+				ROMDictionaryAttribute^ value = gcnew ROMDictionaryAttribute((IntPtr)(&(it->second)));
 				retval->Add(key, value);
 			}
 		}
 		return retval;
 	}
 
-	void ROMDictionaryNET::PumpDebugMessages()
+	void ROMDictionary::PumpDebugMessages()
 	{
 		if (m_ROMDictionary != NULL && DebugDelegate != nullptr)
 		{
@@ -475,7 +475,7 @@ namespace ROMNET
 	}
 
 	//LinearEngine
-	void LinearEngineNET::LoadDictionary(String^ dictionaryTable)
+	void LinearEngine::LoadDictionary(String^ dictionaryTable)
 	{
 		if (m_LinearEngine)
 		{
@@ -484,38 +484,38 @@ namespace ROMNET
 		}
 	}
 
-	ROMDictionaryAttributeNET^ LinearEngineNET::GetDictionaryAttr(String^ dictAttrName)
+	ROMDictionaryAttribute^ LinearEngine::GetDictionaryAttr(String^ dictAttrName)
 	{
-		ROMDictionaryAttributeNET^ retval = nullptr;
+		ROMDictionaryAttribute^ retval = nullptr;
 		if (m_LinearEngine)
 		{
 			wstring wsName = MarshalString(dictAttrName);
 			ROM::ROMDictionaryAttribute* attr = m_LinearEngine->GetDictionaryAttr(wsName);
 			if (attr)
 			{
-				retval = gcnew ROMDictionaryAttributeNET((IntPtr)attr);
+				retval = gcnew ROMDictionaryAttribute((IntPtr)attr);
 			}
 		}
 		return retval;
 	}
 
-	Dictionary<String^, ROMDictionaryAttributeNET^>^ LinearEngineNET::GetAllDictionaryAttrs()
+	Dictionary<String^, ROMDictionaryAttribute^>^ LinearEngine::GetAllDictionaryAttrs()
 	{
-		Dictionary<String^, ROMDictionaryAttributeNET^>^ retval = gcnew Dictionary<String^, ROMDictionaryAttributeNET^>();
+		Dictionary<String^, ROMDictionaryAttribute^>^ retval = gcnew Dictionary<String^, ROMDictionaryAttribute^>();
 		if (m_LinearEngine)
 		{
 			map<wstring, ROM::ROMDictionaryAttribute>* allAttrs = m_LinearEngine->GetAllDictionaryAttrs();
 			for (map<wstring, ROM::ROMDictionaryAttribute>::iterator it = allAttrs->begin(); it != allAttrs->end(); it++)
 			{
 				String^ key = gcnew String(it->first.c_str());
-				ROMDictionaryAttributeNET^ value = gcnew ROMDictionaryAttributeNET((IntPtr)(&(it->second)));
+				ROMDictionaryAttribute^ value = gcnew ROMDictionaryAttribute((IntPtr)(&(it->second)));
 				retval->Add(key, value);
 			}
 		}
 		return retval;
 	}
 
-	void LinearEngineNET::EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents)
+	void LinearEngine::EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents)
 	{
 		if (m_LinearEngine)
 		{
@@ -526,7 +526,7 @@ namespace ROMNET
 		}
 	}
 
-	void LinearEngineNET::EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents)
+	void LinearEngine::EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents)
 	{
 		if (m_LinearEngine)
 		{
@@ -537,24 +537,24 @@ namespace ROMNET
 		}
 	}
 
-	array<ROMDictionaryAttributeNET^>^ LinearEngineNET::GetEvalList()
+	array<ROMDictionaryAttribute^>^ LinearEngine::GetEvalList()
 	{
-		array<ROMDictionaryAttributeNET^>^ retval = nullptr;
+		array<ROMDictionaryAttribute^>^ retval = nullptr;
 		if (m_LinearEngine)
 		{
 			vector<ROM::ROMDictionaryAttribute*> res = m_LinearEngine->GetEvalList();
-			retval = gcnew array<ROMDictionaryAttributeNET^>(res.size());
+			retval = gcnew array<ROMDictionaryAttribute^>(res.size());
 			size_t i = 0;
 			for (vector<ROM::ROMDictionaryAttribute*>::iterator it = res.begin(); it != res.end(); it++)
 			{
-				retval[i] = gcnew ROMDictionaryAttributeNET((IntPtr)(*it));
+				retval[i] = gcnew ROMDictionaryAttribute((IntPtr)(*it));
 				i++;
 			}			
 		}
 		return retval;
 	}
 
-	Dictionary<String^, array<String^>^>^ LinearEngineNET::GetTriggers()
+	Dictionary<String^, array<String^>^>^ LinearEngine::GetTriggers()
 	{
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_LinearEngine)
@@ -576,7 +576,7 @@ namespace ROMNET
 		return retval;
 	}
 
-	void LinearEngineNET::PumpDebugMessages()
+	void LinearEngine::PumpDebugMessages()
 	{
 		if (m_LinearEngine != NULL && DebugDelegate != nullptr)
 		{

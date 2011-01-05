@@ -222,9 +222,11 @@ ROMNode.prototype.FindAllObjectsByID = function(id, recurs)
     var retval = new Array();
     try 
     {
-        this._findObjects(retval, recurs, retval);
+        if (this.m_id == id && resObject != null)
+            retval.push(this);
+        this._findObjects(id, recurs, retval);
     }
-    catch (err) 
+    catch (err)
     {
         ReportError(err);
     }
@@ -274,12 +276,15 @@ ROMNode.prototype._findObjectGUID = function(guid)
 }
 
 ROMNode.prototype._findObjects = function(id, recurs, resObject)
-{
+{    
     for (var child in this.m_children)
     {
-        resObject.push(this.m_children[child]);
-        if (this.m_children[child].m_children.length > 0)
-            this.m_children[child]._findObjects(resObject, recurs, resObject);
+        if (recurs && this.m_children[child].m_id == id && resObject != null)
+        {
+            resObject.push(this.m_children[child]);
+            if (this.m_children[child].m_children.length > 0)
+                this.m_children[child]._findObjects(resObject, recurs, resObject);
+        }
     }
 }     
 

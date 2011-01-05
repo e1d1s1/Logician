@@ -1,25 +1,25 @@
 /*
-This file is part of EDSEngineNET.
+This file is part of EDSEngine.
 Copyright (C) 2009 - 2011 Eric D. Schmidt
 
-    EDSEngineNET is free software: you can redistribute it and/or modify
+    EDSEngine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    EDSEngineNET is distributed in the hope that it will be useful,
+    EDSEngine is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with EDSEngineNET.  If not, see <http://www.gnu.org/licenses/>.
+    along with EDSEngine.  If not, see <http://www.gnu.org/licenses/>.
 */
 // This is the main DLL file.
 
 #include "stdafx.h"
 
-#include "EDSEngineNET.h"
+#include "EDSEngine.h"
 #include <vector>
 #include <map>
 #include <hash_map>
@@ -28,7 +28,7 @@ using namespace std;
 
 namespace EDSNET
 {
-	bool EDSEngineNET::CreateKnowledgeBase(System::String ^knowledge_file)
+	bool EDSEngine::CreateKnowledgeBase(System::String ^knowledge_file)
 	{
 		wstring file;
 		MarshalString(knowledge_file, file);
@@ -40,7 +40,7 @@ namespace EDSNET
 			return false;
 	}
 
-	size_t EDSEngineNET::TableCount()
+	size_t EDSEngine::TableCount()
 	{
 		if (m_KnowledgeBase)
 		{
@@ -50,7 +50,7 @@ namespace EDSNET
 			return 0;
 	}
 
-	bool EDSEngineNET::IsOpen()
+	bool EDSEngine::IsOpen()
 	{
 		if (m_KnowledgeBase)
 			return m_KnowledgeBase->IsOpen();
@@ -58,7 +58,7 @@ namespace EDSNET
 			return false;
 	}
 
-	bool EDSEngineNET::TableHasScript(String^ tableName)
+	bool EDSEngine::TableHasScript(String^ tableName)
 	{
 		if (m_KnowledgeBase)
 		{
@@ -70,7 +70,7 @@ namespace EDSNET
 			return false;
 	}
 
-	bool EDSEngineNET::TableIsGetAll(String^ tableName)
+	bool EDSEngine::TableIsGetAll(String^ tableName)
 	{
 		if (m_KnowledgeBase)
 		{
@@ -82,7 +82,7 @@ namespace EDSNET
 			return false;
 	}
 
-	array<String^>^ EDSEngineNET::EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param, bool bGetAll)
+	array<String^>^ EDSEngine::EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param, bool bGetAll)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_KnowledgeBase)
@@ -99,7 +99,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	Dictionary<String^,	array<String^>^>^ EDSEngineNET::EvaluateTableWithParam(String^ tableName, String^ param, bool bGetAll)
+	Dictionary<String^,	array<String^>^>^ EDSEngine::EvaluateTableWithParam(String^ tableName, String^ param, bool bGetAll)
 	{
 		Dictionary<String^,	array<String^>^>^ retval = nullptr;
 		if (m_KnowledgeBase)
@@ -114,7 +114,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	array<String^>^ EDSEngineNET::EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll)
+	array<String^>^ EDSEngine::EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll)
 	{
 		array<String^>^ retval = nullptr;
 
@@ -131,7 +131,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	Dictionary<String^,	array<String^>^>^ EDSEngineNET::EvaluateTable(String^ tableName, bool bGetAll)
+	Dictionary<String^,	array<String^>^>^ EDSEngine::EvaluateTable(String^ tableName, bool bGetAll)
 	{
 		Dictionary<String^,	array<String^>^>^ retval = nullptr;
 
@@ -147,7 +147,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	array<String^>^	EDSEngineNET::ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll)
+	array<String^>^	EDSEngine::ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll)
 	{
 		array<String^>^ retval = nullptr;
 
@@ -164,7 +164,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	Dictionary<String^,	array<String^>^>^ EDSEngineNET::ReverseEvaluateTable(String^ tableName, bool bGetAll)
+	Dictionary<String^,	array<String^>^>^ EDSEngine::ReverseEvaluateTable(String^ tableName, bool bGetAll)
 	{
 		Dictionary<String^,	array<String^>^>^ retval = nullptr;
 
@@ -180,7 +180,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	String^	EDSEngineNET::GetEvalParameter()
+	String^	EDSEngine::GetEvalParameter()
 	{
 		String^ retval = nullptr;
 
@@ -193,7 +193,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	void EDSEngineNET::SetInputValues(Dictionary<String^, size_t>^ values)
+	void EDSEngine::SetInputValues(Dictionary<String^, size_t>^ values)
 	{
 		if (m_KnowledgeBase)
 		{
@@ -203,7 +203,7 @@ namespace EDSNET
 		}
 	}
 
-	void EDSEngineNET::SetInputValue(String^ name, String^ value)
+	void EDSEngine::SetInputValue(String^ name, String^ value)
 	{
 		if (m_KnowledgeBase)
 		{
@@ -214,7 +214,7 @@ namespace EDSNET
 		}
 	}
 
-	void EDSEngineNET::ResetTable(String^ tableName)
+	void EDSEngine::ResetTable(String^ tableName)
 	{
 		if (m_KnowledgeBase)
 		{
@@ -224,7 +224,7 @@ namespace EDSNET
 		}
 	}
 
-	array<String^>^ EDSEngineNET::GetInputAttrs(String^ tableName)
+	array<String^>^ EDSEngine::GetInputAttrs(String^ tableName)
 	{
 		array<String^>^ retval = nullptr;
 
@@ -239,7 +239,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	array<String^>^ EDSEngineNET::GetInputDependencies(String^ tableName)
+	array<String^>^ EDSEngine::GetInputDependencies(String^ tableName)
 	{
 		array<String^>^ retval = nullptr;
 
@@ -254,7 +254,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	array<String^>^ EDSEngineNET::GetOutputAttrs(String^ tableName)
+	array<String^>^ EDSEngine::GetOutputAttrs(String^ tableName)
 	{
 		array<String^>^ retval = nullptr;
 
@@ -269,7 +269,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	array<String^>^ EDSEngineNET::GetAllPossibleOutputs(String^ tableName, String^ outputName)
+	array<String^>^ EDSEngine::GetAllPossibleOutputs(String^ tableName, String^ outputName)
 	{
 		array<String^>^ retval = nullptr;
 
@@ -285,7 +285,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	String^	EDSEngineNET::DeLocalize(String^ localeValue)
+	String^	EDSEngine::DeLocalize(String^ localeValue)
 	{
 		String^ retval = nullptr;
 
@@ -300,7 +300,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	String^	EDSEngineNET::Translate(String^ source, String^ sourceLocale, String^ destLocale)
+	String^	EDSEngine::Translate(String^ source, String^ sourceLocale, String^ destLocale)
 	{
 		String^ retval = nullptr;
 
@@ -317,7 +317,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	void EDSEngineNET::Debug()
+	void EDSEngine::Debug()
 	{
 		if (m_KnowledgeBase != NULL && DebugDelegate != nullptr)
 		{

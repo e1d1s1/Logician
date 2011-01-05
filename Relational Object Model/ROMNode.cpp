@@ -125,6 +125,8 @@ vector<ROMNode*> ROMNode::FindAllObjectsByID(wstring id, bool recurs)
 {
 	vector<ROMNode*> retval;
 	
+	if (m_id == id)
+		retval.push_back(this);
 	_findObjects(id, recurs, &retval);
 
 	return retval;

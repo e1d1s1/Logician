@@ -37,18 +37,18 @@ using namespace System::Collections::Generic;
 namespace ROMNET {
 	public delegate void DebugHandlerDelegate(String^ msg);
 
-	public ref class ROMNodeNET
+	public ref class ROMNode
 	{
 	public:
-		ROMNodeNET() {m_ROMNode = NULL;}
-		ROMNodeNET(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer();}
-		ROMNodeNET(String^ id) {CreateROMNodeNET(id);}
-		bool CreateROMNodeNET(System::String^ id);
-		~ROMNodeNET() {DestroyROMObject(); this->!ROMNodeNET();}
-		!ROMNodeNET() {}
+		ROMNode() {m_ROMNode = NULL;}
+		ROMNode(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer();}
+		ROMNode(String^ id) {CreateROMNode(id);}
+		bool CreateROMNode(System::String^ id);
+		~ROMNode() {DestroyROMObject(); this->!ROMNode();}
+		!ROMNode() {}
 
 		//some useful operators/casts for the managed/unmanaged boundry
-		static operator long(ROMNodeNET^ romObj)
+		static operator long(ROMNode^ romObj)
 		{
 			if (Equals(romObj, nullptr))
 				return 0;
@@ -58,7 +58,7 @@ namespace ROMNET {
 				return 0;		
 		}
 
-		static bool operator ==(ROMNodeNET^ romObj, ROMNodeNET^ romObj2)
+		static bool operator ==(ROMNode^ romObj, ROMNode^ romObj2)
 		{
 			if (Equals(romObj, romObj2))
 				return true;
@@ -69,7 +69,7 @@ namespace ROMNET {
 			return false;
 		}
 
-		static bool operator !=(ROMNodeNET^ romObj, ROMNodeNET^ romObj2)
+		static bool operator !=(ROMNode^ romObj, ROMNode^ romObj2)
 		{
 			if (Equals(romObj, romObj2))
 				return false;
@@ -86,14 +86,14 @@ namespace ROMNET {
 		void					PumpDebugMessages();
 
 		//relational functions
-		ROMNodeNET^			GetRoot();
-		ROMNodeNET^			Parent();
-		array<ROMNodeNET^>^	GetAllChildren(bool recurs);
-		array<ROMNodeNET^>^ FindObjects(String^ xpath);
-		array<ROMNodeNET^>^ FindAllObjectsByID(String^ id, bool recurs);
-		ROMNodeNET^			FindObjectByGUID(String^ guid);
-		bool				AddChildROMObject(ROMNodeNET^ child);
-		bool				RemoveChildROMObject(ROMNodeNET^ child);
+		ROMNode^			GetRoot();
+		ROMNode^			Parent();
+		array<ROMNode^>^	GetAllChildren(bool recurs);
+		array<ROMNode^>^ FindObjects(String^ xpath);
+		array<ROMNode^>^ FindAllObjectsByID(String^ id, bool recurs);
+		ROMNode^			FindObjectByGUID(String^ guid);
+		bool				AddChildROMObject(ROMNode^ child);
+		bool				RemoveChildROMObject(ROMNode^ child);
 		bool				DestroyROMObject();
 
 		//attribute functions
@@ -134,19 +134,19 @@ namespace ROMNET {
 		IntPtr^				GetPtr() {return (IntPtr)m_ROMNode;}
 
 	private:		
-		array<ROMNodeNET^>^ GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
+		array<ROMNode^>^ GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
 
 		ROM::ROMNode		*m_ROMNode;
 	};
 
-	public ref class ROMDictionaryAttributeNET
+	public ref class ROMDictionaryAttribute
 	{
 	public:
-		ROMDictionaryAttributeNET() {m_ROMDictionaryAttribute = NULL;}
-		ROMDictionaryAttributeNET(IntPtr^ ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr->ToPointer();}
-		void CreateROMDictionaryAttributeNET() {m_ROMDictionaryAttribute = new ROM::ROMDictionaryAttribute();}
-		~ROMDictionaryAttributeNET() {if (m_ROMDictionaryAttribute) delete m_ROMDictionaryAttribute; this->!ROMDictionaryAttributeNET();}
-		!ROMDictionaryAttributeNET() {}
+		ROMDictionaryAttribute() {m_ROMDictionaryAttribute = NULL;}
+		ROMDictionaryAttribute(IntPtr^ ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr->ToPointer();}
+		void CreateROMDictionaryAttribute() {m_ROMDictionaryAttribute = new ROM::ROMDictionaryAttribute();}
+		~ROMDictionaryAttribute() {if (m_ROMDictionaryAttribute) delete m_ROMDictionaryAttribute; this->!ROMDictionaryAttribute();}
+		!ROMDictionaryAttribute() {}
 
 		property String^ Name
 		{
@@ -326,17 +326,17 @@ namespace ROMNET {
 		ROM::ROMDictionaryAttribute* m_ROMDictionaryAttribute;
 	};
 
-	public ref class ROMDictionaryNET
+	public ref class ROMDictionary
 	{
 	public:
-		ROMDictionaryNET() {m_ROMDictionary = NULL;}		
-		ROMDictionaryNET(ROMNodeNET^ context) {CreateROMDictionaryNET(context);}
-		void CreateROMDictionaryNET(ROMNodeNET^ context) 
+		ROMDictionary() {m_ROMDictionary = NULL;}		
+		ROMDictionary(ROMNode^ context) {CreateROMDictionary(context);}
+		void CreateROMDictionary(ROMNode^ context) 
 		{
 			m_ROMDictionary = new ROM::ROMDictionary((ROM::ROMNode*)context->GetPtr()->ToPointer());
 		}
-		virtual ~ROMDictionaryNET() {if (m_ROMDictionary) delete m_ROMDictionary; this->!ROMDictionaryNET();}
-		!ROMDictionaryNET() {}
+		virtual ~ROMDictionary() {if (m_ROMDictionary) delete m_ROMDictionary; this->!ROMDictionary();}
+		!ROMDictionary() {}
 
 		//debugger
 		DebugHandlerDelegate^	DebugDelegate;
@@ -344,26 +344,26 @@ namespace ROMNET {
 		void					PumpDebugMessages();
 
 		void						LoadDictionary(String^ dictionaryTable);
-		ROMDictionaryAttributeNET^	GetDictionaryAttr(String^ dictAttrName);
-		Dictionary<String^, ROMDictionaryAttributeNET^>^ GetAllDictionaryAttrs();
+		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
+		Dictionary<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
 	private:
-		ROMDictionaryNET(IntPtr^ ptr) {m_ROMDictionary = (ROM::ROMDictionary*)ptr->ToPointer();}
+		ROMDictionary(IntPtr^ ptr) {m_ROMDictionary = (ROM::ROMDictionary*)ptr->ToPointer();}
 		ROM::ROMDictionary *m_ROMDictionary;
 	};
 
-	public ref class LinearEngineNET
+	public ref class LinearEngine
 	{
 	public:
-		LinearEngineNET() {m_LinearEngine = NULL;}		
-		LinearEngineNET(ROMNodeNET^ context, String^ dictionaryTable) {CreateLinearEngineNET(context, dictionaryTable);}
-		void CreateLinearEngineNET(ROMNodeNET^ context, String^ dictionaryTable) 
+		LinearEngine() {m_LinearEngine = NULL;}		
+		LinearEngine(ROMNode^ context, String^ dictionaryTable) {CreateLinearEngine(context, dictionaryTable);}
+		void CreateLinearEngine(ROMNode^ context, String^ dictionaryTable) 
 		{
 			wstring dict = MarshalString(dictionaryTable);
 			m_LinearEngine = new ROM::LinearEngine((ROM::ROMNode*)context->GetPtr()->ToPointer(), dict);
 		}
-		virtual ~LinearEngineNET() {if (m_LinearEngine) delete m_LinearEngine; this->!LinearEngineNET();}
-		!LinearEngineNET() {}
+		virtual ~LinearEngine() {if (m_LinearEngine) delete m_LinearEngine; this->!LinearEngine();}
+		!LinearEngine() {}
 
 		//debugger
 		DebugHandlerDelegate^	DebugDelegate;
@@ -371,15 +371,15 @@ namespace ROMNET {
 		void					PumpDebugMessages();
 
 		void						LoadDictionary(String^ dictionaryTable);
-		ROMDictionaryAttributeNET^	GetDictionaryAttr(String^ dictAttrName);
-		Dictionary<String^, ROMDictionaryAttributeNET^>^ GetAllDictionaryAttrs();
+		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
+		Dictionary<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
 		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents);
 		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues) {EvaluateForAttribute(dictAttrName, newValues, true);}
 		void EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents);
 		void EvaluateForAttribute(String^ dictAttrName, String^ newValue) {EvaluateForAttribute(dictAttrName, newValue, true);}
 		void EvaluateAll() {if (m_LinearEngine) m_LinearEngine->EvaluateAll();}
-		array<ROMDictionaryAttributeNET^>^ GetEvalList();
+		array<ROMDictionaryAttribute^>^ GetEvalList();
 		Dictionary<String^, array<String^>^>^ GetTriggers();
 		property bool DictionaryIsValid
 		{
@@ -392,7 +392,7 @@ namespace ROMNET {
 			}
 		}
 	private:
-		LinearEngineNET(IntPtr^ ptr) {m_LinearEngine = (ROM::LinearEngine*)ptr->ToPointer();}
+		LinearEngine(IntPtr^ ptr) {m_LinearEngine = (ROM::LinearEngine*)ptr->ToPointer();}
 		ROM::LinearEngine *m_LinearEngine;
 	};
 }

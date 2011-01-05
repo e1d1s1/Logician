@@ -1,21 +1,21 @@
 /*
-This file is part of EDSEngineNET.
+This file is part of EDSEngine.
 Copyright (C) 2009 - 2011 Eric D. Schmidt
 
-    EDSEngineNET is free software: you can redistribute it and/or modify
+    EDSEngine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    EDSEngineNET is distributed in the hope that it will be useful,
+    EDSEngine is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with EDSEngineNET.  If not, see <http://www.gnu.org/licenses/>.
+    along with EDSEngine.  If not, see <http://www.gnu.org/licenses/>.
 */
-// EDSEngineNET.h
+// EDSEngine.h
 
 #pragma once
 #pragma unmanaged
@@ -35,14 +35,14 @@ using namespace System::Collections::Generic;
 namespace EDSNET {
 	public delegate void DebugHandlerDelegate(String^ msg);
 
-	public ref class EDSEngineNET
+	public ref class EDSEngine
 	{
 	public:
-		EDSEngineNET() {DebugDelegate = nullptr;}
-		EDSEngineNET(String^ knowledge_file) {CreateKnowledgeBase(knowledge_file);}
+		EDSEngine() {DebugDelegate = nullptr;}
+		EDSEngine(String^ knowledge_file) {CreateKnowledgeBase(knowledge_file);}
 		bool CreateKnowledgeBase(String^ knowledge_file);
-		~EDSEngineNET() {this->!EDSEngineNET();}		
-		!EDSEngineNET() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = NULL;}
+		~EDSEngine() {this->!EDSEngine();}		
+		!EDSEngine() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = NULL;}
 		DebugHandlerDelegate^					DebugDelegate;
 		void SetDebugging(bool set) {if (m_KnowledgeBase) m_KnowledgeBase->GenerateDebugMessages(set);}
 
