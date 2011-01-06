@@ -20,6 +20,8 @@
             {
                 write_result("OK: File opened");
             }
+
+            knowledge.SetDebugHandler(debugHandler);
                         
             var cnt = knowledge.TableCount();
             if (cnt == 12)

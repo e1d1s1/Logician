@@ -80,7 +80,7 @@ namespace ROM
 		bool				RemoveAttribute(wstring id, wstring name = L"value");	
 		bool				SetROMObjectValue(wstring name, wstring value);
 		wstring				GetROMObjectValue(wstring name);
-		bool				RemoveROMObjectValue(wstring id);	
+		bool				RemoveROMObjectValue(wstring name);	
 		wstring				GetROMObjectID() {return m_id;}
 		void				SetROMObjectID(wstring id) {m_id = id;}
 		string				GetROMGUID() {return m_guid;}

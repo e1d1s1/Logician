@@ -43,8 +43,10 @@ namespace EDSNET {
 		bool CreateKnowledgeBase(String^ knowledge_file);
 		~EDSEngine() {this->!EDSEngine();}		
 		!EDSEngine() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = NULL;}
+
 		DebugHandlerDelegate^					DebugDelegate;
-		void SetDebugging(bool set) {if (m_KnowledgeBase) m_KnowledgeBase->GenerateDebugMessages(set);}
+		void									SetDebugging(bool set) {if (m_KnowledgeBase) m_KnowledgeBase->GenerateDebugMessages(set);}
+		void									PumpDebugMessages();
 
 		size_t									TableCount();
 		bool									IsOpen();		
@@ -77,8 +79,7 @@ namespace EDSNET {
 		String^									DeLocalize(String^ localeValue);
 		String^									Translate(String^ source, String^ sourceLocale, String^ destLocale);
 
-	private:
-		void									Debug();
+	private:		
 		EDS::CKnowledgeBase						*m_KnowledgeBase;							
 	};
 }
