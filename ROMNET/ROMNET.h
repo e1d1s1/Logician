@@ -95,6 +95,7 @@ namespace ROMNET {
 		bool				AddChildROMObject(ROMNode^ child);
 		bool				RemoveChildROMObject(ROMNode^ child);
 		bool				DestroyROMObject();
+		ROMNode^			Clone();
 
 		//attribute functions
 		String^				GetAttribute(String^ id, String^ name, bool immediate);
@@ -104,12 +105,11 @@ namespace ROMNET {
 		bool				GetAttributeExists(String^ id) {return GetAttributeExists(id, "value");}
 		bool				SetAttribute(String^ id, String^ name, String^ value);
 		bool				SetAttribute(String^ id, String^ value) {return SetAttribute(id, L"value", value);}
-		bool				SetAttributeValue(String^ id, String^ value) {return SetAttribute(id, value);}
 		bool				RemoveAttribute(String^ id, String^ name);
 		bool				RemoveAttribute(String^ id) {return RemoveAttribute(id, "value");} 	
 		bool				SetROMObjectValue(String^ name, String^ value);
 		String^				GetROMObjectValue(String^ name);
-		bool				RemoveROMObjectValue(String^ id);	
+		bool				RemoveROMObjectValue(String^ name);	
 		String^				GetROMObjectID();
 		void				SetROMObjectID(String^ name);
 		String^				GetROMGUID();
@@ -129,7 +129,9 @@ namespace ROMNET {
 		bool				LoadXML(String^ xmlStr);
 
 		//XPATH
-		String^				EvaluateXPATH(String^ xpath);
+		String^				EvaluateXPATH(String^ xpath, String^ guid);
+		String^				EvaluateXPATH(String^ xpath) {return EvaluateXPATH(xpath, GetROMGUID());}
+		
 
 		IntPtr^				GetPtr() {return (IntPtr)m_ROMNode;}
 

@@ -418,11 +418,11 @@ wstring ROMNode::GetROMObjectValue(wstring name)
 	return retval;
 }
 
-bool ROMNode::RemoveROMObjectValue(wstring id)
+bool ROMNode::RemoveROMObjectValue(wstring name)
 {
 	bool retval = false;
 
-	FASTMAP::iterator it = m_nodeValues.find(id);
+	FASTMAP::iterator it = m_nodeValues.find(name);
 	if (it != m_nodeValues.end())
 	{
 		m_nodeValues.erase(it);

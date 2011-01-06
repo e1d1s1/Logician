@@ -143,6 +143,18 @@ namespace ROMNET
 		return retval;
 	}
 
+	ROMNode^ ROMNode::Clone()
+	{
+		ROMNode^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			ROM::ROMNode* node = m_ROMNode->Clone();
+			delete m_ROMNode;
+			retval = gcnew ROMNode((IntPtr)node);
+		}
+		return retval;
+	}
+
 	//attribute functions
 	String^ ROMNode::GetAttribute(String^ id, String^ name, bool immediate)
 	{
@@ -218,13 +230,13 @@ namespace ROMNET
 		return retval;
 	}
 
-	bool ROMNode::RemoveROMObjectValue(String^ id)
+	bool ROMNode::RemoveROMObjectValue(String^ name)
 	{
 		bool retval = false;
 		if (m_ROMNode)
 		{
-			wstring wsID = MarshalString(id);
-			retval = m_ROMNode->RemoveROMObjectValue(wsID);
+			wstring wsName = MarshalString(name);
+			retval = m_ROMNode->RemoveROMObjectValue(wsName);
 		}
 		return retval;
 	}
@@ -387,13 +399,14 @@ namespace ROMNET
 	}
 
 	//XPATH
-	String^ ROMNode::EvaluateXPATH(String^ xpath)
+	String^ ROMNode::EvaluateXPATH(String^ xpath, String^ guid)
 	{
 		String^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsXPATH = MarshalString(xpath);
-			wstring res = m_ROMNode->EvaluateXPATH(wsXPATH);
+			string sGuid = MarshalStringA(guid);
+			wstring res = m_ROMNode->EvaluateXPATH(wsXPATH, sGuid);
 			retval = gcnew String(res.c_str());
 		}
 		return retval;

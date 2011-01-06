@@ -93,7 +93,7 @@ namespace EDSNET
 			MarshalString(param, para);
 			vector<wstring> res = m_KnowledgeBase->EvaluateTableWithParam(table, output, para, bGetAll);
 			retval = GetArrayFromVectorStrings(res);
-			Debug();
+			PumpDebugMessages();
 		}
 
 		return retval;
@@ -109,7 +109,7 @@ namespace EDSNET
 			MarshalString(param, para);
 			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTableWithParam(table, para, bGetAll);
 			retval = GetDictionaryFromMapStrings(res);
-			Debug();
+			PumpDebugMessages();
 		}
 		return retval;
 	}
@@ -125,7 +125,7 @@ namespace EDSNET
 			MarshalString(outputAttr, output);
 			vector<wstring> res = m_KnowledgeBase->EvaluateTable(table, output, bGetAll);
 			retval = GetArrayFromVectorStrings(res);
-			Debug();
+			PumpDebugMessages();
 		}
 
 		return retval;
@@ -141,7 +141,7 @@ namespace EDSNET
 			MarshalString(tableName, table);
 			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTable(table, bGetAll);
 			retval = GetDictionaryFromMapStrings(res);
-			Debug();
+			PumpDebugMessages();
 		}
 
 		return retval;
@@ -158,7 +158,7 @@ namespace EDSNET
 			MarshalString(inputAttr, input);
 			vector<wstring> res = m_KnowledgeBase->ReverseEvaluateTable(table, input, bGetAll);
 			retval = GetArrayFromVectorStrings(res);
-			Debug();
+			PumpDebugMessages();
 		}
 
 		return retval;
@@ -174,7 +174,7 @@ namespace EDSNET
 			MarshalString(tableName, table);
 			map<wstring, vector<wstring> > res = m_KnowledgeBase->ReverseEvaluateTable(table, bGetAll);
 			retval = GetDictionaryFromMapStrings(res);
-			Debug();
+			PumpDebugMessages();
 		}
 
 		return retval;
@@ -317,7 +317,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	void EDSEngine::Debug()
+	void EDSEngine::PumpDebugMessages()
 	{
 		if (m_KnowledgeBase != NULL && DebugDelegate != nullptr)
 		{
