@@ -437,12 +437,32 @@ bool ROMNode::RemoveROMObjectValue(wstring name)
 bool ROMNode::LoadRules(wstring knowledge_file)
 {
 	if (m_KnowledgeBase)
+	{
 		delete m_KnowledgeBase;
+		m_KnowledgeBase = NULL;
+	}
 
 	if (m_parent == NULL) //only the root will have the reference to the rules
 	{
 		m_KnowledgeBase = new EDS::CKnowledgeBase();
 		return m_KnowledgeBase->CreateKnowledgeBase(knowledge_file);
+	}
+	else
+		return false;
+}
+
+bool ROMNode::LoadRulesFromString(wstring xmlStr)
+{
+	if (m_KnowledgeBase)
+	{
+		delete m_KnowledgeBase;
+		m_KnowledgeBase = NULL;
+	}
+
+	if (m_parent == NULL) //only the root will have the reference to the rules
+	{
+		m_KnowledgeBase = new EDS::CKnowledgeBase();
+		return m_KnowledgeBase->CreateKnowledgeBaseFromString(xmlStr);
 	}
 	else
 		return false;

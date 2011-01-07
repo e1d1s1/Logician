@@ -53,7 +53,7 @@ USE_JAVASCRIPT: enables javascript runtime scripting support in rules
 USE_WINDOWS_SCRIPTING: on windows when javascript support is enabled, uses the windows scripting host for processing instead of spidermonkey, thereby eliminating that dependency.
 POSIX: compliant (Linux) environments should enable this define
 DISABLE_DECISIONLOGIC_INTEGRATION: In the EDSEngine build, adding this define to a build will disable intergrated DeicisionLogic debugging over a TCP Socket connection.  It's a handy feature to keep around, but you can eliminate this boost library dependency if you wish.
-
+DISABLE_ZIP: In the EDSEngine build, adding this define to a build will disable support for gzipped xml files and remove the dependency on zlib.
 Windows:
 Visual Studio 2008 project files are included.  Configurations for both MSXML and libxml2 based builds are included, MSXML is recommended at this time.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.
 

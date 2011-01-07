@@ -52,6 +52,7 @@ namespace EDS
 		CKnowledgeBase();
 		CKnowledgeBase(wstring knowledge_file);
 		bool CreateKnowledgeBase(wstring knowledge_file);
+		bool CreateKnowledgeBaseFromString(wstring xmlStr);
 		size_t TableCount() {return m_TableSet.Count();}
 		bool IsOpen() {return m_IsOpen;}
 		void SetDebugHandler(DebugHandler debugger);
@@ -102,7 +103,8 @@ namespace EDS
 
 		//ASCII overloads
 		CKnowledgeBase(string knowledge_file);
-		void CreateKnowledgeBase(string knowledge_file);
+		bool CreateKnowledgeBase(string knowledge_file);
+		bool CreateKnowledgeBaseFromString(string xmlStr);
 		bool TableHasScript(string tableName);
 		bool TableIsGetAll(string tableName);
 		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
@@ -132,8 +134,8 @@ namespace EDS
 		vector<string> GetAllPossibleOutputs(string tableName, string outputName);
 
 
-	private:
-		wstring m_StateParameter;
+	private:		
+		bool _parseXML(Document xmlDocument);
 		vector<pair<wstring, vector<CRuleCell> > > GetTableRowFromXML(NodeList nodes, Document xmlDocument);
 		void SendToDebugServer(wstring msg);
 		wstring XMLSafe(wstring str);
@@ -143,6 +145,7 @@ namespace EDS
 	#else
 		__gnu_cxx::hash_map<wstring, size_t> m_GlobalInputAttrsValues;
 	#endif
+		wstring m_StateParameter;
 		CBimapper m_stringsMap;
 		CTableSet m_TableSet;
 		int iRecursingDepth;

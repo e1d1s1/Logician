@@ -10,13 +10,21 @@ The constructor for EDSEngine simply requires a path string to the souce rules x
 		//optional 2-step C++
 		CKonweldegeBase();
 		bool CreateKnowledgeBase(wstring knowledge_file);
+		
+		//optional load from xml string
+		bool CreateKnowledgeBaseFromString(wstring xmlStr);
 	C#:
 		EDSEngine(string knowledge_file);
 		//optional 2-step C#:
 		EDSEngine();
 		bool CreateKnowledgeBase(string knowledge_file);
+		
+		//optional load from xml string
+		bool CreateKnowledgeBaseFromString(string xmlStr);
 	Javascript:
 		KnowledgeBase(xmlPath);
+		boolean CreateKnowledgeBase(knowledge_file);
+		boolean CreateKnowledgeBaseFromString(xmlStr);
 	
 Public Properties
 IsOpen: returns whether or not the rules file has been opened and parsed successfully.
@@ -323,7 +331,15 @@ GetAllChildren - Obtains a collection of all the (immedidate) child nodes in the
 		array<ROMNode> GetAllChildren(bool recurs);
 	Javascript:
 		array GetAllChildren(bool recurs);
-
+		
+FindObjects - Obtain a colleciton of all the child nodes in the tree mathcing an XPath evaluation at this context.
+	C++:
+		vector<ROMNode*> FindObjects(wstring xpath);
+	C#:
+		array<ROMNode> FindObjects(string xpath);
+	Javascript:
+		array FindObjects(xpath);
+		
 FindAllObjectsOfID - Obtain a colleciton of all the child nodes in the tree of this object context that have the passed id.  Can be done recursively over all child objects.
 	C++:
 		vector<ROMNode*> FindAllObjectsOfID(wstring id, bool recurs);
@@ -331,6 +347,14 @@ FindAllObjectsOfID - Obtain a colleciton of all the child nodes in the tree of t
 		array<ROMNode> FindAllObjectsOfID(string id, bool recurs);
 	Javascript:
 		array FindAllObjectsOfID(id, recurs);	
+		
+FindObjectByGUID - Obtains a child node with the give guid.  Will search over all tree nodes regardless of current context.
+	C++:
+		ROMNode* FindObjectByGUID(wstring guid);
+	C#:
+		ROMNode FindObjectByGUID(string guid);
+	Javascript:
+		ROMNode FindObjectByGUID(guid);	
 		
 AddChildROMObject - Addes a child object to the current object context.  Returns true on success.
 	C++:
@@ -348,7 +372,7 @@ RemoveChildROMObject - Removes a given child from the currrent object context's 
 	Javascript:
 		boolean RemoveChildROMObject(ROMNode child);
 		
-Clone - Make an exact duplicate of the current object.  It will, however, be given a new GUID.
+Clone - Make an exact duplicate of the current object, including any sub-objects.  It will, however, be given a new GUID.
 	C++:
 		ROMNode Clone();
 	C#:
@@ -470,6 +494,14 @@ LoadRules - Loads a rules xml file.  Returns true if successful.
 		bool LoadRules(string name); //supports xml compressed in a zip file
 	Javascript:
 		boolean LoadRules(name);
+		
+LoadRulesFromString - Loadss rules xml data from a string .  Returns true if successful.
+	C++: 
+		bool LoadRulesFromString(wstring xmlStr);
+	C#:
+		bool LoadRulesFromString(string xmlStr);
+	Javascript:
+		boolean LoadRulesFromString(xmlStr);
 
 EvaluateTable (EvaluateTableForAttr) - Evaluates a rules table by name for the given output against the values stored in the current object context.  Returns a collection of string reuslts.
 	C++:

@@ -117,6 +117,7 @@ namespace ROMNET {
 
 		//rules
 		bool				LoadRules(String^ knowledge_file);
+		bool				LoadRulesFromString(String^ xmlStr);
 		array<String^>^		EvaluateTable(String^ evalTable, String^ output, bool bGetAll);
 		array<String^>^		EvaluateTable(String^ evalTable, String^ output);
 		array<String^>^		EvaluateTableForAttr(String^ evalTable, String^ output, bool bGetAll) {return EvaluateTable(evalTable, output, bGetAll);}
