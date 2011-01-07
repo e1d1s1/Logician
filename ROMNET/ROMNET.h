@@ -120,8 +120,6 @@ namespace ROMNET {
 		bool				LoadRulesFromString(String^ xmlStr);
 		array<String^>^		EvaluateTable(String^ evalTable, String^ output, bool bGetAll);
 		array<String^>^		EvaluateTable(String^ evalTable, String^ output);
-		array<String^>^		EvaluateTableForAttr(String^ evalTable, String^ output, bool bGetAll) {return EvaluateTable(evalTable, output, bGetAll);}
-		array<String^>^		EvaluateTableForAttr(String^ evalTable, String^ output) {return EvaluateTable(evalTable, output);}
 		Dictionary<String^, array<String^>^>^ EvaluateTable(String^ evalTable, bool bGetAll);
 		Dictionary<String^, array<String^>^>^ EvaluateTable(String^ evalTable);
 
