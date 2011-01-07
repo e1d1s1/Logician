@@ -88,6 +88,7 @@ namespace ROM
 
 		//rules
 		bool				LoadRules(wstring knowledge_file);
+		bool				LoadRulesFromString(wstring xmlStr);
 		vector<wstring>		EvaluateTable(wstring evalTable, wstring output, bool bGetAll);
 		vector<wstring>		EvaluateTable(wstring evalTable, wstring output);
 		vector<wstring>		EvaluateTableForAttr(wstring evalTable, wstring output, bool bGetAll) {return EvaluateTable(evalTable, output, bGetAll);}
@@ -124,6 +125,7 @@ namespace ROM
 		string				GetROMObjectIDA() {return ROMUTIL::ToASCIIString(m_id);}
 		void				SetROMObjectID(string name) {m_id = ROMUTIL::MBCStrToWStr(name);}
 		bool				LoadRules(string knowledge_file) {return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file));}
+		bool				LoadRulesFromString(string xmlStr) {return LoadRulesFromString(ROMUTIL::MBCStrToWStr(xmlStr));}
 		vector<string>		EvaluateTable(string evalTable, string output, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll));}
 		vector<string>		EvaluateTable(string evalTable, string output) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output)));}
 		map<string, vector<string> > EvaluateTable(string evalTable, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable), bGetAll));}

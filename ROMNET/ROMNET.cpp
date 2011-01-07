@@ -303,6 +303,17 @@ namespace ROMNET
 		}
 		return retval;
 	}
+
+	bool ROMNode::LoadRulesFromString(String^ xmlStr)
+	{
+		bool retval = false;
+		if (m_ROMNode)
+		{
+			wstring wsXML = MarshalString(xmlStr);
+			retval = m_ROMNode->LoadRulesFromString(wsXML);
+		}
+		return retval;
+	}
 		
 	array<String^>^ ROMNode::EvaluateTable(String^ evalTable, String^ output, bool bGetAll)
 	{

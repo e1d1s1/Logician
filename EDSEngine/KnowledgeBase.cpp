@@ -34,7 +34,9 @@ using boost::asio::ip::tcp;
 #include <boost/python.hpp>
 #endif
 
+#ifndef DISABLE_ZIP
 #include "zlib.h"
+#endif
 #ifdef WIN32
 #include <direct.h>
 #endif
@@ -43,7 +45,7 @@ using boost::asio::ip::tcp;
     #import "msscript.ocx"
     using namespace MSScriptControl;
     #else
-    #include <jsapi.h>
+    #include <jsapi.h> //Mozilla SpiderMonkey
     #endif
 #endif
 
@@ -633,9 +635,314 @@ EDS::CKnowledgeBase::CKnowledgeBase(wstring knowledge_file)
 	CreateKnowledgeBase(knowledge_file);
 }
 
-void EDS::CKnowledgeBase::CreateKnowledgeBase(string knowledge_file)
+bool EDS::CKnowledgeBase::CreateKnowledgeBase(string knowledge_file)
 {
-	CreateKnowledgeBase(MBCStrToWStr(knowledge_file.c_str()));
+	return CreateKnowledgeBase(MBCStrToWStr(knowledge_file.c_str()));
+}
+
+bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(string xmlStr)
+{
+	return CreateKnowledgeBaseFromString(MBCStrToWStr(xmlStr));
+}
+
+bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
+{
+	bool retval = false;
+#ifdef USE_MSXML
+	Document	xmlDocument;
+	xmlDocument = NULL;
+	xmlDocument.CreateInstance(L"MSXML2.DOMDocument.6.0");
+	xmlDocument->async = VARIANT_FALSE;
+	xmlDocument->resolveExternals = VARIANT_FALSE;
+	xmlDocument->setProperty("SelectionLanguage", "XPath");
+	xmlDocument->setProperty("SelectionNamespaces", "");
+	//// Turn on the new parser in MSXML6 for better standards compliance (leading whitespaces in attr values);
+	////this must be done prior to loading the document
+	xmlDocument->setProperty("NewParser", VARIANT_TRUE);
+
+	try
+	{
+		VARIANT_BOOL ok = xmlDocument->loadXML(_bstr_t(xmlStr.c_str()));
+		if (ok == VARIANT_TRUE)
+		{
+			retval = _parseXML(xmlDocument);
+		}
+	}
+	catch(const _com_error& e)
+	{
+		ReportError(ToASCIIString((wstring)(e.Description())));
+	}
+	xmlDocument.Release();
+#endif
+
+#ifdef USE_LIBXML
+	xmlInitParser();
+	Document xmlDocument = NULL;
+	string buff = WStrToMBCStr(xmlStr);
+	xmlDocument = xmlParseMemory(buff.c_str(), (int)buff.size());
+	if (xmlDocument != NULL)
+	{
+		retval = _parseXML(xmlDocument);
+
+		if (xmlDocument)
+			xmlFreeDoc(xmlDocument);
+	}
+	xmlCleanupParser();
+#endif
+
+	m_TableSet.Initialize();
+	return retval;
+}
+
+bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
+{
+	//parse the table data and create tables in the tableset
+	bool retval = false;
+	vector<wstring> FormulaInputs;
+	m_IsOpen = true;
+#ifdef USE_MSXML	
+	Node TablesNode = xmlDocument->selectSingleNode("//Tables");
+	wstring debug = VariantToWStr(TablesNode->attributes->getNamedItem("debug")->nodeValue);
+	wstring debugTables = VariantToWStr(TablesNode->attributes->getNamedItem("debugtables")->nodeValue);
+	if (debug == L"true")
+	{
+		m_DEBUGGING_MSGS = true;
+		wstring con = VariantToWStr(TablesNode->attributes->getNamedItem("connection")->nodeValue);
+		if (con.length() > 0)
+		{
+			m_DEBUGGING_CON = con;
+		}
+
+		if (debugTables.length() > 0)
+			m_DebugTables = EDSUTIL::Split(debugTables, L",");
+	}
+	else
+		m_DEBUGGING_MSGS = false;
+
+	NodeList allTables = xmlDocument->selectNodes("Tables/Table");
+	vector<pair<wstring, vector<CRuleCell> > > InputAttrsTests;
+	vector<pair<wstring, vector<CRuleCell> > > OutputAttrsValues;
+
+	for (int i = 0; i < allTables->length; i++)
+	{
+		Node TableNode = allTables->item[i];
+
+		NodeList inputList = TableNode->selectNodes("Inputs");
+		InputAttrsTests = GetTableRowFromXML(inputList, xmlDocument);
+		NodeList outputList = TableNode->selectNodes("Outputs");
+		OutputAttrsValues = GetTableRowFromXML(outputList, xmlDocument);
+
+		wstring name = VariantToWStr(TableNode->attributes->getNamedItem("name")->nodeValue);
+		wstring sGetAll = VariantToWStr(TableNode->attributes->getNamedItem("getall")->nodeValue);
+		bool bGetAll = false;
+		if (sGetAll.length() > 0 && sGetAll[0] == L't')
+			bGetAll = true;
+
+		NodeList formulaInputNodes = TableNode->selectNodes("FormulaInput");
+		if (formulaInputNodes != NULL)
+		{
+			for (int j = 0; j < formulaInputNodes->length; j++)
+			{
+				Node formulaInputNode = formulaInputNodes->item[j];
+				FormulaInputs.push_back((wstring)(formulaInputNode->Gettext()));
+			}
+		}
+
+		m_TableSet.AddTable(InputAttrsTests, OutputAttrsValues, FormulaInputs, &m_stringsMap, name, bGetAll);
+		FormulaInputs.clear();
+		retval = true;
+	}
+
+	NodeList allTranslations = xmlDocument->selectNodes("//Translations/String");
+	for (int i = 0; i < allTranslations->length; i++)
+	{
+		Node StringNode = allTranslations->item[i];
+		NamedNodeMap attrs = StringNode->attributes;
+		if (attrs)
+		{
+			size_t id = atoull(EDSUTIL::ToASCIIString(VariantToWStr(StringNode->attributes->getNamedItem("id")->nodeValue)).c_str());
+			for (int childAttr = 0; childAttr < attrs->length; childAttr++)
+			{
+				Node childNode = attrs->item[childAttr];
+				wstring name = VariantToWStr(childNode->nodeName);
+				if (name != L"id")
+				{
+					wstring langType = name;
+					wstring langValue = VariantToWStr(StringNode->attributes->getNamedItem(name.c_str())->nodeValue);
+					pair<wstring, wstring> kvp;
+					kvp.first = langType;
+					kvp.second = langValue;
+					stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
+					if (itFind != mapBaseIDtoTranslations.end())
+					{
+						stdext::hash_map<wstring, wstring> *newTranlation = &itFind->second;
+						newTranlation->insert(kvp);
+					}
+					else
+					{
+						stdext::hash_map<wstring, wstring> newTranslation;
+						newTranslation.insert(kvp);
+						pair<size_t, stdext::hash_map<wstring, wstring> > idTrans_kvp;
+						idTrans_kvp.first = id;
+						idTrans_kvp.second = newTranslation;
+						mapBaseIDtoTranslations.insert(idTrans_kvp);
+					}
+				}
+			}
+		}
+	}
+
+	Node nodeJS = xmlDocument->selectSingleNode("//Javascript");
+	Node nodePY = xmlDocument->selectSingleNode("//Python");
+	if (nodeJS != NULL)
+		m_jsCode = nodeJS->Gettext() + L"\n";
+	if (nodePY != NULL)
+		m_pyCode = nodePY->Gettext() + L"\n";
+	
+#endif
+
+#ifdef USE_LIBXML
+	xmlXPathContextPtr xpathCtx = xmlXPathNewContext(xmlDocument);
+
+	xmlChar* tablesXPath = (xmlChar*)"//Tables";
+	xmlXPathObjectPtr xpathTables = xmlXPathEvalExpression(tablesXPath, xpathCtx);
+	Node tablesNode = xpathTables->nodesetval->nodeTab[0];
+	wstring debug = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debug"));
+	wstring debugTables = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debugtables"));
+	if (debug == L"true")
+	{
+		m_DEBUGGING_MSGS = true;
+		wstring con = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"connection"));
+		if (con.length() > 0)
+		{
+			m_DEBUGGING_CON = con;
+		}
+		
+		if (debugTables.length() > 0)
+			m_DebugTables = EDSUTIL::Split(debugTables, L",");
+	}
+	else
+		m_DEBUGGING_MSGS = false;
+
+	xmlChar* tableXPath = (xmlChar*)"//Tables/Table";
+	xmlXPathObjectPtr xpathTable = xmlXPathEvalExpression(tableXPath, xpathCtx);
+	NodeList allTables = xpathTable->nodesetval;
+
+	if (allTables != NULL)
+	{
+		for (int i = 0; i < allTables->nodeNr; i++)
+		{
+			Node TableNode = allTables->nodeTab[i];
+			xpathCtx->node = TableNode;
+
+			xmlXPathObjectPtr xpathObjInputs = xmlXPathEvalExpression((xmlChar*)"Inputs", xpathCtx);
+			xmlXPathObjectPtr xpathObjOutputs = xmlXPathEvalExpression((xmlChar*)"Outputs", xpathCtx);
+
+			NodeList inputList = xpathObjInputs->nodesetval;
+			NodeList outputList = xpathObjOutputs->nodesetval;
+
+			wstring name = XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"name"));
+			wstring sGetAll = XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
+			bool bGetAll = false;
+			if (sGetAll.length() > 0 && sGetAll[0] == L't')
+				bGetAll = true;
+
+			xmlXPathObjectPtr xpathObjFormulas = xmlXPathEvalExpression((xmlChar*)"FormulaInput", xpathCtx);
+			NodeList formulaInputNodes = xpathObjFormulas->nodesetval;
+			for (int j = 0; j < formulaInputNodes->nodeNr; j++)
+			{
+				Node formulaInputNode = formulaInputNodes->nodeTab[j];
+				FormulaInputs.push_back(XMLStrToWStr(xmlNodeGetContent(formulaInputNode)));
+			}
+
+			vector<pair<wstring, vector<CRuleCell> > > InputAttrsTests = GetTableRowFromXML(inputList, xmlDocument);
+			vector<pair<wstring, vector<CRuleCell> > > OutputAttrsValues = GetTableRowFromXML(outputList, xmlDocument);
+
+			m_TableSet.AddTable(InputAttrsTests, OutputAttrsValues, FormulaInputs, &m_stringsMap, name, bGetAll);
+			FormulaInputs.clear();
+			retval = true;
+
+			xmlXPathFreeObject(xpathObjInputs);
+			xmlXPathFreeObject(xpathObjOutputs);
+			xmlXPathFreeObject(xpathObjFormulas);
+		}
+	}
+
+
+
+	xpathCtx->node = xmlDocGetRootElement(xmlDocument);
+	xmlChar* stringXPath = (xmlChar*)"//Translations/String";
+	xmlXPathObjectPtr xpathStrings = xmlXPathEvalExpression(stringXPath, xpathCtx);
+	if (xpathStrings != NULL)
+	{
+		NodeList allTranslations = xpathStrings->nodesetval;
+		if (allTranslations != NULL)
+		{
+			for (int i = 0; i < allTranslations->nodeNr; i++)
+			{
+				Node StringNode = allTranslations->nodeTab[i];
+				size_t id = atoull(EDSUTIL::ToASCIIString(XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)"id"))).c_str());
+				for (Attribute childAttr = StringNode->properties; childAttr != NULL; childAttr = childAttr->next)
+				{
+                    wstring name = XMLStrToWStr(childAttr->name);
+                    if (name != L"id")
+                    {
+                        wstring langType = name;
+                        wstring langValue = XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)WStrToMBCStr(name).c_str()));
+                        pair<wstring, wstring> kvp;
+                        kvp.first = langType;
+                        kvp.second = langValue;
+                        #ifdef _MSC_VER
+                        stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
+                        #else
+                        __gnu_cxx::hash_map<size_t, __gnu_cxx::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
+                        #endif
+                        if (itFind != mapBaseIDtoTranslations.end())
+                        {
+                            #ifdef _MSC_VER
+                            stdext::hash_map<wstring, wstring> *newTranlation = &itFind->second;
+                            #else
+                            __gnu_cxx::hash_map<wstring, wstring> *newTranlation = &itFind->second;
+                            #endif
+                            newTranlation->insert(kvp);
+                        }
+                        else
+                        {
+                            #ifdef _MSC_VER
+                            stdext::hash_map<wstring, wstring> newTranslation;
+                            #else
+                            __gnu_cxx::hash_map<wstring, wstring> newTranslation;
+                            #endif
+                            newTranslation.insert(kvp);
+                            #ifdef _MSC_VER
+                            pair<size_t, stdext::hash_map<wstring, wstring> > idTrans_kvp;
+                            #else
+                            pair<size_t, __gnu_cxx::hash_map<wstring, wstring> > idTrans_kvp;
+                            #endif
+                            idTrans_kvp.first = id;
+                            idTrans_kvp.second = newTranslation;
+                            mapBaseIDtoTranslations.insert(idTrans_kvp);
+                        }
+                    }
+				}
+			}
+		}
+	}
+
+	xmlXPathObjectPtr xpathJS = xmlXPathEvalExpression((xmlChar*)"//Javascript", xpathCtx);
+	xmlXPathObjectPtr xpathPY = xmlXPathEvalExpression((xmlChar*)"//Python", xpathCtx);
+	if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathJS->nodesetval->nodeNr == 1)
+		m_jsCode = XMLStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0])) + L"\n";
+	if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathPY->nodesetval->nodeNr == 1)
+		m_pyCode = XMLStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0])) + L"\n";
+	
+	xmlXPathFreeObject(xpathJS);
+	xmlXPathFreeObject(xpathPY);
+	xmlXPathFreeObject(xpathTables);
+	xmlXPathFreeObject(xpathTable);
+	xmlXPathFreeContext(xpathCtx);
+#endif
+	return retval;
 }
 
 bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
@@ -669,6 +976,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 		pos = wsFileName.find_last_of(L".");
 		wsExtension = wsFileName.substr(pos + 1);
 
+#ifndef DISABLE_ZIP
 		if (wsExtension == L"gz")
 		{
 			//get the directory to extract files to
@@ -679,10 +987,6 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 			file_name = knowledge_file.substr(knowledge_file.find_last_of(pathSep) + 1);
 			file_name = FindAndReplace(file_name, L".gz", L".xml");
 
-//#if	_DEBUG
-//	char temp[_MAX_PATH];
-//	getcwd(temp, _MAX_PATH);
-//#endif
 			//unzip
 			gzFile infile = NULL;
 			string s = WStrToMBCStr(knowledge_file);
@@ -702,13 +1006,12 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 			fclose(outfile);
 		}
 		else
+#endif
 		{
 			unzippedFileName = wsFileName;
 		}
-
-		//parse the table data and create tables in the tableset
-
-		vector<wstring> FormulaInputs;
+		
+		
 		//parse the table from xml
 		#ifdef USE_MSXML
 			Document	xmlDocument;
@@ -728,105 +1031,8 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 
 				if (ok)
 				{
-					m_IsOpen = true;
-					Node TablesNode = xmlDocument->selectSingleNode("//Tables");
-					wstring debug = VariantToWStr(TablesNode->attributes->getNamedItem("debug")->nodeValue);
-					wstring debugTables = VariantToWStr(TablesNode->attributes->getNamedItem("debugtables")->nodeValue);
-					if (debug == L"true")
-					{
-						m_DEBUGGING_MSGS = true;
-						wstring con = VariantToWStr(TablesNode->attributes->getNamedItem("connection")->nodeValue);
-						if (con.length() > 0)
-						{
-							m_DEBUGGING_CON = con;
-						}
-
-						if (debugTables.length() > 0)
-							m_DebugTables = EDSUTIL::Split(debugTables, L",");
-					}
-					else
-						m_DEBUGGING_MSGS = false;
-
-					NodeList allTables = xmlDocument->selectNodes("Tables/Table");
-					vector<pair<wstring, vector<CRuleCell> > > InputAttrsTests;
-					vector<pair<wstring, vector<CRuleCell> > > OutputAttrsValues;
-
-					for (int i = 0; i < allTables->length; i++)
-					{
-						Node TableNode = allTables->item[i];
-
-						NodeList inputList = TableNode->selectNodes("Inputs");
-						InputAttrsTests = GetTableRowFromXML(inputList, xmlDocument);
-						NodeList outputList = TableNode->selectNodes("Outputs");
-						OutputAttrsValues = GetTableRowFromXML(outputList, xmlDocument);
-
-						wstring name = VariantToWStr(TableNode->attributes->getNamedItem("name")->nodeValue);
-						wstring sGetAll = VariantToWStr(TableNode->attributes->getNamedItem("getall")->nodeValue);
-						bool bGetAll = false;
-						if (sGetAll.length() > 0 && sGetAll[0] == L't')
-							bGetAll = true;
-
-						NodeList formulaInputNodes = TableNode->selectNodes("FormulaInput");
-						if (formulaInputNodes != NULL)
-						{
-							for (int j = 0; j < formulaInputNodes->length; j++)
-							{
-								Node formulaInputNode = formulaInputNodes->item[j];
-								FormulaInputs.push_back((wstring)(formulaInputNode->Gettext()));
-							}
-						}
-
-						m_TableSet.AddTable(InputAttrsTests, OutputAttrsValues, FormulaInputs, &m_stringsMap, name, bGetAll);
-						FormulaInputs.clear();
-						retval = true;
-					}
-
-					NodeList allTranslations = xmlDocument->selectNodes("//Translations/String");
-					for (int i = 0; i < allTranslations->length; i++)
-					{
-						Node StringNode = allTranslations->item[i];
-						NamedNodeMap attrs = StringNode->attributes;
-						if (attrs)
-						{
-							size_t id = atoull(EDSUTIL::ToASCIIString(VariantToWStr(StringNode->attributes->getNamedItem("id")->nodeValue)).c_str());
-							for (int childAttr = 0; childAttr < attrs->length; childAttr++)
-							{
-								Node childNode = attrs->item[childAttr];
-								wstring name = VariantToWStr(childNode->nodeName);
-								if (name != L"id")
-								{
-									wstring langType = name;
-									wstring langValue = VariantToWStr(StringNode->attributes->getNamedItem(name.c_str())->nodeValue);
-									pair<wstring, wstring> kvp;
-									kvp.first = langType;
-									kvp.second = langValue;
-									stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
-									if (itFind != mapBaseIDtoTranslations.end())
-									{
-										stdext::hash_map<wstring, wstring> *newTranlation = &itFind->second;
-										newTranlation->insert(kvp);
-									}
-									else
-									{
-										stdext::hash_map<wstring, wstring> newTranslation;
-										newTranslation.insert(kvp);
-										pair<size_t, stdext::hash_map<wstring, wstring> > idTrans_kvp;
-										idTrans_kvp.first = id;
-										idTrans_kvp.second = newTranslation;
-										mapBaseIDtoTranslations.insert(idTrans_kvp);
-									}
-								}
-							}
-						}
-					}
-
-					Node nodeJS = xmlDocument->selectSingleNode("//Javascript");
-					Node nodePY = xmlDocument->selectSingleNode("//Python");
-					if (nodeJS != NULL)
-						m_jsCode = nodeJS->Gettext() + L"\n";
-					if (nodePY != NULL)
-						m_pyCode = nodePY->Gettext() + L"\n";
-				}
+					retval = _parseXML(xmlDocument);
+				}					
 			}
 			catch(const _com_error& e)
 			{
@@ -842,146 +1048,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 			xmlDocument = xmlParseFile(strBuff.c_str());
 			if (xmlDocument != NULL)
 			{
-				m_IsOpen = true;
-				xmlXPathContextPtr xpathCtx = xmlXPathNewContext(xmlDocument);
-
-				xmlChar* tablesXPath = (xmlChar*)"//Tables";
-				xmlXPathObjectPtr xpathTables = xmlXPathEvalExpression(tablesXPath, xpathCtx);
-				Node tablesNode = xpathTables->nodesetval->nodeTab[0];
-				wstring debug = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debug"));
-				wstring debugTables = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debugtables"));
-				if (debug == L"true")
-				{
-					m_DEBUGGING_MSGS = true;
-					wstring con = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"connection"));
-					if (con.length() > 0)
-					{
-						m_DEBUGGING_CON = con;
-					}
-					
-					if (debugTables.length() > 0)
-						m_DebugTables = EDSUTIL::Split(debugTables, L",");
-				}
-				else
-					m_DEBUGGING_MSGS = false;
-
-				xmlChar* tableXPath = (xmlChar*)"//Tables/Table";
-				xmlXPathObjectPtr xpathTable = xmlXPathEvalExpression(tableXPath, xpathCtx);
-				NodeList allTables = xpathTable->nodesetval;
-
-				if (allTables != NULL)
-				{
-					for (int i = 0; i < allTables->nodeNr; i++)
-					{
-						Node TableNode = allTables->nodeTab[i];
-						xpathCtx->node = TableNode;
-
-						xmlXPathObjectPtr xpathObjInputs = xmlXPathEvalExpression((xmlChar*)"Inputs", xpathCtx);
-						xmlXPathObjectPtr xpathObjOutputs = xmlXPathEvalExpression((xmlChar*)"Outputs", xpathCtx);
-
-						NodeList inputList = xpathObjInputs->nodesetval;
-						NodeList outputList = xpathObjOutputs->nodesetval;
-
-						wstring name = XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"name"));
-						wstring sGetAll = XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
-						bool bGetAll = false;
-						if (sGetAll.length() > 0 && sGetAll[0] == L't')
-							bGetAll = true;
-
-						xmlXPathObjectPtr xpathObjFormulas = xmlXPathEvalExpression((xmlChar*)"FormulaInput", xpathCtx);
-						NodeList formulaInputNodes = xpathObjFormulas->nodesetval;
-						for (int j = 0; j < formulaInputNodes->nodeNr; j++)
-						{
-							Node formulaInputNode = formulaInputNodes->nodeTab[j];
-							FormulaInputs.push_back(XMLStrToWStr(xmlNodeGetContent(formulaInputNode)));
-						}
-
-						vector<pair<wstring, vector<CRuleCell> > > InputAttrsTests = GetTableRowFromXML(inputList, xmlDocument);
-						vector<pair<wstring, vector<CRuleCell> > > OutputAttrsValues = GetTableRowFromXML(outputList, xmlDocument);
-
-						m_TableSet.AddTable(InputAttrsTests, OutputAttrsValues, FormulaInputs, &m_stringsMap, name, bGetAll);
-						FormulaInputs.clear();
-						retval = true;
-
-						xmlXPathFreeObject(xpathObjInputs);
-						xmlXPathFreeObject(xpathObjOutputs);
-						xmlXPathFreeObject(xpathObjFormulas);
-					}
-				}
-
-
-
-				xpathCtx->node = xmlDocGetRootElement(xmlDocument);
-				xmlChar* stringXPath = (xmlChar*)"//Translations/String";
-				xmlXPathObjectPtr xpathStrings = xmlXPathEvalExpression(stringXPath, xpathCtx);
-				if (xpathStrings != NULL)
-				{
-					NodeList allTranslations = xpathStrings->nodesetval;
-					if (allTranslations != NULL)
-					{
-						for (int i = 0; i < allTranslations->nodeNr; i++)
-						{
-							Node StringNode = allTranslations->nodeTab[i];
-							size_t id = atoull(EDSUTIL::ToASCIIString(XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)"id"))).c_str());
-							for (Attribute childAttr = StringNode->properties; childAttr != NULL; childAttr = childAttr->next)
-							{
-                                wstring name = XMLStrToWStr(childAttr->name);
-                                if (name != L"id")
-                                {
-                                    wstring langType = name;
-                                    wstring langValue = XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)WStrToMBCStr(name).c_str()));
-                                    pair<wstring, wstring> kvp;
-                                    kvp.first = langType;
-                                    kvp.second = langValue;
-                                    #ifdef _MSC_VER
-                                    stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
-                                    #else
-                                    __gnu_cxx::hash_map<size_t, __gnu_cxx::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
-                                    #endif
-                                    if (itFind != mapBaseIDtoTranslations.end())
-                                    {
-                                        #ifdef _MSC_VER
-                                        stdext::hash_map<wstring, wstring> *newTranlation = &itFind->second;
-                                        #else
-                                        __gnu_cxx::hash_map<wstring, wstring> *newTranlation = &itFind->second;
-                                        #endif
-                                        newTranlation->insert(kvp);
-                                    }
-                                    else
-                                    {
-                                        #ifdef _MSC_VER
-                                        stdext::hash_map<wstring, wstring> newTranslation;
-                                        #else
-                                        __gnu_cxx::hash_map<wstring, wstring> newTranslation;
-                                        #endif
-                                        newTranslation.insert(kvp);
-                                        #ifdef _MSC_VER
-                                        pair<size_t, stdext::hash_map<wstring, wstring> > idTrans_kvp;
-                                        #else
-                                        pair<size_t, __gnu_cxx::hash_map<wstring, wstring> > idTrans_kvp;
-                                        #endif
-                                        idTrans_kvp.first = id;
-                                        idTrans_kvp.second = newTranslation;
-                                        mapBaseIDtoTranslations.insert(idTrans_kvp);
-                                    }
-                                }
-							}
-						}
-					}
-				}
-
-				xmlXPathObjectPtr xpathJS = xmlXPathEvalExpression((xmlChar*)"//Javascript", xpathCtx);
-				xmlXPathObjectPtr xpathPY = xmlXPathEvalExpression((xmlChar*)"//Python", xpathCtx);
-				if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathJS->nodesetval->nodeNr == 1)
-					m_jsCode = XMLStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0])) + L"\n";
-				if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathPY->nodesetval->nodeNr == 1)
-					m_pyCode = XMLStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0])) + L"\n";
-				
-				xmlXPathFreeObject(xpathJS);
-				xmlXPathFreeObject(xpathPY);
-				xmlXPathFreeObject(xpathTables);
-				xmlXPathFreeObject(xpathTable);
-				xmlXPathFreeContext(xpathCtx);
+				retval = _parseXML(xmlDocument);
 
 				if (xmlDocument)
 					xmlFreeDoc(xmlDocument);
@@ -989,11 +1056,11 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 			xmlCleanupParser();
 		#endif
 
-
+#ifndef DISABLE_ZIP
 		//delete extracted file
 		if (wsExtension == L"gz")
 			remove(WStrToMBCStr(unzippedFileName).c_str());
-
+#endif
 		m_TableSet.Initialize();
 	}
 	catch (...)
