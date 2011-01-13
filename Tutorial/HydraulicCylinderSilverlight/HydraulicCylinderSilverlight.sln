@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydraulicCylinderSilverlight", "HydraulicCylinderSilverlight\HydraulicCylinderSilverlight.csproj", "{D112DA71-2548-4563-8A24-26391C9644FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydraulicCylinderSilverlight.Web", "HydraulicCylinderSilverlight.Web\HydraulicCylinderSilverlight.Web.csproj", "{7D28FD68-10FB-4D35-8BCD-0B36DEF7EBBE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D112DA71-2548-4563-8A24-26391C9644FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D112DA71-2548-4563-8A24-26391C9644FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D112DA71-2548-4563-8A24-26391C9644FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D112DA71-2548-4563-8A24-26391C9644FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D28FD68-10FB-4D35-8BCD-0B36DEF7EBBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D28FD68-10FB-4D35-8BCD-0B36DEF7EBBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D28FD68-10FB-4D35-8BCD-0B36DEF7EBBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D28FD68-10FB-4D35-8BCD-0B36DEF7EBBE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
