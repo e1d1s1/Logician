@@ -35,7 +35,7 @@ Linux (Ubuntu 9.10+):
 - uuid-dev 1.2+
 
 Windows .NET tools:
-.NET Rules Enginer: EDSEngineNET (C++/CLI wrapper implementation)
+.NET Rules Engine: EDSEngineNET (C++/CLI wrapper implementation)
 - .NET 3.5+
 - EDSEngine v1.0
 
@@ -43,6 +43,9 @@ Windows .NET tools:
 - .NET 3.5+
 - EDSEngine v1.0
 - Relation Object Model v1.0
+
+Silverlight Rules Engine and Relational Object Model
+- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  Silverlight v4.0 recommended and tested.
 
 Build Instructions
 Important pre-processor defines for EDSEngine/Relational Object Model:
