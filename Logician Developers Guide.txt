@@ -1,5 +1,5 @@
 EDSEngine
-EDSEngine is the decision table evaluator of the Logician suite.  It can be used independently of the other libraries.  EDSEngine is the managed .NET wrapper for the C++ engine, and there is a javascript implementation as well in the Knowledgebase.js file.
+EDSEngine is the decision table evaluator of the Logician suite.  It can be used independently of the other libraries.  ROMNET::EDSEngine is the managed .NET wrapper for the C++ engine, and there is a javascript implementation as well in the Knowledgebase.js file.  A silverlight wrapper for the javascript library is also available and generally follows the same interface as the .NET library.
 
 All of the language ports of the EDSEngine library have a similar interface.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
 
@@ -135,7 +135,7 @@ EvaluateTable: A number of overrides exist in C++/C# for your convienience.  The
 	C#:
 		Dictionary<string, string[]> EvaluateTable(string tableName, bool bGetAll)
 	Javascript:
-		array EvaluateTableGet(tableName, bGetAll)
+		array EvaluateTable(tableName, bGetAll)
 
 	Return a collection of solutions for a given output column in a table.
 	C++:
@@ -151,7 +151,7 @@ EvaluateTable: A number of overrides exist in C++/C# for your convienience.  The
 	C#:
 		string[] EvaluateTable(string tableName, string outputAttr, bool bGetAll)
 	Javascript:
-		array EvaluateTableForAttrGet(tableName, outputAttr, bGetAll)
+		array EvaluateTableForAttr(tableName, outputAttr, bGetAll)
 
 EvaluateTableWithParam:	Similar to EvaluateTable, but an additional string parameter is available for use to pass any extra data to the table solver, and if Javascript or Python code is encountered during evaluations, the parameter will be set as a global value named "param" that you can reference in the script code.  Use the GetEvalParameter function to obtain the value back after a table solve if the script code modifies the value.
 
@@ -177,7 +177,7 @@ EvaluateTableWithParam:	Similar to EvaluateTable, but an additional string param
 	C#:
 		Dictionary<string, string[]> EvaluateTableWithParam(string tableName, string param, bool bGetAll)
 	Javascript:
-		array EvaluateTableWithParamGet(tableName, param, bGetAll)	
+		array EvaluateTableWithParam(tableName, param, bGetAll)	
 		
 	Return a collection of solutions for a given output column in a table, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	C++:
@@ -185,7 +185,7 @@ EvaluateTableWithParam:	Similar to EvaluateTable, but an additional string param
 	C#:
 		string[] EvaluateTableWithParam(string tableName, string outputAttr, string param, bool bGetAll)
 	Javascript:
-		array EvaluateTableForAttrWithParamGet(tableName, outputAttr, param, bGetAll)
+		array EvaluateTableForAttrWithParam(tableName, outputAttr, param, bGetAll)
 		
 ReverseEvaluateTable: Performs a table solve but switches all output columns to inputs and all input columns become outputs, effectively reversing the table.  No Javascript or Python scripting will take place.  No table chaining.
 
@@ -220,7 +220,7 @@ ReverseEvaluateTable: Performs a table solve but switches all output columns to 
 	C#:
 		string[] ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll)
 	Javascript:
-		array ReverseEvaluateTableForAttrGet(tableName, inputAttr, bool bGetAll)
+		array ReverseEvaluateTableForAttr(tableName, inputAttr, bool bGetAll)
 		
 GetEvalParameter: Returns the value of the "param" parameter passed in a previous table evaluation.  Use this when you have Javascript or Python script that will modify the value during the table evaluation and you need the resulting vaule.
 	C++:
@@ -288,8 +288,8 @@ GetDebugMessages: In C++ retrieves the debugging message cache.  The intermal ca
 SetDebugging: In C#, turns on the rule debugger so that the DebugDelegate can receive messages.  Internally, this calls the wrapped C++ method GenerateDebugMessages function to enable/disable the internal message cache, and later calls GetDebugMessages at appropriate times.
 
 Relational Object Model
-Relational Object Model is a lightweight rules engine and application state model based on the EDSEngine libraries.  It has a tree-like XML structure, and supports XPATH queries.  The basic state and quuery engine are part of the main ROMNode class/prototype.  ROMDictionary and the inheritied LinearEngine provide the functionality for a 
-All of the language ports of the Relational Object Model library have a similar interface.  The main class names are slightly alterted to prevent confusion when inheriting the unmanaged C++ libraries in the managed C++ CLI/C# libraries.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
+Relational Object Model is a lightweight rules engine and application state model based on the EDSEngine libraries.  It has a tree-like XML structure, and supports XPATH queries.  The basic state and quuery engine are part of the main ROMNode class/prototype.  ROMDictionary and the inheritied LinearEngine provide the functionality for a basic rules engine.
+All of the language ports of the Relational Object Model library have a similar interface.  The main class names are slightly alterted to prevent confusion when inheriting the unmanaged C++ libraries in the managed C++ CLI/C# libraries.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  A silverlight wrapper for the javascript library is also available and generally follows the same interface as the .NET library.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
 
 Constructors
 The constructor for Relational Object Model simply requires a path string to the souce rules xml or zipped xml file.  Zipped xml files are not supported in javascript (you should be compressing static files on your web server using gzip or deflate anyways).
@@ -388,7 +388,7 @@ DestroyROMObject - Clears and recursivley destroys all child nodes and resets al
 	Javascript:
 		boolean DestroyROMObject();
 		
-//attribute functions
+Attribute functions
 GetAttribute - Obtain an attribute value by name.  Name value pairs are generally stored in an xml like node of <Attribute id="SomeID" value="SomeValue/>.  Overriding methods allow you to store additional "sub-values" like <Attribute id="SomeID" value="SomeValue" someOtherValueName="blah"/>.  Passing an immediate parameter as "false" will allow the library to search parent nodes for the attribute if it is not found in the current context.
 	C++:
 		wstring GetAttribute(wstring id, bool immedidate);
@@ -486,7 +486,6 @@ GetAllAttributes - Returns the collection of all attributes and values for the c
 		array GetAllAttributes(name); //an array of arrays, keyed by strings.
 
 EDSEngine Rules Integration
-
 LoadRules - Loads a rules xml file.  Returns true if successful.
 	C++: 
 		bool LoadRules(wstring name); //supports xml compressed in a zip file
@@ -589,7 +588,7 @@ EvaluateXPATH - Performs XPath query, returns result as string.  An XPath query 
 IO
 The internal data is not actually stored as XML at all times.  For performance sake, XML is only generated when an XPATH query is made, and then only if the object has changed since the last query.  These methods allow you to extract the internal data as XML, or to load a previously saved configuration.
 
-SaveXML - Saves the current state to XML.  The indented paramater can apply indetation formatting to the result.
+SaveXML - Updates and saves the current state to XML.  The indented paramater can apply indetation formatting to the result.
 	C++:
 		wstring SaveXML(bool indented); //indentation only currently works when compiled against the libxml library
 	C#:
@@ -597,7 +596,7 @@ SaveXML - Saves the current state to XML.  The indented paramater can apply inde
 	Javascript:
 		string SaveXML(indented); //indentaion only currently works in Firefox
 
-LoadXML - Sets the current object state to the previously saved XML.  Returns true if sueccessful.
+LoadXML - Sets the current object state to the previously saved XML.  Returns true if successful.
 	C++:
 		bool SaveXML(wstring xmlStr);
 	C#:
@@ -647,7 +646,7 @@ Requirsed table outputs:
 			A rules table output of "Y" will set the "Enabled" property of the attribute to true.
 			A rules table output of "YY" will set the "Enabled" property of the attribute to false and the context value to "Y".
 			A rules table output of "YN" will set the "Enabled" property of the attribute to true and the context value to "Y".
-			A rules table output of "NN" will set the "Enabled" property of the attribute to flse and the context value to "N".
+			A rules table output of "NN" will set the "Enabled" property of the attribute to false and the context value to "N".
 		EDIT - An attribute that stores editable text.
 			Rules table outputs supports nummerical ranges exculsive() and/or inclusive[].
 			A rules table output of "Y" will set the "Enabled" property of the attribute to true, no value validation will occur (user could type anything in box).
