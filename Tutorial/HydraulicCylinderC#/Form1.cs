@@ -7,13 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
+using ROMNET;
+using System.IO;
 
 namespace HydraulicCylinder
 {
     public partial class Form1 : Form
     {
-        private ROMNET.ROMNodeNET m_rootNode;
-        private ROMNET.LinearEngineNET m_engine = null;
+        private ROMNode m_rootNode;
+        private LinearEngine m_engine = null;
         private bool bLoadingItems = false;
 
         public Form1()
@@ -25,14 +27,14 @@ namespace HydraulicCylinder
         private void SetupApplication()
         {
             string rulesPath = "HydraulicCylinderRules.xml";
-            m_rootNode = new ROMNET.ROMNodeNET("HydraulicCylinder");
+            m_rootNode = new ROMNode("HydraulicCylinder");
             if (!m_rootNode.LoadRules(rulesPath))
             {
                 MessageBox.Show("Error loading rules file");
                 Close();
             }
 
-            m_engine = new ROMNET.LinearEngineNET(m_rootNode, "HydraulicCylinderDictionary");
+            m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
             m_engine.EvaluateAll();
 
             UpdateControls();
@@ -41,8 +43,8 @@ namespace HydraulicCylinder
         private void UpdateControls()
         {
             bLoadingItems = true;
-            Dictionary<string, ROMNET.ROMDictionaryAttributeNET> allAttrs = m_engine.GetAllDictionaryAttrs();
-            foreach (KeyValuePair<string, ROMNET.ROMDictionaryAttributeNET> kvp in allAttrs)
+            Dictionary<string, ROMDictionaryAttribute> allAttrs = m_engine.GetAllDictionaryAttrs();
+            foreach (KeyValuePair<string, ROMDictionaryAttribute> kvp in allAttrs)
             {                
                 SetControlUI(kvp.Value);
             }
@@ -58,12 +60,11 @@ namespace HydraulicCylinder
             foreach (string subStr in allChars)
                 Catnum += subStr;
 
-            Label catLabel = (Label)this.Controls.Find("Catalog", true)[0];
-            if (catLabel != null)            
-                catLabel.Text = Catnum;            
+            if (Catalog != null)
+                Catalog.Text = Catnum;            
         }
 
-        private void SetControlUI(ROMNET.ROMDictionaryAttributeNET attr)
+        private void SetControlUI(ROMDictionaryAttribute attr)
         {
             Control[] ctrls = this.Controls.Find(attr.Name, true);
             if (ctrls != null && ctrls.Length == 1)
@@ -152,13 +153,17 @@ namespace HydraulicCylinder
             if (dialog.ShowDialog() == DialogResult.Cancel)
                 return;
 
-            System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-            doc.Load(dialog.FileName);
+            string contents = null;
+            StreamReader reader = new StreamReader(dialog.FileName);
+            while (!reader.EndOfStream)
+            {
+                contents = reader.ReadToEnd();
+            }
 
             //reload
-            if (m_rootNode.LoadXML(doc.InnerXml))
+            if (!string.IsNullOrEmpty(contents) && m_rootNode.LoadXML(contents))
             {
-                m_engine = new ROMNET.LinearEngineNET(m_rootNode, "HydraulicCylinderDictionary");
+                m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
                 m_engine.EvaluateAll();
 
                 UpdateControls();
