@@ -1,9 +1,9 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+﻿ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <!-- Thanks for reading the source of this document. Hope you enjoy -->
 <!-- what you find here. Please let me know if you find any errors. -->
 <head>
-<title>Logician: A Table-based Rules Engine In C++/C#/JavaScript using XML</title>
+<title>Logician: A Table-based Rules Engine In C++/.NET/JavaScript using XML</title>
 </head>
 <body>
 <pre>
@@ -11,11 +11,11 @@ Title:       Logician: A Table-based Rules Engine In C++/.NET/JavaScript using X
 Author:      Eric D. Schmidt
 Email:       e1d1s1@hotmail.com
 Member ID:   1152733
-Language:    JavaScript, C++, C#
+Language:    JavaScript, C++, C#/.NET
 Platform:    Windows, Mac, Linux, Web
 Technology:  XML, Business Rules & Automation
 Level:       Intermediate
-Description: Overview of a cross-platform table-based rules enigne with algorithms implemented in C++ and JavaScript, and wrappers to C#/.NET
+Description: Overview of a cross-platform table-based rules enigne with algorithms implemented in C++ and JavaScript, and wrappers to C#/.NET and Silverlight
 Section      General Programming
 SubSection   Algorithms & Recipes
 License:     GPL
@@ -90,7 +90,8 @@ string GetSingleSolution(string tableToEvaluate, string nameOfOutput) //could re
   else
     return "";
 }
-</pre>See the source code for this example in the ColorMixConsole application.&nbsp; Rule tables are stored as XML, and when "compiled" 
+</pre>
+See the source code for this example in the ColorMixConsole application.&nbsp; Rule tables are stored as XML, and when "compiled" 
     by the DecisionLogic utility, linked together in a single XML file.&nbsp; All the values stored within the rules engine are natively strings since they get serialized to XML.&nbsp; In order to optimize performance string compares are avoided when possible by numerically tokenizing all the stored values in the rules table and any input values passed in.&nbsp; That way, it is just comparing numbers most of the time.  So in memory, the previous 
     paint color table looks more like:
 <pre>
@@ -117,9 +118,10 @@ F             T             F
 T             T             T <==This is our solution, corresponding to the tokenized memory value of 5, whose string value is "Green"
 </pre>
 
-<b>Other EDSEngine Features of Note</b><bYou can specify more than one value in an input cell, this is called an "OR", and the test will check them against the input value just like an "or" in code: if (value1 = test || value2 = test  || value3 = test ) then do someting...is abbreviated as value1|value2|value3 in a cell.&nbsp; There is also a notion of "Global ORs" if you design the rules XML using the table designer tool, DecisionLogic.&nbsp; Listing many values out can be a lot of extra typing, so you can define a single list of values as a variable and reuse that variable in all your project tables.&nbsp; In an output cell, the "|" delimeter acts like an "and" (&&).  In this way your solution can return mulitple values.&nbsp; The results of a table evaluation are always returned as an array (vector<wstring> in C++).&nbsp; There is also the notion of a table being "Get One" or "Get All", which means the table designer intended for you to either return just the result of the first true row, or the combined unique results of all true rows.&nbsp; This is selectable in the DesicionLogic designer for every table.&nbsp; You of course always have the option to override it in code.
+<b>Other EDSEngine Features of Note</b>
+<br />You can specify more than one value in an input cell, this is called an "OR", and the test will check them against the input value just like an "or" in code: if (value1 = test || value2 = test  || value3 = test ) then do someting...is abbreviated as value1|value2|value3 in a cell.&nbsp; There is also a notion of "Global ORs" if you design the rules XML using the table designer tool, DecisionLogic.&nbsp; Listing many values out can be a lot of extra typing, so you can define a single list of values as a variable and reuse that variable in all your project tables.&nbsp; In an output cell, the "|" delimeter acts like an "and" (&&).  In this way your solution can return mulitple values.&nbsp; The results of a table evaluation are always returned as an array (vector<wstring> in C++).&nbsp; There is also the notion of a table being "Get One" or "Get All", which means the table designer intended for you to either return just the result of the first true row, or the combined unique results of all true rows.&nbsp; This is selectable in the DesicionLogic designer for every table.&nbsp; You of course always have the option to override it in code.
 
-    <br /><br />
+    <br />
     You can dynamically concatenate values into cells at runtime using the get() keyword.&nbsp;  For instance, suppose we need an output of text for a price list display, and want to drive the text by rule.&nbsp; We might want it to read: "You have purchased X items of price P".&nbsp; In the table 
     we could create an output:
   "You have purchased get(QtyOfItems) of price get(ItemPrice)"
@@ -128,7 +130,7 @@ where QtyOfItems and ItemPrice are values in my application state that would hav
 Runtime scripting with Python (C++/C#) and Javascript (All ports) are supported in output cells so you can perform mathematical calculations and implement more advanced rules.&nbsp; Your output cell will just contain the Python or JavaScript code snippet within the proper keyword, js() or py().&nbsp; For a single line of code it might look like:
 <pre>  js(return (56 * 3).toString())  //Note: you can actually omit the "return" and ".toString()" for a single line of code: js(56 * 3)</pre>
 &nbsp; If you code has multiple lines/functions make sure it explicitly returns a string at the end or you will get a type-casting error.&nbsp;  This becomes more useful when combined with the get() keyword like:
-  js(get(value1) * get(value2)).  Also note that Python is only supported in the C++/C# implementation of EDSEngine.&nbsp;  Javascript-based scripting is a bit more portable for the web being the native run-time scripting language of 
+  js(get(value1) * get(value2)).&nbsp; Also note that Python is only supported in the C++/C# implementation of EDSEngine.&nbsp;  Javascript-based scripting is a bit more portable for the web being the native run-time scripting language of 
     web browsers.
 <br /><br />
 A rather advanced but flexible feature are callback parameters.&nbsp; There are special table evaluation functions with overloads to support passing additional data to EDSEngine, that is also passed to the Javascript or Python code (EvaluateTableWithParameter).&nbsp; The basic idea is maybe you want to send some text or XML data from your application to a rule, modify it in the script, and pass the modifcations back along with the usual result.&nbsp; You can find more details in the developers documentation if the feature might be useful to you.
@@ -137,7 +139,7 @@ ou.
 <h2>Relational Object Modeler and Implementing a Rules Engine</h2>
 <p>
 The use of 
-    the Relational Object Modeloer library will demonstate how you can extend EDSEngine with your own features for a full-blown rules engine.&nbsp; Instead of writing explict classes to model physical products in an eCommerce setting, it may be useful to model the product using 
+    the Relational Object Modeler library will demonstate how you can extend EDSEngine with your own features for a full-blown rules engine.&nbsp; Instead of writing explict classes to model physical products in an eCommerce setting, it may be useful to model the product using 
     a tree-like object structure, similar to XML.&nbsp;  For instance, suppose we were modeling a car.  We might write C++ classes like:
 
 <pre>
@@ -179,12 +181,11 @@ if we model the whole Car as XML and work with it directly, the final state coul
 &lt;/Object&gt;
 </pre>
 
-In the remainder of the tutorial we will take advantage of ROM's built in automation with EDSEngine.  You will find its also convinient not to have to write code for many alogrithms you may need, such as to sum up the total price of the Car object.  
-    ROM supports treating the data like XML and supports XPATH queries.&nbsp; You could just use 
+In the remainder of the tutorial we will take advantage of ROM's built in automation with EDSEngine.&nbsp; You will find its also convinient not to have to write code for many alogrithms you may need, such as to sum up the total price of the Car object.&nbsp; ROM supports treating the data like XML and supports XPATH queries.&nbsp; You could just use 
     an XPATH queries to get the total price of the Car object, and could even do it in a output cell of a table rule using the eval() keyword:
   "Total price is eval(sum(//Attribute[@Price]))", yielding the final text result of "Total price is 9500".
   <br /><br />
-When using the ROM component, decision tables are evaluated against a particular "Object" node context, and can drill down into the parent nodes when an input dependency value is not found in the current context.  You can also use XPATH queries in your input column headers instead of dealing with input values in code, or to specifiy a relation between multiple "Object" nodes.  See the project documentation for more information.&nbsp; 
+When using the ROM component, decision tables are evaluated against a particular "Object" node context, and can drill down into the parent nodes when an input dependency value is not found in the current context.&nbsp; You can also use XPATH queries in your input column headers instead of dealing with input values in code, or to specifiy a relation between multiple "Object" nodes.&nbsp; See the project documentation for more information.&nbsp; 
     It should be noted that the internal data storage mechansim is not XML since 
     that would create a performance bottleneck.&nbsp; However, the current state can 
     be serialized at any time, and is updated whenever a query is made.<p>
@@ -195,9 +196,9 @@ When using the ROM component, decision tables are evaluated against a particular
 
 <p>
 In this tutorial we will demonstrate how to model a real world product configurator in both a javascript-enabled webpage and a C# Winforms application using the Logician tools (A C++ 
-    and Silverlight example is also avialable).  For this demonstation, we will attempt to model the properties and catalog number generation for a commercially avalailable <a href="http://hydraulics.eaton.com/products/pdfs/V-CYMG-MC001-E.pdf" target="_blank">"Heavy-Duty Imperial Mill Type" Hydraulic Cylider</a>.  Given the formula for the generation of aproduct catalog number, a simple graphical layout, or group of selections can be defined.  The names of each control will match the "attribute" names we use in the decision tables.
+    and Silverlight example is also avialable).&nbsp; For this demonstation, we will attempt to model the properties and catalog number generation for a commercially avalailable <a href="http://hydraulics.eaton.com/products/pdfs/V-CYMG-MC001-E.pdf" target="_blank">"Heavy-Duty Imperial Mill Type" Hydraulic Cylider</a>.&nbsp; Given the formula for the generation of aproduct catalog number, a simple graphical layout, or group of selections can be defined.&nbsp; The names of each control will match the "attribute" names we use in the decision tables.
     <br /><br />
-Before any rule evaluation can take place, you have to substantiate an instance of the Relational Object Modeler. You can pass the path to the rules xml file we will create also to load them in the second step, and finally set up the built-in rules engine implementation and apply the rules:
+Before any rule evaluation can take place, you have to substantiate an instance of the Relational Object Modeler.&nbsp; You can pass the path to the rules xml file we will create also to load them in the second step, and finally set up the built-in rules engine implementation and apply the rules:
 <pre>
 //C# port, Javascript is exactly the same without the namepsaces
 ROMNET.ROMNode m_rootNode = new ROMNode("HydraulicCylinder");
@@ -205,29 +206,27 @@ m_rootNode.LoadRules("HydraulicCylinderRules.xml");
 ROMNET.LinearEngine m_engine = new ROMNET.LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
 m_engine.EvaluateAll();
 </pre>
-With a minimal GUI interface of various drop-down and edit boxes built according to the properties in the product's documentation, lets start defining some simple rules based on the product literature so we can test out the application event/evalution code we will build shortly.
-
-Open the DecisionLogic table editor and start a new project.  For each control in the interface, we will define a seperate decision table with the same name that specifies the available values given any necessary input conditions.  Also, ROM requires that we create at least 1 "Dictionary" table that contains a list of all the attribute names we are using, the captions/descriptions for each, etc.  Create a new table named "HydraulicCylinderDictionary", and fill it out with the attributes we will be using to model the product.  They should match the control names created in the configurator GUI.  The "Name" and "Description" columns are self-explanitory.  The "DefaultValue" column will set the value of the attribute on application startup if no rule table is defined for it in the "RuleTable" column.  The "AttributeType" column must be one of the following types:
+With a minimal GUI interface of various drop-down and edit boxes built according to the properties in the product's documentation, lets start defining some simple rules based on the product literature so we can test out the application event/evalution code we will build shortly. Open the DecisionLogic table editor and start a new project.&nbsp;  For each control in the interface, we will define a seperate decision table with the same name that specifies the available values given any necessary input conditions.&nbsp; Also, ROM requires that we create at least 1 "Dictionary" table that contains a list of all the attribute names we are using, the captions/descriptions for each, etc.&nbsp; Create a new table named "HydraulicCylinderDictionary", and fill it out with the attributes we will be using to model the product.&nbsp; They should match the control names created in the configurator GUI.&nbsp;  The "Name" and "Description" columns are self-explanitory.&nbsp; The "DefaultValue" column will set the value of the attribute on application startup if no rule table is defined for it in the "RuleTable" column.&nbsp; The "AttributeType" column must be one of the following types:
 <br />SINGLESELECT - for controls such as combo-boxes/drop-downs, radio buttons, etc
 <br />MULTISELECT - multiselection list boxes
 <br />BOOLEAN - checkboxes
 <br />EDIT - text editing fields
-<br />STATIC - read-only attributes.  Values can be set by the "DefaultValue" column, or evaluated by rule. 
+<br />STATIC - read-only attributes.&nbsp; Values can be set by the "DefaultValue" column, or evaluated by rule. 
 <br /><br />Figure 1<br/>
 <img src="Figure1.png" alt="Dictionary Table"/><br /><br />
 
 
-The first input is "CylinderSeries".  Being the first parameter of the cylinder configuaration, it has no inputs parameters so all the "input" columns can be removed from the table.  From the product documentation we can see that there are 3 possibilities: 3000 psi Hydraulic, 2000 psi Hydraulic, and 250 psi Pneumatic.  We can list them out in 3 seperate output cells in a "get all" table, or put all 3 in a single output cell seperated by a "|" as described earlier.  In this case, its just a matter of your personal style.  Here we will do the latter:
+The first input is "CylinderSeries".&nbsp; Being the first parameter of the cylinder configuaration, it has no inputs parameters so all the "input" columns can be removed from the table.&nbsp; From the product documentation we can see that there are 3 possibilities: 3000 psi Hydraulic, 2000 psi Hydraulic, and 250 psi Pneumatic.&nbsp; We can list them out in 3 seperate output cells in a "get all" table, or put all 3 in a single output cell seperated by a "|" as described earlier.&nbsp; In this case, its just a matter of your personal style.&nbsp; Here we will do the latter:
 
 <br /><br />Figure 2<br/>
 <img src="Figure2.png" alt="CylinderSeries rules"/><br /><br />
 
-We continue filling out a rules table for each attribute we have defined in the "dictionary".  An example of an attribute that will have input conditions would be "RodDiameter".  In the documentation the available rod sizes appear to be limited by the chosen BoreDiameter.  Since there are multiple possibilities for each BoreDiameter, it might save the user time if we automatically set a RodDiameter default value as well when they pick a bore.  This can be done by prefixing a value with the "@" symbol.  It then follows that we could create the following rules table:
+We continue filling out a rules table for each attribute we have defined in the "dictionary".&nbsp; An example of an attribute that will have input conditions would be "RodDiameter".&nbsp; In the documentation the available rod sizes appear to be limited by the chosen BoreDiameter.&nbsp; Since there are multiple possibilities for each BoreDiameter, it might save the user time if we automatically set a RodDiameter default value as well when they pick a bore.&nbsp; This can be done by prefixing a value with the "@" symbol.  It then follows that we could create the following rules table:
 
 <br /><br />Figure 3<br/>
 <img src="Figure3.png" alt="RodDiameter rules"/><br /><br />
 
-Any decent rules engine should be able to identify invalid conditions and appropriate "triggers" to force a revalidation of the current selections.  When you test the sample application, you will notice that if you change the BoreDiameter to a different value, and the currently selected RodDiameter would be out of the valid range, the value of that on-screen selection will be cleared or changed to a correct value depending on the current conditions.  Any changes to the dictionary attributes are routed through event handling and the "EvaluateForAttribute" function of the rules engine which will apply any necessary changes to the current attribute values based on the ruleset.  The object modeler has methods avaliable to us in order to get or set the value of an attribute, or to dump the entire application state to XML as may be needed.
+Any decent rules engine should be able to identify invalid conditions and appropriate "triggers" to force a revalidation of the current selections.&nbsp; When you test the sample application, you will notice that if you change the BoreDiameter to a different value, and the currently selected RodDiameter would be out of the valid range, the value of that on-screen selection will be cleared or changed to a correct value depending on the current conditions.&nbsp; Any changes to the dictionary attributes are routed through event handling and the "EvaluateForAttribute" function of the rules engine which will apply any necessary changes to the current attribute values based on the ruleset.&nbsp; The object modeler has methods avaliable to us in order to get or set the value of an attribute, or to dump the entire application state to XML as may be needed.
 <br/><br/>
 In order to generate the appropriate catalog number for a given set of attribute selections, or "state", we will define another set of rules tables and call for a table evaluation directly:
 <pre>
@@ -252,7 +251,7 @@ Since putting all the rules for the catalog number string in one table would be 
 <img src="Figure5.png" alt="CylinderSeries catalog rules"/><br />
 <br /><br />Figure 6<br/>
 <img src="Figure6.png" alt="Demo web app"/><br /><br />
-One of the great advantages of using these packages on the web is you can effectively eliminate server callbacks to run buisiness logic and perform page updates.  You have the ability to offload a lot of the application logic and CPU cycles onto the user's browser.  With all of these components working in concert, you have Logician, a powerful, flexible, and open source rules engine application framework.
+One of the great advantages of using these packages on the web is you can effectively eliminate server callbacks to run buisiness logic and perform page updates.&nbsp; You have the ability to offload a lot of the application logic and CPU cycles onto the user's browser.&nbsp; With all of these components working in concert, you have Logician, a powerful, flexible, and open source rules engine application framework.
 <br /><br />Download the sample application code in C#, C++, Javascript, and Silverlight along with the rule table samples to get a better understanding of the application logic.  
 
 </body>
