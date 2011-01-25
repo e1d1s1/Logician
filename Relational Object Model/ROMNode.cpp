@@ -137,7 +137,10 @@ ROMNode* ROMNode::FindObjectByGUID(string guid)
 	ROMNode* retval = NULL;
 
 	ROMNode* rootNode = GetRoot();
-	retval = rootNode->_findObjectGUID(guid);
+	if (rootNode->m_guid == guid)
+		retval = rootNode;
+	else
+		retval = rootNode->_findObjectGUID(guid);
 
 	return retval;
 }
@@ -630,9 +633,9 @@ wstring ROMNode::GetATableInputValue(wstring input)
 }
 
 //IO
-void ROMNode::_createXMLDoc()
+void ROMNode::_createXMLDoc(bool bForceLoad)
 {
-	bool bChanged = _anyHasChanged();
+	bool bChanged = (bForceLoad || _anyHasChanged());
 	if (bChanged)
 	{
 		wstring genXML = _generateXML(bChanged);
@@ -752,7 +755,7 @@ wstring ROMNode::_generateXML(bool bRegen)
 
 wstring ROMNode::SaveXML(bool indented)
 {
-	_createXMLDoc();
+	_createXMLDoc(true);
 	return _convertXMLDocToString(indented);
 }
 

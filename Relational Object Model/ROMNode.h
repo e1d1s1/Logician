@@ -48,11 +48,11 @@ namespace ROM
 	friend class LinearEngine;
 	public:
 		~ROMNode(void);
-		ROMNode(){m_KnowledgeBase = NULL;}
+		ROMNode(){_init();}
 		ROMNode(wstring id) {CreateROMNode(id);}
 		ROMNode(string id) {CreateROMNode(id);}
 		void CreateROMNode(wstring id);
-		void CreateROMNode(string id) {m_id = ROMUTIL::MBCStrToWStr(id); _init();}
+		void CreateROMNode(string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
 		void				SetTableDebugHandler(DebugHandler debugger);
 		void				GenerateTableDebugMessages(bool bGenerate);
 		wstring				GetTableDebugMessages();
@@ -149,7 +149,7 @@ namespace ROM
 		void					_setAllUnchanged();
 		wstring					_generateXML(bool bRegen);
 		ROMNode*				_buildObject(Node objectNode, ROMNode* parent);
-		void					_createXMLDoc();
+		void					_createXMLDoc(bool bForceLoad = false);
 		wstring					_convertXMLDocToString(bool indented);
 		EDS::CKnowledgeBase*	_getKnowledge();
 		void					_init();
