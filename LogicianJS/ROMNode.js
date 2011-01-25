@@ -252,7 +252,10 @@ function ROMNode(id) {
         var retval = null;
         try {
             var rootNode = this.GetRoot();
-            retval = rootNode._findObjectGUID(guid);
+			if (rootNode.m_guid == guid)
+				retval = rootNode;
+			else
+				retval = rootNode._findObjectGUID(guid);
         }
         catch (err) {
             ReportError(err);
@@ -852,9 +855,12 @@ function ROMNode(id) {
         return retval;
     }
 
-    this._createXMLDoc = function () {
+    this._createXMLDoc = function (bForceLoad) {
         try {
-            var bChanged = this._anyHasChanged();
+			if (bForceLoad === undefined)
+				bForceLoad = false;
+			
+            var bChanged = if (bForceLoad || this._anyHasChanged();
             if (bChanged) {
                 var genXML = this._generateXML(bChanged);
                 if (IsIE()) {
@@ -881,7 +887,7 @@ function ROMNode(id) {
         if (indented === undefined)
             indented = false;
         try {
-            this._createXMLDoc();
+            this._createXMLDoc(true);
             retval = this._convertXMLDocToString(indented);
         }
         catch (err) {
