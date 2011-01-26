@@ -6,13 +6,10 @@
 // ----------------------------------------------------------------------------
 // headers
 // ----------------------------------------------------------------------------
-//#define USEDEBUGGER 1 //use this to demonstrate integrated application debugging
+#include "LogicianDebugCtrl.h"
 #include "ROMNode.h"
 #include "LinearEngine.h"
-
-#ifdef USEDEBUGGER
-#include "LogicianDebugCtrl.h"
-#endif
+#include "KnowledgeBase.h"
 
 using namespace std;
 using namespace ROM;
@@ -58,24 +55,14 @@ public:
     // event handlers (these functions should _not_ be virtual)
     void OnQuit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
-	void OnOpen(wxCommandEvent& event);
-    void OnSave(wxCommandEvent& event);
-	void ComboEvaluate(wxCommandEvent& event);
-	void TextChanged(wxCommandEvent& event);
 
 private:
 	void SetupApplication();
 	void UpdateControls();
-	void UpdateCatalog();
-	void SetControlUI(ROMDictionaryAttribute attr);
 
-#ifdef USEDEBUGGER
-	wxLogicianDebugCtrl *m_debugger;
-#endif
-	ROMNode *m_rootNode;
-	LinearEngine *m_engine;
 	bool bLoadingItems;
 	wxPanel *panel;
+	wxLogicianDebugCtrl *debug;
 
     // any class wishing to process wxWidgets events must use this macro
     DECLARE_EVENT_TABLE()
@@ -88,19 +75,7 @@ private:
 // IDs for the controls and the menu commands
 enum
 {
-	CylinderSeries = 0,
-	ComboCtrl,
-	EditCtrl,
-	LabelCtrl,
-	lbOptionHead,
-	Catalog,
+	VIEWER = 100,
     // menu items
-    Minimal_Quit = wxID_EXIT,
-	Minimal_Open = wxID_OPEN,
-	Minimal_Save = wxID_SAVE,
-
-    // it is important for the id corresponding to the "About" command to have
-    // this standard value as otherwise it won't be handled properly under Mac
-    // (where it is special and put into the "Apple" menu)
-    Minimal_About = wxID_ABOUT
+    Minimal_Quit = wxID_EXIT
 };

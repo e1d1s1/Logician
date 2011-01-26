@@ -7,7 +7,6 @@
 // ----------------------------------------------------------------------------
 // event tables and other macros for wxWidgets
 // ----------------------------------------------------------------------------
-
 #include "HydraulicCylinderC++.h"
 #include <map>
 #include <iostream>
@@ -17,6 +16,7 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
+
 // the event tables connect the wxWidgets events with the functions (event
 // handlers) which process them. It can be also done at run-time, but for the
 // simple menu events like this the static method is much simpler.
@@ -221,12 +221,18 @@ MyFrame::MyFrame(const wxString& title)
 	sizerGrid->Add(stCatnum);
 
 	sizerTop->Add(sizerGrid, 1);
-	panel->SetSizer(sizerTop);
-
+#ifdef USEDEBUGGER
+	m_debugger = NULL;
+#endif
 	m_engine = NULL;
 	bLoadingItems = false;
 	SetupApplication();
-
+#ifdef USEDEBUGGER
+	m_debugger = new wxLogicianDebugCtrl(m_rootNode, panel, wxID_ANY, wxDefaultPosition,
+		wxSize(640, 480));
+	sizerTop->Add(m_debugger, 1, wxEXPAND|wxSHRINK);
+#endif
+	panel->SetSizer(sizerTop);
 	sizerTop->Fit(this);
 	sizerTop->SetSizeHints(this);
 }
@@ -265,6 +271,10 @@ void MyFrame::UpdateControls()
 	}
 	bLoadingItems = false;
 	UpdateCatalog();
+#ifdef USEDEBUGGER
+	if (m_debugger)
+		m_debugger->Update();
+#endif
 }
 
 void MyFrame::UpdateCatalog()

@@ -40,8 +40,8 @@ namespace ROMNET {
 	public ref class ROMNode
 	{
 	public:
-		ROMNode() {m_ROMNode = NULL;}
-		ROMNode(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer();}
+		ROMNode() {m_ROMNode = NULL; m_KnowledgeBase = NULL;}
+		ROMNode(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer(); m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();}
 		ROMNode(String^ id) {CreateROMNode(id);}
 		bool CreateROMNode(System::String^ id);
 		~ROMNode() {DestroyROMObject(); this->!ROMNode();}
@@ -132,12 +132,14 @@ namespace ROMNET {
 		String^				EvaluateXPATH(String^ xpath) {return EvaluateXPATH(xpath, GetROMGUID());}
 		
 
-		IntPtr^				GetPtr() {return (IntPtr)m_ROMNode;}
+		IntPtr^				GetROMPtr() {return (IntPtr)m_ROMNode;}
+		IntPtr^				GetEDSPtr() {return (IntPtr)m_KnowledgeBase;}
 
 	private:		
 		array<ROMNode^>^ GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
 
 		ROM::ROMNode		*m_ROMNode;
+		EDS::CKnowledgeBase *m_KnowledgeBase;
 	};
 
 	public ref class ROMDictionaryAttribute
@@ -334,7 +336,7 @@ namespace ROMNET {
 		ROMDictionary(ROMNode^ context) {CreateROMDictionary(context);}
 		void CreateROMDictionary(ROMNode^ context) 
 		{
-			m_ROMDictionary = new ROM::ROMDictionary((ROM::ROMNode*)context->GetPtr()->ToPointer());
+			m_ROMDictionary = new ROM::ROMDictionary((ROM::ROMNode*)context->GetROMPtr()->ToPointer());
 		}
 		virtual ~ROMDictionary() {if (m_ROMDictionary) delete m_ROMDictionary; this->!ROMDictionary();}
 		!ROMDictionary() {}
@@ -361,7 +363,7 @@ namespace ROMNET {
 		void CreateLinearEngine(ROMNode^ context, String^ dictionaryTable) 
 		{
 			wstring dict = MarshalString(dictionaryTable);
-			m_LinearEngine = new ROM::LinearEngine((ROM::ROMNode*)context->GetPtr()->ToPointer(), dict);
+			m_LinearEngine = new ROM::LinearEngine((ROM::ROMNode*)context->GetROMPtr()->ToPointer(), dict);
 		}
 		virtual ~LinearEngine() {if (m_LinearEngine) delete m_LinearEngine; this->!LinearEngine();}
 		!LinearEngine() {}
