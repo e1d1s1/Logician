@@ -25,8 +25,8 @@ namespace LogicianSilverlight
 {
     public class ROMNode
     {
-		public ROMNode() {m_ROMNode = null;}
-		public ROMNode(ScriptObject o) {m_ROMNode = o;}
+        public ROMNode() { m_ROMNode = null; m_KnowledgeBase = null; }
+        public ROMNode(ScriptObject o) { m_ROMNode = o; m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); }
 		public ROMNode(string id) {CreateROMNode(id);}
 		public bool CreateROMNode(string id)
         {
@@ -88,8 +88,8 @@ namespace LogicianSilverlight
         public Dictionary<string, Dictionary<string, string>> GetAllAttributes() { return ScriptMarshal.ScriptObjectToDictionaryOfStringDictionary(m_ROMNode.Invoke("GetAllAttributes")); }
 
 		//rules
-		public bool				LoadRules(string knowledge_file) { return (bool)m_ROMNode.Invoke("LoadRules", knowledge_file); }
-        public bool             LoadRulesFromString(string xml) { return (bool)m_ROMNode.Invoke("LoadRulesFromString", xml); }
+        public bool LoadRules(string knowledge_file) { bool retval = (bool)m_ROMNode.Invoke("LoadRules", knowledge_file); m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); return retval; }
+        public bool LoadRulesFromString(string xml) { bool retval = (bool)m_ROMNode.Invoke("LoadRulesFromString", xml); m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); return retval; }
         public string[] EvaluateTable(string evalTable, string output, bool bGetAll) { string[] retval = ScriptMarshal.ScriptObjectToStringArray(m_ROMNode.Invoke("EvaluateTableForAttr", new object[] { evalTable, output, bGetAll })); PumpDebugMessages(); return retval; }
         public string[] EvaluateTable(string evalTable, string output) { string[] retval = ScriptMarshal.ScriptObjectToStringArray(m_ROMNode.Invoke("EvaluateTableForAttr", new object[] { evalTable, output })); PumpDebugMessages(); return retval; }
         public Dictionary<string, string[]> EvaluateTable(string evalTable, bool bGetAll) { Dictionary<string, string[]> retval = ScriptMarshal.ScriptObjectToDictionaryOfStringArray(m_ROMNode.Invoke("EvaluateTable", new object[] { evalTable, bGetAll })); PumpDebugMessages(); return retval; }
@@ -107,5 +107,6 @@ namespace LogicianSilverlight
 
         //private members
 		private ScriptObject	m_ROMNode;
+        private ScriptObject    m_KnowledgeBase;
     }
 }

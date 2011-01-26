@@ -591,6 +591,10 @@ function ROMNode(id) {
         }
         return knowledge;
     }
+    
+    this.GetKnowledgeBase = function() {
+        return this._getKnowledge();
+    }
 
     this.EvaluateTableForAttr = function (evalTable, output, bGetAll) {
         try {
@@ -860,7 +864,7 @@ function ROMNode(id) {
 			if (bForceLoad === undefined)
 				bForceLoad = false;
 			
-            var bChanged = if (bForceLoad || this._anyHasChanged();
+            var bChanged = (bForceLoad || this._anyHasChanged());
             if (bChanged) {
                 var genXML = this._generateXML(bChanged);
                 if (IsIE()) {

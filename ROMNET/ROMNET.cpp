@@ -27,7 +27,10 @@ namespace ROMNET
 		wstring wsID = MarshalString(id);
 		m_ROMNode = new ROM::ROMNode(wsID);
 		if (m_ROMNode)
+		{
+			m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
 			return true;
+		}
 		else
 			return false;
 	}
@@ -300,6 +303,7 @@ namespace ROMNET
 		{
 			wstring wsFile = MarshalString(knowledge_file);
 			retval = m_ROMNode->LoadRules(wsFile);
+			m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
 		}
 		return retval;
 	}
@@ -311,6 +315,7 @@ namespace ROMNET
 		{
 			wstring wsXML = MarshalString(xmlStr);
 			retval = m_ROMNode->LoadRulesFromString(wsXML);
+			m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
 		}
 		return retval;
 	}

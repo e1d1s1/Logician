@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="HydraulicCylinderC++"
+	Name="ROMDebugApp"
 	ProjectGUID="{21BDBDED-B9E9-4C80-A794-40A165721330}"
 	RootNamespace="minimal"
 	TargetFrameworkVersion="0"
@@ -50,7 +50,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHsc "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_lib\mswd&quot;;..\..\EDSEngine;&quot;..\..\Relational Object Model&quot;;..\..\Utilities\LogicianDebugger"
+				AdditionalIncludeDirectories="&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_lib\mswd&quot;;..\..\EDSEngine;&quot;..\..\Relational Object Model&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;USE_MSXML"
 				MinimalRebuild="true"
 				RuntimeLibrary="3"
@@ -77,7 +77,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw28ud_adv.lib wxmsw28ud_html.lib wxbase28ud_xml.lib wxmsw28ud_core.lib wxbase28ud_net.lib wxbase28ud.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxregexud.lib wxexpatd.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib &quot;Relational Object Model.lib&quot; &quot;EDSEngine.lib&quot;"
+				AdditionalDependencies="wxmsw28ud_adv.lib wxmsw28ud_html.lib wxbase28ud_xml.lib wxmsw28ud_core.lib wxbase28ud_net.lib wxbase28ud.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxregexud.lib wxexpatd.lib wxmsw28ud_stc.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib &quot;Relational Object Model.lib&quot; &quot;EDSEngine.lib&quot;"
 				OutputFile="vc_mswud\minimal.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -149,7 +149,7 @@
 				AdditionalOptions="/EHsc "
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_lib\mswd&quot;;..\..\EDSEngine;&quot;..\..\Relational Object Model&quot;;..\..\Utilities\LogicianDebugger"
+				AdditionalIncludeDirectories="&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_lib\mswd&quot;;..\..\EDSEngine;&quot;..\..\Relational Object Model&quot;"
 				PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;USE_MSXML"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -176,7 +176,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw28u_adv.lib wxmsw28u_html.lib wxbase28u_xml.lib wxmsw28u_core.lib wxbase28u_net.lib wxbase28u.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib &quot;Relational Object Model.lib&quot; &quot;EDSEngine.lib&quot;"
+				AdditionalDependencies="wxmsw28u_adv.lib wxmsw28u_html.lib wxbase28u_xml.lib wxmsw28u_core.lib wxbase28u_net.lib wxbase28u.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_stc.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib &quot;Relational Object Model.lib&quot; &quot;EDSEngine.lib&quot;"
 				OutputFile="vc_mswu\minimal.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -219,7 +219,7 @@
 			Name="Source Files"
 			>
 			<File
-				RelativePath=".\HydraulicCylinderC++.cpp"
+				RelativePath=".\ROMDebugApp.cpp"
 				>
 				<FileConfiguration
 					Name="Unicode Debug|Win32"
@@ -245,10 +245,31 @@
 			Name="Headers"
 			>
 			<File
-				RelativePath=".\HydraulicCylinderC++.h"
+				RelativePath=".\EDSDebug.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LogicianDebugCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ROMDebugApp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ROMViewer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StringTable.h"
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\config.xml"
+			DeploymentContent="true"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

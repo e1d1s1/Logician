@@ -99,6 +99,7 @@ namespace ROM
 		vector<wstring>		ReverseEvaluateTable(wstring evalTable, wstring inputAttr);
 		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring evalTable, bool bGetAll);
 		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring evalTable);
+		EDS::CKnowledgeBase* GetKnowledgeBase() {return _getKnowledge();}
 
 
 		//IO
