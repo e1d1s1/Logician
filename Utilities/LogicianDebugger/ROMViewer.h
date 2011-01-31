@@ -99,7 +99,7 @@ public:
 		wxButton *buttonGet = new wxButton(right, GET, L"Get Attribute");
 		wxButton *buttonSet = new wxButton(right, SET, L"Set Attribute");
 		m_txtName = new wxTextCtrl(right, wxID_ANY, L"name");
-		m_txtValue = new wxTextCtrl(right, wxID_ANY);
+		m_txtValue = new wxTextCtrl(right, wxID_ANY, L"value");
 		m_checkImmediate = new wxCheckBox(right, wxID_ANY, L"Immediate");
 		attrSizer->Add(buttonGet);
 		attrSizer->Add(buttonSet);
@@ -151,7 +151,7 @@ public:
 	}
 
     // Common initialization
-    void Init() { m_rootNode = NULL; m_selectedNode = NULL; bLoading = false;}
+    void Init() { m_rootNode = NULL; bLoading = false;}
 
     // Overrides
     wxSize DoGetBestSize() const { return defaultSize; }
@@ -527,7 +527,6 @@ public:
 	}
 
 protected:
-	ROMNode		*m_selectedNode;
     ROMNode		*m_rootNode;
 	wxSplitterWindow *m_splitter;
 	wxTreeCtrl	*m_tree;
