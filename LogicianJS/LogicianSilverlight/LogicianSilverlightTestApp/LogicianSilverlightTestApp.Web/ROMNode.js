@@ -81,7 +81,7 @@ var XSLT_TOP = "<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3
 var XSLT_BOTTOM = "\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
 function CreateROMNode(id) {
     if (id === undefined)
-        return null;
+        id = "";
 
     var retval = new ROMNode(id);
     return retval;
