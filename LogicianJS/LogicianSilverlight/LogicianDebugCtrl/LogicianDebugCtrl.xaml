@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="LogicianDebugCtrl.LogicianDebugCtrl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:romview="clr-namespace:ROMViewer;assembly=ROMViewer"
+    mc:Ignorable="d"
+    d:DesignHeight="480" d:DesignWidth="640">
+    
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" MinHeight="300"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="640"/>
+        </Grid.ColumnDefinitions>
+        <romview:ROMViewer Name="Viewer" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="Auto"/>
+        
+    </Grid>
+</UserControl>
