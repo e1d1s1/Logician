@@ -110,7 +110,7 @@ public:
 
 		wxBoxSizer *quereySizer = new wxBoxSizer(wxHORIZONTAL);
 		wxButton *buttonQuery = new wxButton(right, QUERY, L"XPATH Query");
-		m_txtQuery = new wxTextCtrl(right, wxID_ANY);
+		m_txtQuery = new wxTextCtrl(right, wxID_ANY, L"//Attribute[@id='attr1']/@value");
 		m_checkQueryValue = new wxCheckBox(right, wxID_ANY, L"Query is for object(s)");
 		quereySizer->Add(buttonQuery, 2);
 		quereySizer->Add(m_txtQuery, 6, wxEXPAND|wxSHRINK);
@@ -469,9 +469,9 @@ public:
 							vector<ROMNode*> results = node->FindObjects(query);						
 							wchar_t buff[32] = L"";
 							swprintf(buff, 32, L"%d", results.size());
-							wstring value = buff;
-							value += L" Objects Found";
-							wxMessageBox(value, L"XPATH Result"); 
+							wstring msg = buff;
+							msg += L" Objects Found";
+							wxMessageBox(msg, L"XPATH Result"); 
 
 							//highlight the objects in the tree
 							for (vector<ROMNode*>::iterator it = results.begin(); it != results.end(); it++)
@@ -486,9 +486,9 @@ public:
 						}
 						else
 						{
-							wstring value = L"value: ";
-							value += node->EvaluateXPATH(query);
-							wxMessageBox(value, L"XPATH Result"); 
+							wstring msg = L"value: ";
+							msg += node->EvaluateXPATH(query);
+							wxMessageBox(msg, L"XPATH Result"); 
 						}
 					}
 					catch(...)
