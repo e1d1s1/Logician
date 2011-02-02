@@ -13,7 +13,7 @@
     <RootNamespace>LogicianSilverlightTestApp.Web</RootNamespace>
     <AssemblyName>LogicianSilverlightTestApp.Web</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <SilverlightApplicationList>{5788651F-26BB-421E-AD20-B3C8C431E69E}|..\LogicianSilverlightTestApp\LogicianSilverlightTestApp.csproj|ClientBin|False</SilverlightApplicationList>
+    <SilverlightApplicationList>{5788651F-26BB-421E-AD20-B3C8C431E69E}|..\LogicianSilverlightTestApp\LogicianSilverlightTestApp.csproj|ClientBin|False,{1B9D1C4F-4CAB-49EA-9BE1-D6C6BF43E1ED}|..\..\LogicianDebugApp\LogicianDebugApp.csproj|ClientBin|False</SilverlightApplicationList>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,8 +52,11 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ClientBin\LogicianDebugApp.xap" />
     <Content Include="ClientBin\LogicianSilverlightTestApp.xap" />
     <Content Include="KnowledgeBase.js" />
+    <Content Include="LogicianDebugAppTestPage.aspx" />
+    <Content Include="LogicianDebugAppTestPage.html" />
     <Content Include="LogicianSilverlightTestAppTestPage.aspx" />
     <Content Include="LogicianSilverlightTestAppTestPage.html" />
     <Content Include="ROMNode.js" />

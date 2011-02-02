@@ -25,7 +25,7 @@ namespace LogicianSilverlight
 {
     public class ROMNode
     {
-        public ROMNode() { m_ROMNode = null; m_KnowledgeBase = null; }
+        public ROMNode() { m_ROMNode = null; m_KnowledgeBase = null; CreateROMNode(""); }
         public ROMNode(ScriptObject o) { m_ROMNode = o; m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); }
 		public ROMNode(string id) {CreateROMNode(id);}
 		public bool CreateROMNode(string id)
@@ -70,7 +70,7 @@ namespace LogicianSilverlight
         public ROMNode          Clone() {return (ROMNode)m_ROMNode.Invoke("Clone");}
 
 		//attribute functions
-		public string			GetAttribute(string id, string name, bool immediate) {return (string)m_ROMNode.Invoke("GetAttribute", new object[]{id, name, immediate});}
+		public string			GetAttribute(string id, string name, bool immediate) {return (string)m_ROMNode.Invoke("GetAttributeValue", new object[]{id, name, immediate});}
 		public string			GetAttribute(string id, bool immediate) {return GetAttribute(id, "value", immediate);}
 		public string			GetAttribute(string id) {return GetAttribute(id, "value", false);}
 		public bool				GetAttributeExists(string id, string name) {return (bool)m_ROMNode.Invoke("GetAttributeExists", new object[]{id, name});}
