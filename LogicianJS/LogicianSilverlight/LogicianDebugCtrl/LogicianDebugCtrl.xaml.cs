@@ -23,7 +23,7 @@ namespace LogicianDebugCtrl
         public ROMNode RootNode
         {
             get { return Viewer.RootNode; }
-            set { Viewer.RootNode = value; EDSDebug.ROM = value; }
+            set { Viewer.RootNode = value; EDSDebugger.ROM = value; }
         }
 
         public void Update()

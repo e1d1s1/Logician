@@ -84,6 +84,8 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showDeubuggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showDebuggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel8.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -674,7 +676,8 @@
             // mainMenu
             // 
             this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.showDeubuggerToolStripMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
             this.mainMenu.Size = new System.Drawing.Size(470, 24);
@@ -711,6 +714,21 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // showDeubuggerToolStripMenuItem
+            // 
+            this.showDeubuggerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showDebuggerToolStripMenuItem});
+            this.showDeubuggerToolStripMenuItem.Name = "showDeubuggerToolStripMenuItem";
+            this.showDeubuggerToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
+            this.showDeubuggerToolStripMenuItem.Text = "Debugger";
+            // 
+            // showDebuggerToolStripMenuItem
+            // 
+            this.showDebuggerToolStripMenuItem.Name = "showDebuggerToolStripMenuItem";
+            this.showDebuggerToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.showDebuggerToolStripMenuItem.Text = "Show Debugger";
+            this.showDebuggerToolStripMenuItem.Click += new System.EventHandler(this.showDebuggerToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -749,37 +767,27 @@
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.ComboBox CylinderSeries;
-        private System.Windows.Forms.Label lbCylinderSeries;
         private System.Windows.Forms.ComboBox MountingStyle;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Label lbRodDiameter;
         private System.Windows.Forms.ComboBox RodDiameter;
         private System.Windows.Forms.Label lbBoreDiameter;
-        private System.Windows.Forms.Label lbMountingStyle;
-        private System.Windows.Forms.Label lbRodEndTypes;
         private System.Windows.Forms.ComboBox BoreDiameter;
         private System.Windows.Forms.ComboBox RodEndTypes;
-        private System.Windows.Forms.Label lbSealingSystem;
         private System.Windows.Forms.ComboBox SealingSystem;
-        private System.Windows.Forms.Label lbPorts;
-        private System.Windows.Forms.Label lbPortLocation;
         private System.Windows.Forms.ComboBox Ports;
-        private System.Windows.Forms.Label lbCushionLocations;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Label lbCushionCap;
         private System.Windows.Forms.Label lbCushionHead;
-        private System.Windows.Forms.Label lbCylinderStroke;
         private System.Windows.Forms.TextBox CylinderStroke;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Label lbExtraRodProtection;
-        private System.Windows.Forms.Label lbAdditionalOption;
         private System.Windows.Forms.TextBox ExtraRodProtection;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.Label lbOptionCap;
         private System.Windows.Forms.Label lbOptionHead;
         private System.Windows.Forms.ComboBox AdditionalOption;
         private System.Windows.Forms.Label lbPosition;
-        private System.Windows.Forms.Label lbCatalog;
         private System.Windows.Forms.Label Catalog;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
         private System.Windows.Forms.Label lbPortLocationCap;
@@ -803,6 +811,18 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.Label lbMountingStyle;
+        private System.Windows.Forms.Label lbCylinderSeries;
+        private System.Windows.Forms.Label lbRodEndTypes;
+        private System.Windows.Forms.Label lbSealingSystem;
+        private System.Windows.Forms.Label lbPorts;
+        private System.Windows.Forms.Label lbPortLocation;
+        private System.Windows.Forms.Label lbCushionLocations;
+        private System.Windows.Forms.Label lbCylinderStroke;
+        private System.Windows.Forms.Label lbAdditionalOption;
+        private System.Windows.Forms.Label lbCatalog;
+        private System.Windows.Forms.ToolStripMenuItem showDeubuggerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showDebuggerToolStripMenuItem;
     }
 }
 

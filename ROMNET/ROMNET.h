@@ -40,7 +40,7 @@ namespace ROMNET {
 	public ref class ROMNode
 	{
 	public:
-		ROMNode() {m_ROMNode = NULL; m_KnowledgeBase = NULL;}
+		ROMNode() {CreateROMNode(""); m_KnowledgeBase = NULL;}
 		ROMNode(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer(); m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();}
 		ROMNode(String^ id) {CreateROMNode(id);}
 		bool CreateROMNode(System::String^ id);

@@ -17,6 +17,7 @@ namespace HydraulicCylinder
         private ROMNode m_rootNode;
         private LinearEngine m_engine = null;
         private bool bLoadingItems = false;
+        private DebugForm debugger = null;
 
         public Form1()
         {
@@ -50,6 +51,8 @@ namespace HydraulicCylinder
             }
             bLoadingItems = false;
             UpdateCatalog();
+            if (debugger != null)
+                debugger.Update();
         }
 
         private void UpdateCatalog()
@@ -181,7 +184,18 @@ namespace HydraulicCylinder
 
             string outStr = m_rootNode.SaveXML(true);
             UTF8Encoding encoding = new UTF8Encoding(false);
-            System.IO.File.WriteAllText(dialog.FileName, outStr, encoding);     
+            System.IO.File.WriteAllText(dialog.FileName, outStr, encoding);
+        }
+
+        private void showDebuggerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (debugger == null)
+            {
+                debugger = new DebugForm();
+                m_rootNode.SetDebugging(true);
+                debugger.Initialize(m_rootNode);
+                debugger.Show();
+            }
         }
     }
 }
