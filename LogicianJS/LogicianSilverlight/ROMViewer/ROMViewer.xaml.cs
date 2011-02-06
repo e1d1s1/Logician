@@ -49,7 +49,7 @@ namespace ROMViewer
             item = null;
             if (node != null)
             {
-                item = (TreeViewItem)treeCtrl.FindName(node.GetROMGUID());
+                item = (TreeViewItem)treeCtrl.FindName("_" + node.GetROMGUID().Replace('-', '_'));
             }
 
             if (item != null)
@@ -75,7 +75,7 @@ namespace ROMViewer
             TreeViewItem current = new TreeViewItem();
             current.Header = caption;
             current.Tag = m_rootNode;
-            current.Name = m_rootNode.GetROMGUID();
+            current.Name = "_" + m_rootNode.GetROMGUID().Replace('-', '_');
             current.IsSelected = true;
             treeCtrl.Items.Add(current);
 
@@ -95,7 +95,7 @@ namespace ROMViewer
                 current = new TreeViewItem();
                 current.Header = caption;
                 current.Tag = node;
-                current.Name = node.GetROMGUID();
+                current.Name = "_" + node.GetROMGUID().Replace('-', '_');
                 parent.Items.Add(current);
             }
 
@@ -318,7 +318,7 @@ namespace ROMViewer
 							    //highlight the objects in the tree
 							    foreach (ROMNode nodeRes in results)
 							    {
-								    item = (TreeViewItem)treeCtrl.FindName(nodeRes.GetROMGUID());
+                                    item = (TreeViewItem)treeCtrl.FindName("_" + nodeRes.GetROMGUID().Replace('-', '_'));
 								    if (item != null)
 								    {
 									    item.IsSelected = true;
