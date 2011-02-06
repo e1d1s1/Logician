@@ -323,6 +323,19 @@ namespace ROMViewer
 								    {
 									    item.IsSelected = true;
 									    item.Foreground = new SolidColorBrush(Colors.Red);
+                                        object newParent = item.Parent;
+                                        TreeViewItem parent = null;
+                                        if (newParent != null && newParent is TreeViewItem)
+                                            parent = (TreeViewItem)newParent;
+                                        while (parent != null)
+                                        {
+                                            parent.IsExpanded = true;
+                                            newParent = parent.Parent;
+                                            if (newParent != null && newParent is TreeViewItem)
+                                                parent = (TreeViewItem)newParent;
+                                            else
+                                                parent = null;
+                                        }
 								    }
 							    }
 						    }

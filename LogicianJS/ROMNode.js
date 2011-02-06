@@ -948,6 +948,7 @@ function ROMNode(id) {
             }
             else {
                 id = objectNode.getAttribute("id");
+				guid = objectNode.getAttribute("guid");
             }
 
             if (parent == null) {

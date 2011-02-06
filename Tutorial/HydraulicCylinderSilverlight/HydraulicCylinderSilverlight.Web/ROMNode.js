@@ -81,7 +81,7 @@ var XSLT_TOP = "<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3
 var XSLT_BOTTOM = "\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
 function CreateROMNode(id) {
     if (id === undefined)
-        return null;
+        id = "";
 
     var retval = new ROMNode(id);
     return retval;
@@ -252,7 +252,10 @@ function ROMNode(id) {
         var retval = null;
         try {
             var rootNode = this.GetRoot();
-            retval = rootNode._findObjectGUID(guid);
+			if (rootNode.m_guid == guid)
+				retval = rootNode;
+			else
+				retval = rootNode._findObjectGUID(guid);
         }
         catch (err) {
             ReportError(err);
@@ -588,6 +591,10 @@ function ROMNode(id) {
         }
         return knowledge;
     }
+    
+    this.GetKnowledgeBase = function() {
+        return this._getKnowledge();
+    }
 
     this.EvaluateTableForAttr = function (evalTable, output, bGetAll) {
         try {
@@ -852,9 +859,12 @@ function ROMNode(id) {
         return retval;
     }
 
-    this._createXMLDoc = function () {
+    this._createXMLDoc = function (bForceLoad) {
         try {
-            var bChanged = this._anyHasChanged();
+			if (bForceLoad === undefined)
+				bForceLoad = false;
+			
+            var bChanged = (bForceLoad || this._anyHasChanged());
             if (bChanged) {
                 var genXML = this._generateXML(bChanged);
                 if (IsIE()) {
@@ -881,7 +891,7 @@ function ROMNode(id) {
         if (indented === undefined)
             indented = false;
         try {
-            this._createXMLDoc();
+            this._createXMLDoc(true);
             retval = this._convertXMLDocToString(indented);
         }
         catch (err) {

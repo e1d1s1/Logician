@@ -42,6 +42,9 @@ namespace HydraulicCylinderSilverlight
             m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
             m_engine.EvaluateAll();
 
+            m_rootNode.SetDebugging(true);
+            Debugger.RootNode = m_rootNode;
+
             UpdateControls();
         }
 
@@ -67,6 +70,8 @@ namespace HydraulicCylinderSilverlight
 
             if (Catalog != null)
                 Catalog.Text = Catnum;
+
+            Debugger.Update();
         }
 
         private void SetControlUI(ROMDictionaryAttribute attr)

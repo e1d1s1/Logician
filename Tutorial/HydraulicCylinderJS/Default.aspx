@@ -167,12 +167,12 @@
         }
         
         function SaveConfig() {
-            txtXML.value = "";
-            txtXML.value = m_rootNode.SaveXML(true);
+            document.forms['xmlform']['txtXML'].value = "";
+            document.forms['xmlform']['txtXML'].value = m_rootNode.SaveXML(true);
         }
         
         function LoadConfig() {
-            if (m_rootNode.LoadXML(txtXML.value))
+            if (m_rootNode.LoadXML(document.forms['xmlform']['txtXML'].value))
             {
                 if (m_engine != null)
                 {
@@ -383,7 +383,9 @@
                 </td>
             </tr>
         </table>
-        <textarea id="txtXML" cols=100 rows=50></textarea>   
+        <form name="xmlform">
+            <textarea id="txtXML" name="txtXML" cols=100 rows=50></textarea>
+        </form>
     </div>
 	<div>
 		<input id="btnClear" title="Clear Debug" type="button" value="Clear Debug" onclick="ClearDebug()"/>
