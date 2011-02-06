@@ -5,12 +5,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:debugger="clr-namespace:LogicianDebugCtrl;assembly=LogicianDebugCtrl"
     mc:Ignorable="d"
-    d:DesignHeight="640" d:DesignWidth="800"
-    Width="800" Height="640"
+    d:DesignHeight="640" d:DesignWidth="1024"
+    Width="800" Height="1024"
     >
     
 
     <Grid x:Name="LayoutRoot" Background="White">
-        <debugger:LogicianDebugCtrl Name="Debugger" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="800" Height="640"/>
+        <debugger:LogicianDebugCtrl Name="Debugger" HorizontalAlignment="Stretch" VerticalAlignment="Top" Width="800" Height="1024"/>
     </Grid>
 </UserControl>

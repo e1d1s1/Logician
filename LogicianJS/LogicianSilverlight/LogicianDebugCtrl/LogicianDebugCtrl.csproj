@@ -50,6 +50,7 @@
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Controls.Data.Input, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Browser" />
@@ -67,6 +68,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EDSDebug\EDSDebug.csproj">
+      <Project>{D44A5828-9CCA-403C-99C6-34C3F8B844D5}</Project>
+      <Name>EDSDebug</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LogicianSilverlight\LogicianSilverlight.csproj">
       <Project>{53F1E861-DE81-46ED-BE4D-DD67067FCA36}</Project>
       <Name>LogicianSilverlight</Name>

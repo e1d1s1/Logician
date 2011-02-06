@@ -60,14 +60,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LogicianSilverlight">
-      <HintPath>..\..\..\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Controls.Data.Input, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
@@ -92,6 +90,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AppManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\LogicianJS\LogicianSilverlight\LogicianDebugCtrl\LogicianDebugCtrl.csproj">
+      <Project>{924E4508-3E7A-4A15-A9F9-CAD8CE631105}</Project>
+      <Name>LogicianDebugCtrl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\LogicianJS\LogicianSilverlight\LogicianSilverlight\LogicianSilverlight.csproj">
+      <Project>{53F1E861-DE81-46ED-BE4D-DD67067FCA36}</Project>
+      <Name>LogicianSilverlight</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

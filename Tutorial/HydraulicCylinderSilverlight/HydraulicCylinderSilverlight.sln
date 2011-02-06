@@ -1,9 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+# Visual Web Developer Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydraulicCylinderSilverlight", "HydraulicCylinderSilverlight\HydraulicCylinderSilverlight.csproj", "{D112DA71-2548-4563-8A24-26391C9644FA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydraulicCylinderSilverlight.Web", "HydraulicCylinderSilverlight.Web\HydraulicCylinderSilverlight.Web.csproj", "{7D28FD68-10FB-4D35-8BCD-0B36DEF7EBBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicianSilverlight", "..\..\LogicianJS\LogicianSilverlight\LogicianSilverlight\LogicianSilverlight.csproj", "{53F1E861-DE81-46ED-BE4D-DD67067FCA36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicianDebugCtrl", "..\..\LogicianJS\LogicianSilverlight\LogicianDebugCtrl\LogicianDebugCtrl.csproj", "{924E4508-3E7A-4A15-A9F9-CAD8CE631105}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROMViewer", "..\..\LogicianJS\LogicianSilverlight\ROMViewer\ROMViewer.csproj", "{7A3FE762-EC37-4A6E-9BFA-DF7D7E00A1D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDSDebug", "..\..\LogicianJS\LogicianSilverlight\EDSDebug\EDSDebug.csproj", "{D44A5828-9CCA-403C-99C6-34C3F8B844D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +27,22 @@ Global
 		{7D28FD68-10FB-4D35-8BCD-0B36DEF7EBBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D28FD68-10FB-4D35-8BCD-0B36DEF7EBBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D28FD68-10FB-4D35-8BCD-0B36DEF7EBBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53F1E861-DE81-46ED-BE4D-DD67067FCA36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53F1E861-DE81-46ED-BE4D-DD67067FCA36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53F1E861-DE81-46ED-BE4D-DD67067FCA36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53F1E861-DE81-46ED-BE4D-DD67067FCA36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{924E4508-3E7A-4A15-A9F9-CAD8CE631105}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{924E4508-3E7A-4A15-A9F9-CAD8CE631105}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{924E4508-3E7A-4A15-A9F9-CAD8CE631105}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{924E4508-3E7A-4A15-A9F9-CAD8CE631105}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A3FE762-EC37-4A6E-9BFA-DF7D7E00A1D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A3FE762-EC37-4A6E-9BFA-DF7D7E00A1D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A3FE762-EC37-4A6E-9BFA-DF7D7E00A1D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A3FE762-EC37-4A6E-9BFA-DF7D7E00A1D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D44A5828-9CCA-403C-99C6-34C3F8B844D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D44A5828-9CCA-403C-99C6-34C3F8B844D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D44A5828-9CCA-403C-99C6-34C3F8B844D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D44A5828-9CCA-403C-99C6-34C3F8B844D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
