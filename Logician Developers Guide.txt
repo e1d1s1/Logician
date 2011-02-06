@@ -23,8 +23,8 @@ The constructor for EDSEngine simply requires a path string to the souce rules x
 		bool CreateKnowledgeBaseFromString(string xmlStr);
 	Javascript:
 		KnowledgeBase(xmlPath);
-		boolean CreateKnowledgeBase(knowledge_file);
-		boolean CreateKnowledgeBaseFromString(xmlStr);
+		CreateKnowledgeBase(knowledge_file); //returns an instance of the object when called from global level
+		CreateKnowledgeBaseFromString(xmlStr); //returns an instance of the object when called from global level
 	
 Public Properties
 IsOpen: returns whether or not the rules file has been opened and parsed successfully.
@@ -305,6 +305,7 @@ The constructor for Relational Object Model simply requires a path string to the
 		ROMNode();
 		bool CreateROMNode(string id);
 	Javascript:
+		CreateROMNode(id); //returns an instance of the object when called from global level
 		ROMNode(id);
 		
 Relational functions
@@ -620,20 +621,21 @@ LinearEngine provides a linear, deterministic rules engine based on ROMNode and 
 Constructors
 The constructor for LinearEngine simply requires a path string to the souce rules xml or zipped xml file.  Zipped xml files are not supported in javascript.
 	C++:
-		LinearEngine(wstring knowledge_file);
+		LinearEngine(ROMNode context, wstring dictionaryTable);
 		//optional 2-step C++
 		LinearEngine();
-		bool CreateLinearEngine(wstring knowledge_file);
+		bool CreateLinearEngine(ROMNode context, wstring dictionaryTable);
 	C#:
-		LinearEngine(string knowledge_file);
+		LinearEngine(ROMNode context, string dictionaryTable);
 		//optional 2-step C#:
 		LinearEngine();
-		bool CreateLinearEngine(string knowledge_file);
+		bool CreateLinearEngine(ROMNode context, string dictionaryTable);
 	Javascript:
-		LinearEngine(xmlPath);
+		CreateLinearEngine(context, dictionaryTable) //returns an instance of the object when called from global level
+		LinearEngine(context, dictionaryTable);
 		
 LoadDictionary - Loads a group of attribues and sets some defualt values based on the evaluation of a rules table.  
-Requirsed table outputs:
+Required table outputs:
 	Name: Name of an attribute
 	Description: Description (usually for GUI) of the attribute
 	DefaultValue: A default value to set the attribute to.  To keep the outputs aligned in a multiple output table, use a "~" to indicated an empty string.
