@@ -1,6 +1,6 @@
-Logician Suite Commercial Licensing Information
+﻿Logician Suite Commercial Licensing Information
 
-eLogician LLC provides its EDSEngine and Relational Object Modeler client libraries under a dual license model designed to meet the development and distribution needs of both commercial distributors and open source projects.  The DecisionLogic Rules editor and the EDSEngine client libraries are GPL, while The Relational Object Modeler client libraries are LGPL.  All 3 tools and their variants are packaged and distributed as the "Logician Suite".
+eLogician LLC provides its EDSEngine and Relational Object Modeler client libraries under a dual license model designed to meet the development and distribution needs of both commercial distributors and open source projects.  All of the libraries and tools in this package are GPL and distributed as the "Logician Suite".
 
 For Distributors of Commercial Applications:
 Users that combine and distribute commercially licensed software with Logician client libraries and do not wish to distribute the source code for the commercially licensed software under version 3 of the GNU General Public License (the "GPL") must enter into a commercial license agreement with eLogician LLC.
