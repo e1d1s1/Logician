@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>DecisionLogic Help</title>
+</head>
+<body>
+
+    <ol>
+        <li>Overview of the Interface</li>
+        <li>Creating a Project</li>
+        <li>Creating a Rule Table</li>
+        <li>Working with Rules</li>
+        <li>Defining Javascript/Python Code Snippets</li>
+        <li>Compiling a Project</li>
+        <li>Translations/Globalization</li>
+    </ol>
+    
+    <h2>Overview of the Interface</h2>
+    <img src="Figure1.png" alt="Screenshot of open project" /><p>
+    The above screenshot shows a typical DecisionLogic session when working with an active project.&nbsp; 
+    The left panel contains a tree view which contains the all of rule tables in the 
+    project in hierarchical form, as they are stored on disk as individual *.xml files.&nbsp; Any folder 
+    groups will show up with a folder icon from which containing tables can be 
+    expanded and selected.</p><p>
+    The right panel shows a typical table view when a user selects an item in the 
+    tree view for editing.&nbsp; In the example above, the rules flow left to right 
+    from input conditions to the outputs.&nbsp; The first row shows whether each column 
+        is an input or an output condition.&nbsp; The sencond row contains the attribute 
+        names.&nbsp; The checkbox in the top left corner 
+    of the table indicates whether the table should return the collection of all 
+    true results (checked), or only the ouput of the first encountered true row 
+    (unchecked).&nbsp; The orientation of the tables can be adjusted to a top to bottom 
+        type view under the Table menu.</p>
+    
+    <h2>Creating a Project</h2><p>
+    A new project can be started from the menu File-&gt;New Project.&nbsp; You will be 
+    prompted to save a *.dlp file to some location.&nbsp; It is at this save 
+    location where any additional rule table files will also be stored, and 
+    considered the &quot;root&quot; level of the project.</p>
+</body>
+</html>
