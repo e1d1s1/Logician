@@ -39,6 +39,16 @@ namespace LogicianSilverlight
             else
                 return false;
         }
+        public bool CreateKnowledgeBaseFromString(string knowledgeXML)
+        {
+            object o = HtmlPage.Window.Invoke("CreateKnowledgeBaseFromString", knowledgeXML);
+            m_KnowledgeBase = (ScriptObject)o;
+            DebugDelegate = null;
+            if (m_KnowledgeBase != null)
+                return true;
+            else
+                return false;
+        }
 		~KnowledgeBase() {if (m_KnowledgeBase != null) m_KnowledgeBase = null;}
         static public implicit operator ScriptObject(KnowledgeBase knowledge) { return knowledge.m_KnowledgeBase; }
 

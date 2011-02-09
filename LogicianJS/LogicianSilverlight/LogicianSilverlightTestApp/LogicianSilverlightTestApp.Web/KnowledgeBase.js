@@ -1348,7 +1348,7 @@ function loadXMLDocString(xmlStr)
 
 function CreateKnowledgeBase(xmlPath) {
     if (xmlPath === undefined)
-        return null;
+        return false;
     var retval = new KnowledgeBase(xmlPath);
     xmlDoc = loadXMLDoc(xmlPath);
     retval._parseXML(xmlDoc);
@@ -1357,7 +1357,7 @@ function CreateKnowledgeBase(xmlPath) {
 
 function CreateKnowledgeBaseFromString(xml) {
     if (xml === undefined)
-        return null;
+        return false;
 
     var retval = new KnowledgeBase();
     xmlDoc = loadXMLDocString(xml);
