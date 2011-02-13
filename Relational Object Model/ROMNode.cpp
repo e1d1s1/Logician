@@ -519,6 +519,15 @@ map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable)
 	return retval;
 }
 
+wstring ROMNode::GetFirstTableResult(wstring tableName, wstring output)
+{
+	wstring retval = L"";
+	vector<wstring> res = EvaluateTable(tableName, output);
+	if (res.size() > 0)
+		retval = res[0];
+	return retval;
+}
+
 vector<wstring> ROMNode::ReverseEvaluateTable(wstring evalTable, wstring inputAttr, bool bGetAll)
 {
 	vector<wstring> retval;

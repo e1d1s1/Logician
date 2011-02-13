@@ -95,6 +95,7 @@ namespace ROM
 		vector<wstring>		EvaluateTableForAttr(wstring evalTable, wstring output) {return EvaluateTable(evalTable, output);}
 		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable, bool bGetAll);
 		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable);
+		wstring				GetFirstTableResult(wstring tableName, wstring output);
 		vector<wstring>		ReverseEvaluateTable(wstring evalTable, wstring inputAttr, bool bGetAll);
 		vector<wstring>		ReverseEvaluateTable(wstring evalTable, wstring inputAttr);
 		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring evalTable, bool bGetAll);
@@ -131,6 +132,7 @@ namespace ROM
 		vector<string>		EvaluateTable(string evalTable, string output) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output)));}
 		map<string, vector<string> > EvaluateTable(string evalTable, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable), bGetAll));}
 		map<string, vector<string> > EvaluateTable(string evalTable) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable)));}
+		string				GetFirstTableResult(string tableName, string output) {return WStrToMBCStr(GetFirstTableResult(ROMUTIL::MBCStrToWStr(tableName), ROMUTIL::MBCStrToWStr(output)));}
 		vector<string>		ReverseEvaluateTable(string evalTable, string inputAttr, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr), bGetAll));}
 		vector<string>		ReverseEvaluateTable(string evalTable, string inputAttr) {return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr)));}
 		map<string, vector<string> > ReverseEvaluateTable(string evalTable, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), bGetAll));}

@@ -61,6 +61,7 @@ namespace EDSNET {
 		array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll);
 		Dictionary<String^,	array<String^>^>^	EvaluateTable(String^ tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
 		Dictionary<String^,	array<String^>^>^	EvaluateTable(String^ tableName, bool bGetAll);		
+		String^									GetFirstTableResult(String^ tableName, String^ ouputAttr);
 		array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr) {return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName));}
 		array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll);
 		Dictionary<String^,	array<String^>^>^	ReverseEvaluateTable(String^ tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
