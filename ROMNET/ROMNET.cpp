@@ -361,6 +361,15 @@ namespace ROMNET
 		return retval;
 	}
 
+	String^ ROMNode::GetFirstTableResult(String^ evalTable, String^ output)
+	{
+		String^ retval = gcnew String("");
+		array<String^>^ resAll = EvaluateTable(evalTable, output);
+		if (resAll != nullptr && resAll->Length > 0)
+			retval = resAll[0];
+		return retval;
+	}
+
 	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTable(String^ evalTable)
 	{
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
@@ -371,6 +380,60 @@ namespace ROMNET
 			retval = GetDictionaryFromMapStrings(res);
 			PumpDebugMessages();
 		}		
+		return retval;
+	}
+
+	array<String^>^ ROMNode::ReverseEvaluateTable(String^ evalTable, String^ output, bool bGetAll)
+	{
+		array<String^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			wstring wsTable = MarshalString(evalTable);
+			wstring wsOutput = MarshalString(output);
+			vector<wstring> res = m_ROMNode->ReverseEvaluateTable(wsTable, wsOutput, bGetAll);
+			retval = GetArrayFromVectorStrings(res);
+			PumpDebugMessages();
+		}
+		return retval;
+	}
+
+	array<String^>^ ROMNode::ReverseEvaluateTable(String^ evalTable, String^ output)
+	{
+		array<String^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			wstring wsTable = MarshalString(evalTable);
+			wstring wsOutput = MarshalString(output);
+			vector<wstring> res = m_ROMNode->ReverseEvaluateTable(wsTable, wsOutput);
+			retval = GetArrayFromVectorStrings(res);
+			PumpDebugMessages();
+		}
+		return retval;
+	}
+
+	Dictionary<String^, array<String^>^>^ ROMNode::ReverseEvaluateTable(String^ evalTable, bool bGetAll)
+	{
+		Dictionary<String^, array<String^>^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			wstring wsTable = MarshalString(evalTable);
+			map<wstring, vector<wstring> > res = m_ROMNode->ReverseEvaluateTable(wsTable, bGetAll);
+			retval = GetDictionaryFromMapStrings(res);
+			PumpDebugMessages();
+		}
+		return retval;
+	}
+
+	Dictionary<String^, array<String^>^>^ ROMNode::ReverseEvaluateTable(String^ evalTable)
+	{
+		Dictionary<String^, array<String^>^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			wstring wsTable = MarshalString(evalTable);
+			map<wstring, vector<wstring> > res = m_ROMNode->ReverseEvaluateTable(wsTable);
+			retval = GetDictionaryFromMapStrings(res);
+			PumpDebugMessages();
+		}
 		return retval;
 	}
 

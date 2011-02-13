@@ -74,6 +74,65 @@ function MakeGUID() {
         ReportError(err);
     }
 }
+var ActiveROMObjects = new Array(); //for flash access, guid keyed objects
+var ActiveROMDictObjects = new Array();
+var ActiveEngineObjects = new Array();
+function GetROMObject(guid) {
+    if (guid in ActiveROMObjects)
+        return ActiveROMObjects[guid];
+    else
+        return null;
+}
+function DestroyROMObject(guid) {
+    if (ActiveROMObjects != null && ActiveROMObjects[guid] != null)
+        delete ActiveROMObjects[guid];
+}
+function CleanROMObjects() {
+    for (var guid in ActiveROMObjects) {
+        DestroyROMObject(guid)
+    }
+    if (ActiveROMObjects != null) 
+        delete ActiveROMObjects;
+    ActiveROMObjects = new Array();
+}
+
+function GetROMDictObject(guid) {
+    if (guid in ActiveROMDictObjects)
+        return ActiveROMDictObjects[guid];
+    else
+        return null;
+}
+function DestroyROMDictObject(guid) {
+    if (ActiveROMDictObjects != null && ActiveROMODictbjects[guid] != null)
+        delete ActiveROMDictObjects[guid];
+}
+function CleanROMDictObjects() {
+    for (var guid in ActiveROMDictObjects) {
+        DestroyROMDictObject(guid)
+    }
+    if (ActiveROMDictObjects != null) 
+        delete ActiveROMDictObjects;
+    ActiveROMDictObjects = new Array();
+}
+
+function GetEngineObject(guid) {
+    if (guid in ActiveEngineObjects)
+        return ActiveEngineObjects[guid];
+    else
+        return null;
+}
+function DestroyEngineObject(guid) {
+    if (ActiveEngineObjects != null && ActiveEngineObjects[guid] != null)
+        delete ActiveEngineObjects[guid];
+}
+function CleanEngineObjects() {
+    for (var guid in ActiveEngineObjects) {
+        DestroyEngineObject(guid)
+    }
+    if (ActiveEngineObjects != null) 
+        delete ActiveEngineObjects;
+    ActiveEngineObjects = new Array();
+}
 
 var ATTRIBUTE_NODE = "Attribute";
 var OBJECT_NODE = "Object";
@@ -84,6 +143,7 @@ function CreateROMNode(id) {
         id = "";
 
     var retval = new ROMNode(id);
+    ActiveROMObjects[retval.m_id] = retval;
     return retval;
 }
 
@@ -629,6 +689,17 @@ function ROMNode(id) {
             return null;
         }
     }
+	
+	this.GetFirstTableResult = function(tableName, outputAttr)
+	{
+		var retval = "";
+		
+		var retAll = this.EvaluateTableForAttr(tableName, outputAttr);
+		if (retAll != null && retAll.length > 0)
+			retval = retAll[0];
+		
+		return retval;
+	}
 
     this.ReverseEvaluateTable = function (evalTable, bGetAll) {
         try {
@@ -1090,12 +1161,14 @@ function CreateROMDictionaryAttribute() {
 // ROMDictionary class////////////////////////////////////////////////////////////////
 function CreateROMDictionary(node) {
     var dict = new ROMDictionary(node);
+    ActiveROMDictObjects[dict.m_id] = dict;
     return dict;
 }
 
 function ROMDictionary(node) {
     this.m_context = node;
     this.m_dict = new Array();
+    this.m_id = MakeGUID();
 
     this.GenerateTableDebugMessages = function (bGenerate) {
         try {
@@ -1212,6 +1285,7 @@ function LinearEngine(context, dictionaryTable) {
     this.m_EvalListRecursChecker = new Array();
     this.m_EvalInternal = false;
     this.m_EvalListRecursChecker = null;
+    this.m_id = this.base.m_id;
 
     try {
 
@@ -1872,7 +1946,8 @@ function LinearEngine(context, dictionaryTable) {
 }
 
 function CreateLinearEngine(context, dictionaryTable) {
-    
+
     var engine = new LinearEngine(context, dictionaryTable);
+    ActiveEngineObjects[engine.m_id] = engine;
     return engine;
 }

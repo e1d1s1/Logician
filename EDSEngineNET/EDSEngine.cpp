@@ -147,6 +147,20 @@ namespace EDSNET
 		return retval;
 	}
 
+	String^ EDSEngine::GetFirstTableResult(String^ tableName, String^ outputAttr)
+	{
+		String^ retval = gcnew String("");
+		if (m_KnowledgeBase)
+		{
+			wstring table, output;
+			MarshalString(tableName, table);
+			MarshalString(outputAttr, output);
+			wstring res = m_KnowledgeBase->GetFirstTableResult(table, output);
+			retval = gcnew String(res.c_str());
+		}
+		return retval;
+	}
+
 	array<String^>^	EDSEngine::ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll)
 	{
 		array<String^>^ retval = nullptr;

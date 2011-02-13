@@ -148,6 +148,47 @@ function RemoveScriptTag(id)
     document.getElementsByTagName("head").item(0).removeChild(child);
 }
 
+function MakeGUID() {
+    try {
+        var chars = '0123456789abcdef'.split('');
+
+        var uuid = [], rnd = Math.random, r;
+        uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+        uuid[14] = '4'; // version 4
+
+        for (var i = 0; i < 36; i++) {
+            if (!uuid[i]) {
+                r = 0 | rnd() * 16;
+                uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r & 0xf];
+            }
+        }
+
+        return uuid.join('');
+    }
+    catch (err) {
+        ReportError(err);
+    }
+}
+var ActiveObjects = new Array(); //for flash access, guid keyed objects
+function GetObject(guid) {
+    if (guid in ActiveObjects)
+        return ActiveObjects[guid];
+    else
+        return null;
+}
+function DestroyObject(guid) {
+    if (ActiveObjects != null && ActiveObjects[guid] != null)
+        delete ActiveObjects[guid];
+}
+function CleanObjects() {
+    for (var guid in ActiveObjects) {
+        DestroyObject(guid)
+    }
+    if (ActiveObjects != null) 
+        delete ActiveObjects;
+    ActiveObjects = new Array();
+}
+
 //RuleCell/////////////////////////////////////////////////////////////
 function RuleCell()
 {
@@ -1324,7 +1365,6 @@ function loadXMLDoc(file)
     xhttp.open("GET",file,false);
     xhttp.send("");
     var xmlDoc = xhttp.responseXML;
-    
     return xmlDoc;
 }
 
@@ -1347,12 +1387,19 @@ function loadXMLDocString(xmlStr)
 }
 
 function CreateKnowledgeBase(xmlPath) {
-    if (xmlPath === undefined)
-        return false;
-    var retval = new KnowledgeBase(xmlPath);
-    xmlDoc = loadXMLDoc(xmlPath);
-    retval._parseXML(xmlDoc);
-    return retval;
+	try
+	{	
+		if (xmlPath === undefined)
+			return false;
+		var retval = new KnowledgeBase(xmlPath);
+		ActiveObjects[retval.m_id] = retval;	
+		return retval;
+	}
+	catch(error)
+	{
+		alert("ERROR Creating KnowledgeBase");
+	}
+	return null;
 }
 
 function CreateKnowledgeBaseFromString(xml) {
@@ -1362,6 +1409,7 @@ function CreateKnowledgeBaseFromString(xml) {
     var retval = new KnowledgeBase();
     xmlDoc = loadXMLDocString(xml);
     retval._parseXML(xmlDoc);
+    ActiveObjects[retval.m_id] = retval;
     return retval;
 }
 
@@ -1380,7 +1428,8 @@ function KnowledgeBase(xmlPath) {
         this.m_DebugTables = new Array();
         this.m_DebugHandlerFunct = null;
         this.m_bGenerateMsg = false;
-        this.m_LastDebugMessage = "";        
+        this.m_LastDebugMessage = "";
+        this.m_id = MakeGUID();
 
         this._parseXML = function(xmlDoc)
         {    
@@ -1731,7 +1780,7 @@ function KnowledgeBase(xmlPath) {
 
 
         this.TableCount = function() 
-        {    
+        {   
             try
             {
                 return this.m_TableSet.Count();
@@ -1948,6 +1997,17 @@ function KnowledgeBase(xmlPath) {
             }
             return retval;
         }        
+		
+		this.GetFirstTableResult = function(tableName, outputAttr)
+		{
+			var retval = "";
+			
+			var retAll = this.EvaluateTableForAttr(tableName, outputAttr);
+			if (retAll != null && retAll.length > 0)
+				retval = retAll[0];
+			
+			return retval;
+		}
 
         this.ReverseEvaluateTable = function(tableName, bGetAll)
         {

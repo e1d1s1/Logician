@@ -72,6 +72,7 @@ namespace LogicianSilverlight
         public string[]                         ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll) { ScriptObject o = (ScriptObject)m_KnowledgeBase.Invoke("ReverseEvaluateTableForAttr", new object[] { tableName, inputAttr, bGetAll }); Debug(); return ScriptMarshal.ScriptObjectToStringArray(o); }
         public Dictionary<string, string[]> ReverseEvaluateTable(string tableName) { ScriptObject o = (ScriptObject)m_KnowledgeBase.Invoke("ReverseEvaluateTable", tableName); Debug(); return ScriptMarshal.ScriptObjectToDictionaryOfStringArray(o); }
         public Dictionary<string, string[]> ReverseEvaluateTable(string tableName, bool bGetAll) { ScriptObject o = (ScriptObject)m_KnowledgeBase.Invoke("ReverseEvaluateTable", new object[] { tableName, bGetAll }); Debug(); return ScriptMarshal.ScriptObjectToDictionaryOfStringArray(o); }
+        public string                           GetFirstTableResult(string tableName, string outputAttr) { string retval = (string)m_KnowledgeBase.Invoke("GetFirstTableResult", new object[] { tableName, outputAttr }); Debug(); return retval; }
         public string                           GetEvalParameter() { return (string)m_KnowledgeBase.Invoke("GetEvalParameter"); }	
 		public void							    SetInputValues(Dictionary<string, int> values) {m_KnowledgeBase.Invoke("SetInputValues", values);}
 		public void								SetInputValue(string name, string value) {m_KnowledgeBase.Invoke("SetInputValue", new object[]{name, value});}

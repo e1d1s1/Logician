@@ -64,8 +64,8 @@ namespace LogicianSilverlight
         public ROMNode[]        FindObjects(string xpath) { return ScriptMarshal.ScriptObjectToROMArray(m_ROMNode.Invoke("FindObjects", xpath)); }
         public ROMNode[]        FindAllObjectsByID(string id, bool recurs) { return ScriptMarshal.ScriptObjectToROMArray(m_ROMNode.Invoke("FindAllObjectsByID", new object[] { id, recurs })); }
 		public ROMNode			FindObjectByGUID(string guid) {return (ROMNode)m_ROMNode.Invoke("FindObjectByGUID");}
-        public bool AddChildROMObject(ROMNode child) { return (bool)m_ROMNode.Invoke("AddChildROMObject", child.m_ROMNode); }
-        public bool RemoveChildROMObject(ROMNode child) { return (bool)m_ROMNode.Invoke("RemoveChildROMObject", child.m_ROMNode); }
+        public bool             AddChildROMObject(ROMNode child) { return (bool)m_ROMNode.Invoke("AddChildROMObject", child.m_ROMNode); }
+        public bool             RemoveChildROMObject(ROMNode child) { return (bool)m_ROMNode.Invoke("RemoveChildROMObject", child.m_ROMNode); }
 		public bool				DestroyROMObject() {return (bool)m_ROMNode.Invoke("DestroyROMObject");}
         public ROMNode          Clone() {return (ROMNode)m_ROMNode.Invoke("Clone");}
 
@@ -88,12 +88,13 @@ namespace LogicianSilverlight
         public Dictionary<string, Dictionary<string, string>> GetAllAttributes() { return ScriptMarshal.ScriptObjectToDictionaryOfStringDictionary(m_ROMNode.Invoke("GetAllAttributes")); }
 
 		//rules
-        public bool LoadRules(string knowledge_file) { bool retval = (bool)m_ROMNode.Invoke("LoadRules", knowledge_file); m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); return retval; }
-        public bool LoadRulesFromString(string xml) { bool retval = (bool)m_ROMNode.Invoke("LoadRulesFromString", xml); m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); return retval; }
-        public string[] EvaluateTable(string evalTable, string output, bool bGetAll) { string[] retval = ScriptMarshal.ScriptObjectToStringArray(m_ROMNode.Invoke("EvaluateTableForAttr", new object[] { evalTable, output, bGetAll })); PumpDebugMessages(); return retval; }
-        public string[] EvaluateTable(string evalTable, string output) { string[] retval = ScriptMarshal.ScriptObjectToStringArray(m_ROMNode.Invoke("EvaluateTableForAttr", new object[] { evalTable, output })); PumpDebugMessages(); return retval; }
+        public bool             LoadRules(string knowledge_file) { bool retval = (bool)m_ROMNode.Invoke("LoadRules", knowledge_file); m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); return retval; }
+        public bool             LoadRulesFromString(string xml) { bool retval = (bool)m_ROMNode.Invoke("LoadRulesFromString", xml); m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); return retval; }
+        public string[]         EvaluateTable(string evalTable, string output, bool bGetAll) { string[] retval = ScriptMarshal.ScriptObjectToStringArray(m_ROMNode.Invoke("EvaluateTableForAttr", new object[] { evalTable, output, bGetAll })); PumpDebugMessages(); return retval; }
+        public string[]         EvaluateTable(string evalTable, string output) { string[] retval = ScriptMarshal.ScriptObjectToStringArray(m_ROMNode.Invoke("EvaluateTableForAttr", new object[] { evalTable, output })); PumpDebugMessages(); return retval; }
         public Dictionary<string, string[]> EvaluateTable(string evalTable, bool bGetAll) { Dictionary<string, string[]> retval = ScriptMarshal.ScriptObjectToDictionaryOfStringArray(m_ROMNode.Invoke("EvaluateTable", new object[] { evalTable, bGetAll })); PumpDebugMessages(); return retval; }
         public Dictionary<string, string[]> EvaluateTable(string evalTable) { Dictionary<string, string[]> retval = ScriptMarshal.ScriptObjectToDictionaryOfStringArray(m_ROMNode.Invoke("EvaluateTable", evalTable)); PumpDebugMessages(); return retval; }
+        public string           GetFirstTableResult(string evalTable, string output) { string retval = (string)m_ROMNode.Invoke("GetFirstTableResult", new object[] { evalTable, output }); PumpDebugMessages(); return retval; }
 
 		//IO
         public string           SaveXML(bool indented) { return (string)m_ROMNode.Invoke("SaveXML", indented); }

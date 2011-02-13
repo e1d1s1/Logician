@@ -22,6 +22,22 @@ Copyright (C) 2009 - 2011 Eric D. Schmidt
 
 #include <string>
 #include <vector>
+#include "XMLWrapper.h"
+
+
+static const unsigned char firstByteMark[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
+static const char trailingBytesForUTF8[256] = {
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5 };
+static const unsigned long offsetsFromUTF8[6] = {
+	0x00000000UL, 0x00003080UL, 0x000E2080UL,
+	0x03C82080UL, 0xFA082080UL, 0x82082080UL };
 
 using namespace std;
 
@@ -34,11 +50,17 @@ namespace EDSUTIL
 	vector<wstring> Split(wstring text, wstring separators);
 	bool StringIsNumeric(wstring s);
 	wstring TrimString(wstring s);
-	string ToASCIIString(wstring s);
-	vector<string> ToASCIIStringVector(vector<wstring> vectWS);
+	string WStrToMBCStr(wstring wstr);	
+	vector<string> ToMBCStringVector(vector<wstring> vectWS);
 	string stringify(double x);
 	string stringify(long x);
 	string stringify(size_t x);
+	wstring MBCStrToWStr(string mbStr);
+	string ToASCIIString(wstring s); //for integer and ASCII only
 	wstring ToWString(string s);
+#ifdef USE_LIBXML
+	wstring XMLStrToWStr(const xmlChar* mbStr);
+	wstring XMLStrToWStr(xmlChar* mbStr);
+#endif
 }
 #endif

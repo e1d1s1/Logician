@@ -498,6 +498,16 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 	return retval;
 }
 
+wstring EDS::CKnowledgeBase::GetFirstTableResult(wstring tableName, wstring outputAttr)
+{
+	wstring retval = L"";
+	vector<wstring> retAll = EvaluateTable(tableName, outputAttr);
+	if (retAll.size() > 0)
+		retval = retAll[0];
+		
+	return retval;
+}
+
 vector<wstring> EDS::CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll)
 {
 	vector<wstring> retval;
@@ -807,12 +817,12 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 	xmlChar* tablesXPath = (xmlChar*)"//Tables";
 	xmlXPathObjectPtr xpathTables = xmlXPathEvalExpression(tablesXPath, xpathCtx);
 	Node tablesNode = xpathTables->nodesetval->nodeTab[0];
-	wstring debug = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debug"));
-	wstring debugTables = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debugtables"));
+	wstring debug = EDSUTIL::XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debug"));
+	wstring debugTables = EDSUTIL::XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debugtables"));
 	if (debug == L"true")
 	{
 		m_DEBUGGING_MSGS = true;
-		wstring con = XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"connection"));
+		wstring con = EDSUTIL::XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"connection"));
 		if (con.length() > 0)
 		{
 			m_DEBUGGING_CON = con;
@@ -841,8 +851,8 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 			NodeList inputList = xpathObjInputs->nodesetval;
 			NodeList outputList = xpathObjOutputs->nodesetval;
 
-			wstring name = XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"name"));
-			wstring sGetAll = XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
+			wstring name = EDSUTIL::XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"name"));
+			wstring sGetAll = EDSUTIL::XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
 			bool bGetAll = false;
 			if (sGetAll.length() > 0 && sGetAll[0] == L't')
 				bGetAll = true;
@@ -852,7 +862,7 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 			for (int j = 0; j < formulaInputNodes->nodeNr; j++)
 			{
 				Node formulaInputNode = formulaInputNodes->nodeTab[j];
-				FormulaInputs.push_back(XMLStrToWStr(xmlNodeGetContent(formulaInputNode)));
+				FormulaInputs.push_back(EDSUTIL::XMLStrToWStr(xmlNodeGetContent(formulaInputNode)));
 			}
 
 			vector<pair<wstring, vector<CRuleCell> > > InputAttrsTests = GetTableRowFromXML(inputList, xmlDocument);
@@ -881,14 +891,14 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 			for (int i = 0; i < allTranslations->nodeNr; i++)
 			{
 				Node StringNode = allTranslations->nodeTab[i];
-				size_t id = atoull(EDSUTIL::ToASCIIString(XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)"id"))).c_str());
+				size_t id = atoull(EDSUTIL::ToASCIIString(EDSUTIL::XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)"id"))).c_str());
 				for (Attribute childAttr = StringNode->properties; childAttr != NULL; childAttr = childAttr->next)
 				{
-                    wstring name = XMLStrToWStr(childAttr->name);
+                    wstring name = EDSUTIL::XMLStrToWStr(childAttr->name);
                     if (name != L"id")
                     {
                         wstring langType = name;
-                        wstring langValue = XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)WStrToMBCStr(name).c_str()));
+                        wstring langValue = EDSUTIL::XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)WStrToMBCStr(name).c_str()));
                         pair<wstring, wstring> kvp;
                         kvp.first = langType;
                         kvp.second = langValue;
@@ -932,9 +942,9 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 	xmlXPathObjectPtr xpathJS = xmlXPathEvalExpression((xmlChar*)"//Javascript", xpathCtx);
 	xmlXPathObjectPtr xpathPY = xmlXPathEvalExpression((xmlChar*)"//Python", xpathCtx);
 	if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathJS->nodesetval->nodeNr == 1)
-		m_jsCode = XMLStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0])) + L"\n";
+		m_jsCode = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0])) + L"\n";
 	if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathPY->nodesetval->nodeNr == 1)
-		m_pyCode = XMLStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0])) + L"\n";
+		m_pyCode = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0])) + L"\n";
 	
 	xmlXPathFreeObject(xpathJS);
 	xmlXPathFreeObject(xpathPY);
@@ -1146,19 +1156,19 @@ vector<pair<wstring, vector<CRuleCell> > > EDS::CKnowledgeBase::GetTableRowFromX
 			NodeList values = xmlXPathObjValues->nodesetval;
 			Node attrNode = xmlXPathObjAttr->nodesetval->nodeTab[0];
 
-			wstring attrName = XMLStrToWStr(xmlNodeGetContent(attrNode));
+			wstring attrName = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(attrNode));
 			currentAttrRow.first = attrName;
 			if (values != NULL)
 			{
 				for (int j = 0; j < values->nodeNr; j++)
 				{
 					Node currentValue = values->nodeTab[j];
-					wstring wsIDs = XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"id"));
+					wstring wsIDs = EDSUTIL::XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"id"));
 
 					CRuleCell cell;
 					if (wsIDs.length() > 0)
 					{
-						vector<wstring> cellValues = Split(XMLStrToWStr(xmlNodeGetContent(currentValue)), L"|");
+						vector<wstring> cellValues = Split(EDSUTIL::XMLStrToWStr(xmlNodeGetContent(currentValue)), L"|");
 						string sIDs(wsIDs.begin(), wsIDs.end()); //contains numerical so this ok
 						vector<string> ids = Split(sIDs, ",");
 						if (ids.size() != cellValues.size())
@@ -1173,7 +1183,7 @@ vector<pair<wstring, vector<CRuleCell> > > EDS::CKnowledgeBase::GetTableRowFromX
 						}
 					}
 
-					wstring wsOper = XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"operation"));
+					wstring wsOper = EDSUTIL::XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"operation"));
 					long lOper = 0;
 					if (wsOper.length() > 0)
 					{
@@ -1226,7 +1236,7 @@ map<string, vector<string> > EDS::CKnowledgeBase::EvaluateTable(string tableName
 
 vector<string> EDS::CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string outputAttr, std::string param, bool bGetAll)
 {
-	return ToASCIIStringVector(EvaluateTableWithParam(MBCStrToWStr(tableName), MBCStrToWStr(outputAttr), MBCStrToWStr(param), bGetAll));
+	return ToMBCStringVector(EvaluateTableWithParam(MBCStrToWStr(tableName), MBCStrToWStr(outputAttr), MBCStrToWStr(param), bGetAll));
 }
 
 std::map<string, vector<string> > EDS::CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string param, bool bGetAll)
@@ -1235,9 +1245,14 @@ std::map<string, vector<string> > EDS::CKnowledgeBase::EvaluateTableWithParam(st
 	std::map<string, vector<string> > retval;
 	for (std::map<wstring, vector<wstring> >::iterator it = res.begin(); it != res.end(); it++)
 	{
-		retval[ToASCIIString((*it).first)] = ToASCIIStringVector((*it).second);
+		retval[ToASCIIString((*it).first)] = ToMBCStringVector((*it).second);
 	}
 	return retval;
+}
+
+string EDS::CKnowledgeBase::GetFirstTableResult(string tableName, string ouputAttr)
+{
+	return WStrToMBCStr(GetFirstTableResult(MBCStrToWStr(tableName), MBCStrToWStr(ouputAttr)));
 }
 
 vector<string> EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll)
@@ -1246,7 +1261,7 @@ vector<string> EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, strin
 	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
 	table->EnbleDebugging(DebugThisTable(MBCStrToWStr(tableName)));
 	table->SetInputValues(m_GlobalInputAttrsValues);
-	return ToASCIIStringVector(table->EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false));
+	return ToMBCStringVector(table->EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false));
 }
 
 map<string, vector<string> > EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, bool bGetAll)
@@ -1259,12 +1274,16 @@ map<string, vector<string> > EDS::CKnowledgeBase::ReverseEvaluateTable(string ta
 	for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = outputCollection.begin(); itOut != outputCollection.end(); itOut++)
 	{
 		vector<wstring> result = ReverseEvaluateTable(MBCStrToWStr(tableName), (*itOut).first, bGetAll);
-		retval[ToASCIIString((*itOut).first)] = ToASCIIStringVector(result);
+		retval[ToASCIIString((*itOut).first)] = ToMBCStringVector(result);
 	}
 
 	return retval;
 }
 
+string EDS::CKnowledgeBase::GetEvalParameterA() 
+{
+	return WStrToMBCStr(m_StateParameter);
+}
 
 void EDS::CKnowledgeBase::SetInputValues(hash_map<string, size_t> values)
 {
@@ -1289,22 +1308,22 @@ void EDS::CKnowledgeBase::ResetTable(std::string tableName)
 
 vector<string> EDS::CKnowledgeBase::GetInputAttrs(std::string tableName)
 {
-	return ToASCIIStringVector(GetInputAttrs(MBCStrToWStr(tableName)));
+	return ToMBCStringVector(GetInputAttrs(MBCStrToWStr(tableName)));
 }
 
 vector<string> EDS::CKnowledgeBase::GetInputDependencies(std::string tableName)
 {
-	return ToASCIIStringVector(GetInputDependencies(MBCStrToWStr(tableName)));
+	return ToMBCStringVector(GetInputDependencies(MBCStrToWStr(tableName)));
 }
 
 vector<string> EDS::CKnowledgeBase::GetOutputAttrs(std::string tableName)
 {
-	return ToASCIIStringVector(GetOutputAttrs(MBCStrToWStr(tableName)));
+	return ToMBCStringVector(GetOutputAttrs(MBCStrToWStr(tableName)));
 }
 
 vector<string> EDS::CKnowledgeBase::GetAllPossibleOutputs(std::string tableName, std::string outputName)
 {
-	return ToASCIIStringVector(GetAllPossibleOutputs(MBCStrToWStr(tableName), MBCStrToWStr(outputName)));
+	return ToMBCStringVector(GetAllPossibleOutputs(MBCStrToWStr(tableName), MBCStrToWStr(outputName)));
 }
 
 EDS::CKnowledgeBase::CKnowledgeBase(std::string knowledge_file)
