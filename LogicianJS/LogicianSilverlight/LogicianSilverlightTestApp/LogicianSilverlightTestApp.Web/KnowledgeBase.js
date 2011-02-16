@@ -169,6 +169,8 @@ function MakeGUID() {
         ReportError(err);
     }
 }
+
+//flash support////////////////////////////
 var ActiveObjects = new Array(); //for flash access, guid keyed objects
 function GetObject(guid) {
     if (guid in ActiveObjects)
@@ -176,11 +178,11 @@ function GetObject(guid) {
     else
         return null;
 }
-function DestroyObject(guid) {
+function DestroyKnowledgeBaseObject(guid) {
     if (ActiveObjects != null && ActiveObjects[guid] != null)
         delete ActiveObjects[guid];
 }
-function CleanObjects() {
+function CleanKnowledgeBaseObjects() {
     for (var guid in ActiveObjects) {
         DestroyObject(guid)
     }
@@ -188,6 +190,18 @@ function CleanObjects() {
         delete ActiveObjects;
     ActiveObjects = new Array();
 }
+function DictionaryToObjArray(dict) {
+	var objArray = new Array();
+	if (dict != null) for (var key in dict)
+	{
+		var obj = new Object();
+		obj.key = key;
+		obj.values = dict[key];
+		objArray.push(obj);
+	}
+	return objArray;
+}
+///////////////////////////////////////////
 
 //RuleCell/////////////////////////////////////////////////////////////
 function RuleCell()

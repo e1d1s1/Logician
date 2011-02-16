@@ -25,8 +25,8 @@ namespace LogicianSilverlight
 {
     public class ROMNode
     {
-        public ROMNode() { m_ROMNode = null; m_KnowledgeBase = null; CreateROMNode(""); }
-        public ROMNode(ScriptObject o) { m_ROMNode = o; m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); }
+        public ROMNode() { m_ROMNode = null; /*m_KnowledgeBase = null*/; CreateROMNode(""); }
+        public ROMNode(ScriptObject o) { m_ROMNode = o; /*m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase");*/ }
 		public ROMNode(string id) {CreateROMNode(id);}
 		public bool CreateROMNode(string id)
         {
@@ -38,6 +38,7 @@ namespace LogicianSilverlight
             else
                 return false;
         }
+        public bool DestroyROMObject() { return (bool)m_ROMNode.Invoke("DestroyROMObject"); }
         static public implicit operator ScriptObject(ROMNode node) { return node.m_ROMNode; }
 
         //debugger
@@ -66,7 +67,6 @@ namespace LogicianSilverlight
 		public ROMNode			FindObjectByGUID(string guid) {return (ROMNode)m_ROMNode.Invoke("FindObjectByGUID");}
         public bool             AddChildROMObject(ROMNode child) { return (bool)m_ROMNode.Invoke("AddChildROMObject", child.m_ROMNode); }
         public bool             RemoveChildROMObject(ROMNode child) { return (bool)m_ROMNode.Invoke("RemoveChildROMObject", child.m_ROMNode); }
-		public bool				DestroyROMObject() {return (bool)m_ROMNode.Invoke("DestroyROMObject");}
         public ROMNode          Clone() {return (ROMNode)m_ROMNode.Invoke("Clone");}
 
 		//attribute functions
@@ -83,17 +83,22 @@ namespace LogicianSilverlight
 		public string			GetROMObjectValue(string name) {return (string)m_ROMNode.Invoke("GetROMObjectValue", name);}
 		public bool				RemoveROMObjectValue(string name) {return (bool)m_ROMNode.Invoke("RemoveROMObjectValue", name);}
 		public string			GetROMObjectID() {return (string)m_ROMNode.Invoke("GetROMObjectID");}
-		public void				SetROMObjectID(string name) {m_ROMNode.Invoke("SetROMObjectID", name);}
+		public void				SetROMObjectID(string id) {m_ROMNode.Invoke("SetROMObjectID", id);}
 		public string			GetROMGUID() {return (string)m_ROMNode.Invoke("GetROMGUID");}
         public Dictionary<string, Dictionary<string, string>> GetAllAttributes() { return ScriptMarshal.ScriptObjectToDictionaryOfStringDictionary(m_ROMNode.Invoke("GetAllAttributes")); }
 
 		//rules
-        public bool             LoadRules(string knowledge_file) { bool retval = (bool)m_ROMNode.Invoke("LoadRules", knowledge_file); m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); return retval; }
-        public bool             LoadRulesFromString(string xml) { bool retval = (bool)m_ROMNode.Invoke("LoadRulesFromString", xml); m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase"); return retval; }
+        public bool             LoadRules(string knowledge_file) { bool retval = (bool)m_ROMNode.Invoke("LoadRules", knowledge_file); /*m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase");*/ return retval; }
+        public bool             LoadRulesFromString(string xml) { bool retval = (bool)m_ROMNode.Invoke("LoadRulesFromString", xml); /*m_KnowledgeBase = (ScriptObject)m_ROMNode.Invoke("GetKnowledgeBase");*/ return retval; }
         public string[]         EvaluateTable(string evalTable, string output, bool bGetAll) { string[] retval = ScriptMarshal.ScriptObjectToStringArray(m_ROMNode.Invoke("EvaluateTableForAttr", new object[] { evalTable, output, bGetAll })); PumpDebugMessages(); return retval; }
         public string[]         EvaluateTable(string evalTable, string output) { string[] retval = ScriptMarshal.ScriptObjectToStringArray(m_ROMNode.Invoke("EvaluateTableForAttr", new object[] { evalTable, output })); PumpDebugMessages(); return retval; }
         public Dictionary<string, string[]> EvaluateTable(string evalTable, bool bGetAll) { Dictionary<string, string[]> retval = ScriptMarshal.ScriptObjectToDictionaryOfStringArray(m_ROMNode.Invoke("EvaluateTable", new object[] { evalTable, bGetAll })); PumpDebugMessages(); return retval; }
         public Dictionary<string, string[]> EvaluateTable(string evalTable) { Dictionary<string, string[]> retval = ScriptMarshal.ScriptObjectToDictionaryOfStringArray(m_ROMNode.Invoke("EvaluateTable", evalTable)); PumpDebugMessages(); return retval; }
+        public string[] EvaluateTableWithParam(string evalTable, string output, string param, bool bGetAll) { string[] retval = ScriptMarshal.ScriptObjectToStringArray(m_ROMNode.Invoke("EvaluateTableForAttrWithParam", new object[] { evalTable, output, param, bGetAll })); PumpDebugMessages(); return retval; }
+        public string[] EvaluateTableWithParam(string evalTable, string output, string param) { string[] retval = ScriptMarshal.ScriptObjectToStringArray(m_ROMNode.Invoke("EvaluateTableForAttWithParamr", new object[] { evalTable, output, param })); PumpDebugMessages(); return retval; }
+        public Dictionary<string, string[]> EvaluateTableWithParam(string evalTable, string param, bool bGetAll) { Dictionary<string, string[]> retval = ScriptMarshal.ScriptObjectToDictionaryOfStringArray(m_ROMNode.Invoke("EvaluateTableWithParam", new object[] { evalTable, param, bGetAll })); PumpDebugMessages(); return retval; }
+        public Dictionary<string, string[]> EvaluateTableWithParam(string evalTable, string param) { Dictionary<string, string[]> retval = ScriptMarshal.ScriptObjectToDictionaryOfStringArray(m_ROMNode.Invoke("EvaluateTableWithParam", new object[] {evalTable, param})); PumpDebugMessages(); return retval; }
+        public string           GetEvalParameter() { return (string)m_ROMNode.Invoke("GetEvalParameter");}
         public string           GetFirstTableResult(string evalTable, string output) { string retval = (string)m_ROMNode.Invoke("GetFirstTableResult", new object[] { evalTable, output }); PumpDebugMessages(); return retval; }
 
 		//IO
@@ -108,6 +113,6 @@ namespace LogicianSilverlight
 
         //private members
 		private ScriptObject	m_ROMNode;
-        private ScriptObject    m_KnowledgeBase;
+        //private ScriptObject    m_KnowledgeBase;
     }
 }
