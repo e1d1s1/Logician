@@ -359,16 +359,7 @@ namespace ROMNET
 			PumpDebugMessages();
 		}		
 		return retval;
-	}
-
-	String^ ROMNode::GetFirstTableResult(String^ evalTable, String^ output)
-	{
-		String^ retval = gcnew String("");
-		array<String^>^ resAll = EvaluateTable(evalTable, output);
-		if (resAll != nullptr && resAll->Length > 0)
-			retval = resAll[0];
-		return retval;
-	}
+	}	
 
 	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTable(String^ evalTable)
 	{
@@ -380,6 +371,84 @@ namespace ROMNET
 			retval = GetDictionaryFromMapStrings(res);
 			PumpDebugMessages();
 		}		
+		return retval;
+	}
+
+	array<String^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, String^ output, String^ param, bool bGetAll)
+	{
+		array<String^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			wstring wsTable = MarshalString(evalTable);
+			wstring wsOutput = MarshalString(output);
+			wstring par = MarshalString(param);
+			vector<wstring> res = m_ROMNode->EvaluateTableWithParam(wsTable, wsOutput, par, bGetAll);
+			retval = GetArrayFromVectorStrings(res);
+			PumpDebugMessages();
+		}
+		return retval;
+	}
+
+	array<String^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, String^ output, String^ param)
+	{
+		array<String^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			wstring wsTable = MarshalString(evalTable);
+			wstring wsOutput = MarshalString(output);
+			wstring par = MarshalString(param);
+			vector<wstring> res = m_ROMNode->EvaluateTableWithParam(wsTable, wsOutput, par);
+			retval = GetArrayFromVectorStrings(res);
+			PumpDebugMessages();
+		}
+		return retval;
+	}
+
+	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, String^ param, bool bGetAll)
+	{
+		Dictionary<String^, array<String^>^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			wstring wsTable = MarshalString(evalTable);
+			wstring par = MarshalString(param);
+			map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTableWithParam(wsTable, par, bGetAll);
+			retval = GetDictionaryFromMapStrings(res);
+			PumpDebugMessages();
+		}		
+		return retval;
+	}	
+
+	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, String^ param)
+	{
+		Dictionary<String^, array<String^>^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			wstring wsTable = MarshalString(evalTable);
+			wstring par = MarshalString(param);
+			map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTableWithParam(wsTable, par);
+			retval = GetDictionaryFromMapStrings(res);
+			PumpDebugMessages();
+		}		
+		return retval;
+	}
+
+	String^ ROMNode::GetEvalParameter()
+	{
+		String^ retval = gcnew String("");
+		if (m_ROMNode)
+		{
+			wstring res = m_ROMNode->GetEvalParameter();
+			retval = gcnew String(res.c_str());
+		}
+		return retval;
+	}
+
+	String^ ROMNode::GetFirstTableResult(String^ evalTable, String^ output)
+	{
+		String^ retval = gcnew String("");
+		array<String^>^ resAll = EvaluateTable(evalTable, output);
+		if (resAll != nullptr && resAll->Length > 0)
+			retval = resAll[0];
 		return retval;
 	}
 

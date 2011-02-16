@@ -229,7 +229,7 @@ namespace ROM
 
 	void LinearEngine::EvalBoolean(std::wstring dictAttrName, std::wstring newValue)
 	{
-		vector<wstring> res = m_ROMContext->EvaluateTableForAttr(m_dict[dictAttrName].RuleTable, dictAttrName, false);
+		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName, false);
 		vector<wstring> availableValues;
 
 		vector<wstring> prefixes = ParseOutPrefixes(res, availableValues);
@@ -292,7 +292,7 @@ namespace ROM
 
 	void LinearEngine::EvalEdit(std::wstring dictAttrName, std::wstring newValue)
 	{
-		vector<wstring> res = m_ROMContext->EvaluateTableForAttr(m_dict[dictAttrName].RuleTable, dictAttrName);
+		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
 
 		vector<wstring> prefixes = ParseOutPrefixes(res, availableValues);
@@ -408,7 +408,7 @@ namespace ROM
 	void LinearEngine::EvalMultiSelect(std::wstring dictAttrName, vector<wstring> newValues)
 	{
 		//multi-select lists, checkbox lists
-		vector<wstring> res = m_ROMContext->EvaluateTableForAttr(m_dict[dictAttrName].RuleTable, dictAttrName);
+		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
 		m_dict[dictAttrName].Enabled = true;
 		m_dict[dictAttrName].Valid = true;
@@ -479,7 +479,7 @@ namespace ROM
 	//drop down list, radio button groups, etc
 	void LinearEngine::EvalSingleSelect(wstring dictAttrName, wstring newValue)
 	{
-		vector<wstring> res = m_ROMContext->EvaluateTableForAttr(m_dict[dictAttrName].RuleTable, dictAttrName);
+		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
 		m_dict[dictAttrName].Enabled = true;
 		m_dict[dictAttrName].Valid = true;

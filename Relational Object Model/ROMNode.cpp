@@ -519,6 +519,67 @@ map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable)
 	return retval;
 }
 
+
+
+vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring output, wstring param, bool bGetAll)
+{
+	vector<wstring> retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		LoadInputs(evalTable);
+		retval = knowledge->EvaluateTableWithParam(evalTable, output, param, bGetAll);
+	}
+	return retval;
+}
+
+vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring output, wstring param)
+{
+	vector<wstring> retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		LoadInputs(evalTable);
+		retval = knowledge->EvaluateTableWithParam(evalTable, output, param);
+	}
+	return retval;
+}
+
+map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable, wstring param, bool bGetAll)
+{
+	map<wstring, vector<wstring> > retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		LoadInputs(evalTable);
+		retval = knowledge->EvaluateTableWithParam(evalTable, param, bGetAll);
+	}
+	return retval;
+}
+
+map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable, wstring param)
+{
+	map<wstring, vector<wstring> > retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		LoadInputs(evalTable);
+		retval = knowledge->EvaluateTableWithParam(evalTable, param);
+	}
+	return retval;
+}
+
+wstring ROMNode::GetEvalParameter()
+{
+	wstring retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		retval = knowledge->GetEvalParameter();
+	}
+	return retval;
+}
+
 wstring ROMNode::GetFirstTableResult(wstring tableName, wstring output)
 {
 	wstring retval = L"";

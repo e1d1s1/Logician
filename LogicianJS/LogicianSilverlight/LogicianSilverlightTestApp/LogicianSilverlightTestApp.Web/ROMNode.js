@@ -74,6 +74,7 @@ function MakeGUID() {
         ReportError(err);
     }
 }
+// flash support //////////////////////////////////////////////////////////////
 var ActiveROMObjects = new Array(); //for flash access, guid keyed objects
 var ActiveROMDictObjects = new Array();
 var ActiveEngineObjects = new Array();
@@ -133,6 +134,35 @@ function CleanEngineObjects() {
         delete ActiveEngineObjects;
     ActiveEngineObjects = new Array();
 }
+function DictionaryToObjArray(dict) {
+	var objArray = new Array();
+	if (dict != null) for (var key in dict)
+	{
+		var obj = new Object();
+		obj.key = key;
+		obj.values = dict[key];
+		objArray.push(obj);
+	}
+	return objArray;
+}
+function AttributeDictionaryToObjArray(dict) {
+	var objArray = new Array();
+	if (dict != null) for (var key in dict)
+	{
+		var obj = new Object();
+		obj.key = key;
+		var attrValuePairs = new Array();
+		for (var name in obj[key])
+		{
+			attrValuePairs.push(name);
+			attrValuePairs.push(obj[key][name]);
+		}
+		objArray.values = attrValuePairs;
+		objArray.push(obj);
+	}
+	return objArray;
+}
+//////////////////////////////////////////////////////////
 
 var ATTRIBUTE_NODE = "Attribute";
 var OBJECT_NODE = "Object";
@@ -688,7 +718,57 @@ function ROMNode(id) {
             ReportError(err);
             return null;
         }
+    }	
+	
+	this.EvaluateTableForAttrWithParam = function (evalTable, output, param, bGetAll) {
+        try {
+            var knowledge = this._getKnowledge();
+            if (knowledge != null) {
+                if (bGetAll === undefined)
+                    bGetAll = knowledge.TableIsGetAll(evalTable);
+                this.LoadInputs(evalTable);
+                var retval = knowledge.EvaluateTableForAttrWithParam(evalTable, output, param, bGetAll);
+                return retval;
+            }
+        }
+        catch (err) {
+            ReportError(err);
+            return null;
+        }
     }
+
+    this.EvaluateTableWithParam = function (evalTable, param, bGetAll) {
+        try {
+            var knowledge = this._getKnowledge();
+            if (knowledge != null) {
+                if (bGetAll === undefined)
+                    bGetAll = knowledge.TableIsGetAll(evalTable);
+                this.LoadInputs(evalTable);
+                var retval = knowledge.EvaluateTableWithParam(evalTable, param, bGetAll);
+                return retval;
+            }
+        }
+        catch (err) {
+            ReportError(err);
+            return null;
+        }
+    }
+	
+	this.GetEvalParameter = function()
+	{
+		try
+		{
+			var knowledge = this._getKnowledge();
+            if (knowledge != null) {
+				var retval = knowledge.GetEvalParameter();
+				return retval;
+			}
+		}
+		catch(err) {
+			ReportError(err);
+            return null;
+		}
+	}
 	
 	this.GetFirstTableResult = function(tableName, outputAttr)
 	{

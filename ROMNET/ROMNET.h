@@ -122,6 +122,11 @@ namespace ROMNET {
 		array<String^>^		EvaluateTable(String^ evalTable, String^ output);
 		Dictionary<String^, array<String^>^>^ EvaluateTable(String^ evalTable, bool bGetAll);
 		Dictionary<String^, array<String^>^>^ EvaluateTable(String^ evalTable);
+		array<String^>^		EvaluateTableWithParam(String^ evalTable, String^ output, String^ param, bool bGetAll);
+		array<String^>^		EvaluateTableWithParam(String^ evalTable, String^ output, String^ param);
+		Dictionary<String^, array<String^>^>^ EvaluateTableWithParam(String^ evalTable, String^ param, bool bGetAll);
+		Dictionary<String^, array<String^>^>^ EvaluateTableWithParam(String^ evalTable, String^ param);
+		String^				GetEvalParameter();
 		String^				GetFirstTableResult(String^ tableName, String^ output);
 		array<String^>^		ReverseEvaluateTable(String^ evalTable, String^ output, bool bGetAll);
 		array<String^>^		ReverseEvaluateTable(String^ evalTable, String^ output);
