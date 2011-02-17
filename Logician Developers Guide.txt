@@ -357,7 +357,7 @@ FindObjectByGUID - Obtains a child node with the give guid.  Will search over al
 	Javascript:
 		ROMNode FindObjectByGUID(guid);	
 		
-AddChildROMObject - Addes a child object to the current object context.  Returns true on success.
+AddChildROMObject - Adds a child object to the current object context.  Returns true on success.
 	C++:
 		bool AddChildROMObject(ROMNode *child);
 	C#:
@@ -372,6 +372,38 @@ RemoveChildROMObject - Removes a given child from the currrent object context's 
 		bool RemoveChildROMObject(ROMNode child);
 	Javascript:
 		boolean RemoveChildROMObject(ROMNode child);
+
+GetAllFriends - Returns a collection of associated objects
+	C++:
+		vector<ROMNode*> GetAllFriends ();
+	C#:
+		array<ROMNode> GetAllFriends ();
+	Javascript:
+		array GetAllFriends ();
+
+AddFriend - Creates an association between object contexts.  Returns true on success.
+	C++:
+		bool AddFriend(ROMNode *friend);
+	C#:
+		bool AddFriend(ROMNode friend);
+	Javascript:
+		boolean AddFriend(ROMNode friend);
+		
+RemoveFriend - Removes an association between 2 object contexts.  Returns true on success.
+	C++:
+		bool RemoveFriend(ROMNode *friend);
+	C#:
+		bool RemoveFriend(ROMNode friend);
+	Javascript:
+		boolean RemoveFriend(ROMNode friend);
+
+RemoveAllFriends - Removes all associations between this object and all its previously defined "friends".  Returns true on success.
+	C++:
+		bool RemoveAllFriends();
+	C#:
+		bool RemoveAllFriends();
+	Javascript:
+		boolean RemoveAllFriends();
 		
 Clone - Make an exact duplicate of the current object, including any sub-objects.  It will, however, be given a new GUID.
 	C++:

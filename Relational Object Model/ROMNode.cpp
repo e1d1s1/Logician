@@ -134,6 +134,7 @@ bool ROMNode::AddFriend(ROMNode *friendObj)
 		if (it == m_friends.end())
 		{
 			m_friends.push_back(friendObj);
+			friendObj->m_friends.push_back(this);
 			m_bChanged = true;
 			return true;
 		}
@@ -151,7 +152,9 @@ bool ROMNode::RemoveFriend(ROMNode *friendObj)
 		vector<ROMNode*>::iterator it = find(m_friends.begin(), m_friends.end(), friendObj);
 		if (it != m_friends.end())
 		{
-			friendObj->RemoveFriend(this);
+			vector<ROMNode*>::iterator it2 = find(friendObj->m_friends.begin(), friendObj->m_friends.end(), this);
+			if (it2 != friendObj->m_friends.end())
+				friendObj->m_friends.erase(it2);
 			m_friends.erase(it);
 			retval = true;
 			m_bChanged = retval;
