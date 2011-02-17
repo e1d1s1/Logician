@@ -94,6 +94,7 @@ namespace ROMNET {
 		ROMNode^			FindObjectByGUID(String^ guid);
 		bool				AddChildROMObject(ROMNode^ child);
 		bool				RemoveChildROMObject(ROMNode^ child);
+		bool				RemoveFromParent();
 		array<ROMNode^>^	GetAllFriends();
 		bool				AddFriend(ROMNode^ friendObj);
 		bool				RemoveFriend(ROMNode^ friendObj);
