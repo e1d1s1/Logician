@@ -67,6 +67,10 @@ namespace LogicianSilverlight
 		public ROMNode			FindObjectByGUID(string guid) {return (ROMNode)m_ROMNode.Invoke("FindObjectByGUID");}
         public bool             AddChildROMObject(ROMNode child) { return (bool)m_ROMNode.Invoke("AddChildROMObject", child.m_ROMNode); }
         public bool             RemoveChildROMObject(ROMNode child) { return (bool)m_ROMNode.Invoke("RemoveChildROMObject", child.m_ROMNode); }
+        public ROMNode[]        GetAllFriends() { return ScriptMarshal.ScriptObjectToROMArray(m_ROMNode.Invoke("GetAllFriends")); }
+        public bool             AddFriend(ROMNode friendObj) { return (bool)m_ROMNode.Invoke("AddFriend", friendObj.m_ROMNode); }
+        public bool             RemoveFriend(ROMNode friendObj) { return (bool)m_ROMNode.Invoke("RemoveFriend", friendObj.m_ROMNode); }
+        public bool             RemoveAllFriends() { return (bool)m_ROMNode.Invoke("RemoveAllFriends"); }        
         public ROMNode          Clone() {return (ROMNode)m_ROMNode.Invoke("Clone");}
 
 		//attribute functions

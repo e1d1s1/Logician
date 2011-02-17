@@ -67,6 +67,10 @@ namespace ROM
 		ROMNode*			FindObjectByGUID(wstring guid){return FindObjectByGUID(ToASCIIString(guid));}
 		bool				AddChildROMObject(ROMNode *child);
 		bool				RemoveChildROMObject(ROMNode *child);
+		vector<ROMNode*>	GetAllFriends();
+		bool				AddFriend(ROMNode *friendObj);
+		bool				RemoveFriend(ROMNode *friendObj);
+		bool				RemoveAllFriends();
 		bool				DestroyROMObject();
 		ROMNode*			Clone();
 
@@ -172,6 +176,7 @@ namespace ROM
 		wstring m_lastContents;
 		wstring m_lastAttrContents;		
 		vector<ROMNode*> m_children;
+		vector<ROMNode*> m_friends;
 		ROMNode* m_parent;
 		FASTMAP_MAPS m_attrs;
 		FASTMAP m_nodeValues;
