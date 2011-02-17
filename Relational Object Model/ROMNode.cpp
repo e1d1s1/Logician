@@ -121,6 +121,56 @@ vector<ROMNode*> ROMNode::GetAllChildren(bool recurs)
 	return retval;
 }
 
+vector<ROMNode*> ROMNode::GetAllFriends()
+{
+	return m_friends;
+}
+
+bool ROMNode::AddFriend(ROMNode *friendObj)
+{
+	if (friendObj)
+	{
+		vector<ROMNode*>::iterator it = find(m_friends.begin(), m_friends.end(), friendObj);
+		if (it == m_friends.end())
+		{
+			m_friends.push_back(friendObj);
+			m_bChanged = true;
+			return true;
+		}
+		return false;		
+	}
+	else
+		return false;
+}
+
+bool ROMNode::RemoveFriend(ROMNode *friendObj)
+{
+	bool retval = false;
+	if (friendObj)
+	{
+		vector<ROMNode*>::iterator it = find(m_friends.begin(), m_friends.end(), friendObj);
+		if (it != m_friends.end())
+		{
+			friendObj->RemoveFriend(this);
+			m_friends.erase(it);
+			retval = true;
+			m_bChanged = retval;
+		}
+	}
+	
+	return retval;
+}
+
+bool ROMNode::RemoveAllFriends()
+{
+	bool retval = false;
+	for (vector<ROMNode*>::iterator it = m_friends.begin(); it != m_friends.end(); it++)
+	{
+		retval = RemoveFriend(*it);
+	}	
+	return retval;
+}
+
 vector<ROMNode*> ROMNode::FindAllObjectsByID(wstring id, bool recurs)
 {
 	vector<ROMNode*> retval;
@@ -152,6 +202,16 @@ bool ROMNode::DestroyROMObject()
 	if (m_parent != NULL)
 	{
 		retval = m_parent->RemoveChildROMObject(this);
+	}
+
+	//clear friends
+	for (vector<ROMNode*>::iterator it = m_friends.begin(); it != m_friends.end(); it++)
+	{
+		ROMNode* friendNode = *it;
+		if (friendNode)
+		{
+			friendNode->RemoveFriend(this);
+		}
 	}
 
 	m_attrs.clear();

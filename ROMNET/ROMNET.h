@@ -89,11 +89,15 @@ namespace ROMNET {
 		ROMNode^			GetRoot();
 		ROMNode^			Parent();
 		array<ROMNode^>^	GetAllChildren(bool recurs);
-		array<ROMNode^>^ FindObjects(String^ xpath);
-		array<ROMNode^>^ FindAllObjectsByID(String^ id, bool recurs);
+		array<ROMNode^>^	FindObjects(String^ xpath);
+		array<ROMNode^>^	FindAllObjectsByID(String^ id, bool recurs);
 		ROMNode^			FindObjectByGUID(String^ guid);
 		bool				AddChildROMObject(ROMNode^ child);
 		bool				RemoveChildROMObject(ROMNode^ child);
+		array<ROMNode^>^	GetAllFriends();
+		bool				AddFriend(ROMNode^ friendObj);
+		bool				RemoveFriend(ROMNode^ friendObj);
+		bool				RemoveAllFriends();
 		bool				DestroyROMObject();
 		ROMNode^			Clone();
 

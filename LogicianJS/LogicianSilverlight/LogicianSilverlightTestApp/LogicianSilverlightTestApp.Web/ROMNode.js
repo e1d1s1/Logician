@@ -80,9 +80,44 @@ var ActiveROMDictObjects = new Array();
 var ActiveEngineObjects = new Array();
 function GetROMObject(guid) {
     if (guid in ActiveROMObjects)
-        return ActiveROMObjects[guid];
+        return ActiveROMObjects[guid];	
     else
         return null;
+}
+function GetROMObjectGenericGUID(guid) {
+	var ROM = null;
+    if (guid in ActiveROMObjects)
+        ROM = ActiveROMObjects[guid];	
+
+	if (ROM != null)
+	{
+		var obj = new Object();
+		obj.m_id = ROM.m_id;
+		obj.m_guid = ROM.m_guid;
+		return obj;
+	}
+	return null;
+}
+function GetROMObjectGeneric(obj) {
+	if (obj != null)
+	{
+		if (obj.m_guid != null)
+			return GetROMObjectGenericGUID(obj.m_guid);
+	}
+	return null;
+}
+
+function GetROMObjectArray(arr)
+{
+	var retval = new Array();
+	for (var idx in arr)
+	{
+		var obj = new Object();
+		obj.m_id = arr[idx].m_id;
+		obj.m_guid = arr[idx].m_guid;
+		retval.push(obj);
+	}
+	return retval;
 }
 function DestroyROMObject(guid) {
     if (ActiveROMObjects != null && ActiveROMObjects[guid] != null)
@@ -152,12 +187,13 @@ function AttributeDictionaryToObjArray(dict) {
 		var obj = new Object();
 		obj.key = key;
 		var attrValuePairs = new Array();
-		for (var name in obj[key])
+		var kvp = dict[key];
+		for (var name in kvp)
 		{
 			attrValuePairs.push(name);
-			attrValuePairs.push(obj[key][name]);
+			attrValuePairs.push(kvp[name]);
 		}
-		objArray.values = attrValuePairs;
+		obj.values = attrValuePairs;
 		objArray.push(obj);
 	}
 	return objArray;
@@ -171,9 +207,9 @@ var XSLT_BOTTOM = "\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
 function CreateROMNode(id) {
     if (id === undefined)
         id = "";
-
+		
     var retval = new ROMNode(id);
-    ActiveROMObjects[retval.m_id] = retval;
+    ActiveROMObjects[retval.m_guid] = retval;
     return retval;
 }
 
@@ -185,6 +221,7 @@ function ROMNode(id) {
     this.m_guid = MakeGUID();
     this.m_parent = null;
     this.m_children = new Array();
+	this.m_friends = new Array();
     this.m_bChanged = true;
     this.m_lastContents = "";
     this.m_lastAttrContents = "";
@@ -226,6 +263,27 @@ function ROMNode(id) {
         }
         return false;
     }
+	
+	this.AddFriend = function (friendObj) {
+        try {
+            if (friendObj != null) {
+				var i = GetIndexOfItem(this.m_friends, friendObj);
+				if (i < 0)
+				{
+					this.m_friends.push(friendObj);
+					return true;
+				}
+            }
+        }
+        catch (err) {
+            ReportError(err);
+        }
+        return false;
+    }
+	
+	this.GetAllFriends = function() {
+		return this.m_friends;
+	}
 
     this._findObjects = function (id, recurs, resObject) {
         for (var child in this.m_children) {
@@ -307,7 +365,7 @@ function ROMNode(id) {
     this.FindAllObjectsByID = function (id, recurs) {
         var retval = new Array();
         try {
-            if (this.m_id == id && resObject != null)
+            if (this.m_id == id)
                 retval.push(this);
             this._findObjects(id, recurs, retval);
         }
@@ -369,6 +427,40 @@ function ROMNode(id) {
         }
         return retval;
     }
+	
+	this.RemoveFriend = function (friendObj) {
+        var retval = false;
+        try {
+			if (friendObj != null)
+				{
+				var i = GetIndexOfItem(this.m_friends, friendObj);
+				if (i >= 0) {
+					friendObj.RemoveFriend(this);
+					this.m_friends.splice(i, 1);
+					retval = true;
+				}
+				this.m_bChanged = retval;
+			}
+        }
+        catch (err) {
+            ReportError(err);
+        }
+        return retval;
+    }
+	
+	this.RemoveAllFriends = function () {
+        var retval = false;
+        try {			
+			for (var i = 0; i < this.m_friends.length; i++)
+			{
+				retval = this.RemoveFriend(this.m_friends[i]);
+			}				
+		}        
+        catch (err) {
+            ReportError(err);
+        }
+        return retval;
+    }
 
     this.DestroyROMObject = function () {
         var retval = true;
@@ -377,6 +469,15 @@ function ROMNode(id) {
             if (this.m_parent != null) {
                 retval = this.m_parent.RemoveChildROMObject(this);
             }
+			
+			//clean friends
+			for (var i = this.m_friends.length - 1; i >= 0; i--) {
+				var friendNode = this.m_friends[i];
+				if (friendNode != null)
+				{
+					friendNode.RemoveFriend(this);
+				}
+			}
 
             if (this.m_attrs != null)
                 delete this.m_attrs;

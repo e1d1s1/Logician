@@ -134,6 +134,47 @@ namespace ROMNET
 		return retval;
 	}
 
+	array<ROMNode^>^ ROMNode::GetAllFriends()
+	{
+		array<ROMNode^>^ retval = nullptr;
+		if (m_ROMNode)
+		{
+			vector<ROM::ROMNode*> vFriends = m_ROMNode->GetAllFriends();
+			retval = GetArrayFromVectorROM(vFriends);
+		}
+		return retval;
+	}
+
+	bool ROMNode::AddFriend(ROMNode^ friendObj)
+	{
+		bool retval = false;
+		if (m_ROMNode)
+		{
+			retval = m_ROMNode->AddFriend(friendObj->m_ROMNode);
+		}
+		return retval;
+	}
+
+	bool ROMNode::RemoveFriend(ROMNode^ friendObj)
+	{
+		bool retval = false;
+		if (m_ROMNode)
+		{
+			retval = m_ROMNode->RemoveFriend(friendObj->m_ROMNode);
+		}
+		return retval;
+	}
+
+	bool ROMNode::RemoveAllFriends()
+	{
+		bool retval = false;
+		if (m_ROMNode)
+		{
+			retval = m_ROMNode->RemoveAllFriends();
+		}
+		return retval;
+	}
+
 	bool ROMNode::DestroyROMObject()
 	{
 		bool retval = false;
