@@ -427,6 +427,18 @@ function ROMNode(id) {
         }
         return retval;
     }
+
+    this.RemoveFromParent = function() {
+        try {
+            if (this.m_parent != null) {
+                return this.m_parent.RemoveChildROMObject(this);
+            }
+        }
+        catch (err) {
+            ReportError(err);
+        }
+        return false;
+    }
 	
 	this.RemoveFriend = function (friendObj) {
         var retval = false;

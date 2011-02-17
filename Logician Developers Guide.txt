@@ -373,6 +373,14 @@ RemoveChildROMObject - Removes a given child from the currrent object context's 
 	Javascript:
 		boolean RemoveChildROMObject(ROMNode child);
 
+RemoveFromParent - Same as RemoveChildROMObject, but called from the child's context.
+	C++:
+		bool RemoveFromParent();
+	C#:
+		bool RemoveFromParent();
+	Javascript:
+		boolean RemoveFromParent();
+
 GetAllFriends - Returns a collection of associated objects
 	C++:
 		vector<ROMNode*> GetAllFriends ();

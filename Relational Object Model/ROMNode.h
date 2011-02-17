@@ -67,6 +67,7 @@ namespace ROM
 		ROMNode*			FindObjectByGUID(wstring guid){return FindObjectByGUID(ToASCIIString(guid));}
 		bool				AddChildROMObject(ROMNode *child);
 		bool				RemoveChildROMObject(ROMNode *child);
+		bool				RemoveFromParent();
 		vector<ROMNode*>	GetAllFriends();
 		bool				AddFriend(ROMNode *friendObj);
 		bool				RemoveFriend(ROMNode *friendObj);

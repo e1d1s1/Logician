@@ -134,6 +134,15 @@ namespace ROMNET
 		return retval;
 	}
 
+	bool ROMNode::RemoveFromParent()
+	{
+		if (m_ROMNode)
+		{
+			return m_ROMNode->RemoveFromParent();
+		}
+		return false;
+	}
+
 	array<ROMNode^>^ ROMNode::GetAllFriends()
 	{
 		array<ROMNode^>^ retval = nullptr;

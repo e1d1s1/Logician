@@ -110,6 +110,15 @@ bool ROMNode::RemoveChildROMObject(ROMNode *child)
 	return retval;
 }
 
+bool ROMNode::RemoveFromParent()
+{
+	if (m_parent != NULL)
+	{
+		return m_parent->RemoveChildROMObject(this);
+	}
+	return false;
+}
+
 vector<ROMNode*> ROMNode::GetAllChildren(bool recurs)
 {
 	vector<ROMNode*> retval;
