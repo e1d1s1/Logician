@@ -435,7 +435,9 @@ function ROMNode(id) {
 				{
 				var i = GetIndexOfItem(this.m_friends, friendObj);
 				if (i >= 0) {
-					friendObj.RemoveFriend(this);
+					var i2 = GetIndexOfItem(friendObj.m_friends, this);
+					if (i2 >= 0)
+						friendObj.m_friends.splice(i2, 1);
 					this.m_friends.splice(i, 1);
 					retval = true;
 				}
