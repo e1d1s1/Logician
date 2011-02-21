@@ -76,6 +76,7 @@ function MakeGUID() {
 }
 // flash support //////////////////////////////////////////////////////////////
 var ActiveROMObjects = new Array(); //for flash access, guid keyed objects
+var ActiveROMDictionaryAttributes = new Array();
 var ActiveROMDictObjects = new Array();
 var ActiveEngineObjects = new Array();
 function GetROMObject(guid) {
@@ -130,6 +131,49 @@ function CleanROMObjects() {
     if (ActiveROMObjects != null) 
         delete ActiveROMObjects;
     ActiveROMObjects = new Array();
+}
+
+function GetROMDictAttrObject(guid) {
+    if (guid in ActiveROMDictObjects)
+        return ActiveROMDictionaryAttributes[guid];
+    else
+        return null;
+}
+function GetROMDictAttrArray(arr)
+{
+	var retval = new Array();
+	for (var idx in arr)
+	{
+		var obj = new Object();
+		obj.Name = arr[idx].Name;
+		obj.Description = arr[idx].Description;
+		obj.DefaultValue = arr[idx].DefaultValue;
+		obj.RuleTable = arr[idx].RuleTable;		
+		obj.AttributeType = arr[idx].AttributeType;
+		obj.ValueChanged = arr[idx].ValueChanged;
+		obj.ChangedByUser = arr[idx].ChangedByUser;
+		obj.Valid = arr[idx].Valid;
+		obj.Visible = arr[idx].Visible;
+		obj.Enabled = arr[idx].Enabled;
+		obj.PossibleValues = arr[idx].PossibleValues;
+		obj.AvailableValues = arr[idx].AvailableValues;		
+		obj.m_guid = arr[idx].m_guid;
+		retval.push(obj);
+	}
+	return retval;
+}
+
+function DestroyROMDictAttrObject(guid) {
+    if (ActiveROMDictionaryAttributes != null && ActiveROMDictionaryAttributes[guid] != null)
+        delete ActiveROMDictionaryAttributes[guid];
+}
+function CleanROMDictAttrObjects() {
+    for (var guid in ActiveROMDictionaryAttributes) {
+        DestroyROMDictObject(guid)
+    }
+    if (ActiveROMDictionaryAttributes != null) 
+        delete ActiveROMDictionaryAttributes;
+    ActiveROMDictionaryAttributes = new Array();
 }
 
 function GetROMDictObject(guid) {
@@ -1345,25 +1389,37 @@ function ROMDictionaryAttribute() {
     this.Visible = true;
     this.Enabled = true;
     this.PossibleValues = new Array();
-    this.AvailableValues = new Array();
+    this.AvailableValues = new Array();	
+	this.m_guid = MakeGUID();
 }
 
 function CreateROMDictionaryAttribute() {
     var dictAttr = new ROMDictionaryAttribute();
+	ActiveROMDictionaryAttributes[dictAttr.m_guid] = dictAttr;
     return dictAttr;
 }
 
 // ROMDictionary class////////////////////////////////////////////////////////////////
 function CreateROMDictionary(node) {
-    var dict = new ROMDictionary(node);
-    ActiveROMDictObjects[dict.m_id] = dict;
+    
+	var dict = new ROMDictionary(node);    
+	ActiveROMDictObjects[dict.m_guid] = dict;
     return dict;
+}
+
+function CreateROMDictionaryByGUID(guid) {
+	var objNode = GetROMObject(guid);
+	var dict = CreateROMDictionary(objNode);	
+	if (dict != null)
+		return dict.m_guid;
+	else 
+		return null;
 }
 
 function ROMDictionary(node) {
     this.m_context = node;
     this.m_dict = new Array();
-    this.m_id = MakeGUID();
+    this.m_guid = MakeGUID();
 
     this.GenerateTableDebugMessages = function (bGenerate) {
         try {
@@ -1467,6 +1523,22 @@ function ROMDictionary(node) {
 }
 
 // LinearEngine class////////////////////////////////////////////////////////////////
+function CreateLinearEngine(context, dictionaryTable) {
+
+    var engine = new LinearEngine(context, dictionaryTable);
+    ActiveEngineObjects[engine.m_guid] = engine;
+    return engine;
+}
+
+function CreateLinearEngineByGUID(guid, dictionaryTable) {
+	var objNode = GetROMObject(guid);
+	var dict = CreateLinearEngine(objNode, dictionaryTable);	
+	if (dict != null)
+		return dict.m_guid;
+	else 
+		return null;
+}
+
 function LinearEngine(context, dictionaryTable) {
     this.INVISPREFIX = "^";
     this.DEFAULTPREFIX = "@";
@@ -1480,7 +1552,7 @@ function LinearEngine(context, dictionaryTable) {
     this.m_EvalListRecursChecker = new Array();
     this.m_EvalInternal = false;
     this.m_EvalListRecursChecker = null;
-    this.m_id = this.base.m_id;
+    this.m_guid = this.base.m_guid;
 
     try {
 
@@ -2138,11 +2210,4 @@ function LinearEngine(context, dictionaryTable) {
         ReportError(err);
     }
     return this;
-}
-
-function CreateLinearEngine(context, dictionaryTable) {
-
-    var engine = new LinearEngine(context, dictionaryTable);
-    ActiveEngineObjects[engine.m_id] = engine;
-    return engine;
 }

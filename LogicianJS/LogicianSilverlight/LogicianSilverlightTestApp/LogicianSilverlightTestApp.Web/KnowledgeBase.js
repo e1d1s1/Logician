@@ -1406,7 +1406,7 @@ function CreateKnowledgeBase(xmlPath) {
 		if (xmlPath === undefined)
 			return false;
 		var retval = new KnowledgeBase(xmlPath);
-		ActiveObjects[retval.m_id] = retval;	
+		ActiveObjects[retval.m_guid] = retval;	
 		return retval;
 	}
 	catch(error)
@@ -1423,7 +1423,7 @@ function CreateKnowledgeBaseFromString(xml) {
     var retval = new KnowledgeBase();
     xmlDoc = loadXMLDocString(xml);
     retval._parseXML(xmlDoc);
-    ActiveObjects[retval.m_id] = retval;
+    ActiveObjects[retval.m_guid] = retval;
     return retval;
 }
 
@@ -1443,7 +1443,7 @@ function KnowledgeBase(xmlPath) {
         this.m_DebugHandlerFunct = null;
         this.m_bGenerateMsg = false;
         this.m_LastDebugMessage = "";
-        this.m_id = MakeGUID();
+        this.m_guid = MakeGUID();
 
         this._parseXML = function(xmlDoc)
         {    
