@@ -85,6 +85,19 @@ function GetROMObject(guid) {
     else
         return null;
 }
+function UpdateROMGUID(guid) {
+	var ROM = null;
+	if (guid in ActiveROMObjects)
+		ROM = ActiveROMObjects[guid];
+	
+	if (ROM != null)
+	{
+		ActiveROMObjects[ROM.m_guid] = ROM;
+		return ROM.m_guid;
+	}
+	else
+		return guid;
+}
 function GetROMObjectGenericGUID(guid) {
 	var ROM = null;
     if (guid in ActiveROMObjects)
@@ -242,6 +255,49 @@ function AttributeDictionaryToObjArray(dict) {
 	}
 	return objArray;
 }
+
+function decodeFromHex(str){
+	var r="";
+	var e=str.length;
+	var s;
+	while(e>=0){
+		s=e-3;
+		r=String.fromCharCode("0x"+str.substring(s,e))+r;
+		e=s;
+	}
+	//return r.substr(1, r.length - 2); //hacky but works
+	return r;
+}
+
+function cleanString(s) {
+  /*
+  ** Remove NewLine, CarriageReturn and Tab characters from a String
+  **   s  string to be processed
+  ** returns new string
+  */
+  //alert(s.charCodeAt(0).toString() + ":" + s.charCodeAt(1).toString());
+  r = "";
+  for (i=0; i < s.length; i++) {
+    if (s.charAt(i) != '\n' &&
+        s.charAt(i) != '\r' &&
+        s.charAt(i) != '\t' &&
+		s.charCodeAt(i) != 0) {
+      r += s.charAt(i);
+      }
+    }
+	
+	r = r.replace(/\u202A/g, '');
+	r = r.replace(/\u202B/g, '');
+	r = r.replace(/\u202D/g, '');
+	r = r.replace(/\u202E/g, '');
+	r = r.replace(/\u202C/g, '');
+	r = r.replace(/\u200E/g, '');
+	r = r.replace(/\u200F/g, '');
+	r = r.replace(/\uAO/g, '');
+		
+	return r.replace(/^\s+|\s+$/g, '');
+}
+
 //////////////////////////////////////////////////////////
 
 var ATTRIBUTE_NODE = "Attribute";
@@ -1209,9 +1265,9 @@ function ROMNode(id) {
         }
         return retval;
     }
-
+	
     this.LoadXML = function (xmlStr) {
-        var retval = false;
+		var retval = false;
         try {
             var rootNode = null;
             if (IsIE()) {
@@ -1223,9 +1279,11 @@ function ROMNode(id) {
             }
             else {
                 var parser = new DOMParser();
+				var serializer = new XMLSerializer();
+				this.m_xmlDoc = null;
                 this.m_xmlDoc = parser.parseFromString(xmlStr, "text/xml");
-                rootNode = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-            }
+				rootNode = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);				
+			}
 
             if (rootNode != null) {
                 var objectNode = null;
@@ -1424,7 +1482,7 @@ function ROMDictionary(node) {
     this.GenerateTableDebugMessages = function (bGenerate) {
         try {
             if (this.m_context != null)
-                this.m_context.GenerateDebugMessages(bGenerate);
+                this.m_context.GenerateTableDebugMessages(bGenerate);
         }
         catch (err) {
             ReportError(err);
@@ -1559,7 +1617,7 @@ function LinearEngine(context, dictionaryTable) {
         this.GenerateTableDebugMessages = function (bGenerate) {
             try {
                 if (this.base.m_context != null)
-                    this.base.m_context.GenerateDebugMessages(bGenerate);
+                    this.base.m_context.GenerateTableDebugMessages(bGenerate);
             }
             catch (err) {
                 ReportError(err);
@@ -1762,7 +1820,7 @@ function LinearEngine(context, dictionaryTable) {
                 else
                     this.base.m_dict[dictAttrName].Visible = true;
 
-                var currentValue = this.base.m_context.GetAttributeValue(dictAttrName, false);
+                var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
                 this.base.m_dict[dictAttrName].Valid = true;
                 this.base.m_dict[dictAttrName].Enabled = true;
 
@@ -1925,7 +1983,7 @@ function LinearEngine(context, dictionaryTable) {
                 this.base.m_dict[dictAttrName].Enabled = true;
                 this.base.m_dict[dictAttrName].Valid = true;
 
-                var currentValue = this.base.m_context.GetAttributeValue(dictAttrName, false);
+                var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
                 var currentValues = currentValue.split("|");
                 var selectedValues = new Array();
 
