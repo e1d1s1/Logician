@@ -1,10 +1,26 @@
 package Logician
 {
 	import flash.external.ExternalInterface;
+	import mx.controls.Alert;
 	/**
 	 * ...
 	 * @author Eric D. Schmidt, eLogician LLC
-	 */
+	This file is part of the LogicianFlash Library.
+	Copyright (C) 2009 - 2011 Eric D. Schmidt
+
+		LogicianFlash is free software: you can redistribute it and/or modify
+		it under the terms of the GNU General Public License as published by
+		the Free Software Foundation, either version 3 of the License, or
+		(at your option) any later version.
+
+		LogicianFlash is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		GNU General Public License for more details.
+
+		You should have received a copy of the GNU General Public License
+		along with LogicianFlash.  If not, see <http://www.gnu.org/licenses/>.
+	*/
 	public class ROMNode 
 	{		
 		public function ROMNode(id:String) { m_ROMNode = null; CreateROMNode(id); }		
@@ -98,11 +114,36 @@ package Logician
 		
 		//IO
 		public function SaveXML(indented:Boolean):String {if (m_ROMNode != null) return ExternalInterface.call("eval", "GetROMObject(\"" + m_ROMNode + "\").SaveXML(" + indented.toString() + ");"); else return null;}
-		public function LoadXML(xmlStr:String):Boolean {if (m_ROMNode != null) return ExternalInterface.call("eval", "GetROMObject(\"" + m_ROMNode + "\").LoadXML(\"" + xmlStr + "\");"); else return false;}
+		public function LoadXML(xmlStr:String):Boolean { if (m_ROMNode != null) { var retval:Boolean = ExternalInterface.call("eval", "GetROMObject(\"" + m_ROMNode + "\").LoadXML(cleanString(decodeFromHex(\"" + encodeToHex(xmlStr) + "\")));"); m_ROMNode = ExternalInterface.call("UpdateROMGUID", m_ROMNode); return retval; } else return false; }
 		
 		//XPATH
 		public function EvaluateXPATHForGUID(xpath:String, guid:String):String {if (m_ROMNode != null) return ExternalInterface.call("eval", "GetROMObject(\"" + m_ROMNode + "\").EvaluateXPATH(\"" + xpath + "\", \"" + guid + "\");"); else return null;}
 		public function EvaluateXPATH(xpath:String):String {if (m_ROMNode != null) return ExternalInterface.call("eval", "GetROMObject(\"" + m_ROMNode + "\").EvaluateXPATH(\"" + xpath + "\");"); else return null;}
+		
+		private function encodeToHex(str:String):String{
+			var r:String="";
+			var e:int=str.length;
+			var c:int=0;
+			var h:String;
+			while(c<e){
+				h=str.charCodeAt(c++).toString(16);
+				while(h.length<3) h="0"+h;
+				r+=h;
+			}
+			return r;
+		}
+		
+		private function decodeFromHex(str:String):String{
+			var r:String="";
+			var e:int=str.length;
+			var s:int;
+			while(e>=0){
+				s=e-3;
+				r=String.fromCharCode("0x"+str.substring(s,e))+r;
+				e=s;
+			}
+			return r;
+		}
 		
 		private function ObjArrayToAttributeDictionary(objArray:Array):Array
 		{

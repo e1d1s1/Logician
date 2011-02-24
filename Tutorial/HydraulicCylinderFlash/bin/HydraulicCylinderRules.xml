@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Tables debugtables="MountingStyle,StrokeFractionCat" debug="true" connection="localhost:11000">
+<Tables debugtables="MountingStyle,StrokeFractionCat" debug="false" connection="localhost:11000">
   <Table name="AdditionalCat" getall="false">
     <Inputs>
       <Attr>OptionHead</Attr>
