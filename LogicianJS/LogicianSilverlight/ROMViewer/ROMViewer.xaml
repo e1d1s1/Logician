@@ -40,7 +40,7 @@
         </StackPanel>
         <sdk:GridSplitter Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="1" HorizontalAlignment="Stretch" Name="gridSplitter2" VerticalAlignment="Top" Width="Auto" Background="LightGray"/>
         <ScrollViewer Name="textScroller" Grid.Column="2" Grid.Row="2" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Visibility="Collapsed" VerticalAlignment="Top" Width="Auto">
-            <TextBox Name="text"/>
+            <TextBox Name="textCtrl"/>
         </ScrollViewer>
         <sdk:DataGrid Name="grid" Grid.Column="2" Grid.Row="2" AutoGenerateColumns="False"/>
     </Grid>
