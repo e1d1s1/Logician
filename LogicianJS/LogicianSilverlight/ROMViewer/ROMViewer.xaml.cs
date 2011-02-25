@@ -210,12 +210,15 @@ namespace ROMViewer
 
         private void DisplayXML(TreeViewItem item)
         {
-            text.Text = "";
+            textCtrl.Text = "";
             if (item != null)
             {
                 ROMNode node = (ROMNode)item.Tag;
-                string xml = node.SaveXML(true);
-                text.Text = xml;
+                if (node != null)
+                {
+                    string xml = node.SaveXML(true);
+                    textCtrl.Text = xml;
+                }
             }
         }
 
