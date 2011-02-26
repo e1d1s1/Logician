@@ -47,7 +47,11 @@ Windows .NET tools:
 Silverlight Rules Engine and Relational Object Model
 - Just a wrapper for the Javascript libraries, interface similar to the .NET library.  Silverlight v4.0 recommended and tested.
 
-Build Instructions
+Adobe Flash/Actionscript Rules Engine and Relational Object Model
+- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  However, overloading restrictions cause some function names to differ and in those cases are named similar to the javascript method.  Flash 10.1 tested.
+
+
+C++ Build Notes
 Important pre-processor defines for EDSEngine/Relational Object Model:
 USE_MSXML: on widows platform, enables use of MSXML 6.0
 USE_LIBXML: optional on windows, required on all other platforms to enable use of libxml2 and libxslt.
