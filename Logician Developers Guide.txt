@@ -1,5 +1,5 @@
 EDSEngine
-EDSEngine is the decision table evaluator of the Logician suite.  It can be used independently of the other libraries.  ROMNET::EDSEngine is the managed .NET wrapper for the C++ engine, and there is a javascript implementation as well in the Knowledgebase.js file.  A silverlight wrapper for the javascript library is also available and generally follows the same interface as the .NET library.
+EDSEngine is the decision table evaluator of the Logician suite.  It can be used independently of the other libraries.  ROMNET::EDSEngine is the managed .NET wrapper for the C++ engine, and there is a javascript implementation as well in the Knowledgebase.js file.  A silverlight and Flash Actionscript wrapper for the javascript library are also available and generally follow the same interface as the .NET library.
 
 All of the language ports of the EDSEngine library have a similar interface.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
 
