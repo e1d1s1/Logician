@@ -45,10 +45,10 @@ Windows .NET tools:
 - Relation Object Model v1.0
 
 Silverlight Rules Engine and Relational Object Model
-- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  Silverlight v4.0 recommended and tested.
+- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  Silverlight v4.0 recommended and tested. Visual Studio 2010 project files provided.
 
 Adobe Flash/Actionscript Rules Engine and Relational Object Model
-- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  However, overloading restrictions cause some function names to differ and in those cases are named similar to the javascript method.  Flash 10.1 tested.
+- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  However, overloading restrictions cause some function names to differ and in those cases are named similar to the javascript method.  Flash 10.1 tested.  FlashDevelop project files provided.
 
 
 C++ Build Notes
