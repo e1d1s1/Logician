@@ -158,7 +158,7 @@ package Logician
 					if (key != null && key.length > 0)
 					{
 						var dict:Array = new Array();
-						for (var j:int = 0; j < attrValuePairs.length - 1; j++)
+						for (var j:int = 0; j < attrValuePairs.length - 1; j+=2)
 						{
 							dict[attrValuePairs[j]] = attrValuePairs[j + 1];
 						}
