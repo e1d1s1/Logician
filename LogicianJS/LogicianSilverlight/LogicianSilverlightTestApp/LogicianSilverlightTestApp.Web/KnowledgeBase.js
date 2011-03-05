@@ -1388,9 +1388,9 @@ function loadXMLDocString(xmlStr)
     if (IsIE()) 
     {
         xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-        xmlDoc.m_xmlDoc.async = "false";
-        xmlDoc.m_xmlDoc.setProperty("SelectionLanguage", "XPath");
-        xmlDoc.m_xmlDoc.loadXML(xmlStr);
+        xmlDoc.async = "false";
+        xmlDoc.setProperty("SelectionLanguage", "XPath");
+        xmlDoc.loadXML(xmlStr);
     }
     else 
     {
