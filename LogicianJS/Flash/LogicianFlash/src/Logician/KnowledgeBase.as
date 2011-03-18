@@ -28,7 +28,7 @@ package Logician
 			var o:Object = ExternalInterface.call("CreateKnowledgeBase", knowledge_file);
 			if (o != null)
 			{
-				m_KnowledgeBase = o.m_guid;			
+				m_KnowledgeBase = o.m_guid;		
 				DebugCallback = null;
 				if (m_KnowledgeBase != null)
 					return true;
