@@ -168,6 +168,7 @@ function MakeGUID() {
     catch (err) {
         ReportError(err);
     }
+	return null;
 }
 
 //flash support////////////////////////////
@@ -586,13 +587,13 @@ function Decode()
 		            {
 			            throw "string not found for index: " + id.toString();
 		            }
-	            }
-	            return "";
+	            }	            
             }
             catch (err)
             {
                 ReportError(err);
             }
+			return "";
         }
 
         this.ParseStringForGets = function(id, bForceZero)
@@ -701,7 +702,6 @@ function RuleTable()
     try
     {
         this.DebugMessage = "";
-        this.m_StateParameter = "";
         this.m_InputAttrsValues = new Array();
         this.m_InputAttrsTests = new Array();
         this.m_FormulaInputs = new Array();
@@ -749,7 +749,7 @@ function RuleTable()
                 if (bForward)
                     resultCollection = this.m_OutputAttrsValues;
                 else
-                    resultCollection = this.m_InputAttrsTest;
+                    resultCollection = this.m_InputAttrsTests;
             
                 //for all the outputs get the results
                 for (var i = 0; i < ArraySize(resultCollection); i++)
@@ -1000,6 +1000,7 @@ function RuleTable()
             {
                 ReportError(err);
             }
+			return false;
         }
 
         this.HasJS = function()
@@ -1012,6 +1013,7 @@ function RuleTable()
             {
                 ReportError(err);
             }
+			return false;
         }
 
         this.GetAllOutputAttrNames = function()
@@ -1112,6 +1114,7 @@ function RuleTable()
             {
                 ReportError(err);
             }
+			return null;
         }
 
         this.GetInputAttrsTests = function()
@@ -1124,6 +1127,7 @@ function RuleTable()
             {
                 ReportError(err);
             }
+			return null;
         }
 
         this.DebugEval = function(outputAttr, inputValues, solutions)
@@ -1238,6 +1242,7 @@ function TableSet()
             catch (err) {
                 ReportError(err);
             }
+			return null;
         }
 
         this.GetInputAttrs = function (tableName) {
@@ -1247,6 +1252,7 @@ function TableSet()
             catch (err) {
                 ReportError(err);
             }
+			return null;
         }
 
         this.GetInputDependencies = function (tableName) {
@@ -1265,6 +1271,7 @@ function TableSet()
             catch (err) {
                 ReportError(err);
             }
+			return null;
         }
 
         this.Count = function () {
@@ -1274,6 +1281,7 @@ function TableSet()
             catch (err) {
                 ReportError(err);
             }
+			return 0;
         }
 
         this.LoadTableInfo = function (table) {
@@ -1388,9 +1396,9 @@ function loadXMLDocString(xmlStr)
     if (IsIE()) 
     {
         xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-        xmlDoc.m_xmlDoc.async = "false";
-        xmlDoc.m_xmlDoc.setProperty("SelectionLanguage", "XPath");
-        xmlDoc.m_xmlDoc.loadXML(xmlStr);
+        xmlDoc.async = "false";
+        xmlDoc.setProperty("SelectionLanguage", "XPath");
+        xmlDoc.loadXML(xmlStr);
     }
     else 
     {
@@ -1431,6 +1439,7 @@ function KnowledgeBase(xmlPath) {
     var xmlDoc = null;
 
     try {
+        this.m_StateParameter = "";
         this.m_TableSet = new TableSet();
         this.m_stringsMap = new Bimapper();
         this.mapBaseIDtoTranslations = new Array();
@@ -1675,6 +1684,7 @@ function KnowledgeBase(xmlPath) {
             {
                 ReportError(err);
             }    
+			return false;
         }
 
         this.GetTableRowFromXML = function(nodes, xmlDoc)
@@ -1803,12 +1813,21 @@ function KnowledgeBase(xmlPath) {
             {
                 ReportError(err);
             }
+			return 0;
         }
 
         this.TableIsGetAll = function(tableName)
         {
-            var table = this.m_TableSet.GetTable(tableName);
-            return table.m_bGetAll;
+			try
+			{
+				var table = this.m_TableSet.GetTable(tableName);
+				return table.m_bGetAll;
+			}
+			catch (err)
+            {
+                ReportError(err);
+            }
+			return false;
         }
 
         this.EvaluateTableForAttr = function (tableName, outputAttr, bGetAll) 
@@ -1822,6 +1841,7 @@ function KnowledgeBase(xmlPath) {
             catch (err) {
                 ReportError(err);
             }
+			return null;
         }
 
         this.EvaluateTable = function(tableName, bGetAll)
@@ -1836,6 +1856,7 @@ function KnowledgeBase(xmlPath) {
             {
                 ReportError(err);
             }
+			return null;
         }
 
         this.EvaluateTableForAttrWithParam = function(tableName, outputAttr, param, bGetAll) 
@@ -1845,13 +1866,14 @@ function KnowledgeBase(xmlPath) {
             {
                 if (bGetAll == undefined)
                     bGetAll = this.TableIsGetAll(tableName);
+				
+				var table = this.m_TableSet.GetTable(tableName);
+				
                 if (this.iRecursingDepth == 0)
                     this.m_StateParameter = param;
-                this.iRecursingDepth++;
-        
-                var table = this.m_TableSet.GetTable(tableName);
+                this.iRecursingDepth++;        
+                
                 table.EnableDebugging(this.DebugThisTable(tableName));
-
                 table.SetInputValues(this.m_GlobalInputAttrsValues);
         
                 var results = table.EvaluateTableForAttr(outputAttr, bGetAll, true);
@@ -1875,7 +1897,7 @@ function KnowledgeBase(xmlPath) {
 					            var chainAttrName = args[1].trim();
 					            var debugVals = "";
 
-					            chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, param, this.TableIsGetAll(chainTableName), true);
+					            chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, param, this.TableIsGetAll(chainTableName));
 					            for (var j = 0; j < chainedResults.length; j++)
 					            {
 					                var result = chainedResults[j];
