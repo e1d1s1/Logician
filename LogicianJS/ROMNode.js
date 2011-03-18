@@ -830,8 +830,7 @@ function ROMNode(id) {
 
     this.LoadRulesFromString = function (xml) {
         try {
-            this.m_KnowledgeBase = new KnowledgeBase();
-            this.m_KnowledgeBase.CreateKnowledgeBaseFromString(xml);
+            this.m_KnowledgeBase = CreateKnowledgeBaseFromString(xml);
             if (this.m_KnowledgeBase != null)
                 return true;
             else
@@ -840,6 +839,7 @@ function ROMNode(id) {
         catch (err) {
             ReportError(err);
         }
+		return false;
     }
 
     this.SetRulesDebugHandler = function (func) {
