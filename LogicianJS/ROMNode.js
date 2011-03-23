@@ -18,6 +18,7 @@ through which recipients can access the Corresponding Source.
 */
 
 /// reference path="KnowledgeBase.js"
+/// reference path="javascript-xpath.js"
 
 //stupid IE doesnt do indexOf for array
 function GetIndexOfItem(arr, obj) {
@@ -41,16 +42,53 @@ function ReportError(err) {
     alert(vDebug);
 }
 
+var engineWebKit = "webkit";
+var deviceAndroid = "android";
 function IsIE() {
     var ie = (typeof window.ActiveXObject != 'undefined');
-    //alert("IE=" + ie);
     return ie;
 }
 
 function IsMoz() {
-    var moz = (navigator.userAgent.indexOf('Firefox') >= 0);
-    //alert("Moz=" + moz);
+    var moz = (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0 && SupportsXPATH() == true);
     return moz;
+}
+
+// Detects if the current browser is based on WebKit.
+function DetectWebkit()
+{
+   if (navigator.userAgent.toLowerCase().search(engineWebKit) > -1)
+      return true;
+   else
+      return false;
+}
+
+// Detects if the current device is an Android OS-based device.
+function DetectAndroid() {
+    if (navigator.userAgent.toLowerCase().search(deviceAndroid) > -1)
+        return true;
+    else
+        return false;
+}
+
+// Detects if the current device is an Android OS-based device and
+//   the browser is based on WebKit.
+function DetectAndroidWebKit() {
+    if (DetectAndroid()) {
+        if (DetectWebkit())
+            return true;
+        else
+            return false;
+    }
+    else
+        return false;
+}
+
+function SupportsXPATH() {
+    var res = (document.implementation
+            && document.implementation.hasFeature
+            && document.implementation.hasFeature("XPath", null));
+    return res;
 }
 
 function MakeGUID() {
