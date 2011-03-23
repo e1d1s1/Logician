@@ -25,7 +25,7 @@
     </library-path>
   </compiler>
   <file-specs>
-    <path-element>C:\Users\Eric\Development\Logician\LogicianJS\Flash\LogicianFlash\src\LogicianNative\KnowledgeBase.as</path-element>
+    <path-element>C:\Users\Eric\Development\Logician\LogicianJS\Flash\LogicianFlash\src\Logician\KnowledgeBase.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>30</default-frame-rate>
