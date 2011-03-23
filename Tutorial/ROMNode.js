@@ -18,6 +18,7 @@ through which recipients can access the Corresponding Source.
 */
 
 /// reference path="KnowledgeBase.js"
+/// reference path="javascript-xpath.js"
 
 //stupid IE doesnt do indexOf for array
 function GetIndexOfItem(arr, obj) {
@@ -41,16 +42,53 @@ function ReportError(err) {
     alert(vDebug);
 }
 
+var engineWebKit = "webkit";
+var deviceAndroid = "android";
 function IsIE() {
     var ie = (typeof window.ActiveXObject != 'undefined');
-    //alert("IE=" + ie);
     return ie;
 }
 
 function IsMoz() {
-    var moz = (navigator.userAgent.indexOf('Firefox') >= 0);
-    //alert("Moz=" + moz);
+    var moz = (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0 && SupportsXPATH() == true);
     return moz;
+}
+
+// Detects if the current browser is based on WebKit.
+function DetectWebkit()
+{
+   if (navigator.userAgent.toLowerCase().search(engineWebKit) > -1)
+      return true;
+   else
+      return false;
+}
+
+// Detects if the current device is an Android OS-based device.
+function DetectAndroid() {
+    if (navigator.userAgent.toLowerCase().search(deviceAndroid) > -1)
+        return true;
+    else
+        return false;
+}
+
+// Detects if the current device is an Android OS-based device and
+//   the browser is based on WebKit.
+function DetectAndroidWebKit() {
+    if (DetectAndroid()) {
+        if (DetectWebkit())
+            return true;
+        else
+            return false;
+    }
+    else
+        return false;
+}
+
+function SupportsXPATH() {
+    var res = (document.implementation
+            && document.implementation.hasFeature
+            && document.implementation.hasFeature("XPath", null));
+    return res;
 }
 
 function MakeGUID() {
@@ -74,6 +112,231 @@ function MakeGUID() {
         ReportError(err);
     }
 }
+// flash support //////////////////////////////////////////////////////////////
+var ActiveROMObjects = new Array(); //for flash access, guid keyed objects
+var ActiveROMDictionaryAttributes = new Array();
+var ActiveROMDictObjects = new Array();
+var ActiveEngineObjects = new Array();
+function GetROMObject(guid) {
+    if (guid in ActiveROMObjects)
+        return ActiveROMObjects[guid];	
+    else
+        return null;
+}
+function UpdateROMGUID(guid) {
+	var ROM = null;
+	if (guid in ActiveROMObjects)
+		ROM = ActiveROMObjects[guid];
+	
+	if (ROM != null)
+	{
+		ActiveROMObjects[ROM.m_guid] = ROM;
+		return ROM.m_guid;
+	}
+	else
+		return guid;
+}
+function GetROMObjectGenericGUID(guid) {
+	var ROM = null;
+    if (guid in ActiveROMObjects)
+        ROM = ActiveROMObjects[guid];	
+
+	if (ROM != null)
+	{
+		var obj = new Object();
+		obj.m_id = ROM.m_id;
+		obj.m_guid = ROM.m_guid;
+		return obj;
+	}
+	return null;
+}
+function GetROMObjectGeneric(obj) {
+	if (obj != null)
+	{
+		if (obj.m_guid != null)
+			return GetROMObjectGenericGUID(obj.m_guid);
+	}
+	return null;
+}
+
+function GetROMObjectArray(arr)
+{
+	var retval = new Array();
+	for (var idx in arr)
+	{
+		var obj = new Object();
+		obj.m_id = arr[idx].m_id;
+		obj.m_guid = arr[idx].m_guid;
+		retval.push(obj);
+	}
+	return retval;
+}
+function DestroyROMObject(guid) {
+    if (ActiveROMObjects != null && ActiveROMObjects[guid] != null)
+        delete ActiveROMObjects[guid];
+}
+function CleanROMObjects() {
+    for (var guid in ActiveROMObjects) {
+        DestroyROMObject(guid)
+    }
+    if (ActiveROMObjects != null) 
+        delete ActiveROMObjects;
+    ActiveROMObjects = new Array();
+}
+
+function GetROMDictAttrObject(guid) {
+    if (guid in ActiveROMDictObjects)
+        return ActiveROMDictionaryAttributes[guid];
+    else
+        return null;
+}
+function GetROMDictAttrArray(arr)
+{
+	var retval = new Array();
+	for (var idx in arr)
+	{
+		var obj = new Object();
+		obj.Name = arr[idx].Name;
+		obj.Description = arr[idx].Description;
+		obj.DefaultValue = arr[idx].DefaultValue;
+		obj.RuleTable = arr[idx].RuleTable;		
+		obj.AttributeType = arr[idx].AttributeType;
+		obj.ValueChanged = arr[idx].ValueChanged;
+		obj.ChangedByUser = arr[idx].ChangedByUser;
+		obj.Valid = arr[idx].Valid;
+		obj.Visible = arr[idx].Visible;
+		obj.Enabled = arr[idx].Enabled;
+		obj.PossibleValues = arr[idx].PossibleValues;
+		obj.AvailableValues = arr[idx].AvailableValues;		
+		obj.m_guid = arr[idx].m_guid;
+		retval.push(obj);
+	}
+	return retval;
+}
+
+function DestroyROMDictAttrObject(guid) {
+    if (ActiveROMDictionaryAttributes != null && ActiveROMDictionaryAttributes[guid] != null)
+        delete ActiveROMDictionaryAttributes[guid];
+}
+function CleanROMDictAttrObjects() {
+    for (var guid in ActiveROMDictionaryAttributes) {
+        DestroyROMDictObject(guid)
+    }
+    if (ActiveROMDictionaryAttributes != null) 
+        delete ActiveROMDictionaryAttributes;
+    ActiveROMDictionaryAttributes = new Array();
+}
+
+function GetROMDictObject(guid) {
+    if (guid in ActiveROMDictObjects)
+        return ActiveROMDictObjects[guid];
+    else
+        return null;
+}
+function DestroyROMDictObject(guid) {
+    if (ActiveROMDictObjects != null && ActiveROMODictbjects[guid] != null)
+        delete ActiveROMDictObjects[guid];
+}
+function CleanROMDictObjects() {
+    for (var guid in ActiveROMDictObjects) {
+        DestroyROMDictObject(guid)
+    }
+    if (ActiveROMDictObjects != null) 
+        delete ActiveROMDictObjects;
+    ActiveROMDictObjects = new Array();
+}
+
+function GetEngineObject(guid) {
+    if (guid in ActiveEngineObjects)
+        return ActiveEngineObjects[guid];
+    else
+        return null;
+}
+function DestroyEngineObject(guid) {
+    if (ActiveEngineObjects != null && ActiveEngineObjects[guid] != null)
+        delete ActiveEngineObjects[guid];
+}
+function CleanEngineObjects() {
+    for (var guid in ActiveEngineObjects) {
+        DestroyEngineObject(guid)
+    }
+    if (ActiveEngineObjects != null) 
+        delete ActiveEngineObjects;
+    ActiveEngineObjects = new Array();
+}
+function DictionaryToObjArray(dict) {
+	var objArray = new Array();
+	if (dict != null) for (var key in dict)
+	{
+		var obj = new Object();
+		obj.key = key;
+		obj.values = dict[key];
+		objArray.push(obj);
+	}
+	return objArray;
+}
+function AttributeDictionaryToObjArray(dict) {
+	var objArray = new Array();
+	if (dict != null) for (var key in dict)
+	{
+		var obj = new Object();
+		obj.key = key;
+		var attrValuePairs = new Array();
+		var kvp = dict[key];
+		for (var name in kvp)
+		{
+			attrValuePairs.push(name);
+			attrValuePairs.push(kvp[name]);
+		}
+		obj.values = attrValuePairs;
+		objArray.push(obj);
+	}
+	return objArray;
+}
+
+function decodeFromHex(str){
+	var r="";
+	var e=str.length;
+	var s;
+	while(e>=0){
+		s=e-3;
+		r=String.fromCharCode("0x"+str.substring(s,e))+r;
+		e=s;
+	}
+	//return r.substr(1, r.length - 2); //hacky but works
+	return r;
+}
+
+function cleanString(s) {
+  /*
+  ** Remove NewLine, CarriageReturn and Tab characters from a String
+  **   s  string to be processed
+  ** returns new string
+  */
+  //alert(s.charCodeAt(0).toString() + ":" + s.charCodeAt(1).toString());
+  r = "";
+  for (i=0; i < s.length; i++) {
+    if (s.charAt(i) != '\n' &&
+        s.charAt(i) != '\r' &&
+        s.charAt(i) != '\t' &&
+		s.charCodeAt(i) != 0) {
+      r += s.charAt(i);
+      }
+    }
+	
+	r = r.replace(/\u202A/g, '');
+	r = r.replace(/\u202B/g, '');
+	r = r.replace(/\u202D/g, '');
+	r = r.replace(/\u202E/g, '');
+	r = r.replace(/\u202C/g, '');
+	r = r.replace(/\u200E/g, '');
+	r = r.replace(/\u200F/g, '');
+	r = r.replace(/\uAO/g, '');
+		
+	return r.replace(/^\s+|\s+$/g, '');
+}
+
+//////////////////////////////////////////////////////////
 
 var ATTRIBUTE_NODE = "Attribute";
 var OBJECT_NODE = "Object";
@@ -81,9 +344,10 @@ var XSLT_TOP = "<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3
 var XSLT_BOTTOM = "\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
 function CreateROMNode(id) {
     if (id === undefined)
-        return null;
-
+        id = "";
+		
     var retval = new ROMNode(id);
+    ActiveROMObjects[retval.m_guid] = retval;
     return retval;
 }
 
@@ -95,6 +359,7 @@ function ROMNode(id) {
     this.m_guid = MakeGUID();
     this.m_parent = null;
     this.m_children = new Array();
+	this.m_friends = new Array();
     this.m_bChanged = true;
     this.m_lastContents = "";
     this.m_lastAttrContents = "";
@@ -136,6 +401,27 @@ function ROMNode(id) {
         }
         return false;
     }
+	
+	this.AddFriend = function (friendObj) {
+        try {
+            if (friendObj != null) {
+				var i = GetIndexOfItem(this.m_friends, friendObj);
+				if (i < 0)
+				{
+					this.m_friends.push(friendObj);
+					return true;
+				}
+            }
+        }
+        catch (err) {
+            ReportError(err);
+        }
+        return false;
+    }
+	
+	this.GetAllFriends = function() {
+		return this.m_friends;
+	}
 
     this._findObjects = function (id, recurs, resObject) {
         for (var child in this.m_children) {
@@ -217,7 +503,7 @@ function ROMNode(id) {
     this.FindAllObjectsByID = function (id, recurs) {
         var retval = new Array();
         try {
-            if (this.m_id == id && resObject != null)
+            if (this.m_id == id)
                 retval.push(this);
             this._findObjects(id, recurs, retval);
         }
@@ -252,7 +538,10 @@ function ROMNode(id) {
         var retval = null;
         try {
             var rootNode = this.GetRoot();
-            retval = rootNode._findObjectGUID(guid);
+			if (rootNode.m_guid == guid)
+				retval = rootNode;
+			else
+				retval = rootNode._findObjectGUID(guid);
         }
         catch (err) {
             ReportError(err);
@@ -277,6 +566,54 @@ function ROMNode(id) {
         return retval;
     }
 
+    this.RemoveFromParent = function() {
+        try {
+            if (this.m_parent != null) {
+                return this.m_parent.RemoveChildROMObject(this);
+            }
+        }
+        catch (err) {
+            ReportError(err);
+        }
+        return false;
+    }
+	
+	this.RemoveFriend = function (friendObj) {
+        var retval = false;
+        try {
+			if (friendObj != null)
+				{
+				var i = GetIndexOfItem(this.m_friends, friendObj);
+				if (i >= 0) {
+					var i2 = GetIndexOfItem(friendObj.m_friends, this);
+					if (i2 >= 0)
+						friendObj.m_friends.splice(i2, 1);
+					this.m_friends.splice(i, 1);
+					retval = true;
+				}
+				this.m_bChanged = retval;
+			}
+        }
+        catch (err) {
+            ReportError(err);
+        }
+        return retval;
+    }
+	
+	this.RemoveAllFriends = function () {
+        var retval = false;
+        try {			
+			for (var i = 0; i < this.m_friends.length; i++)
+			{
+				retval = this.RemoveFriend(this.m_friends[i]);
+			}				
+		}        
+        catch (err) {
+            ReportError(err);
+        }
+        return retval;
+    }
+
     this.DestroyROMObject = function () {
         var retval = true;
         try {
@@ -284,6 +621,15 @@ function ROMNode(id) {
             if (this.m_parent != null) {
                 retval = this.m_parent.RemoveChildROMObject(this);
             }
+			
+			//clean friends
+			for (var i = this.m_friends.length - 1; i >= 0; i--) {
+				var friendNode = this.m_friends[i];
+				if (friendNode != null)
+				{
+					friendNode.RemoveFriend(this);
+				}
+			}
 
             if (this.m_attrs != null)
                 delete this.m_attrs;
@@ -522,8 +868,7 @@ function ROMNode(id) {
 
     this.LoadRulesFromString = function (xml) {
         try {
-            this.m_KnowledgeBase = new KnowledgeBase();
-            this.m_KnowledgeBase.CreateKnowledgeBaseFromString(xml);
+            this.m_KnowledgeBase = CreateKnowledgeBaseFromString(xml);
             if (this.m_KnowledgeBase != null)
                 return true;
             else
@@ -532,6 +877,7 @@ function ROMNode(id) {
         catch (err) {
             ReportError(err);
         }
+		return false;
     }
 
     this.SetRulesDebugHandler = function (func) {
@@ -588,6 +934,10 @@ function ROMNode(id) {
         }
         return knowledge;
     }
+    
+    this.GetKnowledgeBase = function() {
+        return this._getKnowledge();
+    }
 
     this.EvaluateTableForAttr = function (evalTable, output, bGetAll) {
         try {
@@ -621,7 +971,68 @@ function ROMNode(id) {
             ReportError(err);
             return null;
         }
+    }	
+	
+	this.EvaluateTableForAttrWithParam = function (evalTable, output, param, bGetAll) {
+        try {
+            var knowledge = this._getKnowledge();
+            if (knowledge != null) {
+                if (bGetAll === undefined)
+                    bGetAll = knowledge.TableIsGetAll(evalTable);
+                this.LoadInputs(evalTable);
+                var retval = knowledge.EvaluateTableForAttrWithParam(evalTable, output, param, bGetAll);
+                return retval;
+            }
+        }
+        catch (err) {
+            ReportError(err);
+            return null;
+        }
     }
+
+    this.EvaluateTableWithParam = function (evalTable, param, bGetAll) {
+        try {
+            var knowledge = this._getKnowledge();
+            if (knowledge != null) {
+                if (bGetAll === undefined)
+                    bGetAll = knowledge.TableIsGetAll(evalTable);
+                this.LoadInputs(evalTable);
+                var retval = knowledge.EvaluateTableWithParam(evalTable, param, bGetAll);
+                return retval;
+            }
+        }
+        catch (err) {
+            ReportError(err);
+            return null;
+        }
+    }
+	
+	this.GetEvalParameter = function()
+	{
+		try
+		{
+			var knowledge = this._getKnowledge();
+            if (knowledge != null) {
+				var retval = knowledge.GetEvalParameter();
+				return retval;
+			}
+		}
+		catch(err) {
+			ReportError(err);
+            return null;
+		}
+	}
+	
+	this.GetFirstTableResult = function(tableName, outputAttr)
+	{
+		var retval = "";
+		
+		var retAll = this.EvaluateTableForAttr(tableName, outputAttr);
+		if (retAll != null && retAll.length > 0)
+			retval = retAll[0];
+		
+		return retval;
+	}
 
     this.ReverseEvaluateTable = function (evalTable, bGetAll) {
         try {
@@ -852,9 +1263,12 @@ function ROMNode(id) {
         return retval;
     }
 
-    this._createXMLDoc = function () {
+    this._createXMLDoc = function (bForceLoad) {
         try {
-            var bChanged = this._anyHasChanged();
+			if (bForceLoad === undefined)
+				bForceLoad = false;
+			
+            var bChanged = (bForceLoad || this._anyHasChanged());
             if (bChanged) {
                 var genXML = this._generateXML(bChanged);
                 if (IsIE()) {
@@ -881,7 +1295,7 @@ function ROMNode(id) {
         if (indented === undefined)
             indented = false;
         try {
-            this._createXMLDoc();
+            this._createXMLDoc(true);
             retval = this._convertXMLDocToString(indented);
         }
         catch (err) {
@@ -889,9 +1303,9 @@ function ROMNode(id) {
         }
         return retval;
     }
-
+	
     this.LoadXML = function (xmlStr) {
-        var retval = false;
+		var retval = false;
         try {
             var rootNode = null;
             if (IsIE()) {
@@ -903,9 +1317,11 @@ function ROMNode(id) {
             }
             else {
                 var parser = new DOMParser();
+				var serializer = new XMLSerializer();
+				this.m_xmlDoc = null;
                 this.m_xmlDoc = parser.parseFromString(xmlStr, "text/xml");
-                rootNode = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-            }
+				rootNode = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);				
+			}
 
             if (rootNode != null) {
                 var objectNode = null;
@@ -938,6 +1354,7 @@ function ROMNode(id) {
             }
             else {
                 id = objectNode.getAttribute("id");
+				guid = objectNode.getAttribute("guid");
             }
 
             if (parent == null) {
@@ -1068,28 +1485,42 @@ function ROMDictionaryAttribute() {
     this.Visible = true;
     this.Enabled = true;
     this.PossibleValues = new Array();
-    this.AvailableValues = new Array();
+    this.AvailableValues = new Array();	
+	this.m_guid = MakeGUID();
 }
 
 function CreateROMDictionaryAttribute() {
     var dictAttr = new ROMDictionaryAttribute();
+	ActiveROMDictionaryAttributes[dictAttr.m_guid] = dictAttr;
     return dictAttr;
 }
 
 // ROMDictionary class////////////////////////////////////////////////////////////////
 function CreateROMDictionary(node) {
-    var dict = new ROMDictionary(node);
+    
+	var dict = new ROMDictionary(node);    
+	ActiveROMDictObjects[dict.m_guid] = dict;
     return dict;
+}
+
+function CreateROMDictionaryByGUID(guid) {
+	var objNode = GetROMObject(guid);
+	var dict = CreateROMDictionary(objNode);	
+	if (dict != null)
+		return dict.m_guid;
+	else 
+		return null;
 }
 
 function ROMDictionary(node) {
     this.m_context = node;
     this.m_dict = new Array();
+    this.m_guid = MakeGUID();
 
     this.GenerateTableDebugMessages = function (bGenerate) {
         try {
             if (this.m_context != null)
-                this.m_context.GenerateDebugMessages(bGenerate);
+                this.m_context.GenerateTableDebugMessages(bGenerate);
         }
         catch (err) {
             ReportError(err);
@@ -1188,6 +1619,22 @@ function ROMDictionary(node) {
 }
 
 // LinearEngine class////////////////////////////////////////////////////////////////
+function CreateLinearEngine(context, dictionaryTable) {
+
+    var engine = new LinearEngine(context, dictionaryTable);
+    ActiveEngineObjects[engine.m_guid] = engine;
+    return engine;
+}
+
+function CreateLinearEngineByGUID(guid, dictionaryTable) {
+	var objNode = GetROMObject(guid);
+	var dict = CreateLinearEngine(objNode, dictionaryTable);	
+	if (dict != null)
+		return dict.m_guid;
+	else 
+		return null;
+}
+
 function LinearEngine(context, dictionaryTable) {
     this.INVISPREFIX = "^";
     this.DEFAULTPREFIX = "@";
@@ -1201,13 +1648,14 @@ function LinearEngine(context, dictionaryTable) {
     this.m_EvalListRecursChecker = new Array();
     this.m_EvalInternal = false;
     this.m_EvalListRecursChecker = null;
+    this.m_guid = this.base.m_guid;
 
     try {
 
         this.GenerateTableDebugMessages = function (bGenerate) {
             try {
                 if (this.base.m_context != null)
-                    this.base.m_context.GenerateDebugMessages(bGenerate);
+                    this.base.m_context.GenerateTableDebugMessages(bGenerate);
             }
             catch (err) {
                 ReportError(err);
@@ -1410,7 +1858,7 @@ function LinearEngine(context, dictionaryTable) {
                 else
                     this.base.m_dict[dictAttrName].Visible = true;
 
-                var currentValue = this.base.m_context.GetAttributeValue(dictAttrName, false);
+                var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
                 this.base.m_dict[dictAttrName].Valid = true;
                 this.base.m_dict[dictAttrName].Enabled = true;
 
@@ -1573,7 +2021,7 @@ function LinearEngine(context, dictionaryTable) {
                 this.base.m_dict[dictAttrName].Enabled = true;
                 this.base.m_dict[dictAttrName].Valid = true;
 
-                var currentValue = this.base.m_context.GetAttributeValue(dictAttrName, false);
+                var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
                 var currentValues = currentValue.split("|");
                 var selectedValues = new Array();
 
@@ -1858,10 +2306,4 @@ function LinearEngine(context, dictionaryTable) {
         ReportError(err);
     }
     return this;
-}
-
-function CreateLinearEngine(context, dictionaryTable) {
-    
-    var engine = new LinearEngine(context, dictionaryTable);
-    return engine;
 }
