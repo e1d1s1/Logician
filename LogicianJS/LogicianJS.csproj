@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B74A03C6-2A70-435D-9CD5-260671BBFFD0}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -53,6 +53,17 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ajaxslt\dom.js" />
+    <Content Include="ajaxslt\dom_unittest.js" />
+    <Content Include="ajaxslt\simplelog.js" />
+    <Content Include="ajaxslt\util.js" />
+    <Content Include="ajaxslt\xmltoken.js" />
+    <Content Include="ajaxslt\xmltoken_unittest.js" />
+    <Content Include="ajaxslt\xpath.js" />
+    <Content Include="ajaxslt\xpathdebug.js" />
+    <Content Include="ajaxslt\xpath_unittest.js" />
+    <Content Include="ajaxslt\xslt.js" />
+    <Content Include="ajaxslt\xslt_unittest.js" />
     <Content Include="KnowledgeBase.js" />
     <Content Include="NoServerCallback.htm" />
     <Content Include="ROMNode.js" />
@@ -85,6 +96,9 @@
           <IISUrl>
           </IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
