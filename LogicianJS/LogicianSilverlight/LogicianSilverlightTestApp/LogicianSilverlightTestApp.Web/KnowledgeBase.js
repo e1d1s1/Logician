@@ -1433,7 +1433,8 @@ function loadXMLDoc(file)
     }
     xhttp.open("GET",file,false);
     xhttp.send("");
-    var xmlDoc = xhttp.responseXML;
+    var xmlDoc = loadXMLDocString(xhttp.responseText);
+    delete xhttp;
     return xmlDoc;
 }
 
@@ -1455,6 +1456,7 @@ function loadXMLDocString(xmlStr)
     {
         var parser = new DOMParser();
         xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+        delete parser;
     }
     return xmlDoc;
 }
@@ -1488,7 +1490,7 @@ function CreateKnowledgeBaseFromString(xml) {
 
 function KnowledgeBase(xmlPath) {
     var xmlDoc = null;
-
+    
     try {
         this.m_StateParameter = "";
         this.m_TableSet = new TableSet();
@@ -1593,7 +1595,7 @@ function KnowledgeBase(xmlPath) {
                     
                     var nodeJSEval = xpathParse("//Javascript");
                     nodeJS = nodeJSEval.evaluate(xmlDoc).nodeSetValue();
-                    if (nodeJS != null)
+                    if (nodeJS != null && nodeJS.length > 0)
                     {
 		                this.m_jsCode = nodeJS[0].firstChild.nodeValue + "\n";
 	                }
@@ -1661,7 +1663,7 @@ function KnowledgeBase(xmlPath) {
                     }
             
                     nodeJS = xmlDoc.evaluate("//Javascript", xmlDoc, null, FIRST_ORDERED_NODE_TYPE, null);
-                    if (nodeJS != null)
+                    if (nodeJS != null && nodeJS.singleNodeValue != null)
                     {
 		                this.m_jsCode = nodeJS.singleNodeValue.textContent + "\n";
 	                }		       

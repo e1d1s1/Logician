@@ -91,6 +91,11 @@ function SupportsXPATH() {
     return res;
 }
 
+//xpath constants
+var STRING_TYPE = 2;
+var ORDERED_NODE_SNAPSHOT_TYPE = 6;
+var FIRST_ORDERED_NODE_TYPE = 9;
+
 function MakeGUID() {
     try {
         var chars = '0123456789abcdef'.split('');
@@ -478,18 +483,39 @@ function ROMNode(id) {
                 }
             }
             else {
-                var res = this.m_xmlDoc.evaluate(xpath, this.m_xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                for (var i = 0; i < res.snapshotLength; i++) {
-                    nodes.push(res.snapshotItem(i));
+                if (DetectAndroidWebKit())
+                {
+                    var evaluator = xpathParse(xpath);
+                    var res = evaluator.evaluate(this.m_xmlDoc).nodeSetValue();
+                     for (var i = 0; i < res.length; i++) {
+                        nodes.push(res[i]);
+                    }
+                    
+                    for (var nodeItr in nodes) {
+                        var objNode = nodes[nodeItr];
+                        var guid = objNode.getAttribute("guid");
+                        if (guid.length > 0) {
+                            var node = this.FindObjectByGUID(guid);
+                            if (node != null)
+                                retval.push(node);
+                        }
+                    }
                 }
+                else
+                {
+                    var res = this.m_xmlDoc.evaluate(xpath, this.m_xmlDoc, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                    for (var i = 0; i < res.snapshotLength; i++) {
+                        nodes.push(res.snapshotItem(i));
+                    }
 
-                for (var nodeItr in nodes) {
-                    var objNode = nodes[nodeItr];
-                    var guid = objNode.getAttribute("guid");
-                    if (guid.length > 0) {
-                        var node = this.FindObjectByGUID(guid);
-                        if (node != null)
-                            retval.push(node);
+                    for (var nodeItr in nodes) {
+                        var objNode = nodes[nodeItr];
+                        var guid = objNode.getAttribute("guid");
+                        if (guid.length > 0) {
+                            var node = this.FindObjectByGUID(guid);
+                            if (node != null)
+                                retval.push(node);
+                        }
                     }
                 }
             }
@@ -1119,13 +1145,23 @@ function ROMNode(id) {
                     retval = this.m_xmlDoc.transformNode(xsltDoc);
                 }
                 else {
-                    var parser = new DOMParser();
-                    xsltDoc = parser.parseFromString(xslt_text, "text/xml");
-                    var xsltProcessor = new XSLTProcessor();
-                    xsltProcessor.importStylesheet(xsltDoc);
-                    var ownerDocument = document.implementation.createDocument("", "xsltDoc", null);
-                    var solnNode = xsltProcessor.transformToFragment(this.m_xmlDoc, ownerDocument);
-                    retval = solnNode.firstChild.textContent;
+                    if (DetectAndroidWebKit())
+                    {
+                        xsltDoc = xmlParse(xslt_text);
+                        retval = xsltProcess(this.m_xmlDoc.node, xsltDoc);
+                    }
+                    else
+                    {
+                        var parser = new DOMParser();
+                        xsltDoc = parser.parseFromString(xslt_text, "text/xml");
+                        var xsltProcessor = new XSLTProcessor();
+                        xsltProcessor.importStylesheet(xsltDoc);
+                        var ownerDocument = document.implementation.createDocument("", "xsltDoc", null);
+                        var solnNode = xsltProcessor.transformToFragment(this.m_xmlDoc, ownerDocument);
+                        retval = solnNode.firstChild.textContent;
+                        delete parser;
+                        delete xsltProcessor;
+                    }
                 }
             }
         }
@@ -1248,12 +1284,20 @@ function ROMNode(id) {
                 if (IsIE()) {
                     retval = this.m_xmlDoc.xml;
                 }
-                else {
-                    var serializer = new XMLSerializer();
-                    if (indented && IsMoz())
-                        retval = XML(serializer.serializeToString(this.m_xmlDoc)).toXMLString();
+                else 
+                {
+                    if (DetectAndroidWebKit())
+                    {     
+                        retval = xmlText(this.m_xmlDoc.node);
+                    }
                     else
-                        retval = serializer.serializeToString(this.m_xmlDoc);
+                    {           
+                        var serializer = new XMLSerializer();
+                        if (indented && IsMoz())
+                            retval = XML(serializer.serializeToString(this.m_xmlDoc)).toXMLString();
+                        else
+                            retval = serializer.serializeToString(this.m_xmlDoc);
+                    }
                 }
             }
         }
@@ -1278,8 +1322,16 @@ function ROMNode(id) {
                     this.m_xmlDoc.loadXML(genXML);
                 }
                 else {
-                    var parser = new DOMParser();
-                    this.m_xmlDoc = parser.parseFromString(genXML, "text/xml");
+                    if (DetectAndroidWebKit())
+                    {
+                        this.m_xmlDoc = new ExprContext(xmlParse(genXML));
+                    }
+                    else
+                    {
+                        var parser = new DOMParser();
+                        this.m_xmlDoc = parser.parseFromString(genXML, "text/xml");
+                        delete parser;
+                    }
                 }
 
                 this._setAllUnchanged();
@@ -1316,11 +1368,22 @@ function ROMNode(id) {
                 rootNode = this.m_xmlDoc.selectSingleNode("Object");
             }
             else {
-                var parser = new DOMParser();
-				var serializer = new XMLSerializer();
-				this.m_xmlDoc = null;
-                this.m_xmlDoc = parser.parseFromString(xmlStr, "text/xml");
-				rootNode = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);				
+                if (DetectAndroidWebKit())
+                {
+                    this.m_xmlDoc = new ExprContext(xmlParse(xmlStr));
+                    var rootEval = xpathParse("Object");
+                    var rootNodes = rootEval.evaluate(this.m_xmlDoc).nodeSetValue();
+                    if (rootNodes != null && rootNodes.length > 0)
+                        rootNode = rootNodes[0];
+                }
+                else
+                {
+                    var parser = new DOMParser();
+				    this.m_xmlDoc = null;
+                    this.m_xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+				    rootNode = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, FIRST_ORDERED_NODE_TYPE, null);			
+				    delete parser;
+				}	
 			}
 
             if (rootNode != null) {
@@ -1328,9 +1391,19 @@ function ROMNode(id) {
                 if (IsIE())
                     objectNode = this.m_xmlDoc.selectSingleNode("Object");
                 else {
-                    var objectNodeSnap = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                    if (objectNodeSnap != null && objectNodeSnap.snapshotLength == 1)
-                        objectNode = objectNodeSnap.snapshotItem(0);
+                    if (DetectAndroidWebKit())
+                    {
+                        var objectNodeEval = xpathParse("Object");
+                        var objectNodes = objectNodeEval.evaluate(this.m_xmlDoc).nodeSetValue();
+                        if (objectNodes != null && objectNodes.length == 1)
+                            objectNode = objectNodes[0];
+                    }
+                    else
+                    {
+                        var objectNodeSnap = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                        if (objectNodeSnap != null && objectNodeSnap.snapshotLength == 1)
+                            objectNode = objectNodeSnap.snapshotItem(0);
+                    }
                 }
 
                 if (objectNode != null && this._buildObject(objectNode, null) != null)
@@ -1402,26 +1475,58 @@ function ROMNode(id) {
             }
             else {
                 //set object attributes
-                var attrNodes = this.m_xmlDoc.evaluate("Attribute", objectNode, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                for (var attrCnt = 0; attrCnt < attrNodes.snapshotLength; attrCnt++) {
-                    var attrNode = attrNodes.snapshotItem(attrCnt);
-                    var idAttr = attrNode.getAttribute("id");
-                    for (var i = 0; i < attrNode.attributes.length; i++) {
-                        var attr = attrNode.attributes[i];
-                        var attrName = attr.nodeName;
-                        var attrValue = attr.nodeValue;
-                        if (attrName != "id")
-                            newNode.SetAttributeValue(idAttr, attrName, attrValue);
+                if (DetectAndroidWebKit())
+                {
+                    var attrNodeEval = xpathParse("Attribute");
+                    var ctx = new ExprContext(objectNode);
+                    var attrNodes = attrNodeEval.evaluate(ctx).nodeSetValue();
+                    for (var attrCnt = 0; attrCnt < attrNodes.length; attrCnt++) {
+                        var attrNode = attrNodes[attrCnt];
+                        var idAttr = attrNode.getAttribute("id");
+                        for (var i = 0; i < attrNode.attributes.length; i++) {
+                            var attr = attrNode.attributes[i];
+                            var attrName = attr.nodeName;
+                            var attrValue = attr.nodeValue;
+                            if (attrName != "id")
+                                newNode.SetAttributeValue(idAttr, attrName, attrValue);
+                        }
                     }
+                    
+                    //children recursivley
+                    var childNodeEval = xpathParse("Object");                    
+                    var childNodes = childNodeEval.evaluate(ctx).nodeSetValue();
+                    if (childNodes != null) for (var childCnt = 0; childCnt < childNodes.length; childCnt++) {
+                        var childNode = childNodes[childCnt];
+                        var newChildObject = this._buildObject(childNode, this);
+                        if (newChildObject != null && newNode != null) {
+                            newNode.AddChildROMObject(newChildObject);
+                        }
+                    }
+                    delete ctx;
                 }
+                else
+                {                    
+                    var attrNodes = this.m_xmlDoc.evaluate("Attribute", objectNode, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                    for (var attrCnt = 0; attrCnt < attrNodes.snapshotLength; attrCnt++) {
+                        var attrNode = attrNodes.snapshotItem(attrCnt);
+                        var idAttr = attrNode.getAttribute("id");
+                        for (var i = 0; i < attrNode.attributes.length; i++) {
+                            var attr = attrNode.attributes[i];
+                            var attrName = attr.nodeName;
+                            var attrValue = attr.nodeValue;
+                            if (attrName != "id")
+                                newNode.SetAttributeValue(idAttr, attrName, attrValue);
+                        }
+                    }                
 
-                //children recursivley
-                var childNodes = this.m_xmlDoc.evaluate("Object", objectNode, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                if (childNodes != null) for (var childCnt = 0; childCnt < childNodes.snapshotLength; childCnt++) {
-                    var childNode = childNodes.snapshotItem(childCnt);
-                    var newChildObject = this._buildObject(childNode, this);
-                    if (newChildObject != null && newNode != null) {
-                        newNode.AddChildROMObject(newChildObject);
+                    //children recursivley
+                    var childNodes = this.m_xmlDoc.evaluate("Object", objectNode, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                    if (childNodes != null) for (var childCnt = 0; childCnt < childNodes.snapshotLength; childCnt++) {
+                        var childNode = childNodes.snapshotItem(childCnt);
+                        var newChildObject = this._buildObject(childNode, this);
+                        if (newChildObject != null && newNode != null) {
+                            newNode.AddChildROMObject(newChildObject);
+                        }
                     }
                 }
             }

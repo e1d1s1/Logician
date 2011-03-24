@@ -352,7 +352,7 @@
         {
             var start = 0; var elapsed = 0; var testROMTreeStart = 0; var testROMTreeEnd = 0; var testROMNodeStart = 0; var testROMNodeEnd = 0;
             var msg = new String();
-            var iMax = 1000;
+            var iMax = 100;
             try
             {
                 clear_results();
@@ -417,7 +417,7 @@
                 }
 
 	            write_result("loading rules");
-	            if (rootNode.LoadRules("test_project.xml"))
+	            if (rootNode.LoadRulesFromString(rules))
 	            {
 		            write_result("...loaded");
 		            //deubg

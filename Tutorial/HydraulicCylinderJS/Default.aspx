@@ -2,9 +2,14 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
-    <title>EDSEngine Web Implementation (No Server Callbacks)</title>
+    <title>Hydraulic Cylinder Configurator</title>    
+    <script src="ajaxslt/util.js" type="text/javascript"></script>
+    <script src="ajaxslt/xmltoken.js" type="text/javascript"></script>
+    <script src="ajaxslt/dom.js" type="text/javascript"></script>
+    <script src="ajaxslt/xpath.js" type="text/javascript"></script>
+    <script src="ajaxslt/xslt.js" type="text/javascript"></script>
     <script src="KnowledgeBase.js" type="text/javascript"></script>    
-    <script src="ROMNode.js" type="text/javascript"></script>    
+    <script src="ROMNode.js" type="text/javascript"></script>
     <script type="text/javascript">
         var m_rootNode = null;
         var m_engine = null;
