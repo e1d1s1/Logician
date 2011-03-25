@@ -67,7 +67,7 @@ const unsigned short EXPLICIT_NULL_STRING = 2;
 
 inline void ReportErrorW(std::wstring errorMsg)
 {
-
+	std::wcerr<<errorMsg<<std::endl;
 }
 
 inline void ReportError(std::string errorMsg)

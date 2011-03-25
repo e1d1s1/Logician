@@ -86,7 +86,7 @@ public:
 	, _T("Debugging Options"))
 	{
 		m_options = options;
-		CreateButtons(wxOK|wxCANCEL|wxHELP);
+		CreateButtons(wxOK|wxCANCEL);
 
 		wxBookCtrlBase* notebook = GetBookCtrl();
 

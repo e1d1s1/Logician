@@ -89,7 +89,7 @@ public:
 		wstring openPath;
 		wxFileDialog openFileDialog (
 							m_parent,
-							_T("Open an existing project file"),
+							_T("Open an existing file"),
 							wxEmptyString,
 							wxEmptyString,
 							filterString,
@@ -125,7 +125,10 @@ public:
 	void WriteConfig(wstring configItem, string value)
 	{
 		wxString key = configItem;
-		m_config->Write(key, value.c_str());
+		wstring wval;
+		wval.assign(value.begin(), value.end());
+		wxString val = wval;
+		m_config->Write(key, val);
 	}	
 	void ReadConfig(wstring configItem, wstring *value)
 	{

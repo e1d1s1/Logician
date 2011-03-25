@@ -51,7 +51,7 @@
 				AdditionalOptions="/EHsc "
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\zlib-1.2.3.win32\include&quot;;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;C:\wxWidgets-2.8.10\include&quot;;&quot;C:\wxWidgets-2.8.10\lib\vc_lib\mswud&quot;;C:\boost_1_39_0"
-				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH"
+				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
@@ -113,6 +113,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy &quot;DecisionLogicHelp.htm&quot; &quot;vc_mswud\DecisionLogicHelp.htm&quot; /Y&#x0D;&#x0A;copy &quot;*.png&quot; &quot;vc_mswud\&quot; /Y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -152,7 +153,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="&quot;..\zlib-1.2.3.win32\include&quot;;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;C:\wxWidgets-2.8.10\include&quot;;&quot;C:\wxWidgets-2.8.10\lib\vc_lib\mswu&quot;;C:\boost_1_39_0"
-				PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH"
+				PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -211,6 +212,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy &quot;DecisionLogicHelp.htm&quot; &quot;vc_mswu\DecisionLogicHelp.htm&quot; /Y&#x0D;&#x0A;copy &quot;*.png&quot; &quot;vc_mswu\&quot; /Y"
 			/>
 		</Configuration>
 	</Configurations>
@@ -360,7 +362,42 @@
 			>
 		</File>
 		<File
+			RelativePath=".\DecisionLogicHelp.htm"
+			DeploymentContent="true"
+			>
+		</File>
+		<File
 			RelativePath=".\DecisionLogicIcon.ico"
+			>
+		</File>
+		<File
+			RelativePath=".\Figure1.png"
+			DeploymentContent="true"
+			>
+		</File>
+		<File
+			RelativePath=".\Figure2.png"
+			DeploymentContent="true"
+			>
+		</File>
+		<File
+			RelativePath=".\Figure3.png"
+			DeploymentContent="true"
+			>
+		</File>
+		<File
+			RelativePath=".\Figure4.png"
+			DeploymentContent="true"
+			>
+		</File>
+		<File
+			RelativePath=".\Figure5.png"
+			DeploymentContent="true"
+			>
+		</File>
+		<File
+			RelativePath=".\Figure6.png"
+			DeploymentContent="true"
 			>
 		</File>
 		<File

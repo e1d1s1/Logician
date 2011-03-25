@@ -5,38 +5,120 @@
     <title>DecisionLogic Help</title>
 </head>
 <body>
-
+    <h1>DecisionLogic Help</h1>
     <ol>
-        <li>Overview of the Interface</li>
-        <li>Creating a Project</li>
-        <li>Creating a Rule Table</li>
-        <li>Working with Rules</li>
-        <li>Defining Javascript/Python Code Snippets</li>
-        <li>Compiling a Project</li>
-        <li>Translations/Globalization</li>
+        <li><a href="#Overview">Overview of the Interface</a></li>
+        <li><a href="#Project">Creating a Project</a></li>
+        <li><a href="#Table">Creating a Rule Table</a></li>
+        <li><a href="#Rules">Working with Rules</a></li>
+        <li><a href="#Script">Defining Javascript/Python Code Snippets</a></li>
+        <li><a href="#Compiling">Compiling a Project</a></li>
+        <li><a href="#Debugging">Debugging</a></li>
     </ol>
     
-    <h2>Overview of the Interface</h2>
-    <img src="Figure1.png" alt="Screenshot of open project" /><p>
-    The above screenshot shows a typical DecisionLogic session when working with an active project.&nbsp; 
-    The left panel contains a tree view which contains the all of rule tables in the 
-    project in hierarchical form, as they are stored on disk as individual *.xml files.&nbsp; Any folder 
-    groups will show up with a folder icon from which containing tables can be 
-    expanded and selected.</p><p>
-    The right panel shows a typical table view when a user selects an item in the 
-    tree view for editing.&nbsp; In the example above, the rules flow left to right 
-    from input conditions to the outputs.&nbsp; The first row shows whether each column 
-        is an input or an output condition.&nbsp; The sencond row contains the attribute 
-        names.&nbsp; The checkbox in the top left corner 
-    of the table indicates whether the table should return the collection of all 
-    true results (checked), or only the ouput of the first encountered true row 
-    (unchecked).&nbsp; The orientation of the tables can be adjusted to a top to bottom 
-        type view under the Table menu.</p>
+    <h2><a name="Overview">Overview of the Interface</a></h2>
+    <img src="Figure1.png" alt="Screenshot of open project" />
+    <p>
+        The above screenshot shows a typical DecisionLogic session when working with an active project. 
+        The left panel contains a tree view which contains the all of rule tables in the 
+        project in hierarchical form, as they are stored on disk as individual *.xml files. Any folder 
+        groups will show up with a folder icon from which containing tables can be 
+        expanded and selected.
+    </p>
+    <p>
+        The right panel shows a typical table view when a user selects an item in the 
+        tree view for editing. In the example above, the rules flow left to right from 
+        input conditions to the outputs. The first row shows whether each column is an 
+        input or an output condition. The second row contains the attribute names. The 
+        checkbox in the top left corner of the table indicates whether the table should 
+        return the collection of all true results (checked), or only the output of the 
+        first encountered true row (unchecked). The orientation of the tables can be 
+        adjusted to a top to bottom type view under the Table menu. Individual 
+        rows/rules can be enabled or disabled in the first column.</p>
     
-    <h2>Creating a Project</h2><p>
-    A new project can be started from the menu File-&gt;New Project.&nbsp; You will be 
-    prompted to save a *.dlp file to some location.&nbsp; It is at this save 
-    location where any additional rule table files will also be stored, and 
-    considered the &quot;root&quot; level of the project.</p>
+    <h2><a name="Project">Creating a Project</a></h2>
+    <p>
+        A new project can be started from the menu File-&gt;New Project. You will be 
+        prompted to save a *.dlp file to some location. It is at this save 
+        location where any additional rule table files will also be stored, and 
+        considered the &quot;root&quot; level of the project.
+        You should make a habit of keeping each project in its own directory.</p>
+
+    <h2><a name="Table">Creating a Rule Table</a></h2>
+    <p>
+        A new table can be created from the menu Table-&gt;New 
+        Table. You can also do a number of other table management tasks in the 
+        Table menu such as Deleting tables from the project, inserting existing files 
+        into the current project, and creating organization groups or folders of 
+        associated tables. Each table is stored as an XML file.
+    </p>
+
+    <h2><a name="Rules">Working with Rules</a></h2>
+    <p>
+        For each rule row in the example table above, you can think of it as a series of 
+        if-then statements. If all the input conditions are satisfied, then the result 
+        of a rule evaluation is the value(s) contained in the output cells. Any input 
+        cell with a empty value are always considered &quot;true&quot;.&nbsp; Output cells can 
+        consist of a single value, or a collection of values delimited by the bar &quot;|&quot; 
+        character, effectively creating an AND condition.. Input cells can also contain 
+        multiple value tests separated by the bar &quot;|&quot;, effectively creating an OR 
+        condition.&nbsp; If an input OR condition needs to be reused in multiple table 
+        locations, rather than typing it over and over a variable can be defined for it 
+        in the GlobalORs table accessible in the menu Table-&gt;Global ORs.</p>
+    Global ORs Table<br />
+    <img src="Figure2.png" alt="Global ORs Table" /><br /><br />
+    Example use of a Global OR variable (Represents the statement "inputAttr1 equals A or Z")<br />
+    <img src="Figure3.png" alt="Example use of Global ORs" /><p>
+        Each input cell can contain operations in addition to the typed values to change 
+        the nature of the true/false evaluation for the cell.&nbsp; Operations available 
+        include:<br />
+> : greater-than, alpha or numerical<br />
+< : less-than, alpha or numerical<br />
+!= or <> : not equal to<br />
+[x,y] : range of values, inclusive ends<br />
+(x,y) : range of values, exclusive ends.  You can mix [] and ()<br />
+= : not typed explicitly, this is the default behavior for a rule cell</p>
+    <h2><a name="Script">Defining JavaScript/Python Code Snippets</a></h2>
+    <p>
+        Each output cell can also contain some special operations involving JavaScript 
+        or Python code snippets that are evaluated at runtime. To invoke script, use the 
+        keyword <b>py(<i>your python code here</i></b>) or <b>js(<i>your javascript code 
+        here</i></b>). Any code snippet needs to return a string value. For example: 
+        js(return (2+2).toString()) would return &quot;4&quot;.&nbsp; For clarity’s sake, you can 
+        omit the &quot;return&quot; and &quot;toString()&quot; text in a one line JavaScript snippet, 
+        making: js(2+2) valid.&nbsp;</p>
+    <p>
+        More complicated code snippets can be evaluated and reused across multiple 
+        tables using the code editing feature. In any cell containing code, its contents 
+        can be edited in a Scintilla-based editor by right clicking it and choosing 
+        &quot;Edit Code&quot; from the popup menu. To edit code shared globally across tables, 
+        access the menu Table-&gt;Global Code.</p>
+    <img src="Figure4.png" alt="Example use of Global Code" />
+
+    <h2><a name="Compiling">Compiling a Project</a></h2>
+    <p>
+        To compile a collection of tables into a format useable by the Logician 
+        EDSEngine table evaluator library, access the menu Compile-&gt;Compile to XML.&nbsp; 
+        A zipped XML file can also be created in this menu.</p>
+
+    <h2><a name="Debugging">Debugging</a></h2>
+    <p>
+        When utilizing compiled rules in an C++ or .NET application, the integrated 
+        debugging feature of DecisionLogic can be used to identify the precise inputs 
+        and outputs of the tables being evaluated in the log window, and to also 
+        highlight the active rule solution in the table window area.&nbsp; Before 
+        compiling an application, turn on the debugger in the menu Compile-&gt;Debug menu.&nbsp; 
+        Then in the next menu item &quot;Debugging Options&quot;, selected from among the list of 
+        project tables which particular tables you would like to receive debugging 
+        messages from upon evaluation in EDSEngine.</p>
+    <img src="Figure5.png" alt="Debugging Options" />
+    <p>        
+        Once you recompile the project 
+        and execute the rules in EDSEngine, you should see debugging output appear in the 
+        log window, as well as table row position highlighting if you allowed for it in 
+        the options.&nbsp; Please note that enabling debugging will reduce application 
+        performance.
+    </p>
+    <img src="Figure6.png" alt="Debugging View" />
 </body>
 </html>

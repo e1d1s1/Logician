@@ -1010,7 +1010,7 @@ public:
 	inline void OnLeftClick(wxGridEvent& event)
 	{
 		//event.Skip();
-		if (event.GetRow() == 0 && event.GetCol() == 0) // the GetAll checkbox
+		if (event.GetRow() == 0 && event.GetCol() == 0 && this->m_type == RULES_TABLE) // the GetAll checkbox
 		{
 			if (this->GetCellValue(0, 0).length() == 0)
 				this->SetCellValue(0, 0, _T("1"));

@@ -52,6 +52,7 @@
 
 #include <wx/treectrl.h>
 #include <wx/splitter.h>
+#include <wx/process.h>
 #include "WorkerClass.h"
 #include "FindReplaceDialog.h"
 // ----------------------------------------------------------------------------
@@ -127,6 +128,7 @@ public:
 	void OnCompileOptions(wxCommandEvent& event);
 
 	//help menu
+	void OnHelp(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
 
 	//tree events
@@ -170,6 +172,7 @@ private:
 	wxFindReplaceData m_findData;
     MyFindReplaceDialog *m_dlgReplace;
 	bool m_bBypassLoad;
+	wxString m_working_directory;
     // any class wishing to process wxWidgets events must use this macro
     DECLARE_EVENT_TABLE();
 
@@ -229,7 +232,8 @@ enum
 	// it is important for the id corresponding to the "About" command to have
     // this standard value as otherwise it won't be handled properly under Mac
     // (where it is special and put into the "Apple" menu)
-    DecisionLogic_About = wxID_ABOUT
+    DecisionLogic_About = wxID_ABOUT,
+	DecisionLogic_Help = wxID_HELP
 };
 
 // Create a new application object: this macro will allow wxWidgets to create
@@ -238,3 +242,28 @@ enum
 // wxGetApp() which will return the reference of the right type (i.e. DecisionLogicApp and
 // not wxApp)
 IMPLEMENT_APP(DecisionLogicApp)
+
+
+// This is the handler for process termination events
+class MyProcess : public wxProcess
+{
+public:
+    MyProcess(DecisionLogicFrame *parent, const wxString& cmd)
+        : wxProcess(parent), m_cmd(cmd)
+    {
+        m_parent = parent;
+    }
+
+    // instead of overriding this virtual function we might as well process the
+    // event from it in the frame class - this might be more convenient in some
+    // cases
+    virtual void MyProcess::OnTerminate(int pid, int status)
+	{
+		// we're not needed any more
+		delete this;
+	}
+
+protected:
+    DecisionLogicFrame *m_parent;
+    wxString m_cmd;
+};

@@ -30,6 +30,7 @@
 #include <wx/fdrepdlg.h>
 #include <wx/utils.h>
 #include <wx/treectrl.h>
+#include <wx/mimetype.h>
 #ifndef WIN32
 #include <wx/imaglist.h>
 #endif
@@ -111,6 +112,7 @@ BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
 	EVT_MENU(DecisionLogic_CompileOptions,  DecisionLogicFrame::OnCompileOptions)
 
     EVT_MENU(DecisionLogic_About, DecisionLogicFrame::OnAbout)
+	EVT_MENU(DecisionLogic_Help, DecisionLogicFrame::OnHelp)
 
 	//FRAME EVENTS//////////////////////////////////////////////////////////////////
 	EVT_SIZE(DecisionLogicFrame::OnSize)
@@ -237,6 +239,8 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 
 	SetSize(800, 600);
 
+	m_working_directory = wxGetCwd();
+
     // create a menu bar
     fileMenu = new wxMenu();
 	fileMenu->Append(DecisionLogic_NewProject, _T("&New Project\tCtrl-N"), _T("Start a new rules project"));
@@ -327,7 +331,8 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 
 	// the "About" item should be in the help menu
     wxMenu *helpMenu = new wxMenu();
-    helpMenu->Append(DecisionLogic_About, _T("&About...\tF1"), _T("Show about dialog"));
+	helpMenu->Append(DecisionLogic_Help, _T("&Help\tF1"), _T("Show help"));
+    helpMenu->Append(DecisionLogic_About, _T("&About..."), _T("Show about dialog"));
 
     // now append the freshly created menu to the menu bar...
     wxMenuBar *menuBar = new wxMenuBar();
@@ -593,12 +598,29 @@ void DecisionLogicFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     wxMessageBox(wxString::Format(
         _T("This is DecisionLogic ")
-        _T("running under %s.\nCoded by Eric D. Schmidt\n(c) eLogician LLC"),
+        _T("running under %s.\nCoded by Eric D. Schmidt\n(c) 2008 - 2011 eLogician LLC"),
         wxGetOsDescription().c_str()
      ),
      _T("About DecisionLogic"),
      wxOK | wxICON_INFORMATION,
      this);
+}
+
+void DecisionLogicFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
+{
+    //shell out the htm help
+	wxMimeTypesManager manager;
+	wxFileType * filetype = manager.GetFileTypeFromExtension(_T("htm"));
+	wxString command;
+	wxString path = m_working_directory + PATHSEP + _T("DecisionLogicHelp.htm");
+	bool ok = filetype->GetOpenCommand(&command, wxFileType::MessageParameters(path));
+	if (ok)
+	{
+		wxProcess *process = new MyProcess(this, command);
+		long pid = wxExecute(command, wxEXEC_ASYNC, process);
+		if (!pid)
+			delete process;
+	}
 }
 
 void DecisionLogicFrame::OnOpenRecentFile (wxCommandEvent& event)
@@ -866,8 +888,8 @@ void DecisionLogicFrame::ShowFindReplaceDialog( wxCommandEvent& WXUNUSED(event) 
 void DecisionLogicFrame::OnFindDialog(wxFindDialogEvent& event)
 {
     wxEventType type = event.GetEventType();
-	bool bMatchCase = event.GetFlags() & wxFR_MATCHCASE;
-	bool bMatchWholeWord = event.GetFlags() & wxFR_WHOLEWORD;
+	bool bMatchCase = (event.GetFlags() & wxFR_MATCHCASE) > 0;
+	bool bMatchWholeWord = (event.GetFlags() & wxFR_WHOLEWORD) > 0;
 
     if ( type == wxEVT_COMMAND_FIND || type == wxEVT_COMMAND_FIND_NEXT )
     {

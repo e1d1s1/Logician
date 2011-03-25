@@ -66,7 +66,7 @@ public:
 		, _T("Global Code"))
 	{
 		m_options = options;
-		CreateButtons(wxOK|wxCANCEL|wxHELP);
+		CreateButtons(wxOK|wxCANCEL);
 
 		wxBookCtrlBase* notebook = GetBookCtrl();
 
