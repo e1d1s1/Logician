@@ -52,7 +52,7 @@ public:
 		, _T("Code Editor"))
 	{
 		m_code = text;
-		CreateButtons(wxOK|wxCANCEL|wxHELP);
+		CreateButtons(wxOK|wxCANCEL);
 
 		wxBookCtrlBase* notebook = GetBookCtrl();
 		wxPanel* codePanel = CreateCodePage(notebook, codeLang);

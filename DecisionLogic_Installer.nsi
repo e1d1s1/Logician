@@ -50,6 +50,14 @@ Section "DecisionLogic (required)"
   SetOutPath $INSTDIR
   ; Put file there
   File "DecisionLogic\vc_mswu\DecisionLogic.exe"
+  File "DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
+  File "DecisionLogic\vc_mswu\Figure1.png"
+  File "DecisionLogic\vc_mswu\Figure2.png"
+  File "DecisionLogic\vc_mswu\Figure3.png"
+  File "DecisionLogic\vc_mswu\Figure4.png"
+  File "DecisionLogic\vc_mswu\Figure5.png"
+  File "DecisionLogic\vc_mswu\Figure6.png"
+  
 
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\DecisionLogic "Install_Dir" "$INSTDIR"

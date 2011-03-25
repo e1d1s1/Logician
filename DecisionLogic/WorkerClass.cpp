@@ -27,7 +27,6 @@
 #include <zlib.h>
 #include <cctype>
 
-
 #include "WorkerClass.h"
 #include "utilities.h"
 
@@ -177,7 +176,7 @@ void WorkerClass::GetSettings()
 	if (m_debugOptions.debugMode == m_debugOptions.SELECTED_TABLES)
 	{
 		m_gui->GetConfig(L"HighlightDebug", &l);
-		m_debugOptions.bOpenTable = (bool)l;
+		m_debugOptions.bOpenTable = l > 0;
 	}
 	else
 	{
@@ -524,7 +523,6 @@ void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
 		return;
 	}
 
-	bool bSystemTable = false;
 	if (newName == GLOBALORS_TABLE_NAME || newName == TRANSLATIONS_TABLE_NAME)
 	{
 		m_gui->PromptMessage(L"This name is a reserved system table, please try again");
