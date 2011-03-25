@@ -13,7 +13,7 @@ Copyright (C) 2009 - 2011 Eric D. Schmidt
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    asize_t with EDSEngine.  If not, see <http://www.gnu.org/licenses/>.
+    along with EDSEngine.  If not, see <http://www.gnu.org/licenses/>.
 */
 #pragma once
 
