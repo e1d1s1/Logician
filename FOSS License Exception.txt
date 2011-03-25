@@ -1,8 +1,8 @@
-FOSS License Exception
+﻿FOSS License Exception
 
 What is the FOSS License Exception?
 
-eLogician’s Free and Open Source Software ("FOSS") License Exception allows developers of FOSS applications to include eLogician's EDSEngine Client Libraries with their FOSS applications.  EDSEngine Client Libraries are typically licensed pursuant to version 3 of the General Public License ("GPL"), but this exception permits distribution of certain EDSEngine Client Libraries with a developer’s FOSS applications licensed under the terms of another FOSS license listed below, even though such other FOSS license may be incompatible with the GPL.
+eLogician’s Free and Open Source Software ("FOSS") License Exception allows developers of FOSS applications to include eLogician's EDSEngine or Relation Object Model Client Libraries with their FOSS applications.  EDSEngine Client Libraries are typically licensed pursuant to version 2 of the General Public License ("GPL"), but this exception permits distribution of certain EDSEngine Client Libraries with a developer’s FOSS applications licensed under the terms of another FOSS license listed below, even though such other FOSS license may be incompatible with the GPL.
 
 The following terms and conditions describe the circumstances under which eLogician’s FOSS License Exception applies.
 
@@ -16,7 +16,7 @@ eLogician’s FOSS License Exception Terms and Conditions
 
       "Independent Work" means portions of the Derivative Work that are not derived from the Program and can reasonably be considered independent and separate works.
 
-      "Program" means a copy of eLogician’s EDSEngine Client Libraries that contains a FOSS Notice.
+      "Program" means a copy of eLogician’s Client Libraries that contain a FOSS Notice.
 
 2. A FOSS application developer ("you" or "your") may distribute a Derivative Work provided that you and the Derivative Work meet all of the following conditions:
          1. You obey the GPL in all respects for the Program and all portions (including modifications) of the Program included in the Derivative Work (provided that this condition does not apply to Independent Works);

@@ -50,6 +50,9 @@ Silverlight Rules Engine and Relational Object Model
 Adobe Flash/Actionscript Rules Engine and Relational Object Model
 - Just a wrapper for the Javascript libraries, interface similar to the .NET library.  However, overloading restrictions cause some function names to differ and in those cases are named similar to the javascript method.  Flash 10.1 tested.  FlashDevelop project files provided.
 
+Android/iPhone notes:
+- An example project utilizing the Google Android SDK and the Open Source "PhoneGap" project is provided.  PhoneGap enables you to write cross-platform mobile applications utilizing HTML5 and Javascript tools.  As such, the example shows how the Javascript libraies can be utilized for mobile development.  See http://www.phonegap.com for details.  Additionally, the C++ library should be useable by iPhone developers with Objective-C++, however this has not currently been tested or confirmed.
+
 
 C++ Build Notes
 Important pre-processor defines for EDSEngine/Relational Object Model:
@@ -71,5 +74,4 @@ Apple OSX:
 Coming soon...should work since all the same *nix tools are available.  Need to test.
 
 Notes for web tools:
-
 The javascript components have been testing against IE6 and up, Firefox 3.5 (Gecko), Google Chrome 8 and Safari 4 (Webkit).  A sample test page with Logician scripting tools is available in the source repository.

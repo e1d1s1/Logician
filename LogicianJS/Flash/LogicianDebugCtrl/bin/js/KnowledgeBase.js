@@ -4,18 +4,24 @@ Copyright (C) 2009-2011  Eric D. Schmidt
     The JavaScript code in this page is free software: you can
     redistribute it and/or modify it under the terms of the GNU
     General Public License (GNU GPL) as published by the Free Software
-    Foundation, either version 3 of the License, or (at your option)
+    Foundation, either version 2 of the License, or (at your option)
     any later version.  The code is distributed WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS
     FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
 
-    As additional permission under GNU GPL version 3 section 7, you
+    As additional permission under GNU GPL version 2 section 3, you
     may distribute non-source (e.g., minimized or compacted) forms of
     that code without the copy of the GNU GPL normally required by
-    section 4, provided you include this license notice and a URL
+    section 3, provided you include this license notice and a URL
     through which recipients can access the Corresponding Source.
     <http://www.gnu.org/licenses/>.
 */
+
+/// reference path="ajaxslt/util.js"
+/// reference path="ajaxslt/xmltoken.js"
+/// reference path="ajaxslt/dom.js"
+/// reference path="ajaxslt/xpath.js"
+/// reference path="ajaxslt/xslt.js"
 
 //IE doesnt do indexOf for array
 function GetIndexOfItem(arr, obj)
@@ -47,6 +53,12 @@ var JAVASCRIPT = 0x2000;
 var INVALID_STRING = 0;
 var EMPTY_STRING = 1;
 var EXPLICIT_NULL_STRING = 2;
+
+//xpath constants
+var STRING_TYPE = 2;
+var ORDERED_NODE_SNAPSHOT_TYPE = 6;
+var FIRST_ORDERED_NODE_TYPE = 9;
+
 function ReportError(err) 
 {
     var vDebug = "";
@@ -59,20 +71,55 @@ function ReportError(err)
     alert(vDebug);
 }
 
-function IsIE() 
-{
+var engineWebKit = "webkit";
+var deviceAndroid = "android";
+function IsIE() {
     var ie = (typeof window.ActiveXObject != 'undefined');
-    //alert("IE=" + ie);
     return ie;
 }
 
-function IsMoz() 
-{
-    var moz = (typeof document.implementation != 'undefined') && (typeof 
-        document.implementation.createDocument != 'undefined');
-    //alert("Moz=" + moz);
+function IsMoz() {
+    var moz = (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0 && SupportsXPATH() == true);
     return moz;
 }
+
+// Detects if the current browser is based on WebKit.
+function DetectWebkit()
+{
+   if (navigator.userAgent.toLowerCase().search(engineWebKit) > -1)
+      return true;
+   else
+      return false;
+}
+
+// Detects if the current device is an Android OS-based device.
+function DetectAndroid() {
+    if (navigator.userAgent.toLowerCase().search(deviceAndroid) > -1)
+        return true;
+    else
+        return false;
+}
+
+// Detects if the current device is an Android OS-based device and
+//   the browser is based on WebKit.
+function DetectAndroidWebKit() {
+    if (DetectAndroid()) {
+        if (DetectWebkit())
+            return true;
+        else
+            return false;
+    }
+    else
+        return false;
+}
+
+function SupportsXPATH() {
+    var res = (document.implementation
+            && document.implementation.hasFeature
+            && document.implementation.hasFeature("XPath", null));
+    return res;
+}
+
 
 String.prototype.trim = function () {
     return this.replace(/^\s*/, "").replace(/\s*$/, "");
@@ -168,6 +215,7 @@ function MakeGUID() {
     catch (err) {
         ReportError(err);
     }
+	return null;
 }
 
 //flash support////////////////////////////
@@ -586,13 +634,13 @@ function Decode()
 		            {
 			            throw "string not found for index: " + id.toString();
 		            }
-	            }
-	            return "";
+	            }	            
             }
             catch (err)
             {
                 ReportError(err);
             }
+			return "";
         }
 
         this.ParseStringForGets = function(id, bForceZero)
@@ -701,7 +749,6 @@ function RuleTable()
     try
     {
         this.DebugMessage = "";
-        this.m_StateParameter = "";
         this.m_InputAttrsValues = new Array();
         this.m_InputAttrsTests = new Array();
         this.m_FormulaInputs = new Array();
@@ -749,7 +796,7 @@ function RuleTable()
                 if (bForward)
                     resultCollection = this.m_OutputAttrsValues;
                 else
-                    resultCollection = this.m_InputAttrsTest;
+                    resultCollection = this.m_InputAttrsTests;
             
                 //for all the outputs get the results
                 for (var i = 0; i < ArraySize(resultCollection); i++)
@@ -1000,6 +1047,7 @@ function RuleTable()
             {
                 ReportError(err);
             }
+			return false;
         }
 
         this.HasJS = function()
@@ -1012,6 +1060,7 @@ function RuleTable()
             {
                 ReportError(err);
             }
+			return false;
         }
 
         this.GetAllOutputAttrNames = function()
@@ -1112,6 +1161,7 @@ function RuleTable()
             {
                 ReportError(err);
             }
+			return null;
         }
 
         this.GetInputAttrsTests = function()
@@ -1124,6 +1174,7 @@ function RuleTable()
             {
                 ReportError(err);
             }
+			return null;
         }
 
         this.DebugEval = function(outputAttr, inputValues, solutions)
@@ -1238,6 +1289,7 @@ function TableSet()
             catch (err) {
                 ReportError(err);
             }
+			return null;
         }
 
         this.GetInputAttrs = function (tableName) {
@@ -1247,6 +1299,7 @@ function TableSet()
             catch (err) {
                 ReportError(err);
             }
+			return null;
         }
 
         this.GetInputDependencies = function (tableName) {
@@ -1265,6 +1318,7 @@ function TableSet()
             catch (err) {
                 ReportError(err);
             }
+			return null;
         }
 
         this.Count = function () {
@@ -1274,6 +1328,7 @@ function TableSet()
             catch (err) {
                 ReportError(err);
             }
+			return 0;
         }
 
         this.LoadTableInfo = function (table) {
@@ -1378,7 +1433,8 @@ function loadXMLDoc(file)
     }
     xhttp.open("GET",file,false);
     xhttp.send("");
-    var xmlDoc = xhttp.responseXML;
+    var xmlDoc = loadXMLDocString(xhttp.responseText);
+    delete xhttp;
     return xmlDoc;
 }
 
@@ -1392,10 +1448,15 @@ function loadXMLDocString(xmlStr)
         xmlDoc.setProperty("SelectionLanguage", "XPath");
         xmlDoc.loadXML(xmlStr);
     }
+    else if (DetectAndroidWebKit())
+    {
+        xmlDoc = new ExprContext(xmlParse(xmlStr));
+    }
     else 
     {
         var parser = new DOMParser();
         xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+        delete parser;
     }
     return xmlDoc;
 }
@@ -1429,8 +1490,9 @@ function CreateKnowledgeBaseFromString(xml) {
 
 function KnowledgeBase(xmlPath) {
     var xmlDoc = null;
-
+    
     try {
+        this.m_StateParameter = "";
         this.m_TableSet = new TableSet();
         this.m_stringsMap = new Bimapper();
         this.mapBaseIDtoTranslations = new Array();
@@ -1461,72 +1523,151 @@ function KnowledgeBase(xmlPath) {
             var bGetAll = false;
     
             if (IsIE() == false)
-            {            
-                debug = xmlDoc.evaluate("Tables/@debug", xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
-                debugTables = xmlDoc.evaluate("Tables/@debugtables", xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
-                allTables = xmlDoc.evaluate("Tables/Table", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-        
-                for (var i = 0; i < allTables.snapshotLength; i++)
-                {
-                    var TableNode = allTables.snapshotItem(i);
-                    var tableName = TableNode.getAttribute("name");
-                    bGetAll = false;
-                    var getAll = TableNode.getAttribute("getall");
-                    if (getAll.toLowerCase().charAt(0) == 't')
-                        bGetAll = true;
-                    var formulaInputs = new Array(); 
-                    inputList = xmlDoc.evaluate("Inputs", TableNode, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                    outputList = xmlDoc.evaluate("Outputs", TableNode, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                    formulaInputNodes = xmlDoc.evaluate("FormulaInput", TableNode, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                    if (formulaInputNodes)
+            {
+                if (DetectAndroidWebKit())
+                {   var debugEval = xpathParse("Tables/@debug");
+                    debug = debugEval.evaluate(xmlDoc).stringValue();
+                    var debugTablesEval = xpathParse("Tables/@debugtables");
+                    debugTables = debugTablesEval.evaluate(xmlDoc).stringValue();
+                    var allTablesEval = xpathParse("Tables/Table");
+                    allTables = allTablesEval.evaluate(xmlDoc).nodeSetValue();
+                    for (var i = 0; i < allTables.length; i++)
                     {
-                        for (var j = 0; j < formulaInputNodes.snapshotLength; j++)
-                        {                        
-                            var formulaInputNode = formulaInputNodes.snapshotItem(j);
-                            formulaInputs.push(formulaInputNode.textContent);
-                        }
-                    }
-                    inputAttrsTests = this.GetTableRowFromXML(inputList, xmlDoc);
-                    outputAttrsValues = this.GetTableRowFromXML(outputList, xmlDoc);
-                    this.m_TableSet.AddTable(inputAttrsTests, outputAttrsValues, formulaInputs, this.m_stringsMap, tableName, bGetAll);    
-                    this.m_IsOpen = true;
-                }
-        
-                allTranslaions = xmlDoc.evaluate("//Translations/String", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                if (allTranslaions)
-                {
-                    for (var i = 0; i < allTranslaions.snapshotLength; i++)
-                    {
-                        var translationNode = allTranslaions.snapshotItem(i);
-                        var id = parseInt(translationNode.getAttribute("id"));
-                        for (var j = 0; j < translationNode.attributes.length; j++)
+                        var TableNode = allTables[i];
+                        var tableName = TableNode.getAttribute("name").toString();
+                        bGetAll = false;
+                        var getAll = TableNode.getAttribute("getall");
+                        if (getAll.toLowerCase().charAt(0) == 't')
+                            bGetAll = true;
+                        var formulaInputs = new Array(); 
+                        var inputListEval = xpathParse("Inputs");
+                        var ouputListEval = xpathParse("Outputs");
+                        var formulaInputNodesEval = xpathParse("FormulaInput");
+                        var ctx = new ExprContext(TableNode);
+                        inputList = inputListEval.evaluate(ctx).nodeSetValue();
+                        outputList = ouputListEval.evaluate(ctx).nodeSetValue();
+                        formulaInputNodes = formulaInputNodesEval.evaluate(ctx).nodeSetValue();
+                        delete ctx;
+                        if (formulaInputNodes)
                         {
-                            var langType = translationNode.attributes[j].nodeName;                        
-                            if (langType != "id")
+                            for (var j = 0; j < formulaInputNodes.length; j++)
+                            {                        
+                                var formulaInputNode = formulaInputNodes[j];
+                                formulaInputs.push(formulaInputNode.firstChild.nodeValue);
+                            }
+                        }
+                        inputAttrsTests = this.GetTableRowFromXML(inputList, xmlDoc);
+                        outputAttrsValues = this.GetTableRowFromXML(outputList, xmlDoc);
+                        this.m_TableSet.AddTable(inputAttrsTests, outputAttrsValues, formulaInputs, this.m_stringsMap, tableName, bGetAll);    
+                        this.m_IsOpen = true;
+                    }
+                    
+                    var allTranslationsEval = xpathParse("//Translations/String");
+                    allTranslaions = allTranslationsEval.evaluate(xmlDoc).nodeSetValue();
+                    if (allTranslaions)
+                    {
+                        for (var i = 0; i < allTranslaions.length; i++)
+                        {
+                            var translationNode = allTranslaions[i];
+                            var id = parseInt(translationNode.getAttribute("id"));
+                            for (var j = 0; j < translationNode.attributes.length; j++)
                             {
-                                var langValue = translationNode.attributes[j].nodeValue;  
-                                if (this.mapBaseIDtoTranslations[id] != null)
+                                var langType = translationNode.attributes[j].nodeName;                        
+                                if (langType != "id")
                                 {
-                                    var newTranslation = this.mapBaseIDtoTranslations[id];
-                                    newTranslation[langType] = langValue;
-                                    this.mapBaseIDtoTranslations[id] = newTranslation;
-                                }
-                                else
-                                {                                
-                                    var newTranslation = new Array();
-                                    newTranslation[langType] = langValue;
-                                    this.mapBaseIDtoTranslations[id] = newTranslation;
+                                    var langValue = translationNode.attributes[j].nodeValue;  
+                                    if (this.mapBaseIDtoTranslations[id] != null)
+                                    {
+                                        var newTranslation = this.mapBaseIDtoTranslations[id];
+                                        newTranslation[langType] = langValue;
+                                        this.mapBaseIDtoTranslations[id] = newTranslation;
+                                    }
+                                    else
+                                    {                                
+                                        var newTranslation = new Array();
+                                        newTranslation[langType] = langValue;
+                                        this.mapBaseIDtoTranslations[id] = newTranslation;
+                                    }
                                 }
                             }
                         }
                     }
+                    
+                    var nodeJSEval = xpathParse("//Javascript");
+                    nodeJS = nodeJSEval.evaluate(xmlDoc).nodeSetValue();
+                    if (nodeJS != null && nodeJS.length > 0)
+                    {
+		                this.m_jsCode = nodeJS[0].firstChild.nodeValue + "\n";
+	                }
                 }
-        
-                nodeJS = xmlDoc.evaluate("//Javascript", xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                if (nodeJS != null)
+                else
                 {
-			        this.m_jsCode = nodeJS.singleNodeValue.textContent + "\n";
-		        }			
+                    debug = xmlDoc.evaluate("Tables/@debug", xmlDoc, null, STRING_TYPE, null).stringValue;
+            	    debugTables = xmlDoc.evaluate("Tables/@debugtables", xmlDoc, null, STRING_TYPE, null).stringValue;
+                    allTables = xmlDoc.evaluate("Tables/Table", xmlDoc, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+            
+                    for (var i = 0; i < allTables.snapshotLength; i++)
+                    {
+                        var TableNode = allTables.snapshotItem(i);
+                        var tableName = TableNode.getAttribute("name");
+                        bGetAll = false;
+                        var getAll = TableNode.getAttribute("getall");
+                        if (getAll.toLowerCase().charAt(0) == 't')
+                            bGetAll = true;
+                        var formulaInputs = new Array(); 
+                        inputList = xmlDoc.evaluate("Inputs", TableNode, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                        outputList = xmlDoc.evaluate("Outputs", TableNode, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                        formulaInputNodes = xmlDoc.evaluate("FormulaInput", TableNode, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                        if (formulaInputNodes)
+                        {
+                            for (var j = 0; j < formulaInputNodes.snapshotLength; j++)
+                            {                        
+                                var formulaInputNode = formulaInputNodes.snapshotItem(j);
+                                formulaInputs.push(formulaInputNode.textContent);
+                            }
+                        }
+                        inputAttrsTests = this.GetTableRowFromXML(inputList, xmlDoc);
+                        outputAttrsValues = this.GetTableRowFromXML(outputList, xmlDoc);
+                        this.m_TableSet.AddTable(inputAttrsTests, outputAttrsValues, formulaInputs, this.m_stringsMap, tableName, bGetAll);    
+                        this.m_IsOpen = true;
+                    }
+            
+                    allTranslaions = xmlDoc.evaluate("//Translations/String", xmlDoc, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                    if (allTranslaions)
+                    {
+                        for (var i = 0; i < allTranslaions.snapshotLength; i++)
+                        {
+                            var translationNode = allTranslaions.snapshotItem(i);
+                            var id = parseInt(translationNode.getAttribute("id"));
+                            for (var j = 0; j < translationNode.attributes.length; j++)
+                            {
+                                var langType = translationNode.attributes[j].nodeName;                        
+                                if (langType != "id")
+                                {
+                                    var langValue = translationNode.attributes[j].nodeValue;  
+                                    if (this.mapBaseIDtoTranslations[id] != null)
+                                    {
+                                        var newTranslation = this.mapBaseIDtoTranslations[id];
+                                        newTranslation[langType] = langValue;
+                                        this.mapBaseIDtoTranslations[id] = newTranslation;
+                                    }
+                                    else
+                                    {                                
+                                        var newTranslation = new Array();
+                                        newTranslation[langType] = langValue;
+                                        this.mapBaseIDtoTranslations[id] = newTranslation;
+                                    }
+                                }
+                            }
+                        }
+                    }
+            
+                    nodeJS = xmlDoc.evaluate("//Javascript", xmlDoc, null, FIRST_ORDERED_NODE_TYPE, null);
+                    if (nodeJS != null && nodeJS.singleNodeValue != null)
+                    {
+		                this.m_jsCode = nodeJS.singleNodeValue.textContent + "\n";
+	                }		       
+	            }
             }
             else // Internet Explorer
             {
@@ -1675,6 +1816,7 @@ function KnowledgeBase(xmlPath) {
             {
                 ReportError(err);
             }    
+			return false;
         }
 
         this.GetTableRowFromXML = function(nodes, xmlDoc)
@@ -1684,53 +1826,110 @@ function KnowledgeBase(xmlPath) {
             {
                 if (IsIE() == false)
                 {
-                    for (var i = 0; i < nodes.snapshotLength; i++)
+                    if (DetectAndroidWebKit())
                     {
-                        var currentAttrRow = new Pair();
-                        var currrentInputAttr = nodes.snapshotItem(i);
-                        var values = xmlDoc.evaluate("Value", currrentInputAttr, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                        var attrNode = xmlDoc.evaluate("Attr", currrentInputAttr, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                        var attrName = "";
-                        if (attrNode != null && attrNode.singleNodeValue != null)
-					        attrName = attrNode.singleNodeValue.textContent;    
-				        if (attrName.length > 0)
-				        {            
-					        currentAttrRow.first = attrName;
-					        currentAttrRow.second = new Array();
-					
-					        for (var j = 0; j < values.snapshotLength; j++)
-					        {                    
-						        var cell = new RuleCell();
-						        var currentValue = values.snapshotItem(j);
-						        var idValue = currentValue.getAttribute("id");
-						        if (idValue)
-						        {
-							        var cellValues = currentValue.textContent.split("|");
-							        var ids = idValue.split(",");
-							        if (cellValues.length != ids.length)
-								        throw "Bad OR";
-								
-							        for (var idCnt = 0; idCnt < ids.length; idCnt++)
-							        {
-								        var id = parseInt(ids[idCnt], 10);
-								        var value = cellValues[idCnt];
-								        this.m_stringsMap.AddString(id, value);
-								        cell.Values.push(id); 
-							        }
-						        }
+                        for (var i = 0; i < nodes.length; i++)
+                        {
+                            var currentAttrRow = new Pair();
+                            var currrentInputAttr = nodes[i];
+                            var valuesEval = xpathParse("Value");
+                            var ctx = new ExprContext(currrentInputAttr);
+                            var values = valuesEval.evaluate(ctx).nodeSetValue();
+                            var attrNodeEval = xpathParse("Attr");
+                            var attrNode = attrNodeEval.evaluate(ctx).nodeSetValue()[0];
+                            delete ctx;           
+                            var attrName = "";
+                            if (attrNode != null && attrNode.firstChild != null)
+					            attrName = attrNode.firstChild.nodeValue;
+					        if (attrName.length > 0)
+				            {            
+					            currentAttrRow.first = attrName;
+					            currentAttrRow.second = new Array();
+					            for (var j = 0; j < values.length; j++)
+					            {                    
+						            var cell = new RuleCell();
+						            var currentValue = values[j];
+						            var idValue = currentValue.getAttribute("id");
+						            if (idValue)
+						            {
+							            var cellValues = currentValue.firstChild.nodeValue.split("|");
+							            var ids = idValue.split(",");
+							            if (cellValues.length != ids.length)
+								            throw "Bad OR";
+    								
+							            for (var idCnt = 0; idCnt < ids.length; idCnt++)
+							            {
+								            var id = parseInt(ids[idCnt], 10);
+								            var value = cellValues[idCnt];
+								            this.m_stringsMap.AddString(id, value);
+								            cell.Values.push(id); 
+							            }
+						            }
 
-						        var operValue = currentValue.getAttribute("operation");
-						        var oper = 0;
-						        if (operValue)
-						        {
-							        oper = parseInt(operValue, 10);
-						        }
-						        cell.Operation = oper;
+						            var operValue = currentValue.getAttribute("operation");
+						            var oper = 0;
+						            if (operValue)
+						            {
+							            oper = parseInt(operValue, 10);
+						            }
+						            cell.Operation = oper;
 
-						        currentAttrRow.second.push(cell);
-					        }              
-                            retval.push(currentAttrRow);        
-                        }        
+						            currentAttrRow.second.push(cell);
+					            }              
+                                retval.push(currentAttrRow);        
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (var i = 0; i < nodes.snapshotLength; i++)
+                        {
+                            var currentAttrRow = new Pair();
+                            var currrentInputAttr = nodes.snapshotItem(i);
+                            var values = xmlDoc.evaluate("Value", currrentInputAttr, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                            var attrNode = xmlDoc.evaluate("Attr", currrentInputAttr, null, FIRST_ORDERED_NODE_TYPE, null);
+                            var attrName = "";
+                            if (attrNode != null && attrNode.singleNodeValue != null)
+					            attrName = attrNode.singleNodeValue.textContent;    
+				            if (attrName.length > 0)
+				            {            
+					            currentAttrRow.first = attrName;
+					            currentAttrRow.second = new Array();
+    					
+					            for (var j = 0; j < values.snapshotLength; j++)
+					            {                    
+						            var cell = new RuleCell();
+						            var currentValue = values.snapshotItem(j);
+						            var idValue = currentValue.getAttribute("id");
+						            if (idValue)
+						            {
+							            var cellValues = currentValue.textContent.split("|");
+							            var ids = idValue.split(",");
+							            if (cellValues.length != ids.length)
+								            throw "Bad OR";
+    								
+							            for (var idCnt = 0; idCnt < ids.length; idCnt++)
+							            {
+								            var id = parseInt(ids[idCnt], 10);
+								            var value = cellValues[idCnt];
+								            this.m_stringsMap.AddString(id, value);
+								            cell.Values.push(id); 
+							            }
+						            }
+
+						            var operValue = currentValue.getAttribute("operation");
+						            var oper = 0;
+						            if (operValue)
+						            {
+							            oper = parseInt(operValue, 10);
+						            }
+						            cell.Operation = oper;
+
+						            currentAttrRow.second.push(cell);
+					            }              
+                                retval.push(currentAttrRow);        
+                            }        
+                        }
                     }
                 }
                 else
@@ -1803,12 +2002,21 @@ function KnowledgeBase(xmlPath) {
             {
                 ReportError(err);
             }
+			return 0;
         }
 
         this.TableIsGetAll = function(tableName)
         {
-            var table = this.m_TableSet.GetTable(tableName);
-            return table.m_bGetAll;
+			try
+			{
+				var table = this.m_TableSet.GetTable(tableName);
+				return table.m_bGetAll;
+			}
+			catch (err)
+            {
+                ReportError(err);
+            }
+			return false;
         }
 
         this.EvaluateTableForAttr = function (tableName, outputAttr, bGetAll) 
@@ -1822,6 +2030,7 @@ function KnowledgeBase(xmlPath) {
             catch (err) {
                 ReportError(err);
             }
+			return null;
         }
 
         this.EvaluateTable = function(tableName, bGetAll)
@@ -1836,6 +2045,7 @@ function KnowledgeBase(xmlPath) {
             {
                 ReportError(err);
             }
+			return null;
         }
 
         this.EvaluateTableForAttrWithParam = function(tableName, outputAttr, param, bGetAll) 
@@ -1845,13 +2055,14 @@ function KnowledgeBase(xmlPath) {
             {
                 if (bGetAll == undefined)
                     bGetAll = this.TableIsGetAll(tableName);
+				
+				var table = this.m_TableSet.GetTable(tableName);
+				
                 if (this.iRecursingDepth == 0)
                     this.m_StateParameter = param;
-                this.iRecursingDepth++;
-        
-                var table = this.m_TableSet.GetTable(tableName);
+                this.iRecursingDepth++;        
+                
                 table.EnableDebugging(this.DebugThisTable(tableName));
-
                 table.SetInputValues(this.m_GlobalInputAttrsValues);
         
                 var results = table.EvaluateTableForAttr(outputAttr, bGetAll, true);
@@ -1875,7 +2086,7 @@ function KnowledgeBase(xmlPath) {
 					            var chainAttrName = args[1].trim();
 					            var debugVals = "";
 
-					            chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, param, this.TableIsGetAll(chainTableName), true);
+					            chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, param, this.TableIsGetAll(chainTableName));
 					            for (var j = 0; j < chainedResults.length; j++)
 					            {
 					                var result = chainedResults[j];
