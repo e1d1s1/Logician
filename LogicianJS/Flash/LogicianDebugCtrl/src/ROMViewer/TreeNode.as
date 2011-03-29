@@ -2,7 +2,7 @@ package ROMViewer
 {
 	/**
 	 * ...
-	 * @author Eric D. Schmidt, eLogician LLC
+	 * @author Eric D. Schmidt, DigiRule LLC
 	 */
 	import mx.collections.ArrayCollection;
 	public class TreeNode 

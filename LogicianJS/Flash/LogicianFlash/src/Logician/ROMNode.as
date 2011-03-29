@@ -4,7 +4,7 @@ package Logician
 	import mx.controls.Alert;
 	/**
 	 * ...
-	 * @author Eric D. Schmidt, eLogician LLC
+	 * @author Eric D. Schmidt, DigiRule LLC
 	This file is part of the LogicianFlash Library.
 	Copyright (C) 2009 - 2011 Eric D. Schmidt
 

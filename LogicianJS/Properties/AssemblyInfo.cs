@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("EDSEngineJS")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("eLogician, LLC")]
+[assembly: AssemblyCompany("DigiRule, LLC")]
 [assembly: AssemblyProduct("EDSEngineJS")]
-[assembly: AssemblyCopyright("Copyright ©  eLogician, LLC 2009-2011")]
+[assembly: AssemblyCopyright("Copyright ©  DigiRule, LLC 2009-2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,18 +1,18 @@
 /*
-Copyright (C) 2009-2011  Eric D. Schmidt
+Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule LLC
 
     The JavaScript code in this page is free software: you can
     redistribute it and/or modify it under the terms of the GNU
     General Public License (GNU GPL) as published by the Free Software
-    Foundation, either version 3 of the License, or (at your option)
+    Foundation, either version 2 of the License, or (at your option)
     any later version.  The code is distributed WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS
     FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
 
-    As additional permission under GNU GPL version 3 section 7, you
+    As additional permission under GNU GPL version 2 section 3, you
     may distribute non-source (e.g., minimized or compacted) forms of
     that code without the copy of the GNU GPL normally required by
-    section 4, provided you include this license notice and a URL
+    section 3, provided you include this license notice and a URL
     through which recipients can access the Corresponding Source.
     <http://www.gnu.org/licenses/>.
 */
@@ -1433,7 +1433,8 @@ function loadXMLDoc(file)
     }
     xhttp.open("GET",file,false);
     xhttp.send("");
-    var xmlDoc = xhttp.responseXML;
+    var xmlDoc = loadXMLDocString(xhttp.responseText);
+    delete xhttp;
     return xmlDoc;
 }
 
@@ -1455,6 +1456,7 @@ function loadXMLDocString(xmlStr)
     {
         var parser = new DOMParser();
         xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+        delete parser;
     }
     return xmlDoc;
 }
@@ -1488,7 +1490,7 @@ function CreateKnowledgeBaseFromString(xml) {
 
 function KnowledgeBase(xmlPath) {
     var xmlDoc = null;
-
+    
     try {
         this.m_StateParameter = "";
         this.m_TableSet = new TableSet();
@@ -1593,7 +1595,7 @@ function KnowledgeBase(xmlPath) {
                     
                     var nodeJSEval = xpathParse("//Javascript");
                     nodeJS = nodeJSEval.evaluate(xmlDoc).nodeSetValue();
-                    if (nodeJS != null)
+                    if (nodeJS != null && nodeJS.length > 0)
                     {
 		                this.m_jsCode = nodeJS[0].firstChild.nodeValue + "\n";
 	                }
@@ -1661,7 +1663,7 @@ function KnowledgeBase(xmlPath) {
                     }
             
                     nodeJS = xmlDoc.evaluate("//Javascript", xmlDoc, null, FIRST_ORDERED_NODE_TYPE, null);
-                    if (nodeJS != null)
+                    if (nodeJS != null && nodeJS.singleNodeValue != null)
                     {
 		                this.m_jsCode = nodeJS.singleNodeValue.textContent + "\n";
 	                }		       
