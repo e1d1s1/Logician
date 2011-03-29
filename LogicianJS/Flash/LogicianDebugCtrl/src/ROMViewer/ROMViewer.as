@@ -7,11 +7,11 @@ package ROMViewer
 	
 	/**
 	 * ...
-	 * @author Eric D. Schmidt, eLogician LLC
+	 * @author Eric D. Schmidt, DigiRule LLC
 	 */
 	/**
 	 * ...
-	 * @author Eric D. Schmidt, eLogician LLC
+	 * @author Eric D. Schmidt, DigiRule LLC
 	 */
 	import Logician.ROMNode;
 	import ROMViewer.TreeNode;

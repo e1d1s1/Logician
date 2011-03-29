@@ -14,7 +14,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("ROMNET")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("eLogician LLC")];
+[assembly:AssemblyCompanyAttribute("DigiRule LLC")];
 [assembly:AssemblyProductAttribute("ROMNET")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c) Eric D. Schmidt")];
 [assembly:AssemblyTrademarkAttribute("")];
