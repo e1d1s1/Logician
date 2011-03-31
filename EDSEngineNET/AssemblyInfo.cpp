@@ -1,6 +1,6 @@
 /*
 This file is part of EDSEngineNET.
-Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule LLC
+Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
     EDSEngineNET is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("EDSEngine")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("DigiRule, LLC")];
+[assembly:AssemblyCompanyAttribute("DigiRule Solutions, LLC")];
 [assembly:AssemblyProductAttribute("EDSEngine")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c) 2009-2011 Eric D. Schmidt")];
 [assembly:AssemblyTrademarkAttribute("")];

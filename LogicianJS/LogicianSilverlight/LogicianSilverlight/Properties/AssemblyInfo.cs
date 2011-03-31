@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("LogicianSilverlight")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DigiRule, LLC")]
+[assembly: AssemblyCompany("DigiRule Solutions, LLC")]
 [assembly: AssemblyProduct("LogicianSilverlight")]
-[assembly: AssemblyCopyright("Copyright © DigiRule, LLC 2011")]
+[assembly: AssemblyCopyright("Copyright © DigiRule Solutions, LLC 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

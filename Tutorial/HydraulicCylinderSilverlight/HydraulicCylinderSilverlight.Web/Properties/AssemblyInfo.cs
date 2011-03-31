@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("HydraulicCylinderSilverlight.Web")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DigiRule, LLC")]
+[assembly: AssemblyCompany("DigiRule Solutions, LLC")]
 [assembly: AssemblyProduct("HydraulicCylinderSilverlight.Web")]
-[assembly: AssemblyCopyright("Copyright © DigiRule, LLC 2011")]
+[assembly: AssemblyCopyright("Copyright © DigiRule Solutions, LLC 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

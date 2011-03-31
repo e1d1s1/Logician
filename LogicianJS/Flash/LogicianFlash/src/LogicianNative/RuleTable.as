@@ -2,7 +2,7 @@ package LogicianNative
 {
 	/**
 	 * ...
-	 * @author Eric D. Schmidt, DigiRule LLC
+	 * @author Eric D. Schmidt, DigiRule Solutions LLC
 	 */
 	import LogicianNative.Bimapper;
 	public class RuleTable 
