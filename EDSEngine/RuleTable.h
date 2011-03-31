@@ -1,6 +1,6 @@
 /*
 This file is part of the EDSEngine Library.
-Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule LLC
+Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
     EDSEngine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule LLC
 #include <map>
 /*
 This file is part of the EDSEngine Library.
-Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule LLC
+Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
     EDSEngine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

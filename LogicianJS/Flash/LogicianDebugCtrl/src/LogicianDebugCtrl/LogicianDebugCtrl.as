@@ -2,7 +2,7 @@ package LogicianDebugCtrl
 {
 	/**
 	 * ...
-	 * @author Eric D. Schmidt, DigiRule LLC
+	 * @author Eric D. Schmidt, DigiRule Solutions LLC
 	 */
 	import EDSDebug.EDSDebug;
 	import ROMViewer.ROMViewer;
