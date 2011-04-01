@@ -65,6 +65,7 @@
     <Content Include="ajaxslt\xslt.js" />
     <Content Include="ajaxslt\xslt_unittest.js" />
     <Content Include="Default.aspx" />
+    <Content Include="Demo.html" />
     <Content Include="HydraulicCylinderRules.xml" />
     <Content Include="KnowledgeBase.js" />
     <Content Include="ROMNode.js" />
