@@ -33,10 +33,6 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LogicianDebuggerWPF, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Utilities\LogicianDebuggerWPF\bin\Release\LogicianDebuggerWPF.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -114,9 +110,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ROMNET\ROMNET.vcproj">
+    <ProjectReference Include="..\..\src\trunk\ROMNET\ROMNET.vcproj">
       <Project>{A2E7FF12-B9E7-4276-8120-407A812AC43B}</Project>
       <Name>ROMNET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\trunk\Utilities\LogicianDebuggerWPF\LogicianDebuggerWPF.csproj">
+      <Project>{511F1ACF-F59C-4EDF-8A32-613B04E3F714}</Project>
+      <Name>LogicianDebuggerWPF</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
