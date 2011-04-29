@@ -11,12 +11,12 @@
 			<mx:Button id="btnEDSTest" label="Test EDS ExternalInterface" click="OnTestEDS()" />
 			<mx:Button id="btnROMTest" label="Test ROM ExternalInterface" click="OnTestROM()" />
 		</mx:HBox>
-		<mx:HBox>
+		<!--mx:HBox>
 			<mx:Button id="btnEDSTestHTML" label="Test EDS HTML Bridge" click="OnTestEDSBridge()" />
 			<mx:Button id="btnROMTestHTML" label="Test ROM HTML Bridge" click="OnTestROMBridge()" />
-		</mx:HBox>
+		</mx:HBox-->
 		<mx:TextArea id="resultsText" height="600" width="800"/>
-		<fx:HTML id="html" x="137" y="40" width="339"/>
+		<!--fx:HTML id="html" x="137" y="40" width="339"/-->
 	</mx:VBox>
 	<fx:Script>
 		<![CDATA[
