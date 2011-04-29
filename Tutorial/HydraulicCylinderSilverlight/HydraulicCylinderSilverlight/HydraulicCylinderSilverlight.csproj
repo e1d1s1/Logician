@@ -92,11 +92,11 @@
     <None Include="Properties\AppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\LogicianJS\LogicianSilverlight\LogicianDebugCtrl\LogicianDebugCtrl.csproj">
+    <ProjectReference Include="..\..\..\src\trunk\LogicianJS\LogicianSilverlight\LogicianDebugCtrl\LogicianDebugCtrl.csproj">
       <Project>{924E4508-3E7A-4A15-A9F9-CAD8CE631105}</Project>
       <Name>LogicianDebugCtrl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\LogicianJS\LogicianSilverlight\LogicianSilverlight\LogicianSilverlight.csproj">
+    <ProjectReference Include="..\..\..\src\trunk\LogicianJS\LogicianSilverlight\LogicianSilverlight\LogicianSilverlight.csproj">
       <Project>{53F1E861-DE81-46ED-BE4D-DD67067FCA36}</Project>
       <Name>LogicianSilverlight</Name>
     </ProjectReference>

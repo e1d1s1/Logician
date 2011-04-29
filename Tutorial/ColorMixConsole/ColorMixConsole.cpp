@@ -7,7 +7,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
-#include "../../EDSEngine/KnowledgeBase.h"
+#include "KnowledgeBase.h"
 
 using namespace std;
 
