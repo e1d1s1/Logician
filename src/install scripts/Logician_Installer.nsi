@@ -8,10 +8,10 @@
 ;--------------------------------
 
 ; The name of the installer
-Name "Logician Suite"
+Name "Logician Suite v1.0"
 
 ; The file to write
-OutFile "Logician_Setup.exe"
+OutFile "Logician_v1_Setup.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Logician
@@ -46,7 +46,7 @@ Section "Visual C++ 2008 Runtime"
 	Delete /REBOOTOK "vcredist_x86.exe"
 SectionEnd
 
-Section "Logician Libraries"
+Section "Logician Suite"
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR
 
@@ -72,19 +72,7 @@ Section "Logician Libraries"
 	File "..\trunk\EDSEngineNET\Release\EDSEngineNET.dll"
 	File "..\trunk\Relational Object Model\Release MSXML\Relational Object Model.lib"
 	File "..\trunk\ROMNET\Release\ROMNET.dll"
-	
-	; Write the installation path into the registry
-	WriteRegStr HKLM SOFTWARE\Logician "Install_Dir" "$INSTDIR"	
-	
-	; Write the uninstall keys for Windows
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" "DisplayName" "Logician Libraries"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" "UninstallString" '"$INSTDIR\uninstall_logician_libraries.exe"'
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" "NoModify" 1
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" "NoRepair" 1
-	WriteUninstaller "uninstall_logician_libraries.exe"
-SectionEnd
 
-Section "DecisionLogic"
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic
 	; Put file there
@@ -99,20 +87,20 @@ Section "DecisionLogic"
 
 	; Write the installation path into the registry
 	WriteRegStr HKLM SOFTWARE\DecisionLogic "Install_Dir" "$INSTDIR"
-
+	
 	; Write the uninstall keys for Windows
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DecisionLogic" "DisplayName" "DecisionLogic"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DecisionLogic" "UninstallString" '"$INSTDIR\uninstall_decisionlogic.exe"'
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DecisionLogic" "NoModify" 1
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DecisionLogic" "NoRepair" 1
-	WriteUninstaller "uninstall_decisionlogic.exe"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" "DisplayName" "Logician Libraries"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" "UninstallString" '"$INSTDIR\uninstall_logician_libraries.exe"'
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" "NoModify" 1
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" "NoRepair" 1
+	WriteUninstaller "uninstall_logician_libraries.exe"
 
 SectionEnd
 
 ; Optional section (can be disabled by the user)
 Section "Start Menu Shortcuts"
 	CreateDirectory "$SMPROGRAMS\DecisionLogic"
-	CreateShortCut "$SMPROGRAMS\DecisionLogic\Uninstall.lnk" "$INSTDIR\uninstall_decisionlogic.exe" "" "$INSTDIR\DecisionLogic\uninstall_decisionlogic.exe" 0
+	CreateShortCut "$SMPROGRAMS\DecisionLogic\Uninstall.lnk" "$INSTDIR\uninstall_logician_libraries.exe" "" "$INSTDIR\DecisionLogic\uninstall_logician_libraries.exe" 0
 	CreateShortCut "$SMPROGRAMS\DecisionLogic\DecisionLogic.lnk" "$INSTDIR\DecisionLogic\DecisionLogic.exe" "" "$INSTDIR\DecisionLogic\DecisionLogic.exe" 0
 SectionEnd
 
@@ -120,16 +108,17 @@ SectionEnd
 
 ; Uninstaller
 
-Section "un.DecisionLogic" "DecisionLogic"
+Section "un.LogicianSuite"
 
 	; Remove registry keys
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DecisionLogic"
-	DeleteRegKey HKLM SOFTWARE\DecisionLogic
-	DeleteRegKey HKCU SOFTWARE\DecisionLogic
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician"
+	DeleteRegKey HKLM SOFTWARE\Logician
+	DeleteRegKey HKCU SOFTWARE\Logician
 
 	; Remove files and uninstaller
 	Delete $INSTDIR\DecisionLogic\*.*
-	Delete $INSTDIR\uninstall_decisionlogic.exe
+	Delete $INSTDIR\*.*
+	Delete $INSTDIR\uninstall_logician_libraries.exe
 	
 	; Remove shortcuts, if any
 	Delete "$SMPROGRAMS\DecisionLogic\*.*"
@@ -137,23 +126,6 @@ Section "un.DecisionLogic" "DecisionLogic"
 	; Remove directories used
 	RMDir "$SMPROGRAMS\DecisionLogic"
 	RMDir "$INSTDIR\DecisionLogic"
-  
-	; Remove directories used
-	RMDir "$INSTDIR"
-
-SectionEnd
-
-Section "un.Logician Libraries" "Logician Libraries"
-	; Remove registry keys
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician"
-	DeleteRegKey HKLM SOFTWARE\Logician
-	DeleteRegKey HKCU SOFTWARE\Logician
-	
-	; Remove files 
-	Delete $INSTDIR\uninstall_logician_libraries.exe
-	
-	; Remove directories used
-	Delete $INSTDIR\*.*
 	RMDir "$INSTDIR"
 
 SectionEnd
