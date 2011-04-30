@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <flex-config xmlns="http://www.adobe.com/2006/flex-config">
-  <output>C:\Users\Eric\Development\Logician\LogicianJS\Flash\LogicianFlash\.\bin\LogicianFlash.swc</output>
+  <output>C:\Users\Eric\Development\Logician\src\trunk\LogicianJS\Flash\LogicianFlash\.\bin\LogicianFlash.swc</output>
   <use-network>true</use-network>
   <target-player>10</target-player>
   <warnings>true</warnings>
@@ -17,8 +17,11 @@
     <use-resource-bundle-metadata>true</use-resource-bundle-metadata>
     <verbose-stacktraces>false</verbose-stacktraces>
     <source-path>
-      <path-element>c:\users\eric\development\logician\logicianjs\flash\logicianflash\src</path-element>
+      <path-element>c:\users\eric\development\logician\src\trunk\logicianjs\flash\logicianflash\src</path-element>
     </source-path>
+    <library-path>
+      <path-element>c:\users\eric\development\logician\src\trunk\logicianjs\flash\logicianflash\xpath-as3-1.0.0.swc</path-element>
+    </library-path>
   </compiler>
   <compute-digest>false</compute-digest>
   <include-classes>

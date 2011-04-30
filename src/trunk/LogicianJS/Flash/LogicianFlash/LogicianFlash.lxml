@@ -7,7 +7,7 @@
   <MakeMXI>true</MakeMXI>
   <IntegrateAsDoc>true</IntegrateAsDoc>
   <LaunchAEM>false</LaunchAEM>
-  <MXIVersion>0.0.31</MXIVersion>
+  <MXIVersion>0.0.36</MXIVersion>
   <MXPIncludeASI>false</MXPIncludeASI>
   <MXIAuthor>Eric D. Schmidt, eLogician LLC</MXIAuthor>
   <MXIDescription />
