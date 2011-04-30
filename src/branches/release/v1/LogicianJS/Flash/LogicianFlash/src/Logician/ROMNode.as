@@ -1,7 +1,6 @@
 package Logician
 {
 	import flash.external.ExternalInterface;
-	import mx.controls.Alert;
 	/**
 	 * ...
 	 * @author Eric D. Schmidt, DigiRule Solutions LLC
