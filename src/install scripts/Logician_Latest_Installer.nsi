@@ -8,7 +8,7 @@
 ;--------------------------------
 
 ; The name of the installer
-Name "Logician Suite v1.0"
+Name "Logician Suite (Dev)"
 
 ; The file to write
 OutFile "Logician_Setup.exe"
