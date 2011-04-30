@@ -72,6 +72,10 @@ Section "Logician Suite"
 	File "..\branches\release\v1\EDSEngineNET\Release\EDSEngineNET.dll"
 	File "..\branches\release\v1\Relational Object Model\Release MSXML\Relational Object Model.lib"
 	File "..\branches\release\v1\ROMNET\Release\ROMNET.dll"
+	File "..\branches\release\v1\LogicianJS\KnowledgeBase.js"
+	File "..\branches\release\v1\LogicianJS\ROMNode.js"
+	File "..\branches\release\v1\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll"
+	File "..\branches\release\v1\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
 
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic
