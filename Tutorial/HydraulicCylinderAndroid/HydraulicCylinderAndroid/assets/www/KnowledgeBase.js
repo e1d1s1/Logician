@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009-2011  Eric D. Schmidt
+Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
     The JavaScript code in this page is free software: you can
     redistribute it and/or modify it under the terms of the GNU
@@ -146,6 +146,8 @@ function isAlphanum(parm) {return isValid(parm,lwr+upr+numb);}
 function ArraySize(arr) //for associative array sizes
 {
     var l = 0;
+	if (length in arr)
+		return arr.length;
     for (var k in arr) {
         l++;
     }
@@ -304,16 +306,9 @@ function Bimapper()
         {
             var retval = "";
             try
-            {        
-                for (var i in this.m_IndexToStringsMap)
-                {
-                    if (i == id)
-                    {
-                        retval = this.m_IndexToStringsMap[id];
-                        break;
-                    }
-                }
-        
+            {
+				if (id in this.m_IndexToStringsMap)                    
+					retval = this.m_IndexToStringsMap[id];
             }
             catch (err)
             {
@@ -331,13 +326,9 @@ function Bimapper()
 		        {
 			        retval = EMPTY_STRING;
 		        }
-		        else for (var i in this.m_StringsToIndexMap)
+		        else if (s in this.m_StringsToIndexMap)
                 {
-                    if (i == s)
-                    {
-                        retval = this.m_StringsToIndexMap[s];
-                        break;
-                    }
+					retval = this.m_StringsToIndexMap[s];                    
                 }        
             }
             catch (err)
