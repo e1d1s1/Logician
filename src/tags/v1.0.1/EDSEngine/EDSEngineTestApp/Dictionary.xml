@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="Dictionary" getall="true">
+    <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>Name</Attr>
+      <Value operation="1">aDictAttr3</Value>
+      <Value operation="1">bDictAttr4</Value>
+      <Value operation="1">cDictAttr1</Value>
+      <Value operation="1">dDictAttr2</Value>
+      <Value operation="1">eDictAttr5</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>Description</Attr>
+      <Value operation="1">A Boolean Attribute</Value>
+      <Value operation="1">A Multi-Select Attribute</Value>
+      <Value operation="1">A Single Selection Attribute</Value>
+      <Value operation="1">Another Single Selection</Value>
+      <Value operation="1">An Edit Attribute</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>DefaultValue</Attr>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
+      <Value operation="1">0</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>AttributeType</Attr>
+      <Value operation="1">BOOLEAN</Value>
+      <Value operation="1">MULTISELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">EDIT</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Outputs>
+      <Attr>RuleTable</Attr>
+      <Value operation="1">DictAttr3</Value>
+      <Value operation="1">DictAttr4</Value>
+      <Value operation="1">DictAttr1</Value>
+      <Value operation="1">DictAttr2</Value>
+      <Value operation="1">DictAttr5</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>
