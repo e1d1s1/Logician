@@ -1,5 +1,0 @@
-Linux compilation
-
-Make pretty:
-Disabled rows
-Code
