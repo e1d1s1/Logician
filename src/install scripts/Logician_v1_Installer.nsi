@@ -8,10 +8,10 @@
 ;--------------------------------
 
 ; The name of the installer
-Name "Logician Suite v1.0"
+Name "Logician Suite v1.0.1"
 
 ; The file to write
-OutFile "Logician_v1_Setup.exe"
+OutFile "Logician_v101_Setup.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Logician
