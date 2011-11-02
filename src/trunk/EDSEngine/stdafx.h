@@ -53,14 +53,6 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
 using namespace std;
 
-#ifdef _MSC_VER
-using namespace std;
-using namespace stdext;
-#else
-using namespace __gnu_cxx;
-typedef int                 BOOL;
-#endif
-
 const unsigned short INVALID_STRING = 0;
 const unsigned short EMPTY_STRING = 1;
 const unsigned short EXPLICIT_NULL_STRING = 2;
