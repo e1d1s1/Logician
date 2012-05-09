@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009-2011  Eric D. Schmidt
+Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
 The JavaScript code in this page is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -2146,7 +2146,7 @@ function LinearEngine(context, dictionaryTable) {
                 }
 
                 //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
-                if (currentValues != null && (currentValues.length == 1 && (currentValues[0].length == 0 || GetIndexOfItem(availableValues, currentValues[0]) >= 0)) && prefixes.length > 0) {
+                if (currentValues != null && (currentValues.length == 1 && (currentValues[0].length == 0 || GetIndexOfItem(availableValues, currentValues[0]) < 0)) && prefixes.length > 0) {
                     for (var i = 0; i < prefixes.length; i++) {
                         if (prefixes[i].indexOf(this.DEFAULTPREFIX) >= 0) {
                             selectedValues.push(availableValues[i]);
@@ -2211,7 +2211,7 @@ function LinearEngine(context, dictionaryTable) {
                 }
 
                 //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
-                if ((currentValue.length == 0 || GetIndexOfItem(availableValues, currentValue) >= 0) && prefixes.length > 0) {
+                if ((currentValue.length == 0 || GetIndexOfItem(availableValues, currentValue) < 0) && prefixes.length > 0) {
                     for (var i = 0; i < prefixes.length; i++) {
                         if (prefixes[i].indexOf(this.DEFAULTPREFIX) >= 0) {
                             newValue = availableValues[i];
