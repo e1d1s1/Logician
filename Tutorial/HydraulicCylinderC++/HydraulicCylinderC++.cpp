@@ -364,7 +364,7 @@ void MyFrame::ComboEvaluate(wxCommandEvent& event)
 	if (bLoadingItems)
 		return;
 	wxComboBox* sender = (wxComboBox*)event.GetEventObject();
-	m_engine->EvaluateForAttribute(sender->GetName().c_str(), sender->GetValue().c_str());
+	m_engine->EvaluateForAttribute(sender->GetName().wc_str(), sender->GetValue().wc_str());
     UpdateControls();
 }
 
@@ -373,7 +373,7 @@ void MyFrame::TextChanged(wxCommandEvent& event)
 	if (bLoadingItems)
 		return;
 	wxTextCtrl* sender = (wxTextCtrl*)event.GetEventObject();
-	m_engine->EvaluateForAttribute(sender->GetName().c_str(), sender->GetValue().c_str());
+	m_engine->EvaluateForAttribute(sender->GetName().wc_str(), sender->GetValue().wc_str());
     UpdateControls();
 }
 
@@ -422,7 +422,7 @@ void MyFrame::OnOpen(wxCommandEvent& WXUNUSED(event))
 	}
 
 	//reload
-	if (m_rootNode->LoadXML(docXML.c_str()))
+	if (m_rootNode->LoadXML(docXML.wc_str()))
 	{
 		if (m_engine)
 		{
