@@ -4,7 +4,7 @@
 // Author:      Eric D. Schmidt
 // Modified by:
 // Created:     07/01/2010
-// Copyright:   (c) 2009 - 2011 Eric D. Schmidt, DigiRule Solutions LLC
+// Copyright:   (c) 2009 - 2012 Eric D. Schmidt, DigiRule Solutions LLC
 // Licence:     GNU GPLv2
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -211,8 +211,8 @@ void WorkerClass::SaveApplicationSettings()
 		m_gui->WriteConfig(L"RecentProjectList", fileList);
 
 		//remember debugging options
-		m_gui->WriteConfig(L"DebugMode", UTILS::stringify((long)m_debugOptions.debugMode).c_str());
-		m_gui->WriteConfig(L"HighlightDebug", UTILS::stringify((long)m_debugOptions.bOpenTable).c_str());
+		m_gui->WriteConfig(L"DebugMode", m_debugOptions.debugMode);
+		m_gui->WriteConfig(L"HighlightDebug", (int)m_debugOptions.bOpenTable);
 		vector<wstring> tables = m_debugOptions.selectedTables;
 	}
 }
@@ -1263,21 +1263,21 @@ void WorkerClass::SetProjectDebugging(bool enabled, int server_id)
 		//see if the server is really listening
 		if (!m_gui->ServerReady())
 		{
-			LogTextLine(_("Could not listen at the specified port !n"));
+			LogTextLine(L"Could not listen at the specified port !n");
 			return;
 		}
 		else
 		{
 			// Setup the event handler and subscribe to connection events
 			m_gui->StartServer(server_id, &m_debugOptions);
-			LogTextLine(_("Debugger server listening.\n"));
+			LogTextLine(L"Debugger server listening.\n");
 		}
 	}
 	else
 	{
 		m_gui->ShutdownServer();
 
-		LogTextLine(_("Debugger server stopped.\n"));
+		LogTextLine(L"Debugger server stopped.\n");
 	}
 }
 

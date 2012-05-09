@@ -93,7 +93,7 @@ public:
 							wxEmptyString,
 							wxEmptyString,
 							filterString,
-							wxOPEN
+							wxFD_OPEN
 						 );
 
 		openFileDialog.CentreOnParent();
@@ -107,29 +107,27 @@ public:
 	void GetConfig(wstring configItem, long *l)
 	{
 		long lValue;
-		wxString key = configItem;
-		m_config->Read(key, &lValue);
+		m_config->Read(configItem.c_str(), &lValue);
 		*l = lValue;
 	}
 	void GetConfig(wstring configItem, wstring *str)
 	{
-		wxString strValue, key = configItem;
-		m_config->Read(key, &strValue);
+		wxString strValue;
+		m_config->Read(configItem.c_str(), &strValue);
 		*str = (wstring)strValue;
 	}
 	void WriteConfig(wstring configItem, wstring value)
 	{
-		wxString key = configItem;
-		m_config->Write(key, value);
+		m_config->Write(configItem.c_str(), value.c_str());
 	}
 	void WriteConfig(wstring configItem, string value)
 	{
-		wxString key = configItem;
-		wstring wval;
-		wval.assign(value.begin(), value.end());
-		wxString val = wval;
-		m_config->Write(key, val);
+		m_config->Write(configItem.c_str(), value.c_str());
 	}	
+	void WriteConfig(wstring configItem, int value)
+	{
+		m_config->Write(configItem.c_str(), value);
+	}
 	void ReadConfig(wstring configItem, wstring *value)
 	{
 		wxString str, key = configItem;

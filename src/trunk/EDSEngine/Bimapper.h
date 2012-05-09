@@ -19,6 +19,9 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
 #ifdef _MSC_VER
 #include <hash_map>
+	#if (_MSC_VER < 1600)
+		using namespace stdext;
+	#endif
 #else
 #include <ext/hash_map>
 #include <tr1/functional>

@@ -4,7 +4,7 @@
 // Author:      Eric D. Schmidt
 // Modified by:
 // Created:     07/01/2010
-// Copyright:   (c) 2009 - 2011 Eric D. Schmidt, DigiRule Solutions LLC
+// Copyright:   (c) 2009 - 2012 Eric D. Schmidt, DigiRule Solutions LLC
 // Licence:     GNU GPLv2
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -147,7 +147,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (_T("DARK GREY")));
     StyleSetBackground (wxSTC_STYLE_LINENUMBER, *wxWHITE);
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour (_T("DARK GREY")));
-    InitializePrefs (DEFAULT_LANGUAGE);
+    InitializePrefs (_T(DEFAULT_LANGUAGE));
 
     // set visibility
     SetVisiblePolicy (wxSTC_VISIBLE_STRICT|wxSTC_VISIBLE_SLOP, 1);
