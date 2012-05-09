@@ -4,7 +4,7 @@
 // Author:      Eric D. Schmidt
 // Modified by:
 // Created:     07/01/2010
-// Copyright:   (c) 2009 - 2011 Eric D. Schmidt, DigiRule Solutions LLC
+// Copyright:   (c) 2009 - 2012 Eric D. Schmidt, DigiRule Solutions LLC
 // Licence:     GNU GPLv2
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -598,7 +598,7 @@ void DecisionLogicFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     wxMessageBox(wxString::Format(
         _T("This is DecisionLogic ")
-        _T("running under %s.\nCoded by Eric D. Schmidt\n(c) 2008 - 2011 DigiRule Solutions LLC"),
+        _T("running under %s.\nCoded by Eric D. Schmidt\n(c) 2008 - 2012 DigiRule Solutions LLC"),
         wxGetOsDescription().c_str()
      ),
      _T("About DecisionLogic"),

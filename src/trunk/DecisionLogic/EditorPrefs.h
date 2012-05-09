@@ -26,12 +26,13 @@
 #include "wx/stc/stc.h"  // styled text control
 
 //! application headers
+#include <wx/cmndata.h>
 
 
 //============================================================================
 // declarations
 //============================================================================
-#define DEFAULT_LANGUAGE _("<default>")
+#define DEFAULT_LANGUAGE "<default>"
 
 #define PAGE_COMMON _("Common")
 #define PAGE_LANGUAGES _("Languages")
@@ -171,7 +172,7 @@ extern wxString *g_appname;
 
 //! global print data, to remember settings during the session
 extern wxPrintData *g_printData;
-extern wxPageSetupData *g_pageSetupData;
+extern wxPageSetupDialogData *g_pageSetupData;
 
 #endif // wxUSE_PRINTING_ARCHITECTURE
 
