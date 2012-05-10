@@ -23,6 +23,10 @@ namespace ROM
 {
 	void LinearEngine::CreateLinearEngine(ROMNode* context, wstring dictionaryTable)
 	{
+		InvalidateMode = NORMAL;
+		ResetBehavior = SKIPRESET;
+		TrackUserBehavior = SKIPTRACKUSER;
+		TBUATTR = L"TBUAttrs";
 		InitializeEngine(dictionaryTable);		
 	}
 
@@ -150,16 +154,40 @@ namespace ROM
 		}
 	}
 
-	void LinearEngine::EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents)
+	void LinearEngine::EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents, int InvalidateMode)
 	{
 		vector<wstring> newValues;
 		newValues.push_back(newValue);
-		EvaluateForAttribute(dictAttrName, newValues, bEvalDependents);
+		EvaluateForAttribute(dictAttrName, newValues, bEvalDependents, InvalidateMode);
 	}
 
-	void LinearEngine::EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents)
+	void LinearEngine::EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents, int InvalidateMode)
 	{
 		ResetValueChanged();
+		
+		if (ResetBehavior == RESETBYRULE)
+		{
+			//resets other atts when setting this one
+			m_ROMContext->SetAttribute(L"currrentattr", dictAttrName);
+			vector<wstring> attrsToReset = m_ROMContext->EvaluateTable((wstring)L"reset", (wstring)L"attr");
+			for (vector<wstring>::iterator it = attrsToReset.begin(); it != attrsToReset.end(); it++)
+			{
+				m_ROMContext->SetAttribute(*it, L"");
+			}
+
+			//resets an attr if it has not been touched by the user 
+			if (TrackUserBehavior == TRACKUSER)
+			{
+				vector<wstring> attrsToReset = m_ROMContext->EvaluateTable((wstring)L"reset_INCBU", (wstring)L"attr");
+				for (vector<wstring>::iterator it = attrsToReset.begin(); it != attrsToReset.end(); it++)
+				{
+					if (!IsTouchedByUser(*it))
+						m_ROMContext->SetAttribute(*it, L"");
+				}
+			}
+		}
+
+
 		map<wstring, ROMDictionaryAttribute>::iterator itFind = m_dict.find(dictAttrName);
 		if (itFind != m_dict.end())
 		{
@@ -168,11 +196,11 @@ namespace ROM
 			switch (m_dict[dictAttrName].AttributeType)
 			{
 			case SINGLESELECT:
-				EvalSingleSelect(dictAttrName, newValues[0]);
+				EvalSingleSelect(dictAttrName, newValues[0], InvalidateMode != FLAG);
 				break;
 
 			case MULTISELECT:
-				EvalMultiSelect(dictAttrName, newValues);
+				EvalMultiSelect(dictAttrName, newValues, InvalidateMode != FLAG);
 				break;
 
 			case BOOLEANSELECT:
@@ -180,7 +208,7 @@ namespace ROM
 				break;
 
 			case EDIT:
-				EvalEdit(dictAttrName, newValues[0]);
+				EvalEdit(dictAttrName, newValues[0], InvalidateMode != FLAG);
 				break;
 
 			default: //STATIC
@@ -199,6 +227,26 @@ namespace ROM
 		{
 			(*it)->ValueChanged = false;
 		}
+	}
+
+	bool LinearEngine::IsTouchedByUser(wstring dictAttrName)
+	{
+		return ROMUTIL::StringContains(m_ROMContext->GetAttribute(TBUATTR), dictAttrName + L"|");
+	}
+
+	void LinearEngine::SetTouchedByUser(wstring dictAttrName)
+	{
+		m_dict[dictAttrName].ChangedByUser = true;
+		wstring currentList = m_ROMContext->GetAttribute(TBUATTR);
+		m_ROMContext->SetAttribute(TBUATTR, currentList + dictAttrName + L"|");
+	}
+	
+	void LinearEngine::RemoveTouchedByUser(wstring dictAttrName)
+	{
+		m_dict[dictAttrName].ChangedByUser = false;
+		wstring currentList = m_ROMContext->GetAttribute(TBUATTR);
+		wstring newList = ROMUTIL::FindAndReplace(currentList, dictAttrName + L"|", L"");
+		m_ROMContext->SetAttribute(TBUATTR, newList);
 	}
 
 	void LinearEngine::EvaluateAll()
@@ -225,6 +273,12 @@ namespace ROM
 			}
 		}
 		return retval;
+	}
+
+	void LinearEngine::FlagAttrInvalid(std::wstring dictAttrName)
+	{
+		m_dict[dictAttrName].ChangedByUser = false;
+		m_dict[dictAttrName].Valid = false;
 	}
 
 	void LinearEngine::EvalBoolean(std::wstring dictAttrName, std::wstring newValue)
@@ -290,7 +344,7 @@ namespace ROM
 		}
 	}
 
-	void LinearEngine::EvalEdit(std::wstring dictAttrName, std::wstring newValue)
+	void LinearEngine::EvalEdit(std::wstring dictAttrName, std::wstring newValue, bool setTheValue)
 	{
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
@@ -340,22 +394,39 @@ namespace ROM
 #endif
 				if (dNewValue <= dMax && dNewValue >= dMin)
 				{
-					m_ROMContext->SetAttribute(dictAttrName, newValue);
+					if (setTheValue)
+						m_ROMContext->SetAttribute(dictAttrName, newValue);
+					else					
+						FlagAttrInvalid(dictAttrName);					
 				}
 				else if (dNewValue > dMax)
 				{
-					wstring wstrMax(vals[1].begin(), vals[1].end());
-					m_ROMContext->SetAttribute(dictAttrName, wstrMax);
+					if (setTheValue)
+					{
+						wstring wstrMax(vals[1].begin(), vals[1].end());
+						m_ROMContext->SetAttribute(dictAttrName, wstrMax);
+					}
+					else
+					{
+						FlagAttrInvalid(dictAttrName);
+					}
 				}
 				else if (dNewValue < dMin)
 				{
-					wstring wstrMin(vals[0].begin(), vals[0].end());
-					m_ROMContext->SetAttribute(dictAttrName, wstrMin);
+					if (setTheValue)
+					{
+						wstring wstrMin(vals[0].begin(), vals[0].end());
+						m_ROMContext->SetAttribute(dictAttrName, wstrMin);
+					}
+					else
+					{
+						FlagAttrInvalid(dictAttrName);
+					}
 				}
 			}
 			else if (availableValues[0].length() == 1 && availableValues[0][0] == L'Y')
 			{
-				m_ROMContext->SetAttribute(dictAttrName, newValue);
+				m_ROMContext->SetAttribute(dictAttrName, newValue);			
 			}
 			else if (availableValues[0].length() == 1 && availableValues[0][0] == L'N')
 			{
@@ -364,7 +435,7 @@ namespace ROM
 				m_dict[dictAttrName].Enabled = false;
 			}
 			else if (availableValues[0].length() == 2 && availableValues[0] == L"YY") //user must enter something
-			{
+			{	
 				m_ROMContext->SetAttribute(dictAttrName, newValue);
 				m_dict[dictAttrName].Valid = newValue.length() > 0;
 			}
@@ -405,7 +476,7 @@ namespace ROM
 			m_dict[dictAttrName].Visible = true;
 	}
 
-	void LinearEngine::EvalMultiSelect(std::wstring dictAttrName, vector<wstring> newValues)
+	void LinearEngine::EvalMultiSelect(std::wstring dictAttrName, vector<wstring> newValues, bool setTheValue)
 	{
 		//multi-select lists, checkbox lists
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
@@ -473,11 +544,21 @@ namespace ROM
 			finalValue+=*it;
 		}
 		if (finalValue != currentValue)
-			m_ROMContext->SetAttribute(dictAttrName, finalValue);
+		{
+			if (setTheValue)
+				m_ROMContext->SetAttribute(dictAttrName, finalValue);
+			else
+			{
+				if (availableValues.size() > 0)
+					FlagAttrInvalid(dictAttrName);
+				else
+					m_ROMContext->SetAttribute(dictAttrName, finalValue);
+			}				
+		}
 	}
 
 	//drop down list, radio button groups, etc
-	void LinearEngine::EvalSingleSelect(wstring dictAttrName, wstring newValue)
+	void LinearEngine::EvalSingleSelect(wstring dictAttrName, wstring newValue, bool setTheValue)
 	{
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
@@ -533,14 +614,26 @@ namespace ROM
 		{
 			if (currentValue != newValue)
 			{
-				m_ROMContext->SetAttribute(dictAttrName, newValue);
+				if (setTheValue)
+					m_ROMContext->SetAttribute(dictAttrName, newValue);
+				else				
+					FlagAttrInvalid(dictAttrName);				
 			}
 		}
 		else
 		{
 			if (m_dict[dictAttrName].Enabled == true)
 				m_dict[dictAttrName].Valid = false;
-			m_ROMContext->SetAttribute(dictAttrName, L"");
+			if (setTheValue)
+				m_ROMContext->SetAttribute(dictAttrName, L"");
+			else
+			{
+				if (availableValues.size() > 0)
+					FlagAttrInvalid(dictAttrName);
+				else
+					m_ROMContext->SetAttribute(dictAttrName, L"");
+			}
+
 			m_dict[dictAttrName].ChangedByUser = false;
 		}
 	}
@@ -597,7 +690,7 @@ namespace ROM
 				{
 					vector<wstring> selectedValues = GetSelectedValues(&itFind->second);
 					bool bWasChangedByUser = itFind->second.ChangedByUser;
-					EvaluateForAttribute(*it, selectedValues);
+					EvaluateForAttribute(*it, selectedValues, true, InvalidateMode);
 					if (bWasChangedByUser)
 					{
 						bool bValuesRemainSame = true;
@@ -659,15 +752,15 @@ namespace ROM
 		InitializeEngine(ROMUTIL::MBCStrToWStr(dictionaryTable));
 	}
 
-	void LinearEngine::EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents)
+	void LinearEngine::EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents, int InvalidateMode)
 	{
-		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), ROMUTIL::ToWStringVector(newValues), bEvalDependents);
+		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), ROMUTIL::ToWStringVector(newValues), bEvalDependents, InvalidateMode);
 	}
 
-	void LinearEngine::EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents)
+	void LinearEngine::EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents, int InvalidateMode)
 	{
 		vector<wstring> newValues;
 		newValues.push_back(ROMUTIL::MBCStrToWStr(newValue));
-		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), newValues, bEvalDependents);
+		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), newValues, bEvalDependents, InvalidateMode);
 	}
 }
