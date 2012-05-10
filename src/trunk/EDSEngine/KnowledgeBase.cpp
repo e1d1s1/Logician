@@ -699,7 +699,6 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 	}
 	xmlCleanupParser();
 #endif
-
 	m_TableSet.Initialize();
 	return retval;
 }

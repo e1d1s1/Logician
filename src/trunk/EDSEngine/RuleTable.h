@@ -63,6 +63,7 @@ public:
 	bool HasJS() {return bHasJavascript;}
 	bool HasPython() {return bHasPython;}
 	bool IsGetAll() {return bGetAll;}
+	wstring GetTableName() {return m_Name;}
 
 	vector<wstring> GetAllOutputAttrNames();
 	vector<wstring> GetAllInputAttrNames();

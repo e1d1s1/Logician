@@ -361,14 +361,14 @@ namespace ROMNET {
 		void					SetDebugging(bool set) {if (m_ROMDictionary) m_ROMDictionary->GenerateTableDebugMessages(set);}
 		void					PumpDebugMessages();
 
-		void						LoadDictionary(String^ dictionaryTable);
+		void					LoadDictionary(String^ dictionaryTable);
 		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
 		Dictionary<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
 	private:
 		ROMDictionary(IntPtr^ ptr) {m_ROMDictionary = (ROM::ROMDictionary*)ptr->ToPointer();}
 		ROM::ROMDictionary *m_ROMDictionary;
-	};
+	};	
 
 	public ref class LinearEngine
 	{
@@ -388,14 +388,15 @@ namespace ROMNET {
 		void					SetDebugging(bool set) {if (m_LinearEngine) m_LinearEngine->GenerateTableDebugMessages(set);}
 		void					PumpDebugMessages();
 
-		void						LoadDictionary(String^ dictionaryTable);
+		void					LoadDictionary(String^ dictionaryTable);
 		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
 		Dictionary<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
-		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents);
+		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents, int InvalidateMode);
+		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents) {EvaluateForAttribute(dictAttrName, newValues, bEvalDependents, NORMAL);}
 		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues) {EvaluateForAttribute(dictAttrName, newValues, true);}
-		void EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents);
-		void EvaluateForAttribute(String^ dictAttrName, String^ newValue) {EvaluateForAttribute(dictAttrName, newValue, true);}
+		void EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents, int InvalidateMode);
+		void EvaluateForAttribute(String^ dictAttrName, String^ newValue) {EvaluateForAttribute(dictAttrName, newValue, true, NORMAL);}
 		void EvaluateAll() {if (m_LinearEngine) m_LinearEngine->EvaluateAll();}
 		array<ROMDictionaryAttribute^>^ GetEvalList();
 		Dictionary<String^, array<String^>^>^ GetTriggers();
@@ -409,6 +410,52 @@ namespace ROMNET {
 					return false;
 			}
 		}
+		property unsigned int InvalidateMode
+		{
+			virtual unsigned int get()
+			{
+				if (m_LinearEngine)
+					return m_LinearEngine->InvalidateMode;
+				else
+					return NORMAL;
+			}
+			virtual void set(unsigned int value)
+			{
+				if (m_LinearEngine)
+					m_LinearEngine->InvalidateMode = value;
+			}
+		}
+		property unsigned int ResetBehavior
+		{
+			virtual unsigned int get()
+			{
+				if (m_LinearEngine)
+					return m_LinearEngine->ResetBehavior;
+				else
+					return SKIPRESET;
+			}
+			virtual void set(unsigned int value)
+			{
+				if (m_LinearEngine)
+					m_LinearEngine->ResetBehavior = value;
+			}
+		}
+		property unsigned int TrackUserBehavior
+		{
+			virtual unsigned int get()
+			{
+				if (m_LinearEngine)
+					return m_LinearEngine->TrackUserBehavior;
+				else
+					return SKIPTRACKUSER;
+			}
+			virtual void set(unsigned int value)
+			{
+				if (m_LinearEngine)
+					m_LinearEngine->TrackUserBehavior = value;
+			}
+		}
+
 	private:
 		LinearEngine(IntPtr^ ptr) {m_LinearEngine = (ROM::LinearEngine*)ptr->ToPointer();}
 		ROM::LinearEngine *m_LinearEngine;
