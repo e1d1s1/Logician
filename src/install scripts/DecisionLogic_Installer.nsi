@@ -72,8 +72,8 @@ SectionEnd
 ; Optional section (can be disabled by the user)
 Section "Start Menu Shortcuts"
 	CreateDirectory "$SMPROGRAMS\DecisionLogic"
-	CreateShortCut "$SMPROGRAMS\DecisionLogic\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-	CreateShortCut "$SMPROGRAMS\DecisionLogic\DecisionLogic.lnk" "$INSTDIR\DecisionLogic.exe" "" "$INSTDIR\DecisionLogic.exe" 0
+	CreateShortCut "$SMPROGRAMS\DecisionLogic\Uninstall.lnk" "$INSTDIR\uninstall_decisionlogic.exe" "" "$INSTDIR\uninstall_decisionlogic.exe" 0
+	CreateShortCut "$SMPROGRAMS\DecisionLogic\DecisionLogic.lnk" "$INSTDIR\DecisionLogic\DecisionLogic.exe" "" "$INSTDIR\DecisionLogic\DecisionLogic.exe" 0
 SectionEnd
 
 ;--------------------------------
