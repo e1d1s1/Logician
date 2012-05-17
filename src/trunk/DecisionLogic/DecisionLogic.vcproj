@@ -81,7 +81,7 @@
 				OutputFile="vc_mswud\DecisionLogic.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;C:\wxWidgets-2.8.10\lib\vc_lib&quot;"
+				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;C:\wxWidgets-2.8.10\lib\vc_lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
@@ -183,7 +183,7 @@
 				OutputFile="vc_mswu\DecisionLogic.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;C:\wxWidgets-2.8.10\lib\vc_lib&quot;;&quot;C:\boost_1_39_0\bin.v2\libs\system\build\msvc-9.0\release\link-static\threading-multi&quot;;&quot;C:\boost_1_39_0\bin.v2\libs\date_time\build\msvc-9.0\release\link-static\threading-multi&quot;;&quot;C:\boost_1_39_0\bin.v2\libs\regex\build\msvc-9.0\release\link-static\threading-multi&quot;"
+				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;C:\wxWidgets-2.8.10\lib\vc_lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
 				ProgramDatabaseFile="vc_mswu\DecisionLogic.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -212,7 +212,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;DecisionLogicHelp.htm&quot; &quot;vc_mswu\DecisionLogicHelp.htm&quot; /Y&#x0D;&#x0A;copy &quot;*.png&quot; &quot;vc_mswu\&quot; /Y"
+				CommandLine="copy &quot;DecisionLogicHelp.htm&quot; &quot;vc_mswu\DecisionLogicHelp.htm&quot; /Y&#x0D;&#x0A;copy &quot;*.png&quot; &quot;vc_mswu\&quot; /Y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

@@ -18,8 +18,8 @@ echo "Building EDSEngineNET..."
 echo "EDSEngineNET build complete"
 
 echo "Building EDSEngineNETTestApp..."
-%MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp\EDSEngineNETTestApp.csproj" /t:rebuild /p:Configuration="Debug"
-%MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp\EDSEngineNETTestApp.csproj" /t:rebuild /p:Configuration="Release"
+%MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp\EDSEngineNETTestApp2008.csproj" /t:rebuild /p:Configuration="Debug"
+%MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp\EDSEngineNETTestApp2008.csproj" /t:rebuild /p:Configuration="Release"
 echo "EDSEngineNETTestApp build complete"
 
 echo "Building EDSEngineJS..."
@@ -45,8 +45,8 @@ echo "Building ROMNET..."
 echo "ROMNET build complete"
 
 echo "Building ROMNETTestApplication..."
-%MSBUILD_PATH% "ROMNET\ROMNETTestApplication\ROMNETTestApplication.csproj" /t:rebuild /p:Configuration="Debug"
-%MSBUILD_PATH% "ROMNET\ROMNETTestApplication\ROMNETTestApplication.csproj" /t:rebuild /p:Configuration="Release"
+%MSBUILD_PATH% "ROMNET\ROMNETTestApplication\ROMNETTestApplication2008.csproj" /t:rebuild /p:Configuration="Debug"
+%MSBUILD_PATH% "ROMNET\ROMNETTestApplication\ROMNETTestApplication2008.csproj" /t:rebuild /p:Configuration="Release"
 echo "ROMNETTestApplication build complete"
 
 
