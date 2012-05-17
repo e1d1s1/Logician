@@ -75,7 +75,8 @@ Section "Logician Suite"
 	File "..\trunk\LogicianJS\KnowledgeBase.js"
 	File "..\trunk\LogicianJS\ROMNode.js"
 	File "..\trunk\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll"
-	File "..\trunk\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
+	;File "..\trunk\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
+	File "..\trunk\Utilities\LogicianDebuggerWPF\bin\Release\LogicianDebuggerWPF.dll"
 
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic

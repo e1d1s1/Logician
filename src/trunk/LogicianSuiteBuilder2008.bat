@@ -22,10 +22,10 @@ echo "Building EDSEngineNETTestApp..."
 %MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp\EDSEngineNETTestApp2008.csproj" /t:rebuild /p:Configuration="Release"
 echo "EDSEngineNETTestApp build complete"
 
-echo "Building EDSEngineJS..."
-%MSBUILD_PATH% "EDSEngineJS\EDSEngineJS.csproj" /t:rebuild /p:Configuration="Debug"
-%MSBUILD_PATH% "EDSEngineJS\EDSEngineJS.csproj" /t:rebuild /p:Configuration="Release"
-echo "EDSEngineJS build complete"
+echo "Building LogicianJS..."
+%MSBUILD_PATH% "LogicianJS\LogicianJS.csproj" /t:rebuild /p:Configuration="Debug"
+%MSBUILD_PATH% "LogicianJS\LogicianJS.csproj" /t:rebuild /p:Configuration="Release"
+echo "LogicianJS build complete"
 
 
 
@@ -49,12 +49,21 @@ echo "Building ROMNETTestApplication..."
 %MSBUILD_PATH% "ROMNET\ROMNETTestApplication\ROMNETTestApplication2008.csproj" /t:rebuild /p:Configuration="Release"
 echo "ROMNETTestApplication build complete"
 
-
-
 echo "Building DecisionLogic..."
 %MSBUILD_PATH% "DecisionLogic\DecisionLogic.vcproj" /t:rebuild /p:Configuration="Unicode Debug"
 %MSBUILD_PATH% "DecisionLogic\DecisionLogic.vcproj" /t:rebuild /p:Configuration="Unicode Release"
 echo "DecisionLogic build complete"
+
+echo "Building Utilities"
+echo "Building LogicianDebuggerWPF"
+%MSBUILD_PATH% "Utilities\LogicianDebuggerWPF\LogicianDebugger2008.csproj" /t:rebuild /p:Configuration="Debug"
+%MSBUILD_PATH% "Utilities\LogicianDebuggerWPF\LogicianDebugger2008.csproj" /t:rebuild /p:Configuration="Release"
+echo "Building LogicianDebuggerWPF complete"
+
+echo "Building LogicianDebugger"
+%MSBUILD_PATH% "Utilities\LogicianDebugger\ROMDebugApp.vcproj" /t:rebuild /p:Configuration="Unicode Debug"
+%MSBUILD_PATH% "Utilities\LogicianDebugger\ROMDebugApp.vcproj" /t:rebuild /p:Configuration="Unicode Release"
+echo "LogicianDebugger build complete"
 
 echo "All builds complete"
 pause
