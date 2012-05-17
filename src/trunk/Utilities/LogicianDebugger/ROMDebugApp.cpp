@@ -101,7 +101,7 @@ MyFrame::MyFrame(const wxString& title)
 		wxString line = text.ReadLine();
 		docXML+=line;
 	}
-	if (!node->LoadXML(docXML.c_str()))
+	if (!node->LoadXML(docXML.wc_str()))
 		return;
 
 	ROMNode *childNode = new ROMNode("Child1");
