@@ -6,7 +6,7 @@ Prerequisites:
 Rules Engine: EDSEngine
 All platforms: 
 - zlib compression library v1.2.3
-- boost C++ libraries v1.4+
+- boost C++ libraries v1.47+
 - iconv v1.9.2
 - libxml2 v2.7.3 
 - libxslt v1.1.24 
@@ -17,7 +17,7 @@ Windows:
 
 Rule Table Builder GUI: DecisionLogic
 All platforms:
-- wxWidgets GUI toolkit v2.8.10+
+- wxWidgets GUI toolkit v2.8.10+, v2.9.3+ for VS2010 project
 - zlib compression library v1.2.3
 - iconv v1.9.2
 - libxml2 v2.7.3
@@ -45,7 +45,7 @@ Windows .NET tools:
 - Relation Object Model v1.0
 
 Silverlight Rules Engine and Relational Object Model
-- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  Silverlight v4.0 recommended and tested. Visual Studio 2010 project files provided.
+- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  Silverlight v4.0 recommended and tested. Visual Studio 2010 project files provided.  Compiling apps with VS2010 will require end users to have .NET 4.0 and the VC2010 C++ runtime.
 
 Adobe Flash/Actionscript Rules Engine and Relational Object Model
 - Just a wrapper for the Javascript libraries, interface similar to the .NET library.  However, overloading restrictions cause some function names to differ and in those cases are named similar to the javascript method.  Flash 10.1 tested.  FlashDevelop project files provided.
