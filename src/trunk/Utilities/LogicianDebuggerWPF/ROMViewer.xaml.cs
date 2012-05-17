@@ -171,10 +171,10 @@ namespace LogicianDebuggerWPF
             grid.ItemsSource = null;
             grid.Columns.Clear();
 
-            DataGridTextColumn attrCol = CreateTextColumn("attr", "attr");
+            Microsoft.Windows.Controls.DataGridTextColumn attrCol = CreateTextColumn("attr", "attr");
             attrCol.Binding = new System.Windows.Data.Binding("Attribute");
             grid.Columns.Add(attrCol);
-            DataGridTextColumn valueCol = CreateTextColumn("value", "value");
+            Microsoft.Windows.Controls.DataGridTextColumn valueCol = CreateTextColumn("value", "value");
             valueCol.Binding = new System.Windows.Data.Binding("Value");
             grid.Columns.Add(valueCol);
 
@@ -192,7 +192,7 @@ namespace LogicianDebuggerWPF
 
             for (int i = 0; i < AdditionalCols; i++)
             {
-                DataGridTemplateColumn col = CreateTemplateColumn(i);
+                Microsoft.Windows.Controls.DataGridTemplateColumn col = CreateTemplateColumn(i);
                 if (col != null)
                     grid.Columns.Add(col);
             }
@@ -200,9 +200,9 @@ namespace LogicianDebuggerWPF
             grid.ItemsSource = table;
         }
 
-        private DataGridTextColumn CreateTextColumn(string fieldName, string title)
+        private Microsoft.Windows.Controls.DataGridTextColumn CreateTextColumn(string fieldName, string title)
         {
-            DataGridTextColumn column = new DataGridTextColumn();
+            Microsoft.Windows.Controls.DataGridTextColumn column = new Microsoft.Windows.Controls.DataGridTextColumn();
             column.Header = title;
             column.Binding = new System.Windows.Data.Binding(fieldName);
             return column;
@@ -221,11 +221,11 @@ namespace LogicianDebuggerWPF
             return new StreamReader(stream);
         }
 
-        private DataGridTemplateColumn CreateTemplateColumn(int i)
+        private Microsoft.Windows.Controls.DataGridTemplateColumn CreateTemplateColumn(int i)
         {
             try
             {
-                DataGridTemplateColumn column = new DataGridTemplateColumn();
+                Microsoft.Windows.Controls.DataGridTemplateColumn column = new Microsoft.Windows.Controls.DataGridTemplateColumn();
                 column.Header = "sub-value";
 
                 object o = XamlReader.Load(new XmlTextReader(CreateColumnTemplate(i))); //display template

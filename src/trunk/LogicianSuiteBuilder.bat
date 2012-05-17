@@ -56,5 +56,10 @@ echo "Building DecisionLogic..."
 %MSBUILD_PATH% "DecisionLogic\DecisionLogic.vcxproj" /t:rebuild /p:Configuration="Unicode Release"
 echo "DecisionLogic build complete"
 
+echo "Building Utilities"
+echo "Building LogicianDebuggerWPF"
+%MSBUILD_PATH% "Utilities\LogicianDebuggerWPF\LogicianDebugger.csproj" /t:rebuild /p:Configuration="Debug"
+%MSBUILD_PATH% "Utilities\LogicianDebuggerWPF\LogicianDebugger.csproj" /t:rebuild /p:Configuration="Release"
+
 echo "All builds complete"
 pause
