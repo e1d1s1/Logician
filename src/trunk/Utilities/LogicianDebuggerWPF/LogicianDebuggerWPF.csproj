@@ -34,6 +34,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EDSEngineNET, Version=1.0.4514.1687, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\EDSEngineNET\Release\EDSEngineNET.dll</HintPath>
+    </Reference>
+    <Reference Include="ROMNET, Version=1.0.4514.2332, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ROMNET\Release\ROMNET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -107,16 +115,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\EDSEngineNET\EDSEngineNET.vcproj">
-      <Project>{C035245F-9D98-4585-8350-6E1CDD5ADAC3}</Project>
-      <Name>EDSEngineNET</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ROMNET\ROMNET.vcproj">
-      <Project>{A2E7FF12-B9E7-4276-8120-407A812AC43B}</Project>
-      <Name>ROMNET</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

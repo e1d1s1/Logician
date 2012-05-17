@@ -41,7 +41,7 @@ namespace ROM
 		vector<wstring> AvailableValues;
 	};
 
-	enum
+	enum ATTRTYPE_E
 	{
 		SINGLESELECT = 0,
 		MULTISELECT = 1,

@@ -157,6 +157,15 @@ namespace ROMNET {
 		EDS::CKnowledgeBase *m_KnowledgeBase;
 	};
 
+	public enum class ATTRTYPE
+	{
+		SINGLESELECT = ROM::SINGLESELECT,
+		MULTISELECT = ROM::MULTISELECT,
+		BOOLEANSELECT = ROM::BOOLEANSELECT,
+		EDIT = ROM::EDIT,
+		STATIC = ROM::STATIC
+	};
+
 	public ref class ROMDictionaryAttribute
 	{
 	public:
@@ -172,6 +181,7 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 					return gcnew String(m_ROMDictionaryAttribute->Name.c_str());
+				else return "";
 			}
 			virtual void set(String^ value)
 			{
@@ -185,6 +195,7 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 					return gcnew String(m_ROMDictionaryAttribute->Description.c_str());
+				else return "";
 			}
 			virtual void set(String^ value)
 			{
@@ -198,6 +209,7 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 					return gcnew String(m_ROMDictionaryAttribute->DefaultValue.c_str());
+				else return "";
 			}
 			virtual void set(String^ value)
 			{
@@ -211,6 +223,7 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 					return gcnew String(m_ROMDictionaryAttribute->RuleTable.c_str());
+				else return "";
 			}
 			virtual void set(String^ value)
 			{
@@ -218,17 +231,18 @@ namespace ROMNET {
 					m_ROMDictionaryAttribute->RuleTable = MarshalString(value);
 			}
 		}
-		property int AttributeType
+		property ATTRTYPE AttributeType
 		{
-			virtual int get()
+			virtual ATTRTYPE get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return m_ROMDictionaryAttribute->AttributeType;
+					return static_cast<ATTRTYPE>(m_ROMDictionaryAttribute->AttributeType);
+				else return ATTRTYPE::STATIC;
 			}
-			virtual void set(int value)
+			virtual void set(ATTRTYPE value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->AttributeType = value;
+					m_ROMDictionaryAttribute->AttributeType = static_cast<ROM::ATTRTYPE_E>(value);
 			}
 		}
 		property bool ValueChanged
@@ -237,6 +251,7 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->ValueChanged;
+				else return false;
 			}
 			virtual void set(bool value)
 			{
@@ -250,6 +265,7 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->ChangedByUser;
+				else return false;
 			}
 			virtual void set(bool value)
 			{
@@ -263,6 +279,7 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->Valid;
+				else return false;
 			}
 			virtual void set(bool value)
 			{
@@ -276,6 +293,7 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->Visible;
+				else return false;
 			}
 			virtual void set(bool value)
 			{
@@ -289,6 +307,7 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->Enabled;
+				else return false;
 			}
 			virtual void set(bool value)
 			{
@@ -301,7 +320,8 @@ namespace ROMNET {
 			virtual array<String^>^ get()
 			{
 				if (m_ROMDictionaryAttribute)				
-					return GetArrayFromVectorStrings(m_ROMDictionaryAttribute->PossibleValues);				
+					return GetArrayFromVectorStrings(m_ROMDictionaryAttribute->PossibleValues);			
+				else return gcnew array<String^>(0);
 			}
 			virtual void set(array<String^>^ value)
 			{
@@ -323,7 +343,8 @@ namespace ROMNET {
 			virtual array<String^>^ get()
 			{
 				if (m_ROMDictionaryAttribute)				
-					return GetArrayFromVectorStrings(m_ROMDictionaryAttribute->AvailableValues);				
+					return GetArrayFromVectorStrings(m_ROMDictionaryAttribute->AvailableValues);	
+				else return gcnew array<String^>(0);
 			}
 			virtual void set(array<String^>^ value)
 			{
@@ -368,7 +389,25 @@ namespace ROMNET {
 	private:
 		ROMDictionary(IntPtr^ ptr) {m_ROMDictionary = (ROM::ROMDictionary*)ptr->ToPointer();}
 		ROM::ROMDictionary *m_ROMDictionary;
-	};	
+	};		
+
+	public enum class INVALIDATEMODE
+	{
+		NORMAL = ROM::NORMALINVALIDATE,
+		FLAG = ROM::FLAGINVALIDATE
+	};
+
+	public enum class RESETMODE
+	{
+		RESETBYRULE = ROM::RESETBYRULE,
+		SKIPRESET = ROM::SKIPRESET
+	};
+
+	public enum class TRACKMODE
+	{
+		TRACKUSER = ROM::TRACKUSER,
+		SKIPTRACKUSER = ROM::SKIPTRACKUSER
+	};
 
 	public ref class LinearEngine
 	{
@@ -392,11 +431,11 @@ namespace ROMNET {
 		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
 		Dictionary<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
-		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents, int InvalidateMode);
-		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents) {EvaluateForAttribute(dictAttrName, newValues, bEvalDependents, NORMAL);}
+		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents, INVALIDATEMODE invalidateMode);
+		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents) {EvaluateForAttribute(dictAttrName, newValues, bEvalDependents, INVALIDATEMODE::NORMAL);}
 		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues) {EvaluateForAttribute(dictAttrName, newValues, true);}
-		void EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents, int InvalidateMode);
-		void EvaluateForAttribute(String^ dictAttrName, String^ newValue) {EvaluateForAttribute(dictAttrName, newValue, true, NORMAL);}
+		void EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents, INVALIDATEMODE invalidateMode);
+		void EvaluateForAttribute(String^ dictAttrName, String^ newValue) {EvaluateForAttribute(dictAttrName, newValue, true, INVALIDATEMODE::NORMAL);}
 		void EvaluateAll() {if (m_LinearEngine) m_LinearEngine->EvaluateAll();}
 		array<ROMDictionaryAttribute^>^ GetEvalList();
 		Dictionary<String^, array<String^>^>^ GetTriggers();
@@ -410,49 +449,49 @@ namespace ROMNET {
 					return false;
 			}
 		}
-		property unsigned int InvalidateMode
+		property INVALIDATEMODE InvalidateMode
 		{
-			virtual unsigned int get()
+			virtual INVALIDATEMODE get()
 			{
 				if (m_LinearEngine)
-					return m_LinearEngine->InvalidateMode;
+					return static_cast<INVALIDATEMODE>(m_LinearEngine->InvalidateMode);
 				else
-					return NORMAL;
+					return INVALIDATEMODE::NORMAL;
 			}
-			virtual void set(unsigned int value)
+			virtual void set(INVALIDATEMODE value)
 			{
 				if (m_LinearEngine)
-					m_LinearEngine->InvalidateMode = value;
+					m_LinearEngine->InvalidateMode = static_cast<ROM::INVALIDATEMODE_E>(value);
 			}
 		}
-		property unsigned int ResetBehavior
+		property RESETMODE ResetBehavior
 		{
-			virtual unsigned int get()
+			virtual RESETMODE get()
 			{
 				if (m_LinearEngine)
-					return m_LinearEngine->ResetBehavior;
+					return static_cast<RESETMODE>(m_LinearEngine->ResetBehavior);
 				else
-					return SKIPRESET;
+					return RESETMODE::SKIPRESET;
 			}
-			virtual void set(unsigned int value)
+			virtual void set(RESETMODE value)
 			{
 				if (m_LinearEngine)
-					m_LinearEngine->ResetBehavior = value;
+					m_LinearEngine->ResetBehavior = static_cast<ROM::RESETMODE_E>(value);
 			}
 		}
-		property unsigned int TrackUserBehavior
+		property TRACKMODE TrackUserBehavior
 		{
-			virtual unsigned int get()
+			virtual TRACKMODE get()
 			{
 				if (m_LinearEngine)
-					return m_LinearEngine->TrackUserBehavior;
+					return static_cast<TRACKMODE>(m_LinearEngine->TrackUserBehavior);
 				else
-					return SKIPTRACKUSER;
+					return TRACKMODE::SKIPTRACKUSER;
 			}
-			virtual void set(unsigned int value)
+			virtual void set(TRACKMODE value)
 			{
 				if (m_LinearEngine)
-					m_LinearEngine->TrackUserBehavior = value;
+					m_LinearEngine->TrackUserBehavior = static_cast<ROM::TRACKMODE_E>(value);
 			}
 		}
 
@@ -460,4 +499,6 @@ namespace ROMNET {
 		LinearEngine(IntPtr^ ptr) {m_LinearEngine = (ROM::LinearEngine*)ptr->ToPointer();}
 		ROM::LinearEngine *m_LinearEngine;
 	};
+
+	
 }

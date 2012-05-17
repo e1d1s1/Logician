@@ -371,8 +371,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="EDSEngine.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\Debug MSXML&quot;;C:\boost_1_40_0\lib"
+				LinkIncremental="0"
+				AdditionalLibraryDirectories="&quot;..\Debug MSXML&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -446,8 +446,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="EDSEngine.lib"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;..\Release MSXML&quot;;C:\boost_1_40_0\lib"
+				LinkIncremental="0"
+				AdditionalLibraryDirectories="&quot;..\Release MSXML&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
