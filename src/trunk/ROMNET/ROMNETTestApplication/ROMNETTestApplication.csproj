@@ -38,9 +38,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ROMNET, Version=1.0.3657.20896, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\Release\ROMNET.dll</HintPath>
+    <Reference Include="ROMNET, Version=1.0.4514.2332, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Release\ROMNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

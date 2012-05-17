@@ -23,10 +23,10 @@ namespace ROM
 {
 	void LinearEngine::CreateLinearEngine(ROMNode* context, wstring dictionaryTable)
 	{
-		InvalidateMode = NORMAL;
+		InvalidateMode = NORMALINVALIDATE;
 		ResetBehavior = SKIPRESET;
 		TrackUserBehavior = SKIPTRACKUSER;
-		TBUATTR = L"TBUAttrs";
+		TBUATTR = L"TBU_";
 		InitializeEngine(dictionaryTable);		
 	}
 
@@ -42,6 +42,8 @@ namespace ROM
 			m_vEvalList.clear();
 			m_mapTriggers.clear();
 			LoadDictionary(dictionaryTable);
+			if (TrackUserBehavior == TRACKUSER)
+				LoadTrackingAttrs();
 
 			//open each attr in dict, load its dependency info to create m_vEvalList, m_mapTriggers
 			//build an initial list that matches the dictionary order
@@ -71,6 +73,20 @@ namespace ROM
 			m_EvalInternal = false;
 			OrderDictionary();
 			m_vEvalListRecursChecker.clear();
+		}
+	}
+
+	void LinearEngine::LoadTrackingAttrs()
+	{
+		FASTMAP_MAPS allAttrs = m_ROMContext->GetAllAttributes();
+		for (FASTMAP_MAPS::iterator it = allAttrs.begin(); it != allAttrs.end(); it++)
+		{
+			if (ROMUTIL::StringContains(it->first, TBUATTR))
+			{
+				wstring dictAttrName = ROMUTIL::FindAndReplace(it->first, TBUATTR, L"");
+				if (m_dict.find(dictAttrName) != m_dict.end())
+					m_dict[dictAttrName].ChangedByUser = true;
+			}
 		}
 	}
 
@@ -196,11 +212,11 @@ namespace ROM
 			switch (m_dict[dictAttrName].AttributeType)
 			{
 			case SINGLESELECT:
-				EvalSingleSelect(dictAttrName, newValues[0], InvalidateMode != FLAG);
+				EvalSingleSelect(dictAttrName, newValues[0], InvalidateMode != FLAGINVALIDATE);
 				break;
 
 			case MULTISELECT:
-				EvalMultiSelect(dictAttrName, newValues, InvalidateMode != FLAG);
+				EvalMultiSelect(dictAttrName, newValues, InvalidateMode != FLAGINVALIDATE);
 				break;
 
 			case BOOLEANSELECT:
@@ -208,7 +224,7 @@ namespace ROM
 				break;
 
 			case EDIT:
-				EvalEdit(dictAttrName, newValues[0], InvalidateMode != FLAG);
+				EvalEdit(dictAttrName, newValues[0], InvalidateMode != FLAGINVALIDATE);
 				break;
 
 			default: //STATIC
@@ -231,22 +247,19 @@ namespace ROM
 
 	bool LinearEngine::IsTouchedByUser(wstring dictAttrName)
 	{
-		return ROMUTIL::StringContains(m_ROMContext->GetAttribute(TBUATTR), dictAttrName + L"|");
+		return m_ROMContext->GetAttributeExists(TBUATTR + dictAttrName);
 	}
 
 	void LinearEngine::SetTouchedByUser(wstring dictAttrName)
 	{
 		m_dict[dictAttrName].ChangedByUser = true;
-		wstring currentList = m_ROMContext->GetAttribute(TBUATTR);
-		m_ROMContext->SetAttribute(TBUATTR, currentList + dictAttrName + L"|");
+		m_ROMContext->SetAttribute(TBUATTR + dictAttrName, L"Y");
 	}
 	
 	void LinearEngine::RemoveTouchedByUser(wstring dictAttrName)
 	{
 		m_dict[dictAttrName].ChangedByUser = false;
-		wstring currentList = m_ROMContext->GetAttribute(TBUATTR);
-		wstring newList = ROMUTIL::FindAndReplace(currentList, dictAttrName + L"|", L"");
-		m_ROMContext->SetAttribute(TBUATTR, newList);
+		m_ROMContext->RemoveAttribute(TBUATTR + dictAttrName);
 	}
 
 	void LinearEngine::EvaluateAll()

@@ -373,8 +373,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;Relational Object Model.lib&quot; &quot;EDSEngine.lib&quot;"
-				LinkIncremental="0"
-				AdditionalLibraryDirectories="&quot;..\Debug MSXML&quot;;&quot;..\..\EDSEngine\Debug MSXML&quot;;C:\boost_1_39_0\lib"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;..\Debug MSXML&quot;;&quot;..\..\EDSEngine\Debug MSXML&quot;"
 				IgnoreDefaultLibraryNames="MSVCRT;MSVCR90"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -449,8 +449,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;Relational Object Model.lib&quot; &quot;EDSEngine.lib&quot;"
-				LinkIncremental="0"
-				AdditionalLibraryDirectories="&quot;..\Release MSXML&quot;;&quot;..\..\EDSEngine\Release MSXML&quot;;C:\boost_1_39_0\lib"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;..\Release MSXML&quot;;&quot;..\..\EDSEngine\Release MSXML&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

@@ -21,37 +21,37 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
 #define MAX_RECURSION 1000
 
-enum INVALIDATEMODE
-{
-	NORMAL = 0,
-	FLAG
-};
-
-enum RESETMODE
-{
-	RESETBYRULE = 10,
-	SKIPRESET	
-};
-
-enum TRACKMODE
-{
-	TRACKUSER = 20,
-	SKIPTRACKUSER
-};
-
 using namespace std;
 
 namespace ROM
 {
+	enum INVALIDATEMODE_E
+	{
+		NORMALINVALIDATE,
+		FLAGINVALIDATE
+	};
+
+	enum RESETMODE_E
+	{
+		RESETBYRULE,
+		SKIPRESET
+	};
+
+	enum TRACKMODE_E
+	{
+		TRACKUSER,
+		SKIPTRACKUSER
+	};
+
 	class LinearEngine : public ROMDictionary
 	{
 	public:
-		LinearEngine(){InvalidateMode = NORMAL;}
+		LinearEngine(){InvalidateMode = NORMALINVALIDATE;}
 		LinearEngine(ROMNode* context, wstring dictionaryTable):ROMDictionary(context) {CreateLinearEngine(context, dictionaryTable);}
 		void CreateLinearEngine(ROMNode* context, wstring dictionaryTable);
 		virtual ~LinearEngine(){}
-		void EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents = true, int InvalidateMode = NORMAL);
-		void EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents = true, int InvalidateMode = NORMAL);
+		void EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents = true, int InvalidateMode = NORMALINVALIDATE);
+		void EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents = true, int InvalidateMode = NORMALINVALIDATE);
 		void EvaluateAll();
 		vector<ROMDictionaryAttribute*> GetEvalList() {return m_vEvalList;}
 		map<wstring, vector<wstring> > GetTriggers() {return m_mapTriggers;}
@@ -64,8 +64,8 @@ namespace ROM
 
 		//ASCII overloads
 		LinearEngine(ROMNode* context, string dictionaryTable);
-		void EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents = true, int InvalidateMode = NORMAL);
-		void EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents = true, int InvalidateMode = NORMAL);
+		void EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents = true, int InvalidateMode = NORMALINVALIDATE);
+		void EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents = true, int InvalidateMode = NORMALINVALIDATE);
 
 
 	private:
@@ -80,6 +80,7 @@ namespace ROM
 		bool IsTouchedByUser(wstring dictAttrName);
 		void SetTouchedByUser(wstring dictAttrName);
 		void RemoveTouchedByUser(wstring dictAttrName);
+		void LoadTrackingAttrs();
 		vector<wstring> ParseOutPrefixes(vector<wstring> values, vector<wstring> &valuesWithoutPrefixes); //remove the special character flags from the values
 		vector<wstring> GetSelectedValues(ROMDictionaryAttribute* attr);
 		void ResetValueChanged();		
@@ -94,5 +95,5 @@ namespace ROM
 		wstring DEFAULTPREFIX;
 		wstring DISABLEPREFIX;
 		wstring TBUATTR;
-	};
+	};	
 }
