@@ -39,6 +39,8 @@
 #include "folder.xpm"
 #include "folder_open.xpm"
 
+#define VERSION "1.0.2b"
+
 //Icon
 #if !defined(__WXMSW__) && !defined(__WXPM__)
     #include "DecisionLogicIcon.xpm"
@@ -597,8 +599,9 @@ void DecisionLogicFrame::OnCompileOptions(wxCommandEvent& WXUNUSED(event))
 void DecisionLogicFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     wxMessageBox(wxString::Format(
-        _T("This is DecisionLogic ")
-        _T("running under %s.\nCoded by Eric D. Schmidt\n(c) 2008 - 2012 DigiRule Solutions LLC"),
+        _T("This is DecisionLogic v")
+		_T(VERSION)
+        _T(" running under %s.\nCoded by Eric D. Schmidt\n(c) 2008 - 2012 DigiRule Solutions LLC"),
         wxGetOsDescription().c_str()
      ),
      _T("About DecisionLogic"),
@@ -637,9 +640,12 @@ void DecisionLogicFrame::OnOpenRecentFile (wxCommandEvent& event)
 void DecisionLogicFrame::TreeItemSelected(wxTreeEvent& event)
 {
 	wxTreeItemId item = m_tree->GetSelection();
-	if (item.IsOk() && m_tree->GetItemImage(item) == TreeCtrlIcon_File)
+	int icon = m_tree->GetItemImage(item);
+	if (item.IsOk() && (m_tree->GetRootItem() == item || icon == TreeCtrlIcon_File))
 	{
-		if (!m_bBypassLoad)
+		if (m_tree->GetRootItem() == item)
+			m_gui->SetActiveGroup(m_gui->GetTreeNodePath((void*)item.m_pItem));
+		else if (!m_bBypassLoad)
 			m_worker->LoadTable( ((wstring)(m_tree->GetItemText(m_tree->GetSelection()))) );
 	}
 	else
