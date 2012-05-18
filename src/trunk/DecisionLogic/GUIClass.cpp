@@ -306,13 +306,18 @@ void GUIClass::SetActiveGroup(wstring groupPath)
 	wstring strPathSep; strPathSep += PATHSEP;
 	vector<wstring> pathParts = UTILS::Split(groupPath, strPathSep);
 	wxTreeItemId grpItem;
-	if (pathParts.size() > 0 || (pathParts.size() == 1 && !(pathParts[0].length() == 1 && pathParts[0][0] == PATHSEP)))
+	if (pathParts.size() > 0)
 	{
-		grpItem = FindItemNamed(m_tree->GetRootItem(), pathParts[0]);
-		for (vector<wstring>::iterator it = pathParts.begin() + 1; it != pathParts.end(); it++)
+		if (pathParts.size() == 1 && !(pathParts[0].length() == 1 && pathParts[0][0] == PATHSEP))
 		{
-			grpItem = FindItemNamed(grpItem, *it);
+			grpItem = FindItemNamed(m_tree->GetRootItem(), pathParts[0]);
+			for (vector<wstring>::iterator it = pathParts.begin() + 1; it != pathParts.end(); it++)
+			{
+				grpItem = FindItemNamed(grpItem, *it);
+			}
 		}
+		else
+			grpItem = m_tree->GetRootItem();
 	}
 	else
 		grpItem = m_tree->GetRootItem();

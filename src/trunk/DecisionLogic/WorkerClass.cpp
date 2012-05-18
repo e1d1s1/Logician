@@ -250,7 +250,7 @@ bool WorkerClass::Save(OpenLogicTable *targetTable)
 						current_table.logic_table.Name != TRANSLATIONS_TABLE_NAME)
 					{
 						//set path according to its place in the tree, relative to working directory
-						current_table.logic_table.Path = current_table.logic_table.Path +
+						current_table.logic_table.Path = current_table.logic_table.Path + PATHSEP +
 							m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) +
 							current_table.logic_table.Name + L".xml";
 					}
@@ -678,6 +678,8 @@ void WorkerClass::NewTable(wstring name)
 			}
 			bSystemTable = true;
 		}
+		if (name.length() == 0)
+			return;
 		if (!ValidateFolderName(name))
 		{
 			m_gui->PromptMessage(L"Invalid file name.");
