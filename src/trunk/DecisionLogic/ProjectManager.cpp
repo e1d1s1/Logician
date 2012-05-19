@@ -826,6 +826,10 @@ bool ProjectManager::SaveDataSet(wstring name, wstring full_path, DataSet<wstrin
             }
         }
 
+		//if all is left is '/', then clear it
+		if (rel_path.length() == 1 && rel_path[0] == PATHSEP)
+			rel_path = L"";
+
         //add new DataSet to the project
         if (isNewTable)
         {

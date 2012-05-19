@@ -509,7 +509,12 @@ void DecisionLogicFrame::OnInsertTable(wxCommandEvent& event)
 
 void DecisionLogicFrame::OnNewTable(wxCommandEvent& WXUNUSED(event))
 {
-	m_worker->NewTable();
+	m_bBypassLoad = false;
+	if (cur_sel.IsOk())
+	{
+		m_tree->SelectItem(cur_sel);
+		m_worker->NewTable();
+	}
 }
 
 void DecisionLogicFrame::OnDeleteTable(wxCommandEvent& WXUNUSED(event))
@@ -519,7 +524,12 @@ void DecisionLogicFrame::OnDeleteTable(wxCommandEvent& WXUNUSED(event))
 
 void DecisionLogicFrame::OnRenameTable(wxCommandEvent& WXUNUSED(event))
 {
-	m_worker->RenameTable();
+	m_bBypassLoad = false;
+	if (cur_sel.IsOk())
+	{
+		m_tree->SelectItem(cur_sel);
+		m_worker->RenameTable();
+	}
 }
 
 void DecisionLogicFrame::OnNewGroup(wxCommandEvent& WXUNUSED(event))
@@ -639,17 +649,20 @@ void DecisionLogicFrame::OnOpenRecentFile (wxCommandEvent& event)
 //Tree Events
 void DecisionLogicFrame::TreeItemSelected(wxTreeEvent& event)
 {
-	wxTreeItemId item = m_tree->GetSelection();
-	int icon = m_tree->GetItemImage(item);
-	if (item.IsOk() && (m_tree->GetRootItem() == item || icon == TreeCtrlIcon_File))
+	cur_sel = m_tree->GetSelection();
+	if (cur_sel.IsOk())
 	{
-		if (m_tree->GetRootItem() == item)
-			m_gui->SetActiveGroup(m_gui->GetTreeNodePath((void*)item.m_pItem));
-		else if (!m_bBypassLoad)
-			m_worker->LoadTable( ((wstring)(m_tree->GetItemText(m_tree->GetSelection()))) );
+		int icon = m_tree->GetItemImage(cur_sel);
+		if (cur_sel.IsOk() && (m_tree->GetRootItem() == cur_sel || icon == TreeCtrlIcon_File))
+		{
+			if (m_tree->GetRootItem() == cur_sel)
+				m_gui->SetActiveGroup(m_gui->GetTreeNodePath((void*)cur_sel.m_pItem));
+			else if (!m_bBypassLoad)
+				m_worker->LoadTable( ((wstring)(m_tree->GetItemText(m_tree->GetSelection()))) );
+		}
+		else
+			m_gui->SetActiveGroup(m_gui->GetTreeNodePath((void*)cur_sel.m_pItem));
 	}
-	else
-		m_gui->SetActiveGroup(m_gui->GetTreeNodePath((void*)item.m_pItem));
 }
 
 void DecisionLogicFrame::TreeOnBeginDrag(wxTreeEvent& event)
@@ -986,7 +999,7 @@ void DecisionLogicFrame::OnTreeContextMenu(wxTreeEvent &event)
 {
 	wxMenu popupMenu;
 
-	wxTreeItemId cur_sel = event.GetItem();
+	cur_sel = event.GetItem();
 	if (cur_sel.IsOk())
 	{
 		wstring name = m_tree->GetItemText(cur_sel).wc_str();

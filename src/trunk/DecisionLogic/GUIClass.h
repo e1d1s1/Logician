@@ -67,6 +67,7 @@ public:
 	vector<wstring> GetChildrenOfActiveGroup();
 	vector<wstring> GetChildTablesOfActiveGroup();
 	vector<wstring> GetChildrenOfGroup(wstring groupPath);
+	wstring GetParentGroupName(wstring name);
 	void AddAllProjectNodes(StringTable<wstring> *project);
 	void SetActiveGroup(wstring groupPath);
 
