@@ -84,7 +84,7 @@ vector<string> UTILS::Split(string text, string separators)
 		stop = text.find_first_of(separators, start);
 		if ((stop < 0) || (stop > n)) stop = n;
 		retval.push_back(text.substr(start, stop - start));
-		start = text.find_first_not_of(separators, stop+1);
+		start =  stop + 1;
 	}
 
 	if (retval.size() == 0)
@@ -104,7 +104,7 @@ vector<wstring> UTILS::Split(wstring text, wstring separators)
 		stop = text.find_first_of(separators, start);
 		if ((stop < 0) || (stop > n)) stop = n;
 		retval.push_back(text.substr(start, stop - start));
-		start = text.find_first_not_of(separators, stop+1);
+		start =  stop + 1;
 	}
 
 	if (retval.size() == 0)
