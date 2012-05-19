@@ -301,6 +301,19 @@ vector<wstring> GUIClass::GetChildrenOfGroup(wstring groupPath)
 	return names;
 }
 
+wstring GUIClass::GetParentGroupName(wstring tableName)
+{
+	wstring name = L"";
+	wxTreeItemId grpItem = FindItemNamed(m_tree->GetRootItem(), tableName);
+	if (grpItem.IsOk())
+	{
+		 wxTreeItemId parent = m_tree->GetItemParent(grpItem);
+		 if (parent.IsOk())
+			name = m_tree->GetItemText(parent).wc_str();
+	}
+	return name;
+}
+
 void GUIClass::SetActiveGroup(wstring groupPath)
 {
 	wstring strPathSep; strPathSep += PATHSEP;
@@ -308,16 +321,17 @@ void GUIClass::SetActiveGroup(wstring groupPath)
 	wxTreeItemId grpItem;
 	if (pathParts.size() > 0)
 	{
-		if (pathParts.size() == 1 && !(pathParts[0].length() == 1 && pathParts[0][0] == PATHSEP))
+		if (pathParts.size() == 1)
 		{
-			grpItem = FindItemNamed(m_tree->GetRootItem(), pathParts[0]);
-			for (vector<wstring>::iterator it = pathParts.begin() + 1; it != pathParts.end(); it++)
-			{
-				grpItem = FindItemNamed(grpItem, *it);
-			}
+			if (pathParts[0].length() == 1 && pathParts[0][0] == PATHSEP)
+				grpItem = m_tree->GetRootItem();
+			else
+				grpItem = FindItemNamed(m_tree->GetRootItem(), pathParts[0]);
 		}
-		else
-			grpItem = m_tree->GetRootItem();
+		else if (pathParts.size() > 1)
+		{			
+			grpItem = FindItemNamed(m_tree->GetRootItem(), pathParts[pathParts.size() - 1]);			
+		}
 	}
 	else
 		grpItem = m_tree->GetRootItem();
@@ -393,18 +407,22 @@ void GUIClass::AddAllProjectNodes(StringTable<wstring> *project)
 				}
 				else //children
 				{
-					wxTreeItemId parentNode = m_tree->GetRootItem(), tableParent, childToAdd;
+					wxTreeItemId tableParent = m_tree->GetRootItem();
 					for (size_t i = 0; i < parts.size(); i++)
 					{
-						tableParent = FindItemNamed(parentNode, parts[i]);
-						if (!tableParent.IsOk())
+						wxTreeItemId newParent = FindItemNamed(tableParent, parts[i]);
+						if (!newParent.IsOk())
 						{
-							parentNode = AddTreeNode(parentNode, NULL, parts[i], "Group");
-							tableParent = parentNode;
+							newParent = AddTreeNode(tableParent, NULL, parts[i], "Group");
+							tableParent = newParent;
 						}
+						else
+							tableParent = newParent;
 					}
 					if (tableParent.IsOk())
+					{
 						AddTreeNode(tableParent, NULL, name);
+					}
 				}
 			}
 		}

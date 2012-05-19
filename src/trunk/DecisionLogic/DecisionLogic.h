@@ -163,7 +163,7 @@ private:
 	wxTreeCtrl *m_tree;
 	wxSashLayoutWindow *winTree, *winLog;
 	wxTextCtrl *txtLog;
-	wxTreeItemId m_draggedItem;
+	wxTreeItemId m_draggedItem, cur_sel;
 	wxMenu *compilerMenu, *fileMenu, *tableMenu, *recentFileMenu;
 	wstring m_lastName;
 	wxPoint *m_last_find_pos;

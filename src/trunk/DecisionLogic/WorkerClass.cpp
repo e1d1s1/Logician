@@ -244,19 +244,24 @@ bool WorkerClass::Save(OpenLogicTable *targetTable)
 				if (current_table.logic_table.Path.length() == 0)
 				{
 					current_table.logic_table.Path = m_pm.GetProjectWorkingPath();
+
+					if (current_table.logic_table.Path[current_table.logic_table.Path.length() - 1] != PATHSEP)
+							current_table.logic_table.Path = current_table.logic_table.Path + PATHSEP;
+
 					//append the subdir, if needed
 
 					if (current_table.logic_table.Name != GLOBALORS_TABLE_NAME &&
 						current_table.logic_table.Name != TRANSLATIONS_TABLE_NAME)
 					{
-						//set path according to its place in the tree, relative to working directory
-						current_table.logic_table.Path = current_table.logic_table.Path + PATHSEP +
-							m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) +
-							current_table.logic_table.Name + L".xml";
+						//set path according to its place in the tree, relative to working directory	
+						wstring subdir = m_gui->GetTreeNodePath(m_gui->GetActiveGroupName());
+						if (subdir.length() > 1)
+							current_table.logic_table.Path = current_table.logic_table.Path + subdir;				
+						current_table.logic_table.Path = current_table.logic_table.Path + current_table.logic_table.Name + L".xml";
 					}
 					else
 					{
-						current_table.logic_table.Path = current_table.logic_table.Path + PATHSEP +
+						current_table.logic_table.Path = current_table.logic_table.Path +
 							current_table.logic_table.Name + L".xml";
 					}
 				}
@@ -730,6 +735,13 @@ void WorkerClass::AddTableToProject(wstring name, bool bCreateNew, bool bSystemT
 			{
 				LogicTable table;
 				table.CreateLogicTable(name);
+				table.Path = m_pm.GetProjectWorkingPath();
+				if (table.Path[table.Path.length() - 1] != PATHSEP)
+					table.Path = table.Path + PATHSEP;
+				wstring subdir = m_gui->GetTreeNodePath(m_gui->GetActiveGroupName());
+				if (subdir.length() > 1)
+					table.Path = table.Path + subdir;
+				table.Path = table.Path + table.Name + L".xml";
 				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
 				childForm->Show();
 			}
