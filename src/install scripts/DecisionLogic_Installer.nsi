@@ -60,6 +60,11 @@ Section "DecisionLogic (required)"
 
 	; Write the installation path into the registry
 	WriteRegStr HKLM SOFTWARE\DecisionLogic "Install_Dir" "$INSTDIR"
+	
+	; Write the file association for DecisionLogic to registry
+	WriteRegStr HKCR .dlp "" "DecisionLogicProject"
+	WriteRegStr HKCR DecisionLogicProject\shell\open\command "" '$INSTDIR\DecisionLogic\DecisionLogic.exe "%1"'
+	WriteRegStr HKCR DecisionLogicProject\DefaultIcon "" '$INSTDIR\DecisionLogic\DecisionLogic.exe'
 
 	; Write the uninstall keys for Windows
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DecisionLogic" "DisplayName" "DecisionLogic"
@@ -86,6 +91,8 @@ Section "Uninstall"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DecisionLogic"
 	DeleteRegKey HKLM SOFTWARE\DecisionLogic
 	DeleteRegKey HKCU SOFTWARE\DecisionLogic
+	DeleteRegKey HKCR .dlp
+	DeleteRegKey HKCR DecisionLogicProject
 
 	; Remove files and uninstaller
 	Delete $INSTDIR\DecisionLogic\*.*

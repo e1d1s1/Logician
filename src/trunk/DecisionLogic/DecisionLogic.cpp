@@ -228,6 +228,38 @@ bool DecisionLogicApp::OnInit(void)
     return true;
 }
 
+void DecisionLogicApp::OnInitCmdLine(wxCmdLineParser& parser)
+{
+    parser.SetDesc (g_cmdLineDesc);
+    // must refuse '/' as parameter starter or cannot use "/path" style paths
+    parser.SetSwitchChars (_("-"));
+}
+
+static wxString fileToOpen = _("");
+bool DecisionLogicApp::OnCmdLineParsed(wxCmdLineParser& parser)
+{
+	if (parser.GetParamCount() > 0)
+	{
+		fileToOpen = parser.GetParam(0);
+	}
+	return true;
+}
+
+int DecisionLogicApp::OnRun()
+{
+	if (fileToOpen.length() > 0 && pt2WorkerObject2 != NULL)
+	{
+		DecisionLogicFrame *frame = (DecisionLogicFrame*)pt2WorkerObject2;
+		frame->OpenProjectFile(fileToOpen);
+	}
+
+	int exitcode = wxApp::OnRun();
+
+    wxTheClipboard->Flush();
+    if (exitcode!=0)
+        return exitcode;
+}
+
 // ----------------------------------------------------------------------------
 // main frame
 // ----------------------------------------------------------------------------
@@ -412,6 +444,15 @@ wxImageList* DecisionLogicFrame::CreateImageList(int size)
 void DecisionLogicFrame::OnNewProject(wxCommandEvent& WXUNUSED(event))
 {
 	if (m_worker->NewProject())
+	{
+		EnableAllMenus();
+		this->SetTitle(L"DecisionLogic - " + m_worker->GetProjectName());
+	}
+}
+
+void DecisionLogicFrame::OpenProjectFile(wxString fileName)
+{
+	if (m_worker->OpenProject(fileName.wc_str()))
 	{
 		EnableAllMenus();
 		this->SetTitle(L"DecisionLogic - " + m_worker->GetProjectName());

@@ -53,6 +53,7 @@
 #include <wx/treectrl.h>
 #include <wx/splitter.h>
 #include <wx/process.h>
+#include <wx/cmdline.h>
 #include "WorkerClass.h"
 #include "FindReplaceDialog.h"
 // ----------------------------------------------------------------------------
@@ -69,6 +70,18 @@ public:
     // initialization (doing it here and not in the ctor allows to have an error
     // return: if OnInit() returns false, the application terminates)
     virtual bool OnInit(void);
+	virtual bool OnCmdLineParsed(wxCmdLineParser& parser);
+	virtual void OnInitCmdLine(wxCmdLineParser& parser);
+	virtual int OnRun();
+};
+
+static const wxCmdLineEntryDesc g_cmdLineDesc [] =
+{
+	{ wxCMD_LINE_PARAM, NULL, NULL, _("open a dlp project file"),
+          wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
+	{ wxCMD_LINE_SWITCH, _("h"), _("help"), _("displays help on the command line parameters"),
+        wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
+    { wxCMD_LINE_NONE }
 };
 
 // Define a new frame type: this is going to be our main frame
@@ -138,6 +151,9 @@ public:
 	void TreeOnBeginLabelEdit(wxTreeEvent& event);
 	void TreeOnEndLabelEdit(wxTreeEvent& event);
 	void TreeOnKeyDownItem(wxTreeEvent& event);
+
+	//command line events
+	void OpenProjectFile(wxString fileName);
 
 	//debugger
 	void OnSocketEvent(wxSocketEvent& event);
