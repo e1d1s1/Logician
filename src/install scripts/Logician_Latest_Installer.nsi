@@ -93,6 +93,11 @@ Section "Logician Suite"
 	; Write the installation path into the registry
 	WriteRegStr HKLM SOFTWARE\DecisionLogic "Install_Dir" "$INSTDIR"
 	
+	; Write the file association for DecisionLogic to registry
+	WriteRegStr HKCR .dlp "" "DecisionLogicProject"
+	WriteRegStr HKCR DecisionLogicProject\shell\open\command "" '$INSTDIR\DecisionLogic\DecisionLogic.exe "%1"'
+	WriteRegStr HKCR DecisionLogicProject\DefaultIcon "" '$INSTDIR\DecisionLogic\DecisionLogic.exe'
+	
 	; Write the uninstall keys for Windows
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" "DisplayName" "Logician Libraries"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" "UninstallString" '"$INSTDIR\uninstall_logician_libraries.exe"'
@@ -119,6 +124,8 @@ Section "un.LogicianSuite"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician"
 	DeleteRegKey HKLM SOFTWARE\Logician
 	DeleteRegKey HKCU SOFTWARE\Logician
+	DeleteRegKey HKCR .dlp
+	DeleteRegKey HKCR DecisionLogicProject
 
 	; Remove files and uninstaller
 	Delete $INSTDIR\DecisionLogic\*.*
