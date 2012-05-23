@@ -541,10 +541,10 @@ void GUIClass::GenerateRecentFileList(wxMenu *listMenu, int RecentFile_ID_BEGIN,
 	}
 }
 
-bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring *last_found_name, bool bMatchCase, bool bMatchWholeWord, bool bDoReplace, wstring strReplace)
+bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring *last_found_name, ProjectManager *pm, bool bMatchCase, bool bMatchWholeWord, bool bDoReplace, wstring strReplace)
 {
 	bool bFoundAnything = false;
-	vector<wstring> allTables = m_pm->GetProjectTableNames();
+	vector<wstring> allTables = pm->GetProjectTableNames();
 	if (allTables.size() == 0)
 		return false;
 
@@ -573,7 +573,7 @@ bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring 
 			//open each table, find the strings
 			bFoundInTable = false;
 			xmlInitParser();
-			xmlDocPtr doc = m_pm->LoadTableRawXML(*itTable);
+			xmlDocPtr doc = pm->LoadTableRawXML(*itTable);
 			xmlXPathContextPtr xpathCtx = xmlXPathNewContext(doc);
 			xmlXPathObjectPtr xpathObjAttrs = xmlXPathEvalExpression((xmlChar*)"//Attr", xpathCtx);
 			xmlXPathObjectPtr xpathObjValues = xmlXPathEvalExpression((xmlChar*)"//Value", xpathCtx);
@@ -630,7 +630,7 @@ bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring 
 		{
 			startPos->x = 0;
 			startPos->y = 0;
-			bFoundAnything = FindTextInAnyTable(strToFind, startPos, last_found_name, bMatchCase, bMatchWholeWord, bDoReplace, strReplace);
+			bFoundAnything = FindTextInAnyTable(strToFind, startPos, last_found_name, pm, bMatchCase, bMatchWholeWord, bDoReplace, strReplace);
 		}
 	}
 	return bFoundAnything;
