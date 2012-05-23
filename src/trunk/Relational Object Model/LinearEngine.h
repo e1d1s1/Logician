@@ -50,8 +50,8 @@ namespace ROM
 		LinearEngine(ROMNode* context, wstring dictionaryTable):ROMDictionary(context) {CreateLinearEngine(context, dictionaryTable);}
 		void CreateLinearEngine(ROMNode* context, wstring dictionaryTable);
 		virtual ~LinearEngine(){}
-		void EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents = true, int InvalidateMode = NORMALINVALIDATE);
-		void EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents = true, int InvalidateMode = NORMALINVALIDATE);
+		void EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents = true);
+		void EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents = true);
 		void EvaluateAll();
 		vector<ROMDictionaryAttribute*> GetEvalList() {return m_vEvalList;}
 		map<wstring, vector<wstring> > GetTriggers() {return m_mapTriggers;}
@@ -64,17 +64,17 @@ namespace ROM
 
 		//ASCII overloads
 		LinearEngine(ROMNode* context, string dictionaryTable);
-		void EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents = true, int InvalidateMode = NORMALINVALIDATE);
-		void EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents = true, int InvalidateMode = NORMALINVALIDATE);
+		void EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents = true);
+		void EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents = true);
 
 
 	private:
 		void InitializeEngine(wstring dictionaryTable);
 		void OrderDictionary();
-		void EvalSingleSelect(wstring dictAttrName, wstring newValue, bool setTheValue = true);
-		void EvalMultiSelect(wstring dictAttrName, vector<wstring> newValues, bool setTheValue = true);
+		void EvalSingleSelect(wstring dictAttrName, wstring newValue);
+		void EvalMultiSelect(wstring dictAttrName, vector<wstring> newValues);
 		void EvalBoolean(wstring dictAttrName, wstring newValue);
-		void EvalEdit(wstring dictAttrName, wstring newValue, bool setTheValue = true);
+		void EvalEdit(wstring dictAttrName, wstring newValue);
 		void EvaluateDependencies(wstring dictAttrName);
 		void FlagAttrInvalid(wstring dictAttrName);
 		bool IsTouchedByUser(wstring dictAttrName);

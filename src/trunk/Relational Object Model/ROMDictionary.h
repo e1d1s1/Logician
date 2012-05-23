@@ -32,7 +32,7 @@ namespace ROM
 		ROMDictionary() {}
 		void CreateROMDictionary(ROMNode* context);
 		virtual ~ROMDictionary(void){}
-		wstring	GetTableDebugMessages() {if (m_ROMContext != NULL) return m_ROMContext->GetTableDebugMessages();}
+		wstring	GetTableDebugMessages() {if (m_ROMContext != NULL) return m_ROMContext->GetTableDebugMessages(); else return L"";}
 		void GenerateTableDebugMessages(bool bGenerate) {if (m_ROMContext != NULL) m_ROMContext->GenerateTableDebugMessages(bGenerate);}
 
 		void LoadDictionary(wstring dictionaryTable);

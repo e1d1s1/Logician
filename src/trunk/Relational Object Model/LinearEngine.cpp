@@ -170,14 +170,14 @@ namespace ROM
 		}
 	}
 
-	void LinearEngine::EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents, int InvalidateMode)
+	void LinearEngine::EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents)
 	{
 		vector<wstring> newValues;
 		newValues.push_back(newValue);
-		EvaluateForAttribute(dictAttrName, newValues, bEvalDependents, InvalidateMode);
+		EvaluateForAttribute(dictAttrName, newValues, bEvalDependents);
 	}
 
-	void LinearEngine::EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents, int InvalidateMode)
+	void LinearEngine::EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents)
 	{
 		ResetValueChanged();
 		
@@ -212,11 +212,11 @@ namespace ROM
 			switch (m_dict[dictAttrName].AttributeType)
 			{
 			case SINGLESELECT:
-				EvalSingleSelect(dictAttrName, newValues[0], InvalidateMode != FLAGINVALIDATE);
+				EvalSingleSelect(dictAttrName, newValues[0]);
 				break;
 
 			case MULTISELECT:
-				EvalMultiSelect(dictAttrName, newValues, InvalidateMode != FLAGINVALIDATE);
+				EvalMultiSelect(dictAttrName, newValues);
 				break;
 
 			case BOOLEANSELECT:
@@ -224,7 +224,7 @@ namespace ROM
 				break;
 
 			case EDIT:
-				EvalEdit(dictAttrName, newValues[0], InvalidateMode != FLAGINVALIDATE);
+				EvalEdit(dictAttrName, newValues[0]);
 				break;
 
 			default: //STATIC
@@ -357,7 +357,7 @@ namespace ROM
 		}
 	}
 
-	void LinearEngine::EvalEdit(std::wstring dictAttrName, std::wstring newValue, bool setTheValue)
+	void LinearEngine::EvalEdit(std::wstring dictAttrName, std::wstring newValue)
 	{
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
@@ -366,6 +366,13 @@ namespace ROM
 		m_dict[dictAttrName].AvailableValues = availableValues;
 		m_dict[dictAttrName].Enabled = true;
 		m_dict[dictAttrName].Valid = true;
+
+		bool setTheValue = true;
+		if (InvalidateMode != NORMALINVALIDATE)
+		{
+			wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, true);
+			setTheValue = currentValue.length() == 0 || InvalidateMode == NORMALINVALIDATE;
+		}
 
 		//set the dictionary default on load
 		if (newValue.length() == 0)
@@ -407,10 +414,8 @@ namespace ROM
 #endif
 				if (dNewValue <= dMax && dNewValue >= dMin)
 				{
-					if (setTheValue)
-						m_ROMContext->SetAttribute(dictAttrName, newValue);
-					else					
-						FlagAttrInvalid(dictAttrName);					
+					m_ROMContext->SetAttribute(dictAttrName, newValue);
+			
 				}
 				else if (dNewValue > dMax)
 				{
@@ -489,7 +494,7 @@ namespace ROM
 			m_dict[dictAttrName].Visible = true;
 	}
 
-	void LinearEngine::EvalMultiSelect(std::wstring dictAttrName, vector<wstring> newValues, bool setTheValue)
+	void LinearEngine::EvalMultiSelect(std::wstring dictAttrName, vector<wstring> newValues)
 	{
 		//multi-select lists, checkbox lists
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
@@ -503,6 +508,19 @@ namespace ROM
 		wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, false);
 		vector<wstring> currentValues = ROMUTIL::Split(currentValue, L"|");
 		vector<wstring> selectedValues;
+
+		bool setTheValue = true;		
+		bool bFound = true;		
+		if (InvalidateMode != NORMALINVALIDATE)
+		{
+			setTheValue = currentValues.size() == 0 || InvalidateMode == NORMALINVALIDATE;
+			for (vector<wstring>::iterator it = currentValues.begin(); it != currentValues.end(); it++)
+			{
+				bFound = find(availableValues.begin(), availableValues.end(), *it) != availableValues.end();
+				if (bFound)
+					break;
+			}		
+		}
 
 		//set the dictionary default on load
 		if (newValues.size() == 0)
@@ -519,6 +537,7 @@ namespace ROM
 		{
 			selectedValues.push_back(availableValues[0]);
 			m_dict[dictAttrName].ChangedByUser = false;
+			bFound = true;
 		}
 		//if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
 		else if (currentValues.size() == 1 && (currentValues[0].length() == 0 || find(availableValues.begin(), availableValues.end(), currentValues[0]) == availableValues.end()) && prefixes.size() > 0)
@@ -527,8 +546,12 @@ namespace ROM
 			{
 				if (ROMUTIL::StringContains(prefixes[i], DEFAULTPREFIX))
 				{
-					selectedValues.push_back(availableValues[i]);
-					m_dict[dictAttrName].ChangedByUser = false;
+					if (InvalidateMode == NORMALINVALIDATE || currentValue.length() == 0)
+					{
+						selectedValues.push_back(availableValues[i]);
+						m_dict[dictAttrName].ChangedByUser = false;
+						bFound = true;
+					}
 				}
 			}
 		}
@@ -558,6 +581,9 @@ namespace ROM
 		}
 		if (finalValue != currentValue)
 		{
+			if (!setTheValue)
+				setTheValue = bFound;
+
 			if (setTheValue)
 				m_ROMContext->SetAttribute(dictAttrName, finalValue);
 			else
@@ -571,7 +597,7 @@ namespace ROM
 	}
 
 	//drop down list, radio button groups, etc
-	void LinearEngine::EvalSingleSelect(wstring dictAttrName, wstring newValue, bool setTheValue)
+	void LinearEngine::EvalSingleSelect(wstring dictAttrName, wstring newValue)
 	{
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
@@ -581,8 +607,10 @@ namespace ROM
 		//the list of results is what is available for selection in the control
 		vector<wstring> prefixes = ParseOutPrefixes(res, availableValues);
 		m_dict[dictAttrName].AvailableValues = availableValues;
+		bool bFound = find(availableValues.begin(), availableValues.end(), newValue) != availableValues.end();
 
 		wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, true);
+		bool setTheValue = currentValue.length() == 0 || InvalidateMode == NORMALINVALIDATE;
 
 		//set the dictionary default on load
 		if (newValue.length() == 0)
@@ -597,18 +625,23 @@ namespace ROM
 		if (availableValues.size() == 1)
 		{
 			newValue = availableValues[0];
+			bFound = true;
 			m_dict[dictAttrName].ChangedByUser = false;
 		}
 
 		//if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
-		if ((currentValue.length() == 0 || find(availableValues.begin(), availableValues.end(), currentValue) == availableValues.end()) && prefixes.size() > 0)
+		if ((currentValue.length() == 0 || (find(availableValues.begin(), availableValues.end(), currentValue) == availableValues.end())) && prefixes.size() > 0)
 		{
 			for (size_t i = 0; i < prefixes.size(); i++)
 			{
 				if (ROMUTIL::StringContains(prefixes[i], DEFAULTPREFIX))
 				{
-					newValue = availableValues[i];
-					m_dict[dictAttrName].ChangedByUser = false;
+					if (InvalidateMode == NORMALINVALIDATE || currentValue.length() == 0)
+					{
+						newValue = availableValues[i];						
+						bFound = true;			
+						m_dict[dictAttrName].ChangedByUser = false;
+					}
 					break;
 				}
 			}
@@ -622,11 +655,14 @@ namespace ROM
 			m_dict[dictAttrName].Visible = false;
 		else
 			m_dict[dictAttrName].Visible = true;
-
-		if (newValue.length() > 0 && find(availableValues.begin(), availableValues.end(), newValue) != availableValues.end())
+		
+		if (newValue.length() > 0 && bFound)
 		{
 			if (currentValue != newValue)
 			{
+				if (!setTheValue)
+					setTheValue = bFound;
+
 				if (setTheValue)
 					m_ROMContext->SetAttribute(dictAttrName, newValue);
 				else				
@@ -703,7 +739,7 @@ namespace ROM
 				{
 					vector<wstring> selectedValues = GetSelectedValues(&itFind->second);
 					bool bWasChangedByUser = itFind->second.ChangedByUser;
-					EvaluateForAttribute(*it, selectedValues, true, InvalidateMode);
+					EvaluateForAttribute(*it, selectedValues, true);
 					if (bWasChangedByUser)
 					{
 						bool bValuesRemainSame = true;
@@ -765,15 +801,15 @@ namespace ROM
 		InitializeEngine(ROMUTIL::MBCStrToWStr(dictionaryTable));
 	}
 
-	void LinearEngine::EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents, int InvalidateMode)
+	void LinearEngine::EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents)
 	{
-		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), ROMUTIL::ToWStringVector(newValues), bEvalDependents, InvalidateMode);
+		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), ROMUTIL::ToWStringVector(newValues), bEvalDependents);
 	}
 
-	void LinearEngine::EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents, int InvalidateMode)
+	void LinearEngine::EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents)
 	{
 		vector<wstring> newValues;
 		newValues.push_back(ROMUTIL::MBCStrToWStr(newValue));
-		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), newValues, bEvalDependents, InvalidateMode);
+		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), newValues, bEvalDependents);
 	}
 }

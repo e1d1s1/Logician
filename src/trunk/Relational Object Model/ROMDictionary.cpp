@@ -46,6 +46,7 @@ void ROMDictionary::LoadDictionary(wstring dictionaryTable)
 	{		
 		ROMDictionaryAttribute dictAttr;
 		dictAttr.Name = allNames[i];		
+		dictAttr.Index = i;
 		if (res[L"DefaultValue"].size() > 0 && res[L"DefaultValue"][i] != L"~") dictAttr.DefaultValue = res[L"DefaultValue"][i];
 		if (res[L"Description"].size() > 0 && res[L"Description"][i] != L"~") dictAttr.Description = res[L"Description"][i];
 		if (res[L"RuleTable"].size() > 0 && res[L"RuleTable"][i] != L"~") dictAttr.RuleTable = res[L"RuleTable"][i];		

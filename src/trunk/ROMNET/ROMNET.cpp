@@ -726,24 +726,24 @@ namespace ROMNET
 		return retval;
 	}
 
-	void LinearEngine::EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents, INVALIDATEMODE invalidateMode)
+	void LinearEngine::EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents)
 	{
 		if (m_LinearEngine)
 		{
 			wstring name = MarshalString(dictAttrName);
 			vector<wstring> vals = GetVectorFromArrayStrings(newValues);
-			m_LinearEngine->EvaluateForAttribute(name, vals, bEvalDependents, static_cast<ROM::INVALIDATEMODE_E>(InvalidateMode));
+			m_LinearEngine->EvaluateForAttribute(name, vals, bEvalDependents);
 			PumpDebugMessages();
 		}
 	}
 
-	void LinearEngine::EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents, INVALIDATEMODE invalidateMode)
+	void LinearEngine::EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents)
 	{
 		if (m_LinearEngine)
 		{
 			wstring name = MarshalString(dictAttrName);
 			wstring val = MarshalString(newValue);
-			m_LinearEngine->EvaluateForAttribute(name, val, bEvalDependents, static_cast<ROM::INVALIDATEMODE_E>(InvalidateMode));
+			m_LinearEngine->EvaluateForAttribute(name, val, bEvalDependents);
 			PumpDebugMessages();
 		}
 	}
