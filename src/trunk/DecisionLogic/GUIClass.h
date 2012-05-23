@@ -159,7 +159,7 @@ public:
 	//find
 	void FindTextInActiveTable(wstring strToFind, wxPoint *startPos,
 		bool bMatchCase, bool bMatchWholeWord, bool bDoReplace = false, wstring strReplace = L"");
-	bool FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring *last_found_name,
+	bool FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring *last_found_name, ProjectManager *pm,
 		bool bMatchCase, bool bMatchWholeWord, bool bDoReplace = false, wstring strReplace = L"");
 
 

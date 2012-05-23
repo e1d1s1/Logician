@@ -181,7 +181,7 @@ namespace ROM
 	{
 		ResetValueChanged();
 		
-		if (ResetBehavior == RESETBYRULE)
+		if (ResetBehavior == RESETBYRULE && !m_EvalInternal)
 		{
 			//resets other atts when setting this one
 			m_ROMContext->SetAttribute(L"currrentattr", dictAttrName);
@@ -189,6 +189,9 @@ namespace ROM
 			for (vector<wstring>::iterator it = attrsToReset.begin(); it != attrsToReset.end(); it++)
 			{
 				m_ROMContext->SetAttribute(*it, L"");
+				RemoveTouchedByUser(*it);
+				if (m_dict[*it].AvailableValues.size() > 0)
+					m_dict[*it].Valid = false;
 			}
 
 			//resets an attr if it has not been touched by the user 
@@ -198,7 +201,12 @@ namespace ROM
 				for (vector<wstring>::iterator it = attrsToReset.begin(); it != attrsToReset.end(); it++)
 				{
 					if (!IsTouchedByUser(*it))
+					{
 						m_ROMContext->SetAttribute(*it, L"");
+						RemoveTouchedByUser(*it);
+						if (m_dict[*it].AvailableValues.size() > 0)
+							m_dict[*it].Valid = false;
+					}
 				}
 			}
 		}
@@ -208,7 +216,10 @@ namespace ROM
 		if (itFind != m_dict.end())
 		{
 			m_dict[dictAttrName].ValueChanged = true;
-			m_dict[dictAttrName].ChangedByUser = !m_EvalInternal;
+			bool bChanged = !m_EvalInternal;
+			if (bChanged)
+				SetTouchedByUser(dictAttrName);
+
 			switch (m_dict[dictAttrName].AttributeType)
 			{
 			case SINGLESELECT:
@@ -253,13 +264,15 @@ namespace ROM
 	void LinearEngine::SetTouchedByUser(wstring dictAttrName)
 	{
 		m_dict[dictAttrName].ChangedByUser = true;
-		m_ROMContext->SetAttribute(TBUATTR + dictAttrName, L"Y");
+		if (TrackUserBehavior == TRACKUSER)
+			m_ROMContext->SetAttribute(TBUATTR + dictAttrName, L"Y");
 	}
 	
 	void LinearEngine::RemoveTouchedByUser(wstring dictAttrName)
 	{
 		m_dict[dictAttrName].ChangedByUser = false;
-		m_ROMContext->RemoveAttribute(TBUATTR + dictAttrName);
+		if (TrackUserBehavior == TRACKUSER)
+			m_ROMContext->RemoveAttribute(TBUATTR + dictAttrName);
 	}
 
 	void LinearEngine::EvaluateAll()
@@ -321,7 +334,7 @@ namespace ROM
 		if (availableValues.size() == 0)
 		{
 			m_ROMContext->SetAttribute(dictAttrName, L"N");
-			m_dict[dictAttrName].ChangedByUser = false;
+			RemoveTouchedByUser(dictAttrName);
 			return;
 		}
 		else if (availableValues.size() == 1) //you should only have one value
@@ -341,13 +354,13 @@ namespace ROM
 			else if (availableValues[0] == L"YY") //force Yes, no other choice
 			{
 				m_ROMContext->SetAttribute(dictAttrName, L"Y");
-				m_dict[dictAttrName].ChangedByUser = false;
+				RemoveTouchedByUser(dictAttrName);
 				m_dict[dictAttrName].Enabled = false;
 			}
 			else if (availableValues[0] == L"NN") //force No, no other choice
 			{
 				m_ROMContext->SetAttribute(dictAttrName, L"N");
-				m_dict[dictAttrName].ChangedByUser = false;
+				RemoveTouchedByUser(dictAttrName);
 				m_dict[dictAttrName].Enabled = false;
 			}
 			else if (newValue.length() == 1) //Y or N
@@ -386,7 +399,7 @@ namespace ROM
 			if (ROMUTIL::StringContains(prefixes[0], DISABLEPREFIX))
 			{
 				m_dict[dictAttrName].Enabled = false;
-				m_dict[dictAttrName].ChangedByUser = false;
+				RemoveTouchedByUser(dictAttrName);
 				m_ROMContext->SetAttribute(dictAttrName, prefixes[0]);
 			}
 			else
@@ -449,7 +462,7 @@ namespace ROM
 			else if (availableValues[0].length() == 1 && availableValues[0][0] == L'N')
 			{
 				m_ROMContext->SetAttribute(dictAttrName, L"");
-				m_dict[dictAttrName].ChangedByUser = false;
+				RemoveTouchedByUser(dictAttrName);
 				m_dict[dictAttrName].Enabled = false;
 			}
 			else if (availableValues[0].length() == 2 && availableValues[0] == L"YY") //user must enter something
@@ -460,19 +473,19 @@ namespace ROM
 			else
 			{
 				m_ROMContext->SetAttribute(dictAttrName, availableValues[0]);
-				m_dict[dictAttrName].ChangedByUser = false;
+				RemoveTouchedByUser(dictAttrName);
 			}
 		}
 		else if (availableValues.size() == 0)
 		{
 			m_ROMContext->SetAttribute(dictAttrName, newValue);
-			m_dict[dictAttrName].ChangedByUser = false;
+			RemoveTouchedByUser(dictAttrName);
 			m_dict[dictAttrName].Enabled = false;
 		}
 		else if (availableValues.size() == 1 && availableValues[0].length() > 0)
 		{
 			m_ROMContext->SetAttribute(dictAttrName, availableValues[0]);
-			m_dict[dictAttrName].ChangedByUser = false;
+			RemoveTouchedByUser(dictAttrName);
 		}
 		else if (availableValues.size() > 0)
 		{
@@ -484,7 +497,7 @@ namespace ROM
 			else
 			{
 				m_ROMContext->SetAttribute(dictAttrName, L"");
-				m_dict[dictAttrName].ChangedByUser = false;
+				RemoveTouchedByUser(dictAttrName);
 			}
 		}
 
@@ -528,7 +541,7 @@ namespace ROM
 			if (m_dict[dictAttrName].DefaultValue.length() > 0)
 			{
 				newValues.push_back(m_dict[dictAttrName].DefaultValue);
-				m_dict[dictAttrName].ChangedByUser = false;
+				RemoveTouchedByUser(dictAttrName);
 			}
 		}
 
@@ -536,7 +549,7 @@ namespace ROM
 		if (availableValues.size() == 1)
 		{
 			selectedValues.push_back(availableValues[0]);
-			m_dict[dictAttrName].ChangedByUser = false;
+			RemoveTouchedByUser(dictAttrName);
 			bFound = true;
 		}
 		//if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
@@ -549,7 +562,7 @@ namespace ROM
 					if (InvalidateMode == NORMALINVALIDATE || currentValue.length() == 0)
 					{
 						selectedValues.push_back(availableValues[i]);
-						m_dict[dictAttrName].ChangedByUser = false;
+						RemoveTouchedByUser(dictAttrName);
 						bFound = true;
 					}
 				}
@@ -626,7 +639,7 @@ namespace ROM
 		{
 			newValue = availableValues[0];
 			bFound = true;
-			m_dict[dictAttrName].ChangedByUser = false;
+			RemoveTouchedByUser(dictAttrName);
 		}
 
 		//if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
@@ -640,7 +653,7 @@ namespace ROM
 					{
 						newValue = availableValues[i];						
 						bFound = true;			
-						m_dict[dictAttrName].ChangedByUser = false;
+						RemoveTouchedByUser(dictAttrName);
 					}
 					break;
 				}
@@ -683,7 +696,7 @@ namespace ROM
 					m_ROMContext->SetAttribute(dictAttrName, L"");
 			}
 
-			m_dict[dictAttrName].ChangedByUser = false;
+			RemoveTouchedByUser(dictAttrName);
 		}
 	}
 

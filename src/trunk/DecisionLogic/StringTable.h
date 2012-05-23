@@ -55,6 +55,7 @@ public:
 	void Clear();
 	void AddColumn(T name);
 	vector<T> GetColumns();
+	T GetColumnName(size_t index);
 	void InsertColumn(T name, size_t col);
 	void RemoveColumn(T name);
 	void RemoveColumn(size_t col);
@@ -186,6 +187,14 @@ template <class T>
 size_t StringTable<T>::Columns()
 {
     return m_colNames.size();
+}
+
+template <class T>
+T StringTable<T>::GetColumnName(size_t index)
+{
+	if (index < m_colNames.size())
+		return m_colNames[index];
+	else return L"";
 }
 
 template <class T>
