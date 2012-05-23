@@ -24,13 +24,13 @@ namespace ROM
 	public:
 		ROMDictionaryAttribute() {CreateROMDictionaryAttribute();}
 		~ROMDictionaryAttribute() {}
-		void CreateROMDictionaryAttribute() {Visible = true; Valid = false; ValueChanged = false; ChangedByUser = false; Enabled = true;}
+		void CreateROMDictionaryAttribute() {Visible = true; Valid = false; ValueChanged = false; ChangedByUser = false; Enabled = true; Index = 0;}
 		wstring Name;
 		wstring Description;
 		wstring DefaultValue;
 		wstring RuleTable;
 		int AttributeType;
-
+		int Index;
 		bool ValueChanged;
 		bool ChangedByUser;
 		bool Valid;

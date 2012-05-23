@@ -53,7 +53,7 @@ namespace ROMNET {
 			if (Equals(romObj, nullptr))
 				return 0;
 			else if (romObj->m_ROMNode != NULL)
-				(long)romObj->m_ROMNode;
+				return (long)romObj->m_ROMNode;
 			else
 				return 0;		
 		}
@@ -245,6 +245,20 @@ namespace ROMNET {
 					m_ROMDictionaryAttribute->AttributeType = static_cast<ROM::ATTRTYPE_E>(value);
 			}
 		}
+		property int Index
+		{
+			virtual int get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return m_ROMDictionaryAttribute->Index;
+				else return 0;
+			}
+			virtual void set(int value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->Index = value;
+			}
+		}
 		property bool ValueChanged
 		{
 			virtual bool get()
@@ -431,11 +445,10 @@ namespace ROMNET {
 		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
 		Dictionary<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
-		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents, INVALIDATEMODE invalidateMode);
-		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents) {EvaluateForAttribute(dictAttrName, newValues, bEvalDependents, INVALIDATEMODE::NORMAL);}
+		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents);
 		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues) {EvaluateForAttribute(dictAttrName, newValues, true);}
-		void EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents, INVALIDATEMODE invalidateMode);
-		void EvaluateForAttribute(String^ dictAttrName, String^ newValue) {EvaluateForAttribute(dictAttrName, newValue, true, INVALIDATEMODE::NORMAL);}
+		void EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents);
+		void EvaluateForAttribute(String^ dictAttrName, String^ newValue) {EvaluateForAttribute(dictAttrName, newValue, true);}
 		void EvaluateAll() {if (m_LinearEngine) m_LinearEngine->EvaluateAll();}
 		array<ROMDictionaryAttribute^>^ GetEvalList();
 		Dictionary<String^, array<String^>^>^ GetTriggers();
