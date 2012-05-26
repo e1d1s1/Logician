@@ -136,7 +136,11 @@ namespace LogicianDebuggerWPF
                     List<ROMAttrData> table = new List<ROMAttrData>();
                     Dictionary<string, Dictionary<string, string>> allAttrs = node.GetAllAttributes();
 
-                    foreach (string attr in allAttrs.Keys)
+                    SortedDictionary<string, KeyValuePair<string, Dictionary<string, string>>> sorted = new SortedDictionary<string, KeyValuePair<string, Dictionary<string, string>>>();
+                    foreach (KeyValuePair<string, Dictionary<string, string>> kvp in allAttrs)
+                        sorted.Add(kvp.Key, kvp);
+
+                    foreach (string attr in sorted.Keys)
                     {
                         ROMAttrData row = new ROMAttrData();
                         Dictionary<string, string> attrValuePair = allAttrs[attr];

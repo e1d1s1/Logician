@@ -1,40 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicianDebuggerWPF", "LogicianDebuggerWPF.csproj", "{511F1ACF-F59C-4EDF-8A32-613B04E3F714}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicianDebuggerTestApp", "LogicianDebuggerTestApp\LogicianDebuggerTestApp.csproj", "{DFD92C96-74E6-4202-8A67-8205A43DB20E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicianDebugger2008", "LogicianDebugger2008.csproj", "{511F1ACF-F59C-4EDF-8A32-613B04E3F714}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|Mixed Platforms = Debug|Mixed Platforms
-		Debug|Win32 = Debug|Win32
 		Release|Any CPU = Release|Any CPU
-		Release|Mixed Platforms = Release|Mixed Platforms
-		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{511F1ACF-F59C-4EDF-8A32-613B04E3F714}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{511F1ACF-F59C-4EDF-8A32-613B04E3F714}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{511F1ACF-F59C-4EDF-8A32-613B04E3F714}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{511F1ACF-F59C-4EDF-8A32-613B04E3F714}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{511F1ACF-F59C-4EDF-8A32-613B04E3F714}.Debug|Win32.ActiveCfg = Debug|Any CPU
 		{511F1ACF-F59C-4EDF-8A32-613B04E3F714}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{511F1ACF-F59C-4EDF-8A32-613B04E3F714}.Release|Any CPU.Build.0 = Release|Any CPU
-		{511F1ACF-F59C-4EDF-8A32-613B04E3F714}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{511F1ACF-F59C-4EDF-8A32-613B04E3F714}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{511F1ACF-F59C-4EDF-8A32-613B04E3F714}.Release|Win32.ActiveCfg = Release|Any CPU
-		{DFD92C96-74E6-4202-8A67-8205A43DB20E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DFD92C96-74E6-4202-8A67-8205A43DB20E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DFD92C96-74E6-4202-8A67-8205A43DB20E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{DFD92C96-74E6-4202-8A67-8205A43DB20E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{DFD92C96-74E6-4202-8A67-8205A43DB20E}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{DFD92C96-74E6-4202-8A67-8205A43DB20E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DFD92C96-74E6-4202-8A67-8205A43DB20E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DFD92C96-74E6-4202-8A67-8205A43DB20E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{DFD92C96-74E6-4202-8A67-8205A43DB20E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{DFD92C96-74E6-4202-8A67-8205A43DB20E}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
