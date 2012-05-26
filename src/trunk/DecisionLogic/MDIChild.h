@@ -417,7 +417,6 @@ public:
 		}
 
 		int startIndex = inputtable->Rows() + status_offset;
-
 		if (m_type == RULES_TABLE)
 		{
 			if (outputtable != NULL)
@@ -542,12 +541,33 @@ public:
 			}
 		}
 
+		SetLabels();
 		for (int j = 0; j < this->GetNumberRows(); j++)
 		{
 			for (int i = 0; i < this->GetNumberCols(); i++)
 			{
 				this->FormatCell(j, i);
 			}
+		}
+	}
+
+	//wxWidgets oddity, once you set a custom header, all must be custom or insert/delete have issues
+	inline void SetLabels()
+	{
+		int labelOffset = 2;
+		if (m_type == GLOBAL_ORS_TABLE || m_type == TRANSLATIONS_TABLE)
+			labelOffset = 1;
+
+		for (int j = 0; j < this->GetNumberRows(); j++)
+		{
+			if (j >= labelOffset)
+				this->SetRowLabelValue(j, GetRowLabelValue(j));
+		}		
+
+		for (int i = 0; i < this->GetNumberCols(); i++)
+		{
+			if (i >= labelOffset)				
+				this->SetColLabelValue(i, GetColLabelValue(i));				
 		}
 	}
 
@@ -854,6 +874,8 @@ public:
 			this->SetCellValue(j, 0, strChoices[0]);
 		}
 
+		SetLabels();
+
 		for (int i = 0 ; i < this->GetNumberCols(); i++)
 		{
 			this->FormatCell(j, i);
@@ -881,6 +903,9 @@ public:
 		{
 			this->FormatCell(j, this->GetNumberCols() - 1);
 		}
+
+		SetLabels();
+
 		if (allowUndo)
 			UpdateUndo();
 	}
