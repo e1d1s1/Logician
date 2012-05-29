@@ -6,7 +6,7 @@
 	ProjectGUID="{A2E7FF12-B9E7-4276-8120-407A812AC43B}"
 	RootNamespace="ROMNET"
 	Keyword="ManagedCProj"
-	TargetFrameworkVersion="196613"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

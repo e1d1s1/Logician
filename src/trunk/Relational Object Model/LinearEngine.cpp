@@ -184,7 +184,7 @@ namespace ROM
 		if (ResetBehavior == RESETBYRULE && !m_EvalInternal)
 		{
 			//resets other atts when setting this one
-			m_ROMContext->SetAttribute(L"currrentattr", dictAttrName);
+			m_ROMContext->SetAttribute(L"currentattr", dictAttrName);
 			vector<wstring> attrsToReset = m_ROMContext->EvaluateTable((wstring)L"reset", (wstring)L"attr");
 			for (vector<wstring>::iterator it = attrsToReset.begin(); it != attrsToReset.end(); it++)
 			{
@@ -384,7 +384,7 @@ namespace ROM
 		if (InvalidateMode != NORMALINVALIDATE)
 		{
 			wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, true);
-			setTheValue = currentValue.length() == 0 || InvalidateMode == NORMALINVALIDATE;
+			setTheValue = currentValue.length() == 0;
 		}
 
 		//set the dictionary default on load
@@ -526,7 +526,7 @@ namespace ROM
 		bool bFound = true;		
 		if (InvalidateMode != NORMALINVALIDATE)
 		{
-			setTheValue = currentValues.size() == 0 || InvalidateMode == NORMALINVALIDATE;
+			setTheValue = currentValues.size() == 0;
 			for (vector<wstring>::iterator it = currentValues.begin(); it != currentValues.end(); it++)
 			{
 				bFound = find(availableValues.begin(), availableValues.end(), *it) != availableValues.end();

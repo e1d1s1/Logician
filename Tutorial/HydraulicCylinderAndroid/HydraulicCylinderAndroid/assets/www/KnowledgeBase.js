@@ -1053,6 +1053,19 @@ function RuleTable()
             }
 			return false;
         }
+        
+        this.GetTableName = function()
+        {
+            try
+            {
+                return this.m_Name;
+            }
+            catch (err)
+            {
+                ReportError(err);
+            }
+			return "";
+        }
 
         this.GetAllOutputAttrNames = function()
         {

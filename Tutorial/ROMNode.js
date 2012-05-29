@@ -336,12 +336,18 @@ function cleanString(s) {
 	r = r.replace(/\u202C/g, '');
 	r = r.replace(/\u200E/g, '');
 	r = r.replace(/\u200F/g, '');
-	r = r.replace(/\uAO/g, '');
+	r = r.replace(/\uA0/g, '');
 		
 	return r.replace(/^\s+|\s+$/g, '');
 }
 
 //////////////////////////////////////////////////////////
+function Enum(){}
+Enum.INVALIDATEMODE_E = {NORMALINVALIDATE : 0, FLAGINVALIDATE : 1};
+Enum.RESETMODE_E = { RESETBYRULE : 0, SKIPRESET : 1};
+Enum.TRACKMODE_E = { TRACKUSER : 0, SKIPTRACKUSER : 1 };
+Enum.ATTRTYPE_E = { SINGLESELECT : 0, MULTISELECT : 1, BOOLEANSELECT : 2, EDIT : 3, STATIC : 4 };
+
 
 var ATTRIBUTE_NODE = "Attribute";
 var OBJECT_NODE = "Object";
@@ -1572,18 +1578,14 @@ function ROMNode(id) {
     return this;
 }
 
-var SINGLESELECT = 0;
-var MULTISELECT = 1;
-var BOOLEANSELECT = 2;
-var EDIT = 3;
-var STATIC = 4;
+
 // ROMDictionaryAttribute class////////////////////////////////////////////////////////////////
 function ROMDictionaryAttribute() {
     this.Name = "";
     this.Description = "";
     this.DefaultValue = "";
     this.RulesTable = "";
-    this.AttributeType = SINGLESELECT;
+    this.AttributeType = Enum.ATTRTYPE_E.SINGLESELECT;
     this.ValueChanged = false;
     this.ChangedByUser = false;
     this.Valid = false;
@@ -1591,6 +1593,7 @@ function ROMDictionaryAttribute() {
     this.Enabled = true;
     this.PossibleValues = new Array();
     this.AvailableValues = new Array();	
+    this.Index = 0;
 	this.m_guid = MakeGUID();
 }
 
@@ -1651,6 +1654,7 @@ function ROMDictionary(node) {
             for (var i = 0; i < ArraySize(allNames); i++) {
                 var dictAttr = new ROMDictionaryAttribute();
                 dictAttr.Name = allNames[i];
+                dictAttr.Index = i;
 
                 if (res["DefaultValue"].length > 0 && res["DefaultValue"][i] != "~") dictAttr.DefaultValue = res["DefaultValue"][i];
                 if (res["Description"].length > 0 && res["Description"][i] != "~") dictAttr.Description = res["Description"][i];
@@ -1661,25 +1665,25 @@ function ROMDictionary(node) {
                 strAttrType = strAttrType.toUpperCase();
 
                 if (strAttrType.length == 0 || strAttrType == "SINGLESELECT") {
-                    dictAttr.AttributeType = SINGLESELECT;
+                    dictAttr.AttributeType = Enum.ATTRTYPE_E.SINGLESELECT;
                 }
                 else if (strAttrType == "MULTISELECT") {
-                    dictAttr.AttributeType = MULTISELECT;
+                    dictAttr.AttributeType = Enum.ATTRTYPE_E.MULTISELECT;
                 }
                 else if (strAttrType == "BOOLEAN") {
-                    dictAttr.AttributeType = BOOLEANSELECT;
+                    dictAttr.AttributeType = Enum.ATTRTYPE_E.BOOLEANSELECT;
                 }
                 else if (strAttrType == "EDIT") {
-                    dictAttr.AttributeType = EDIT;
+                    dictAttr.AttributeType = Enum.ATTRTYPE_E.EDIT;
                 }
                 else if (strAttrType == "STATIC") {
-                    dictAttr.AttributeType = STATIC;
+                    dictAttr.AttributeType = Enum.ATTRTYPE_E.STATIC;
                 }
 
                 //on load, just set default values and possibilities
                 //only set a default if there is no rules table and no current value
                 var value = this.m_context.GetAttribute(dictAttr.Name, false);
-                if (((value.length == 0 && dictAttr.RuleTable.length == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length > 0 && dictAttr.DefaultValue != "~") {
+                if (((value.length == 0 && dictAttr.RuleTable.length == 0) || dictAttr.AttributeType == Enum.ATTRTYPE_E.STATIC) && dictAttr.DefaultValue.length > 0 && dictAttr.DefaultValue != "~") {
                     this.m_context.SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
                 }
 
@@ -1744,6 +1748,11 @@ function LinearEngine(context, dictionaryTable) {
     this.INVISPREFIX = "^";
     this.DEFAULTPREFIX = "@";
     this.DISABLEPREFIX = "#";
+    this.TBUATTR = "TBU_";
+    
+    this.InvalidateMode = Enum.INVALIDATEMODE_E.NORMALINVALIDATE;
+    this.ResetBehavior = Enum.RESETMODE_E.SKIPRESET;
+    this.TrackUserBehavior = Enum.TRACKMODE_E.TRACKUSER;
 
     this.base = new ROMDictionary(context);
 
@@ -1796,6 +1805,36 @@ function LinearEngine(context, dictionaryTable) {
             //newValues could be a string or an array
             try {
                 this.ResetValueChanged();
+                if (this.ResetBehavior == Enum.RESETMODE_E.RESETBYRULE && !this.m_EvalInternal)
+                {
+                    //resets other atts when setting this one
+                    this.base.m_context.SetAttribute("currentattr", dictAttrName);
+                    var attrsToReset = this.base.m_context.EvaluateTableForAttr("reset", "attr");
+                    for (var i = 0; i < attrsToReset.length; i++)
+                    {
+                        this.base.m_context.SetAttribute(attrsToReset[i], "");
+                        this.RemoveTouchedByUser(attrsToReset[i]);
+                        if (this.base.m_dict[dictAttrName].AvailableValues.length > 0)
+                            this.base.m_dict[dictAttrName].Valid = false;
+                    }
+                    
+                    //resets an attr if it has not been touched by the user 
+                    if (this.TrackUserBehavior == Enum.TRACKMODE_E.TRACKUSER)
+                    {
+                        var attrsToReset = this.base.m_context.EvaluateTableForAttr("reset_INCBU", "attr");
+                        for (var i = 0; i < attrsToReset.length; i++)
+                        {
+                            if (!this.IsTouchedByUser(attrsToReset[i]))
+                            {
+                                this.base.m_context.SetAttribute(attrsToReset[i], "");
+                                this.RemoveTouchedByUser(attrsToReset[i]);
+                                if (this.base.m_dict[dictAttrName].AvailableValues.length > 0)
+                                    this.base.m_dict[dictAttrName].Valid = false;
+                            }
+                        }
+                    }
+                    
+                }
                 var newVals = new Array();
                 if (typeof newValues == "string")
                     newVals.push(newValues);
@@ -1804,21 +1843,23 @@ function LinearEngine(context, dictionaryTable) {
 
                 if (dictAttrName in this.base.m_dict) {
                     this.base.m_dict[dictAttrName].ValueChanged = true;
-                    this.base.m_dict[dictAttrName].ChangedByUser = !this.m_EvalInternal;
+                    var bChanged = !this.m_EvalInternal;
+                    if (bChanged)
+                        this.SetTouchedByUser(dictAttrName);
                     switch (this.base.m_dict[dictAttrName].AttributeType) {
-                        case SINGLESELECT:
+                        case Enum.ATTRTYPE_E.SINGLESELECT:
                             this.EvalSingleSelect(dictAttrName, newVals[0]);
                             break;
 
-                        case MULTISELECT:
+                        case Enum.ATTRTYPE_E.MULTISELECT:
                             this.EvalMultiSelect(dictAttrName, newVals);
                             break;
 
-                        case BOOLEANSELECT:
+                        case Enum.ATTRTYPE_E.BOOLEANSELECT:
                             this.EvalBoolean(dictAttrName, newVals[0]);
                             break;
 
-                        case EDIT:
+                        case Enum.ATTRTYPE_E.EDIT:
                             this.EvalEdit(dictAttrName, newVals[0]);
                             break;
 
@@ -1949,6 +1990,19 @@ function LinearEngine(context, dictionaryTable) {
                 ReportError(err);
             }
         }
+        
+        this.LoadTrackingAttrs = function () {
+            var allAttrs = this.base.m_context.GetAllAttributes();
+            for (var it in allAttrs)
+            {
+                if (it.indexOf(this.TBUATTR) >= 0)
+                {
+                    var dictAttrName = it;
+	                if (dictAttrName in this.base.m_dict)	               
+	                    this.base.m_dict[dictAttrName].ChangedByUser = true;	                
+	            }
+            }
+        }
 
         this.EvalBoolean = function (dictAttrName, newValue) {
             try {
@@ -1975,7 +2029,7 @@ function LinearEngine(context, dictionaryTable) {
 
                 if (availableValues == null || availableValues.length == 0) {
                     this.base.m_context.SetAttribute(dictAttrName, "N");
-                    this.base.m_dict[dictAttrName].ChangedByUser = false;
+                    this.RemoveTouchedByUser(dictAttrName);
                     return;
                 }
                 else if (availableValues.length == 1) //you should only have one value
@@ -1993,13 +2047,13 @@ function LinearEngine(context, dictionaryTable) {
                     else if (availableValues[0] == "YY") //force Yes, no other choice
                     {
                         this.base.m_context.SetAttribute(dictAttrName, "Y");
-                        this.base.m_dict[dictAttrName].ChangedByUser = false;
+                        this.RemoveTouchedByUser(dictAttrName);
                         this.base.m_dict[dictAttrName].Enabled = false;
                     }
                     else if (availableValues[0] == "NN") //force No, no other choice
                     {
                         this.base.m_context.SetAttribute(dictAttrName, "N");
-                        this.base.m_dict[dictAttrName].ChangedByUser = false;
+                        this.RemoveTouchedByUser(dictAttrName);
                         this.base.m_dict[dictAttrName].Enabled = false;
                     }
                     else if (newValue.length == 1) //Y or N
@@ -2023,6 +2077,12 @@ function LinearEngine(context, dictionaryTable) {
                 this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
                 this.base.m_dict[dictAttrName].Enabled = true;
                 this.base.m_dict[dictAttrName].Valid = true;
+                var setTheValue = true;
+                if (this.InvalidateMode != Enum.INVALIDATEMODE_E.NORMALINVALIDATE)
+                {
+                    var currentValue = this.base.m_context.GetAttribute(dictAttrName, true);
+                    setTheValue = currentValue.length == 0;
+                }
 
                 var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
 
@@ -2035,7 +2095,7 @@ function LinearEngine(context, dictionaryTable) {
                 if (availableValues.length == 1) {
                     if (prefixes[0].indexOf(this.DISABLEPREFIX) >= 0) {
                         this.base.m_dict[dictAttrName].Enabled = false;
-                        this.base.m_dict[dictAttrName].ChangedByUser = false;
+                        this.RemoveTouchedByUser(dictAttrName);
                         this.base.m_context.SetAttribute(dictAttrName, prefixes[0]);
                         return;
                     }
@@ -2058,12 +2118,22 @@ function LinearEngine(context, dictionaryTable) {
                             this.base.m_context.SetAttribute(dictAttrName, newValue);
                         }
                         else if (dNewValue > dMax) {
-                            var wstrMax = vals[1];
-                            this.base.m_context.SetAttribute(dictAttrName, wstrMax);
+                            if (setTheValue)
+                            {
+                                var wstrMax = vals[1];
+                                this.base.m_context.SetAttribute(dictAttrName, wstrMax);
+                            }
+                            else
+                                this.FlagAttrInvalid(dictAttrName);
                         }
                         else if (dNewValue < dMin) {
-                            var wstrMin = vals[0];
-                            this.base.m_context.SetAttribute(dictAttrName, wstrMin);
+                            if (setTheValue)
+                            {
+                                var wstrMin = vals[0];
+                                this.base.m_context.SetAttribute(dictAttrName, wstrMin);
+                            }
+                            else
+                                this.FlagAttrInvalid(dictAttrName);
                         }
                     }
                     else if (availableValues[0].length == 1 && availableValues[0][0] == 'Y') {
@@ -2071,7 +2141,7 @@ function LinearEngine(context, dictionaryTable) {
                     }
                     else if (availableValues[0].length == 1 && availableValues[0][0] == 'N') {
                         this.base.m_context.SetAttribute(dictAttrName, "");
-                        this.base.m_dict[dictAttrName].ChangedByUser = false;
+                        this.RemoveTouchedByUser(dictAttrName);
                         this.base.m_dict[dictAttrName].Enabled = false;
                     }
                     else if (availableValues[0].length == 2 && availableValues[0] == "YY") //user must enter something
@@ -2081,17 +2151,17 @@ function LinearEngine(context, dictionaryTable) {
                     }
                     else {
                         this.base.m_context.SetAttribute(dictAttrName, availableValues[0]);
-                        this.base.m_dict[dictAttrName].ChangedByUser = false;
+                        this.RemoveTouchedByUser(dictAttrName);
                     }
                 }
                 else if (availableValues.length == 0) {
                     this.base.m_context.SetAttribute(dictAttrName, "");
-                    this.base.m_dict[dictAttrName].ChangedByUser = false;
+                    this.RemoveTouchedByUser(dictAttrName);
                     this.base.m_dict[dictAttrName].Enabled = false;
                 }
                 else if (availableValues.length == 1 && availableValues[0].length > 0) {
                     this.base.m_context.SetAttribute(dictAttrName, availableValues[0]);
-                    this.base.m_dict[dictAttrName].ChangedByUser = false;
+                    this.RemoveTouchedByUser(dictAttrName);
                 }
                 else if (availableValues.length > 0) {
                     if (GetIndexOfItem(availableValues, newValue) >= 0) {
@@ -2099,7 +2169,7 @@ function LinearEngine(context, dictionaryTable) {
                     }
                     else {
                         this.base.m_context.SetAttribute(dictAttrName, "");
-                        this.base.m_dict[dictAttrName].ChangedByUser = false;
+                        this.RemoveTouchedByUser(dictAttrName);
                     }
                 }
 
@@ -2129,20 +2199,34 @@ function LinearEngine(context, dictionaryTable) {
                 var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
                 var currentValues = currentValue.split("|");
                 var selectedValues = new Array();
+                
+                var setTheValue = true;
+                var bFound = true;
+                if (this.InvalidateMode == Enum.INVALIDATEMODE_E.NORMALINVALIDATE)
+                {
+                    setTheValue = currentValue.length == 0;
+                    for (var it in currentValue)
+                    {
+                        bFound = GetIndexOfItem(availableValues, it) >= 0;
+                        if (bFound)
+                            break;
+                    }
+                }
 
                 //set the dictionary default on load
                 if (newValues.length == 0) {
                     if (this.base.m_dict[dictAttrName].DefaultValue != null && this.base.m_dict[dictAttrName].DefaultValue.length > 0) {
                         newValues = new Array();
                         newValues.push(this.base.m_dict[dictAttrName].DefaultValue);
-                        this.base.m_dict[dictAttrName].ChangedByUser = false;
+                        this.RemoveTouchedByUser(dictAttrName);
                     }
                 }
 
                 //if only one is available, force that selection now
                 if (availableValues.length == 1) {
                     selectedValues.push(availableValues[0]);
-                    this.base.m_dict[dictAttrName].ChangedByUser = false;
+                    this.RemoveTouchedByUser(dictAttrName);
+                    bFound = true;
                 }
 
                 //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
@@ -2150,7 +2234,8 @@ function LinearEngine(context, dictionaryTable) {
                     for (var i = 0; i < prefixes.length; i++) {
                         if (prefixes[i].indexOf(this.DEFAULTPREFIX) >= 0) {
                             selectedValues.push(availableValues[i]);
-                            this.base.m_dict[dictAttrName].ChangedByUser = false;
+                            this.RemoveTouchedByUser(dictAttrName);
+                            bFound = true;
                         }
                     }
                 }
@@ -2176,7 +2261,18 @@ function LinearEngine(context, dictionaryTable) {
                 }
 
                 if (finalValue != currentValue) {
-                    this.base.m_context.SetAttribute(dictAttrName, finalValue);
+                    if (!setTheValue)
+                        setTheValue = bFound;
+                        
+                    if (setTheValue)
+                        this.base.m_context.SetAttribute(dictAttrName, finalValue);
+                    else
+                    {
+                        if (availableValues.length > 0)
+                            this.FlagAttrInvalid(dictAttrName);
+                        else
+                            this.base.m_context.SetAttribute(dictAttrName, finalValue);
+                    }
                 }
             }
             catch (err) {
@@ -2196,6 +2292,8 @@ function LinearEngine(context, dictionaryTable) {
                 this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
 
                 var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
+                var bFound = GetIndexOfItem(availableValues, newValue) >= 0;
+                var setTheValue = currentValue.length == 0 || this.InvalidateMode == Enum.INVALIDATEMODE_E.NORMALINVALIDATE;
 
                 //set the dictionary default on load
                 if (newValue.length == 0) {
@@ -2207,16 +2305,21 @@ function LinearEngine(context, dictionaryTable) {
                 //if only one is available, force that selection now
                 if (availableValues.length == 1) {
                     newValue = availableValues[0];
-                    this.base.m_dict[dictAttrName].ChangedByUser = false;
+                    this.RemoveTouchedByUser(dictAttrName);
+                    bFound = true;
                 }
 
                 //if the current value is "" or will become invalid, and an available value is prefixed with a "@" default, set it now
                 if ((currentValue.length == 0 || GetIndexOfItem(availableValues, currentValue) < 0) && prefixes.length > 0) {
                     for (var i = 0; i < prefixes.length; i++) {
                         if (prefixes[i].indexOf(this.DEFAULTPREFIX) >= 0) {
-                            newValue = availableValues[i];
-                            this.base.m_dict[dictAttrName].ChangedByUser = false;
-                            break;
+                            if (this.InvalidateMode == Enum.INVALIDATEMODE_E.NORMALINVALIDATE || currentValue.length == 0)
+                            {
+                                newValue = availableValues[i];
+                                this.RemoveTouchedByUser(dictAttrName);
+                                bFound = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -2229,16 +2332,31 @@ function LinearEngine(context, dictionaryTable) {
                 else
                     this.base.m_dict[dictAttrName].Visible = true;
 
-                if (newValue.length > 0 && GetIndexOfItem(availableValues, newValue) >= 0) {
+                if (newValue.length > 0 && bFound) {
                     if (currentValue != newValue) {
-                        this.base.m_context.SetAttribute(dictAttrName, newValue);
+                        if (!setTheValue)
+                            setTheValue = bFound;
+
+                        if (setTheValue)
+                            this.base.m_context.SetAttribute(dictAttrName, newValue);
+                        else
+                            this.FlagAttrInvalid(dictAttrName);
                     }
                 }
                 else {
                     if (this.base.m_dict[dictAttrName].Enabled == true)
                         this.base.m_dict[dictAttrName].Valid = false;
-                    this.base.m_context.SetAttribute(dictAttrName, "");
-                    this.base.m_dict[dictAttrName].ChangedByUser = false;
+                    if (setTheValue)
+                        this.base.m_context.SetAttribute(dictAttrName, "");
+                    else
+                    {        
+                        if (availableValues.length > 0)
+                            this.FlagAttrInvalid(dictAttrName);
+                        else
+                            this.base.m_context.SetAttribute(dictAttrName, "");
+                    }
+                    
+                    this.RemoveTouchedByUser(dictAttrName);
                 }
             }
             catch (err) {
@@ -2280,6 +2398,27 @@ function LinearEngine(context, dictionaryTable) {
             }
             this.m_EvalInternal = false;
         }
+        
+        this.FlagAttrInvalid = function (dictAttrName) {
+            this.base.m_dict[dictAttrName].ChangedByUser = false;
+            this.base.m_dict[dictAttrName].Valid = false;
+        }
+        
+        this.IsTouchedByUser = function (dictAttrName) {
+            return this.base.m_context.GetAttributeExists(this.TBUATTR + dictAttrName);
+        }
+        
+        this.SetTouchedByUser = function (dictAttrName) {
+            this.base.m_dict[dictAttrName].ChangedByUser = true;
+            if (this.TrackUserBehavior == Enum.TRACKMODE_E.TRACKUSER)
+                this.base.m_context.SetAttribute(this.TBUATTR + dictAttrName, "Y");
+        }
+        
+        this.RemoveTouchedByUser = function (dictAttrName) {
+            this.base.m_dict[dictAttrName].ChangedByUser = false;
+            if (this.TrackUserBehavior == Enum.TRACKMODE_E.TRACKUSER)
+                this.base.m_context.RemoveAttribute(this.TBUATTR + dictAttrName);
+        }      
 
         //remove the special character flags from the values
         this.ParseOutPrefixes = function (values, valuesWithoutPrefixes) {
@@ -2325,19 +2464,19 @@ function LinearEngine(context, dictionaryTable) {
             try {
                 var currentValue = this.base.m_context.GetAttribute(attr.Name, false);
                 switch (attr.AttributeType) {
-                    case SINGLESELECT:
+                    case Enum.ATTRTYPE_E.SINGLESELECT:
                         retval.push(currentValue);
                         break;
 
-                    case MULTISELECT:
+                    case Enum.ATTRTYPE_E.MULTISELECT:
                         retval = currentValue.split("|");
                         break;
 
-                    case BOOLEANSELECT:
+                    case Enum.ATTRTYPE_E.BOOLEANSELECT:
                         retval.push(currentValue);
                         break;
 
-                    case EDIT:
+                    case Enum.ATTRTYPE_E.EDIT:
                         retval.push(currentValue);
                         break;
 
@@ -2392,6 +2531,8 @@ function LinearEngine(context, dictionaryTable) {
                     }
                 }
 
+                if (this.TrackUserBehavior == Enum.TRACKMODE_E.TRACKUSER)
+                    this.LoadTrackingAttrs();
                 //based on the triggers, re-order the dictionary
                 m_CurrentRecursion = 0;
                 this.OrderDictionary();
