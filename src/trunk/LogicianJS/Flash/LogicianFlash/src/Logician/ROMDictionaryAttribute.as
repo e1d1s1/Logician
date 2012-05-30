@@ -62,6 +62,8 @@ package Logician
 		public function SetPossibleValues(values:Array):void { if (m_ROMDictionaryAttribute != null) ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").PossibleValues = \"" + ArrayToDelimitedString(values) + "\".split(\"|\");"); PossibleValues = values; }
 		public function GetAvailableValues():Array/*of string*/ { if (m_ROMDictionaryAttribute != null) { var retval:Array = ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").AvailableValues;"); AvailableValues = retval; return retval;} else return null; }
 		public function SetAvailableValues(values:Array):void { if (m_ROMDictionaryAttribute != null) ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").AvailableValues = \"" + ArrayToDelimitedString(values) + "\".split(\"|\");"); AvailableValues = values; }
+		public function GetIndex():int { if (m_ROMDictionaryAttribute != null) { var retval:int = ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").Index;"); Index = retval; return retval;} else return 0; }
+		public function SetIndex(type:int):void { if (m_ROMDictionaryAttribute != null) ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").Index = " + type + ";"); Index = type; }
 		
 		public function SetGUID(guid:String):void { m_ROMDictionaryAttribute = guid; }
 		
@@ -77,6 +79,7 @@ package Logician
 		public var Enabled:Boolean = false;
 		public var PossibleValues:Array = new Array();
 		public var AvailableValues:Array = new Array();
+		public var Index:int = 0;
 		
 		private var m_ROMDictionaryAttribute:String = null;
 		

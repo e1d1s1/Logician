@@ -116,9 +116,11 @@ namespace ROMViewer
                 {
                     List<ROMAttrData> table = new List<ROMAttrData>();
                     Dictionary<string, Dictionary<string, string>> allAttrs = node.GetAllAttributes();
-                    
-                    foreach (string attr in allAttrs.Keys)
+
+                    var sorted = from a in allAttrs orderby a.Key select a;
+                    foreach (KeyValuePair<string, Dictionary<string, string>> kvpSort in sorted)
                     {
+                        string attr = kvpSort.Key;
                         ROMAttrData row = new ROMAttrData();                    
                         Dictionary<string, string> attrValuePair = allAttrs[attr];
                         row.Attribute = attr;
