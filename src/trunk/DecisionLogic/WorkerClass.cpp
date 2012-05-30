@@ -331,7 +331,7 @@ bool WorkerClass::LoadTable(wstring name)
 				table.LoadDataSet(ds, name, path);
 				table.bGetAll = m_pm.TableIsGetAll(name);
 				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
-				childForm->Show();
+				childForm->Show(true);
 				retval = true;
 			}
 		}
@@ -344,7 +344,7 @@ bool WorkerClass::LoadTable(wstring name)
 				LogicTable table;
 				table.LoadDataSet(ds, name, path);
 				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
-				childForm->Show();
+				childForm->Show(true);
 				retval = true;
 			}
 			else
@@ -743,7 +743,7 @@ void WorkerClass::AddTableToProject(wstring name, bool bCreateNew, bool bSystemT
 					table.Path = table.Path + subdir;
 				table.Path = table.Path + table.Name + L".xml";
 				MDIChild *childForm = new MDIChild(m_gui->GetParentFrame(), SignalTableClosed, OpenTableCallback, SaveTableCallback, m_orientation, table_type, m_gui->GetOpenWindows(), table, &m_pm, name);
-				childForm->Show();
+				childForm->Show(true);
 			}
 
 			bIsSaved = false;
