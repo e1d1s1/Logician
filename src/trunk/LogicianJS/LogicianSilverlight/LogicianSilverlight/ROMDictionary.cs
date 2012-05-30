@@ -224,6 +224,21 @@ namespace LogicianSilverlight
                 m_ROMDictionaryAttribute.SetProperty("AvailableValues", value);	
 			}
 		}
+
+        public int Index
+        {
+            get
+            {
+                if (m_ROMDictionaryAttribute != null)
+                    return (int)m_ROMDictionaryAttribute.GetProperty("Index");
+                else
+                    return 0;
+            }
+            set
+            {
+                m_ROMDictionaryAttribute.SetProperty("Index", value);
+            }
+        }
 	
 	    private ScriptObject m_ROMDictionaryAttribute;
     }
@@ -423,6 +438,51 @@ namespace LogicianSilverlight
                     return false;
 			}
 		}
+
+        public int InvalidateMode
+        {
+            get
+            {
+                if (m_LinearEngine != null)
+                    return (int)m_LinearEngine.Invoke("InvalidateMode");
+                else
+                    return 0;
+            }
+            set
+            {
+                m_LinearEngine.SetProperty("InvalidateMode", value);
+            }
+        }
+
+        public int ResetBehavior
+        {
+            get
+            {
+                if (m_LinearEngine != null)
+                    return (int)m_LinearEngine.Invoke("ResetBehavior");
+                else
+                    return 0;
+            }
+            set
+            {
+                m_LinearEngine.SetProperty("ResetBehavior", value);
+            }
+        }
+
+        public int TrackUserBehavior
+        {
+            get
+            {
+                if (m_LinearEngine != null)
+                    return (int)m_LinearEngine.Invoke("TrackUserBehavior");
+                else
+                    return 0;
+            }
+            set
+            {
+                m_LinearEngine.SetProperty("TrackUserBehavior", value);
+            }
+        }
 
         private ScriptObject m_LinearEngine;
     }
