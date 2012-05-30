@@ -1814,8 +1814,8 @@ function LinearEngine(context, dictionaryTable) {
                     {
                         this.base.m_context.SetAttribute(attrsToReset[i], "");
                         this.RemoveTouchedByUser(attrsToReset[i]);
-                        if (this.base.m_dict[dictAttrName].AvailableValues.length > 0)
-                            this.base.m_dict[dictAttrName].Valid = false;
+                        if (this.base.m_dict[attrsToReset[i]].AvailableValues.length > 0)
+                            this.base.m_dict[attrsToReset[i]].Valid = false;
                     }
                     
                     //resets an attr if it has not been touched by the user 
@@ -1828,8 +1828,8 @@ function LinearEngine(context, dictionaryTable) {
                             {
                                 this.base.m_context.SetAttribute(attrsToReset[i], "");
                                 this.RemoveTouchedByUser(attrsToReset[i]);
-                                if (this.base.m_dict[dictAttrName].AvailableValues.length > 0)
-                                    this.base.m_dict[dictAttrName].Valid = false;
+                                if (this.base.m_dict[attrsToReset[i]].AvailableValues.length > 0)
+                                    this.base.m_dict[attrsToReset[i]].Valid = false;
                             }
                         }
                     }
