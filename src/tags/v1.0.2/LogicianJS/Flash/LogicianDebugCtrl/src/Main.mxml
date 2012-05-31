@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:debug="LogicianDebugCtrl.*" initialize="SetupApplication()">
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<debug:LogicianDebugCtrl id="Debugger" width="100%" height="640"/>
+	<fx:Script>
+		<![CDATA[
+		import Logician.ROMNode;
+		private function SetupApplication():void
+		{
+			var myXML:XML = new XML();
+			
+			
+			var urlRequest:URLRequest = new URLRequest("config.xml");
+			var urlLoader:URLLoader = new URLLoader();
+			urlLoader.dataFormat = URLLoaderDataFormat.TEXT;
+			urlLoader.addEventListener(Event.COMPLETE, urlLoader_complete);
+			urlLoader.load(urlRequest);
+		}
+		
+		private function urlLoader_complete(evt:Event):void {
+			var myXML:XML = new XML(evt.target.data);
+			
+			var node:ROMNode = new ROMNode("");
+			node.LoadXML(myXML.toString());
+			var childNode:ROMNode = new ROMNode("Child1");
+			childNode.SetAttribute("attr1", "A child attr");
+			node.AddChildROMObject(childNode);
+			var childNode2:ROMNode = new ROMNode("Child2");
+			childNode2.SetAttribute("attr2", "A child attr");
+			node.AddChildROMObject(childNode2);
+			var childNode3:ROMNode = new ROMNode("Child3");
+			childNode3.SetAttribute("attr3", "A child attr");
+			childNode3.SetAttributeValue("attr3", "attrSub1", "A sub child attr");
+			childNode3.SetAttributeValue("attr3", "attrSub2", "A 2nd sub child attr");
+			childNode2.AddChildROMObject(childNode3);
+			
+			Debugger.SetROMNode(node);
+			Debugger.Update();			
+		}
+			
+		
+		
+		]]>
+	</fx:Script>
+</s:Application>
