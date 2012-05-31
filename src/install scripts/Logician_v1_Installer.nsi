@@ -11,7 +11,7 @@
 Name "Logician Suite v1.0.2"
 
 ; The file to write
-OutFile "Logician_v101_Setup.exe"
+OutFile "Logician_v102_Setup.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Logician
@@ -36,20 +36,18 @@ UninstPage instfiles
 ;--------------------------------
 
 
-
 ; The stuff to install
 Section "Visual C++ 2008 Runtime"
 	; VS2008 Redist
 	SetOutPath $TEMP
 	File "vcredist_x86.exe"
-	Exec '/q:a /c:"vcredist_x86.exe /q"'
+	ExecWait '"vcredist_x86.exe" /q:a /c:"VCREDI~1.EXE /q:a /c:""msiexec /i vcredist.msi /qb!"" "'
 	Delete /REBOOTOK "vcredist_x86.exe"
 SectionEnd
 
 Section "Logician Suite"
 	; Set output path to the installation directory.
-	SetOutPath $INSTDIR
-
+	SetOutPath $INSTDIR\VC9
 	;3rd party libs
 	File "iconv-1.9.2.win32\bin\iconv.dll"
 	File "iconv-1.9.2.win32\lib\iconv.lib"
@@ -68,19 +66,45 @@ Section "Logician Suite"
 	File "zlib-1.2.3.win32\lib\zdll.lib"
 	File "zlib-1.2.3.win32\lib\zlib.lib"
 	
-	File "..\tags\v1.0.2\EDSEngine\Release MSXML\EDSEngine.lib"
-	File "..\tags\v1.0.2\EDSEngineNET\Release\EDSEngineNET.dll"
-	File "..\tags\v1.0.2\Relational Object Model\Release MSXML\Relational Object Model.lib"
-	File "..\tags\v1.0.2\ROMNET\Release\ROMNET.dll"
-	File "..\tags\v1.0.2\LogicianJS\KnowledgeBase.js"
-	File "..\tags\v1.0.2\LogicianJS\ROMNode.js"
+	File "..\tags\v1.0.2\VC9\EDSEngine.lib"
+	File "..\tags\v1.0.2\VC9\EDSEngineNET.dll"
+	File "..\tags\v1.0.2\VC9\Relational Object Model.lib"
+	File "..\tags\v1.0.2\VC9\ROMNET.dll"
+	File "..\tags\v1.0.2\VC9\LogicianDebuggerWPF.dll"
+	File "..\tags\v1.0.2\VC9\WPFToolkit.dll"
+	
+	
+	SetOutPath $INSTDIR\VC10
+	;3rd party libs
+	File "iconv-1.9.2.win32\bin\iconv.dll"
+	File "iconv-1.9.2.win32\lib\iconv.lib"
+	File "iconv-1.9.2.win32\lib\iconv_a.lib"
+	File "libxml2-2.7.3.win32\bin\libxml2.dll"
+	File "libxml2-2.7.3.win32\lib\libxml2.lib"
+	File "libxml2-2.7.3.win32\lib\libxml2_a.lib"
+	File "libxml2-2.7.3.win32\lib\libxml2_a_dll.lib"
+	File "libxslt-1.1.24.win32\bin\libexslt.dll"
+	File "libxslt-1.1.24.win32\bin\libxslt.dll"
+	File "libxslt-1.1.24.win32\lib\libexslt.lib"
+	File "libxslt-1.1.24.win32\lib\libexslt_a.lib"
+	File "libxslt-1.1.24.win32\lib\libxslt.lib"
+	File "libxslt-1.1.24.win32\lib\libxslt_a.lib"
+	File "zlib-1.2.3.win32\bin\zlib1.dll"
+	File "zlib-1.2.3.win32\lib\zdll.lib"
+	File "zlib-1.2.3.win32\lib\zlib.lib"
+	
+	File "..\tags\v1.0.2\VC10\EDSEngine.lib"
+	File "..\tags\v1.0.2\VC10\EDSEngineNET.dll"
+	File "..\tags\v1.0.2\VC10\Relational Object Model.lib"
+	File "..\tags\v1.0.2\VC10\ROMNET.dll"
+	File "..\tags\v1.0.2\VC10\LogicianDebuggerWPF.dll"
+	File "..\tags\v1.0.2\VC10\WPFToolkit.dll"
 	File "..\tags\v1.0.2\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll"
-	File "..\tags\v1.0.2\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
 
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic
 	; Put file there
-	File "..\tags\v1.0.2\DecisionLogic\vc_mswu\DecisionLogic.exe"
+	File "..\tags\v1.0.2\VC9\DecisionLogic.exe"
 	File "..\tags\v1.0.2\DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
 	File "..\tags\v1.0.2\DecisionLogic\vc_mswu\Figure1.png"
 	File "..\tags\v1.0.2\DecisionLogic\vc_mswu\Figure2.png"
@@ -88,7 +112,16 @@ Section "Logician Suite"
 	File "..\tags\v1.0.2\DecisionLogic\vc_mswu\Figure4.png"
 	File "..\tags\v1.0.2\DecisionLogic\vc_mswu\Figure5.png"
 	File "..\tags\v1.0.2\DecisionLogic\vc_mswu\Figure6.png"
-
+	
+	SetOutPath $INSTDIR
+	File "..\tags\v1.0.2\LogicianJS\KnowledgeBase.js"
+	File "..\tags\v1.0.2\LogicianJS\ROMNode.js"
+	;File "..\tags\v1.0.2\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
+	
+	SetOutPath $INSTDIR\ajaxslt
+	File "..\tags\v1.0.2\LogicianJS\ajaxslt\*.*"	
+	
+	SetOutPath $INSTDIR
 	; Write the installation path into the registry
 	WriteRegStr HKLM SOFTWARE\DecisionLogic "Install_Dir" "$INSTDIR"
 	
@@ -128,6 +161,9 @@ Section "un.LogicianSuite"
 
 	; Remove files and uninstaller
 	Delete $INSTDIR\DecisionLogic\*.*
+	Delete $INSTDIR\VC10\*.*
+	Delete $INSTDIR\VC9\*.*
+	Delete $INSTDIR\ajaxslt\*.*
 	Delete $INSTDIR\*.*
 	Delete $INSTDIR\uninstall_logician_libraries.exe
 	
@@ -137,6 +173,9 @@ Section "un.LogicianSuite"
 	; Remove directories used
 	RMDir "$SMPROGRAMS\DecisionLogic"
 	RMDir "$INSTDIR\DecisionLogic"
+	RMDir "$INSTDIR\VC9"
+	RMDir "$INSTDIR\VC10"
+	RMDir "$INSTDIR\ajaxslt"
 	RMDir "$INSTDIR"
 
 SectionEnd
