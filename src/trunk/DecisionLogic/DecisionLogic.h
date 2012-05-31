@@ -273,7 +273,7 @@ public:
     // instead of overriding this virtual function we might as well process the
     // event from it in the frame class - this might be more convenient in some
     // cases
-    virtual void MyProcess::OnTerminate(int pid, int status)
+    virtual void OnTerminate(int pid, int status)
 	{
 		// we're not needed any more
 		delete this;
