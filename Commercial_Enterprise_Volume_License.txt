@@ -1,7 +1,7 @@
 ﻿Rev12022009
 This Logician Enterprise Volume License Agreement (“Agreement”) is by and between DigiRule Solutions, LLC and Customer, both as identified on the Order Form. This Agreement and the Order Form collectively make up the entire agreement of the parties concerning Product (the “Agreement”). This Agreement is effective as of the Effective Date of the Order Form.
 
-Summary:  In short, this an unlimited-seat/server license to use the Logician client librires within you enterprise while waiving the source code sharing and linking requirements of the GPL.  This license additionally allows you to distribute the compiled libraries to external thrid parties for use with your own distributed software, and imposes no licensing purchase requiremnts for such third parties.
+Summary:  In short, this an unlimited-seat/server license to use the Logician client libraries within you enterprise while waiving the source code sharing and linking requirements of the GPL.  This license additionally allows you to distribute the compiled libraries to external thrid parties for use with your own distributed software, and imposes no licensing purchase requiremnts for such third parties.
 
 1. Definitions.
 "You" means [Company Name, Address] who is being licensed to use the Software. "We," "us" and "our" means DigiRule Solutions, LLC.
