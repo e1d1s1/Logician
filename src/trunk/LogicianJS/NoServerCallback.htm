@@ -3,11 +3,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
     <title>EDSEngine Web Implementation (No Server Callbacks)</title>    
-    <script src="ajaxslt/util.js" type="text/javascript"></script>
-    <script src="ajaxslt/xmltoken.js" type="text/javascript"></script>
-    <script src="ajaxslt/dom.js" type="text/javascript"></script>
-    <script src="ajaxslt/xpath.js" type="text/javascript"></script>
-    <script src="ajaxslt/xslt.js" type="text/javascript"></script>
+    <script src="ajaxslt/util.js" type="text/javascript"></script>  
+    <script src="ajaxslt/xmltoken.js" type="text/javascript"></script>  
+    <script src="ajaxslt/dom.js" type="text/javascript"></script>  
+    <script src="ajaxslt/xpath.js" type="text/javascript"></script>  
+    <script src="ajaxslt/xslt.js" type="text/javascript"></script>  
     <script src="./KnowledgeBase.js" type="text/javascript"></script>    
     <script src="./ROMNode.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -31,9 +31,9 @@
             knowledge.SetDebugHandler(debugHandler);
                         
             var cnt = knowledge.TableCount();
-            if (cnt == 12)
+            if (cnt == 13)
             {
-                write_result("OK: 12 Tables loaded");
+                write_result("OK: 13 Tables loaded");
             }
             else
             {
@@ -435,27 +435,29 @@
 
                     write_result("Checking dictionary size");
                     var attrs = engine.GetAllDictionaryAttrs();
-                    if (ArraySize(attrs) == 5)
+                    if (ArraySize(attrs) == 6)
                         write_result("size ok");
                     else
                         write_result("FAILURE loading dictionary:" + ArraySize(attrs));
 
                     var order = engine.GetEvalList();
-                    if (order != null && order.length == 5 &&
+                    if (order != null && order.length == 6 &&
                         order[0].Name == "cDictAttr1" &&
                         order[1].Name == "dDictAttr2" &&
                         order[2].Name == "aDictAttr3" &&
                         order[3].Name == "bDictAttr4" &&
-                        order[4].Name == "eDictAttr5")
+                        order[4].Name == "eDictAttr5" &&
+                        order[5].Name == "eDictAttr6")
                         write_result("Order OK");
                     else
                         write_result("FAILURE to assess the evaluation order:" + order.length + order[0].Name);
 
                     var triggers = engine.GetTriggers();
                     if (ArraySize(triggers) == 3 &&
-				        triggers["aDictAttr3"].length == 2 &&
+				        triggers["aDictAttr3"].length == 3 &&
 				        triggers["aDictAttr3"][0] == "bDictAttr4" &&
-				        triggers["aDictAttr3"][1] == "eDictAttr5")
+				        triggers["aDictAttr3"][1] == "eDictAttr5" &&
+                        triggers["aDictAttr3"][2] == "eDictAttr6")
 				        write_result("Triggers OK");
 			        else
 				        write_result("FAILURE to assess the triggers");

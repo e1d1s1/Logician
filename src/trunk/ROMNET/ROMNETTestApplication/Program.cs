@@ -82,18 +82,19 @@ namespace ROM2NETTestApplication
 
                 Log("Checking dictionary size");
                 Dictionary<string, ROMDictionaryAttribute> attrs = engine.GetAllDictionaryAttrs();
-                if (attrs.Count == 5)
+                if (attrs.Count == 6)
                     Log("size ok");
                 else
                     Log("FAILURE loading dictionary");
 
                 ROMDictionaryAttribute[] order = engine.GetEvalList();
-                if (order != null && order.Length == 5 &&
+                if (order != null && order.Length == 6 &&
                     order[0].Name == "cDictAttr1" &&
                     order[1].Name == "dDictAttr2" &&
                     order[2].Name == "aDictAttr3" &&
                     order[3].Name == "bDictAttr4" &&
-                    order[4].Name == "eDictAttr5")
+                    order[4].Name == "eDictAttr5" &&
+                    order[5].Name == "eDictAttr6")
                     Log("Order OK");
                 else
                     Log("FAILURE to assess the evaluation order");
@@ -102,7 +103,8 @@ namespace ROM2NETTestApplication
                 if (triggers.Count == 3 &&
 				triggers["aDictAttr3"].Length == 2 &&
 				triggers["aDictAttr3"][0] == "bDictAttr4" &&
-				triggers["aDictAttr3"][1] == "eDictAttr5")
+				triggers["aDictAttr3"][1] == "eDictAttr5" &&
+                triggers["aDictAttr3"][2] == "eDictAttr6")
 				Log("Triggers OK");
 			    else
 				    Log("FAILURE to assess the triggers");

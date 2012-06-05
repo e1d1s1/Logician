@@ -2380,8 +2380,8 @@ function LinearEngine(context, dictionaryTable) {
                                 var newSelectedValues = this.GetSelectedValues(this.base.m_dict[attrName]);
                                 if (newSelectedValues.length != selectedValues.length)
                                     bValuesRemainSame = false;
-                                else for (var i = 0; i < selectedValues.length; i++) {
-                                    if (GetIndexOfItem(newSelectedValues, selectedValues[i]) < 0) {
+                                else for (var j = 0; j < selectedValues.length; j++) {
+                                    if (GetIndexOfItem(newSelectedValues, selectedValues[j]) < 0) {
                                         bValuesRemainSame = false;
                                         break;
                                     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using EDSNET;
 
@@ -26,9 +25,9 @@ namespace EDSEngineTestApp
             knowledge.SetDebugging(true);
 
             var cnt = knowledge.TableCount();
-            if (cnt == 12)
+            if (cnt == 13)
             {
-                write_result("OK: 12 Tables loaded");
+                write_result("OK: 13 Tables loaded");
             }
             else
             {

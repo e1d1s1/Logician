@@ -701,7 +701,7 @@ Required table outputs:
 			A rules table output of "Y" will set the "Enabled" property of the attribute to true.
 			A rules table output of "YY" will set the "Enabled" property of the attribute to false and the context value to "Y".
 			A rules table output of "YN" will set the "Enabled" property of the attribute to true and the context value to "Y".
-			A rules table output of "NN" will set the "Enabled" property of the attribute to false and the context value to "N".
+			A rules table output of "N" will set the "Enabled" property of the attribute to false and the context value to "N".
 		EDIT - An attribute that stores editable text.
 			Rules table outputs supports nummerical ranges exculsive() and/or inclusive[].
 			A rules table output of "Y" will set the "Enabled" property of the attribute to true, no value validation will occur (user could type anything in box).
