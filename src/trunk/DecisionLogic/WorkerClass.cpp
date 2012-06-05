@@ -809,7 +809,7 @@ void WorkerClass::DeleteTable(wstring nameDelete)
 
 		if (nameToDelete.length() > 0 && path.length() > 0)
 		{
-			wstring question = L"Do you wnat to delete the " + nameToDelete + L" table";
+			wstring question = L"Do you want to delete the " + nameToDelete + L" table";
 			int ans = m_gui->PromptQuestion(question, L"Remove Table?");
 
 			if (ans == ID_YES)
@@ -820,7 +820,7 @@ void WorkerClass::DeleteTable(wstring nameDelete)
 				m_pm.DeleteDataSet(nameToDelete + L".xml");
 				if (UTILS::FileExists(path))
 				{
-					ans = m_gui->PromptQuestion(L"Table removed from project.\nDo you wnat to delete the file as well?", L"Remove File?");
+					ans = m_gui->PromptQuestion(L"Table removed from project.\nDo you want to delete the file as well?", L"Remove File?");
 					if (ans == ID_YES)
 					{
 						#ifdef WIN32
@@ -1000,7 +1000,7 @@ void WorkerClass::DeleteGroup()
 			m_gui->DeleteTreeNode(groupName);
 
 		if (paths.size() > 0)
-		{	int ans = m_gui->PromptQuestion(L"Group removed from project.\nDo you wnat to delete the associated files as well?", L"Remove Files?");
+		{	int ans = m_gui->PromptQuestion(L"Group removed from project.\nDo you want to delete the associated files as well?", L"Remove Files?");
 			if (ans == ID_YES)
 			{
 				for (vector<wstring>::iterator it = paths.begin(); it != paths.end(); it++)
