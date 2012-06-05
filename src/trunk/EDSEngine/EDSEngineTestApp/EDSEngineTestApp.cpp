@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 
 	string s = stringifyDouble(knowledge.TableCount());
 	Log("# of Tables loaded: " + s);
-	if (s == "12")
+	if (s == "13")
 	{
 		res.SetResult(true, "");
 	}

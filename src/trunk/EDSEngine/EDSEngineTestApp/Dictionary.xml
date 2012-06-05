@@ -21,7 +21,7 @@
       <Value operation="1">cDictAttr1</Value>
       <Value operation="1">dDictAttr2</Value>
       <Value operation="1">eDictAttr5</Value>
-      <Value/>
+      <Value operation="1">eDictAttr6</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -34,7 +34,7 @@
       <Value operation="1">A Single Selection Attribute</Value>
       <Value operation="1">Another Single Selection</Value>
       <Value operation="1">An Edit Attribute</Value>
-      <Value/>
+      <Value operation="1">Another Boolean</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -47,7 +47,7 @@
       <Value operation="1">~</Value>
       <Value operation="1">~</Value>
       <Value operation="1">0</Value>
-      <Value/>
+      <Value operation="1">~</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -60,7 +60,7 @@
       <Value operation="1">SINGLESELECT</Value>
       <Value operation="1">SINGLESELECT</Value>
       <Value operation="1">EDIT</Value>
-      <Value/>
+      <Value operation="1">BOOLEAN</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -73,7 +73,7 @@
       <Value operation="1">DictAttr1</Value>
       <Value operation="1">DictAttr2</Value>
       <Value operation="1">DictAttr5</Value>
-      <Value/>
+      <Value operation="1">DictAttr6</Value>
       <Value/>
       <Value/>
       <Value/>

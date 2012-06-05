@@ -339,9 +339,11 @@ namespace ROM
 		}
 		else if (availableValues.size() == 1) //you should only have one value
 		{
-			if (availableValues[0].length() == 0 || availableValues[0] == L"N")
+			if (availableValues[0].length() == 0 || availableValues[0][0] == L'N')
 			{
 				m_ROMContext->SetAttribute(dictAttrName, L"N");
+				RemoveTouchedByUser(dictAttrName);
+				m_dict[dictAttrName].Enabled = false;
 				return;
 			}
 			else if (availableValues[0] == L"YN") //allow Yes or No with a default of Y
@@ -354,12 +356,6 @@ namespace ROM
 			else if (availableValues[0] == L"YY") //force Yes, no other choice
 			{
 				m_ROMContext->SetAttribute(dictAttrName, L"Y");
-				RemoveTouchedByUser(dictAttrName);
-				m_dict[dictAttrName].Enabled = false;
-			}
-			else if (availableValues[0] == L"NN") //force No, no other choice
-			{
-				m_ROMContext->SetAttribute(dictAttrName, L"N");
 				RemoveTouchedByUser(dictAttrName);
 				m_dict[dictAttrName].Enabled = false;
 			}

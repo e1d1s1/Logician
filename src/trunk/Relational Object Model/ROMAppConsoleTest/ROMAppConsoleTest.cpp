@@ -185,27 +185,29 @@ int main(int argc, char* argv[])
 
 			Log("Checking dictionary size");
 			map<wstring, ROMDictionaryAttribute>* attrs = engine2.GetAllDictionaryAttrs();
-			if (attrs->size() == 5)
+			if (attrs->size() == 6)
 				Log("size ok");
 			else
 				Log("FAILURE loading dictionary");
 
 			vector<ROMDictionaryAttribute*> order = engine2.GetEvalList();
-			if (order.size() == 5 &&
+			if (order.size() == 6 &&
 				order.at(0)->Name == L"cDictAttr1" &&
 				order.at(1)->Name == L"dDictAttr2" &&
 				order.at(2)->Name == L"aDictAttr3" &&
 				order.at(3)->Name == L"bDictAttr4" &&
-				order.at(4)->Name == L"eDictAttr5")
+				order.at(4)->Name == L"eDictAttr5" &&
+				order.at(5)->Name == L"eDictAttr6")
 				Log("Order OK");
 			else
 				Log("FAILURE to assess the evaluation order");
 
 			map<wstring, vector<wstring> > triggers = engine2.GetTriggers();
 			if (triggers.size() == 3 &&
-				triggers[L"aDictAttr3"].size() == 2 &&
+				triggers[L"aDictAttr3"].size() == 3 &&
 				triggers[L"aDictAttr3"].at(0) == L"bDictAttr4" &&
-				triggers[L"aDictAttr3"].at(1) == L"eDictAttr5")
+				triggers[L"aDictAttr3"].at(1) == L"eDictAttr5" &&
+				triggers[L"aDictAttr3"].at(2) == L"eDictAttr6")
 				Log("Triggers OK");
 			else
 				Log("FAILURE to assess the triggers");
@@ -240,6 +242,15 @@ int main(int argc, char* argv[])
 				Log("Evaluation of attributes ok");
 			else
 				Log("FAILURE to evaluate an attribute");
+
+			engine2.EvaluateForAttribute(L"cDictAttr1", L"Option1");
+			string dictAttr1 = rootNode->GetAttribute("cDictAttr1");
+			engine2.EvaluateForAttribute(L"dDictAttr2", L"ResultByOption1");
+			string dictAttr2 = rootNode->GetAttribute("dDictAttr2");
+			string boolDict3 = rootNode->GetAttribute("aDictAttr3");
+			string boolDict6 = rootNode->GetAttribute("eDictAttr6");
+			engine2.EvaluateForAttribute("eDictAttr6", "Y");
+			boolDict6 = rootNode->GetAttribute("eDictAttr6");
 		}
 		else
 		{
