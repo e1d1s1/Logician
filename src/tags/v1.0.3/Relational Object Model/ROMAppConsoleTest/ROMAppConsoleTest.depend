@@ -1,0 +1,283 @@
+# depslib dependency file v1.0
+1258609266 source:/home/eric/Documents/Development/Relational Object Model/ROMAppConsoleTest/ROMAppConsoleTest.cpp
+	"stdafx.h"
+	<string>
+	<vector>
+	"ROMTree.h"
+
+1257403627 /home/eric/Documents/Development/Relational Object Model/ROMAppConsoleTest/stdafx.h
+	<stdio.h>
+	<tchar.h>
+
+1257253643 /home/eric/Documents/Development/Relational Object Model//ROMTree.h
+	<vector>
+	<string>
+	<iostream>
+	<algorithm>
+	"KnowledgeBase.h"
+	<comdef.h>
+
+1258603962 /home/eric/Documents/Development/EDSEngine/KnowledgeBase.h
+	"stdafx.h"
+	<string>
+	"RuleTable.h"
+	"TableSet.h"
+	"XMLWrapper.h"
+
+1258603495 /home/eric/Documents/Development/EDSEngine/stdafx.h
+	<windows.h>
+	<string>
+	<iostream>
+	<sstream>
+	<stdexcept>
+
+1257253643 /home/eric/Documents/Development/EDSEngine/RuleTable.h
+	<vector>
+	<string>
+	<map>
+	<set>
+	"Bimapper.h"
+	"RuleCell.h"
+
+1258604332 /home/eric/Documents/Development/EDSEngine/Bimapper.h
+	<hash_map>
+	<ext/hash_map>
+	<tr1/functional>
+
+1257253643 /home/eric/Documents/Development/EDSEngine/RuleCell.h
+
+1257253643 /home/eric/Documents/Development/EDSEngine/TableSet.h
+	<string>
+	<map>
+	"RuleTable.h"
+
+1257253643 /home/eric/Documents/Development/EDSEngine/XMLWrapper.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<assert.h>
+	<libxml/tree.h>
+	<libxml/parser.h>
+	<libxml/xpath.h>
+	<libxml/xpathInternals.h>
+
+1278363999 /usr/include/libxml2/libxml/tree.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/xmlstring.h>
+	<libxml/xmlregexp.h>
+	<libxml/xmlmemory.h>
+
+1278363999 /usr/include/libxml2/libxml/xmlversion.h
+	<libxml/xmlexports.h>
+	<ansidecl.h>
+
+1278363999 /usr/include/libxml2/libxml/xmlexports.h
+
+1278363999 /usr/include/libxml2/libxml/xmlstring.h
+	<stdarg.h>
+	<libxml/xmlversion.h>
+
+1278363999 /usr/include/libxml2/libxml/xmlregexp.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/dict.h>
+
+1278363999 /usr/include/libxml2/libxml/dict.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1278363999 /usr/include/libxml2/libxml/xmlmemory.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/threads.h>
+	<libxml/globals.h>
+
+1278363999 /usr/include/libxml2/libxml/threads.h
+	<libxml/xmlversion.h>
+	<libxml/globals.h>
+
+1278363999 /usr/include/libxml2/libxml/globals.h
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xmlerror.h>
+	<libxml/SAX.h>
+	<libxml/SAX2.h>
+	<libxml/xmlmemory.h>
+	<libxml/threads.h>
+
+1278363999 /usr/include/libxml2/libxml/parser.h
+	<stdarg.h>
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/dict.h>
+	<libxml/hash.h>
+	<libxml/valid.h>
+	<libxml/entities.h>
+	<libxml/xmlerror.h>
+	<libxml/xmlstring.h>
+	<libxml/encoding.h>
+	<libxml/xmlIO.h>
+	<libxml/globals.h>
+
+1278363999 /usr/include/libxml2/libxml/hash.h
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/dict.h>
+
+1278363999 /usr/include/libxml2/libxml/valid.h
+	<libxml/xmlversion.h>
+	<libxml/xmlerror.h>
+	<libxml/tree.h>
+	<libxml/list.h>
+	<libxml/xmlautomata.h>
+	<libxml/xmlregexp.h>
+
+1278363999 /usr/include/libxml2/libxml/xmlerror.h
+	<libxml/parser.h>
+
+1278363999 /usr/include/libxml2/libxml/list.h
+	<libxml/xmlversion.h>
+
+1278363999 /usr/include/libxml2/libxml/xmlautomata.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/xmlregexp.h>
+
+1278363999 /usr/include/libxml2/libxml/entities.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1278363999 /usr/include/libxml2/libxml/encoding.h
+	<libxml/xmlversion.h>
+	<iconv.h>
+	<libxml/tree.h>
+
+1278363999 /usr/include/libxml2/libxml/xmlIO.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/globals.h>
+	<libxml/tree.h>
+	<libxml/parser.h>
+	<libxml/encoding.h>
+
+1278363999 /usr/include/libxml2/libxml/SAX.h
+	<stdio.h>
+	<stdlib.h>
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xlink.h>
+
+1278363999 /usr/include/libxml2/libxml/xlink.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1278363999 /usr/include/libxml2/libxml/SAX2.h
+	<stdio.h>
+	<stdlib.h>
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xlink.h>
+
+1278363999 /usr/include/libxml2/libxml/xpath.h
+	<libxml/xmlversion.h>
+	<libxml/xmlerror.h>
+	<libxml/tree.h>
+	<libxml/hash.h>
+
+1278363999 /usr/include/libxml2/libxml/xpathInternals.h
+	<libxml/xmlversion.h>
+	<libxml/xpath.h>
+
+1257253643 source:/home/eric/Documents/Development/Relational Object Model/ROMAppConsoleTest/stdafx.cpp
+	"stdafx.h"
+
+1293736606 source:/home/eric/Development/Relational Object Model/ROMAppConsoleTest/ROMAppConsoleTest.cpp
+	"stdafx.h"
+	<stdio.h>
+	<string>
+	<vector>
+	"ROMNode.h"
+	"LinearEngine.h"
+	<iostream>
+	<windows.h>
+
+1262793208 /home/eric/Development/Relational Object Model/ROMAppConsoleTest/stdafx.h
+	<stdio.h>
+	<tchar.h>
+
+1293684780 /home/eric/Development/Relational Object Model//ROMNode.h
+	<vector>
+	<string>
+	<iostream>
+	<algorithm>
+	"KnowledgeBase.h"
+	"utilities.h"
+
+1293731163 /home/eric/Development/EDSEngine/KnowledgeBase.h
+	"stdafx.h"
+	<string>
+	"RuleTable.h"
+	"TableSet.h"
+	"XMLWrapper.h"
+	<comutil.h>
+
+1258603496 /home/eric/Development/EDSEngine/stdafx.h
+	<windows.h>
+	<string>
+	<iostream>
+	<sstream>
+	<stdexcept>
+
+1288069691 /home/eric/Development/EDSEngine/RuleTable.h
+	<vector>
+	<string>
+	<map>
+	<set>
+	"Bimapper.h"
+	"RuleCell.h"
+
+1258603496 /home/eric/Development/EDSEngine/Bimapper.h
+	<hash_map>
+	<ext/hash_map>
+	<tr1/functional>
+
+1257253644 /home/eric/Development/EDSEngine/RuleCell.h
+
+1259949114 /home/eric/Development/EDSEngine/TableSet.h
+	<string>
+	<map>
+	"RuleTable.h"
+
+1257253644 /home/eric/Development/EDSEngine/XMLWrapper.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<assert.h>
+	<libxml/tree.h>
+	<libxml/parser.h>
+	<libxml/xpath.h>
+	<libxml/xpathInternals.h>
+
+1293654504 /home/eric/Development/Relational Object Model//utilities.h
+	<string>
+	<vector>
+	<map>
+	<stdlib.h>
+	<stdio.h>
+	<assert.h>
+	<comdef.h>
+	<time.h>
+
+1293566696 /home/eric/Development/Relational Object Model//LinearEngine.h
+	"ROMDictionary.h"
+
+1291450330 /home/eric/Development/Relational Object Model//ROMDictionary.h
+	"ROMNode.h"
+	"ROMDictionaryAttribute.h"
+
+1291448568 /home/eric/Development/Relational Object Model//ROMDictionaryAttribute.h
+
+1262793208 source:/home/eric/Development/Relational Object Model/ROMAppConsoleTest/stdafx.cpp
+	"stdafx.h"
+
