@@ -11,7 +11,7 @@
 Name "Logician Suite v1.0.3"
 
 ; The file to write
-OutFile "Logician_v102_Setup.exe"
+OutFile "Logician_v103_Setup.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Logician
