@@ -103,8 +103,7 @@ namespace ROM2NETTestApplication
                 if (triggers.Count == 3 &&
 				triggers["aDictAttr3"].Length == 2 &&
 				triggers["aDictAttr3"][0] == "bDictAttr4" &&
-				triggers["aDictAttr3"][1] == "eDictAttr5" &&
-                triggers["aDictAttr3"][2] == "eDictAttr6")
+				triggers["aDictAttr3"][1] == "eDictAttr5")
 				Log("Triggers OK");
 			    else
 				    Log("FAILURE to assess the triggers");

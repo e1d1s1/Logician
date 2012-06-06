@@ -204,10 +204,9 @@ int main(int argc, char* argv[])
 
 			map<wstring, vector<wstring> > triggers = engine2.GetTriggers();
 			if (triggers.size() == 3 &&
-				triggers[L"aDictAttr3"].size() == 3 &&
+				triggers[L"aDictAttr3"].size() == 2 &&
 				triggers[L"aDictAttr3"].at(0) == L"bDictAttr4" &&
-				triggers[L"aDictAttr3"].at(1) == L"eDictAttr5" &&
-				triggers[L"aDictAttr3"].at(2) == L"eDictAttr6")
+				triggers[L"aDictAttr3"].at(1) == L"eDictAttr5")
 				Log("Triggers OK");
 			else
 				Log("FAILURE to assess the triggers");

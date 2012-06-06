@@ -39,7 +39,7 @@ RuleTable - table to evaluate to obtain the value (will override default if exis
 void ROMDictionary::LoadDictionary(wstring dictionaryTable)
 {
 	m_dict.clear();
-	map<wstring, vector<wstring> > res = m_ROMContext->EvaluateTable(dictionaryTable);	
+	map<wstring, vector<wstring> > res = m_ROMContext->EvaluateTable(dictionaryTable, true);	
 	vector<wstring> allNames = res[L"Name"];
 
 	for (size_t i = 0; i < allNames.size(); i++)
@@ -79,9 +79,16 @@ void ROMDictionary::LoadDictionary(wstring dictionaryTable)
 		//on load, just set default values and possibilities
 		//only set a default if there is no rules table and no current value		
 		wstring value = m_ROMContext->GetAttribute(dictAttr.Name);
-		if (((value.length() == 0 && dictAttr.RuleTable.length() == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length() > 0 && dictAttr.DefaultValue != L"~")
+		if (((value.length() == 0 && dictAttr.RuleTable.length() == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length() > 0 && dictAttr.DefaultValue != L"~" && dictAttr.AttributeType != BOOLEANSELECT)
 		{
 			m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
+		}
+		if (dictAttr.AttributeType == BOOLEANSELECT && value.length() == 0 && dictAttr.RuleTable.length() == 0)
+		{
+			if (dictAttr.DefaultValue.length() > 0)
+				m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue.substr(0, 1));
+			else
+				m_ROMContext->SetAttribute(dictAttr.Name, L"N");
 		}
 
 		if (dictAttr.RuleTable.length() > 0)

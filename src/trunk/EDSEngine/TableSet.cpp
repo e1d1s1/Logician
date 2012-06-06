@@ -92,6 +92,9 @@ vector<wstring> CTableSet::ParseTablesAndChainsForInputs(wstring tableName)
 {
 	vector<wstring> retval;
 
+	if (m_tables.find(tableName) == m_tables.end())
+		return retval;
+
 	CRuleTable table = m_tables[tableName];
 	retval = table.GetAllInputDependencies();
 	vector<wstring> outputs = table.GetAllOutputAttrNames();
@@ -123,22 +126,34 @@ vector<wstring> CTableSet::ParseTablesAndChainsForInputs(wstring tableName)
 
 CRuleTable* CTableSet::GetTable(std::wstring tableName)
 {
-	return &m_tables[tableName];
+	if (m_tables.find(tableName) != m_tables.end())
+		return &m_tables[tableName];
+	else
+		return NULL;
 }
 
 vector<wstring> CTableSet::GetInputAttrs(std::wstring tableName)
 {
-	return m_inputAttrsByTable[tableName];
+	if (m_inputAttrsByTable.find(tableName) != m_inputAttrsByTable.end())
+		return m_inputAttrsByTable[tableName];
+	else
+		return vector<wstring>();
 }
 
 vector<wstring> CTableSet::GetOutputAttrs(std::wstring tableName)
 {
-	return m_outputAttrsByTable[tableName];
+	if (m_outputAttrsByTable.find(tableName) != m_outputAttrsByTable.end())
+		return m_outputAttrsByTable[tableName];
+	else
+		return vector<wstring>();
 }
 
 vector<wstring> CTableSet::GetInputDependencies(std::wstring tableName)
 {
-	return m_inputDependenciesByTable[tableName];
+	if (m_outputAttrsByTable.find(tableName) != m_outputAttrsByTable.end())
+		return m_inputDependenciesByTable[tableName];
+	else
+		return vector<wstring>();
 }
 
 size_t CTableSet::Count()

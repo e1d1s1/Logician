@@ -81,7 +81,7 @@ namespace EDS
 		vector<wstring> GetInputAttrs(wstring tableName) {return m_TableSet.GetInputAttrs(tableName);}
 		vector<wstring> GetInputDependencies(wstring tableName) {return m_TableSet.GetInputDependencies(tableName);}
 		vector<wstring> GetOutputAttrs(wstring tableName) {return m_TableSet.GetOutputAttrs(tableName);}
-		vector<wstring> GetAllPossibleOutputs(wstring tableName, wstring outputName) {return m_TableSet.GetTable(tableName)->GetAllPossibleOutputs(outputName);}
+		vector<wstring> GetAllPossibleOutputs(wstring tableName, wstring outputName);
 
 		//Translations
 		wstring Localize(wstring baseValue, wstring locale) {return Translate(baseValue, L"", locale);}

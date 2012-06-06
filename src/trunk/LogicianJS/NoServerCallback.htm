@@ -454,10 +454,9 @@
 
                     var triggers = engine.GetTriggers();
                     if (ArraySize(triggers) == 3 &&
-				        triggers["aDictAttr3"].length == 3 &&
+				        triggers["aDictAttr3"].length == 2 &&
 				        triggers["aDictAttr3"][0] == "bDictAttr4" &&
-				        triggers["aDictAttr3"][1] == "eDictAttr5" &&
-                        triggers["aDictAttr3"][2] == "eDictAttr6")
+				        triggers["aDictAttr3"][1] == "eDictAttr5")
 				        write_result("Triggers OK");
 			        else
 				        write_result("FAILURE to assess the triggers");

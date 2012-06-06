@@ -1584,7 +1584,7 @@ function ROMDictionaryAttribute() {
     this.Name = "";
     this.Description = "";
     this.DefaultValue = "";
-    this.RulesTable = "";
+    this.RuleTable = "";
     this.AttributeType = Enum.ATTRTYPE_E.SINGLESELECT;
     this.ValueChanged = false;
     this.ChangedByUser = false;
@@ -1683,8 +1683,15 @@ function ROMDictionary(node) {
                 //on load, just set default values and possibilities
                 //only set a default if there is no rules table and no current value
                 var value = this.m_context.GetAttribute(dictAttr.Name, false);
-                if (((value.length == 0 && dictAttr.RuleTable.length == 0) || dictAttr.AttributeType == Enum.ATTRTYPE_E.STATIC) && dictAttr.DefaultValue.length > 0 && dictAttr.DefaultValue != "~") {
+                if (((value.length == 0 && dictAttr.RuleTable.length == 0) || dictAttr.AttributeType == Enum.ATTRTYPE_E.STATIC) && dictAttr.DefaultValue.length > 0 && dictAttr.DefaultValue != "~" && dictAttr.AttributeType != Enum.ATTRTYPE_E.BOOLEANSELECT) {
                     this.m_context.SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
+                }
+                if (dictAttr.AttributeType == Enum.ATTRTYPE_E.BOOLEANSELECT && value.length == 0 && dictAttr.RuleTable.length == 0)
+                {
+                    if (dictAttr.DefaultValue.length > 0)
+                        this.m_context.SetAttribute(dictAttr.Name, dictAttr.DefaultValue.substr(0, 1));
+                    else
+                        this.m_context.SetAttribute(dictAttr.Name, "N");
                 }
 
                 if (dictAttr.RuleTable.length > 0)
@@ -2022,17 +2029,14 @@ function LinearEngine(context, dictionaryTable) {
                 this.base.m_dict[dictAttrName].Enabled = true;
 
                 //set the dictionary default on load
-                if (newValue.length == 0) {
+                if (currentValue.length == 0) {
                     if (this.base.m_dict[dictAttrName].DefaultValue != null && this.base.m_dict[dictAttrName].DefaultValue.length > 0)
-                        newValue = this.base.m_dict[dictAttrName].DefaultValue;
+                        currentValue = this.base.m_dict[dictAttrName].DefaultValue;
+                    else
+                        currentValue = "N";
                 }
 
-                if (availableValues == null || availableValues.length == 0) {
-                    this.base.m_context.SetAttribute(dictAttrName, "N");
-                    this.RemoveTouchedByUser(dictAttrName);
-                    return;
-                }
-                else if (availableValues.length == 1) //you should only have one value
+                if (availableValues.length == 1) //you should only have one value
                 {
                     if (availableValues[0].length == 0 || availableValues[0] == "N") {
                         this.base.m_context.SetAttribute(dictAttrName, "N");
@@ -2050,18 +2054,31 @@ function LinearEngine(context, dictionaryTable) {
                         this.RemoveTouchedByUser(dictAttrName);
                         this.base.m_dict[dictAttrName].Enabled = false;
                     }
-                    else if (availableValues[0] == "NN") //force No, no other choice
-                    {
-                        this.base.m_context.SetAttribute(dictAttrName, "N");
-                        this.RemoveTouchedByUser(dictAttrName);
-                        this.base.m_dict[dictAttrName].Enabled = false;
-                    }
                     else if (newValue.length == 1) //Y or N
                     {
                         this.base.m_context.SetAttribute(dictAttrName, newValue);
                     }
+                    else if (currentValue.length == 0 && newValue.length == 0)
+                    {
+                        this.base.m_context.SetAttribute(dictAttrName, "Y");
+                        this.RemoveTouchedByUser(dictAttrName);
+                        this.base.m_dict[dictAttrName].Enabled = false;
+                    }
+                    else
+                        this.base.m_context.SetAttribute(dictAttrName, currentValue);
                 }
-
+                else if (newValue.length == 1) //Y or N
+                {
+                    this.base.m_context.SetAttribute(dictAttrName, newValue);
+                }
+                else if (currentValue.length == 0 && newValue.length == 0)
+                {
+                    this.base.m_context.SetAttribute(dictAttrName, "Y");
+                    this.RemoveTouchedByUser(dictAttrName);
+                    this.base.m_dict[dictAttrName].Enabled = false;
+                }
+                else
+                    this.base.m_context.SetAttribute(dictAttrName, currentValue);
             }
             catch (err) {
                 ReportError(err);
@@ -2202,10 +2219,10 @@ function LinearEngine(context, dictionaryTable) {
                 
                 var setTheValue = true;
                 var bFound = true;
-                if (this.InvalidateMode == Enum.INVALIDATEMODE_E.NORMALINVALIDATE)
+                if (this.InvalidateMode != Enum.INVALIDATEMODE_E.NORMALINVALIDATE)
                 {
-                    setTheValue = currentValue.length == 0;
-                    for (var it in currentValue)
+                    setTheValue = currentValues.length == 0;
+                    for (var it in currentValues)
                     {
                         bFound = GetIndexOfItem(availableValues, it) >= 0;
                         if (bFound)
