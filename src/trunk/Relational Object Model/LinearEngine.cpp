@@ -324,20 +324,16 @@ namespace ROM
 		m_dict[dictAttrName].Valid = true;
 		m_dict[dictAttrName].Enabled = true;
 
-		//set the dictionary default on load
-		if (newValue.length() == 0)
+		//set a default
+		if (currentValue.length() == 0)
 		{
 			if (m_dict[dictAttrName].DefaultValue.length() > 0)
-				newValue = m_dict[dictAttrName].DefaultValue;
+				currentValue = m_dict[dictAttrName].DefaultValue;
+			else
+				currentValue = L"N";			
 		}
 
-		if (availableValues.size() == 0)
-		{
-			m_ROMContext->SetAttribute(dictAttrName, L"N");
-			RemoveTouchedByUser(dictAttrName);
-			return;
-		}
-		else if (availableValues.size() == 1) //you should only have one value
+		if (availableValues.size() == 1) //you should only have one value
 		{
 			if (availableValues[0].length() == 0 || availableValues[0][0] == L'N')
 			{
@@ -363,7 +359,27 @@ namespace ROM
 			{
 				m_ROMContext->SetAttribute(dictAttrName, newValue);
 			}
+			else if (currentValue.length() == 0 && newValue.length() == 0)
+			{
+				m_ROMContext->SetAttribute(dictAttrName, L"N");
+				RemoveTouchedByUser(dictAttrName);
+				m_dict[dictAttrName].Enabled = false;
+			}
+			else
+				m_ROMContext->SetAttribute(dictAttrName, currentValue);
 		}
+		else if (newValue.length() == 1) //Y or N
+		{
+			m_ROMContext->SetAttribute(dictAttrName, newValue);
+		}
+		else if (currentValue.length() == 0 && newValue.length() == 0)
+		{
+			m_ROMContext->SetAttribute(dictAttrName, L"N");
+			RemoveTouchedByUser(dictAttrName);
+			m_dict[dictAttrName].Enabled = false;
+		}
+		else
+			m_ROMContext->SetAttribute(dictAttrName, currentValue);
 	}
 
 	void LinearEngine::EvalEdit(std::wstring dictAttrName, std::wstring newValue)

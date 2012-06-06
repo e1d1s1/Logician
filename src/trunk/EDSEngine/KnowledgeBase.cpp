@@ -164,19 +164,35 @@ void EDS::CKnowledgeBase::ResetTable(wstring tableName)
 	iRecursingDepth = 0;
 
 	CRuleTable *table = m_TableSet.GetTable(tableName);
-	table->ResetTable();
+	if (table != NULL)
+		table->ResetTable();
+}
+
+vector<wstring> EDS::CKnowledgeBase::GetAllPossibleOutputs(wstring tableName, wstring outputName)
+{
+	CRuleTable *table = m_TableSet.GetTable(tableName);
+	if (table != NULL)
+		return m_TableSet.GetTable(tableName)->GetAllPossibleOutputs(outputName);
+	else
+		return vector<wstring>();
 }
 
 bool EDS::CKnowledgeBase::TableHasScript(wstring tableName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
-	return (table->HasJS() || table->HasPython());
+	if (table != NULL)
+		return (table->HasJS() || table->HasPython());
+	else
+		return false;
 }
 
 bool EDS::CKnowledgeBase::TableIsGetAll(wstring tableName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
-	return table->IsGetAll();
+	if (table != NULL)
+		return table->IsGetAll();
+	else
+		return false;
 }
 
 //public functions
@@ -196,11 +212,18 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 	try
 	{
 		CRuleTable *table = m_TableSet.GetTable(tableName);
+
+		if (table == NULL)
+			return retval;
+
 		if (iRecursingDepth == 0)
 		{
 			m_StateParameter = param;
 		}
 		iRecursingDepth++;
+
+		if (table == NULL)
+			return retval;
 
 		table->EnbleDebugging(DebugThisTable(tableName));
 
@@ -515,9 +538,12 @@ vector<wstring> EDS::CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wst
 	try
 	{
 		CRuleTable *table = m_TableSet.GetTable(tableName);
-		table->EnbleDebugging(DebugThisTable(tableName));
-		table->SetInputValues(m_GlobalInputAttrsValues);
-		retval = table->EvaluateTable(inputAttr, bGetAll, false);
+		if (table != NULL)
+		{
+			table->EnbleDebugging(DebugThisTable(tableName));
+			table->SetInputValues(m_GlobalInputAttrsValues);
+			retval = table->EvaluateTable(inputAttr, bGetAll, false);
+		}
 	}
 	catch (...)
 	{
@@ -533,6 +559,8 @@ map<wstring, vector<wstring> > EDS::CKnowledgeBase::ReverseEvaluateTable(wstring
 	try
 	{
 		CRuleTable *table = m_TableSet.GetTable(tableName);
+		if (table == NULL)
+			return retval;
 		table->EnbleDebugging(DebugThisTable(tableName));
 		table->SetInputValues(m_GlobalInputAttrsValues);
 		vector<pair<wstring, vector<CRuleCell> > > outputCollection = table->GetInputAttrsTests();
@@ -617,12 +645,15 @@ map<wstring, vector<wstring> > EDS::CKnowledgeBase::EvaluateTableWithParam(std::
 	map<wstring, vector<wstring> > retval;
 
 	CRuleTable *table = m_TableSet.GetTable(tableName);
-	vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues = table->GetOutputAttrsValues();
-	//for all the outputs get the results
-	for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = outputAttrsValues.begin(); itOut != outputAttrsValues.end(); itOut++)
+	if (table != NULL)
 	{
-		vector<wstring> result = EvaluateTableWithParam(tableName, (*itOut).first, param, bGetAll);
-		retval[(*itOut).first] = result;
+		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues = table->GetOutputAttrsValues();
+		//for all the outputs get the results
+		for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = outputAttrsValues.begin(); itOut != outputAttrsValues.end(); itOut++)
+		{
+			vector<wstring> result = EvaluateTableWithParam(tableName, (*itOut).first, param, bGetAll);
+			retval[(*itOut).first] = result;
+		}
 	}
 
 	return retval;
@@ -1258,9 +1289,14 @@ vector<string> EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, strin
 {
 	//no chaining or scripting in reverse
 	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
-	table->EnbleDebugging(DebugThisTable(MBCStrToWStr(tableName)));
-	table->SetInputValues(m_GlobalInputAttrsValues);
-	return ToMBCStringVector(table->EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false));
+	if (table != NULL)
+	{
+		table->EnbleDebugging(DebugThisTable(MBCStrToWStr(tableName)));
+		table->SetInputValues(m_GlobalInputAttrsValues);
+		return ToMBCStringVector(table->EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false));
+	}
+	else
+		return vector<string>();
 }
 
 map<string, vector<string> > EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, bool bGetAll)
@@ -1268,12 +1304,15 @@ map<string, vector<string> > EDS::CKnowledgeBase::ReverseEvaluateTable(string ta
 	map<string, vector<string> > retval;
 
 	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
-	vector<pair<wstring, vector<CRuleCell> > > outputCollection = table->GetInputAttrsTests();
-	//for all the outputs get the results
-	for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = outputCollection.begin(); itOut != outputCollection.end(); itOut++)
+	if (table != NULL)
 	{
-		vector<wstring> result = ReverseEvaluateTable(MBCStrToWStr(tableName), (*itOut).first, bGetAll);
-		retval[ToASCIIString((*itOut).first)] = ToMBCStringVector(result);
+		vector<pair<wstring, vector<CRuleCell> > > outputCollection = table->GetInputAttrsTests();
+		//for all the outputs get the results
+		for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = outputCollection.begin(); itOut != outputCollection.end(); itOut++)
+		{
+			vector<wstring> result = ReverseEvaluateTable(MBCStrToWStr(tableName), (*itOut).first, bGetAll);
+			retval[ToASCIIString((*itOut).first)] = ToMBCStringVector(result);
+		}
 	}
 
 	return retval;

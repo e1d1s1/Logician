@@ -1288,7 +1288,8 @@ function TableSet()
 
         this.GetTable = function (tableName) {
             try {
-                return this.m_tables[tableName];
+                if (tableName in this.m_tables)
+                    return this.m_tables[tableName];
             }
             catch (err) {
                 ReportError(err);
@@ -1298,7 +1299,8 @@ function TableSet()
 
         this.GetInputAttrs = function (tableName) {
             try {
-                return this.m_inputAttrsByTable[tableName];
+                if (tableName in this.m_inputAttrsByTable)
+                    return this.m_inputAttrsByTable[tableName];
             }
             catch (err) {
                 ReportError(err);
@@ -1308,7 +1310,8 @@ function TableSet()
 
         this.GetInputDependencies = function (tableName) {
             try {
-                return this.m_inputDependenciesByTable[tableName];
+                if (tableName in this.m_inputDependenciesByTable)
+                    return this.m_inputDependenciesByTable[tableName];
             }
             catch (err) {
                 ReportError(err);
@@ -1317,7 +1320,8 @@ function TableSet()
 
         this.GetOutputAttrs = function (tableName) {
             try {
-                return this.m_outputAttrsByTable[tableName];
+                if (tableName in this.m_outputAttrsByTable)
+                    return this.m_outputAttrsByTable[tableName];
             }
             catch (err) {
                 ReportError(err);
@@ -1379,6 +1383,9 @@ function TableSet()
         this.ParseTablesAndChainsForInputs = function (tableName) {
             var retval = new Array();
             try {
+                if (!(tableName in this.m_tables))
+                    return retval;
+
                 var table = this.m_tables[tableName];
                 retval = table.GetAllInputDependencies();
                 var outputs = table.GetAllOutputAttrNames();
@@ -2014,7 +2021,8 @@ function KnowledgeBase(xmlPath) {
 			try
 			{
 				var table = this.m_TableSet.GetTable(tableName);
-				return table.m_bGetAll;
+				if (table != null)
+                    return table.m_bGetAll;
 			}
 			catch (err)
             {
@@ -2059,8 +2067,11 @@ function KnowledgeBase(xmlPath) {
             {
                 if (bGetAll == undefined)
                     bGetAll = this.TableIsGetAll(tableName);
-				
-				var table = this.m_TableSet.GetTable(tableName);
+
+                var table = this.m_TableSet.GetTable(tableName);
+
+                if (table == null)
+                    return retval;
 				
                 if (this.iRecursingDepth == 0)
                     this.m_StateParameter = param;
@@ -2210,6 +2221,8 @@ function KnowledgeBase(xmlPath) {
                 if (bGetAll == undefined)
                     bGetAll = this.TableIsGetAll(tableName);
                 var table = this.m_TableSet.GetTable(tableName);
+                if (table == null)
+                    return retval;
                 var outputAttrsValues = table.GetOutputAttrsValues();
         
                 for (var i = 0; i < ArraySize(outputAttrsValues); i++)
@@ -2246,6 +2259,8 @@ function KnowledgeBase(xmlPath) {
                 if (bGetAll == undefined)
                     bGetAll = this.TableIsGetAll(tableName);
                 var table = this.m_TableSet.GetTable(tableName);
+                if (table == null)
+                    return retval;
                 table.EnableDebugging(this.DebugThisTable(tableName));
                 table.SetInputValues(this.m_GlobalInputAttrsValues);
                 var outputCollection = table.GetInputAttrsTests();
@@ -2274,6 +2289,8 @@ function KnowledgeBase(xmlPath) {
                     bGetAll = this.TableIsGetAll(tableName);
                 //no chaining or scripting in reverse        
                 var table = this.m_TableSet.GetTable(tableName);
+                if (table == null)
+                    return retval;
                 table.EnableDebugging(this.DebugThisTable(tableName));
                 table.SetInputValues(this.m_GlobalInputAttrsValues);
                 retval = table.EvaluateTableForAttr(outputAttr, bGetAll, false);
@@ -2331,7 +2348,8 @@ function KnowledgeBase(xmlPath) {
                 this.iRecursingDepth = 0;
 
                 var table = this.m_TableSet.GetTable(tableName);
-                table.ResetTable();
+                if (table != null)                    
+                    table.ResetTable();
             }
             catch (err)
             {
@@ -2379,7 +2397,9 @@ function KnowledgeBase(xmlPath) {
         {
             try
             {
-                var table = this.m_TableSet.GetTable(tableName);                
+                var table = this.m_TableSet.GetTable(tableName);    
+                if (table == null)
+                    return new Array();            
                 return table.GetAllPossibleOutputs(outputName);                
             }
             catch (err)

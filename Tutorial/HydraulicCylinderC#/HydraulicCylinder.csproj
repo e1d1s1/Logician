@@ -47,8 +47,9 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="ROMNET">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Logician\ROMNET.dll</HintPath>
+    <Reference Include="ROMNET, Version=1.0.4526.80, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\src\trunk\ROMNET\Debug\ROMNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
