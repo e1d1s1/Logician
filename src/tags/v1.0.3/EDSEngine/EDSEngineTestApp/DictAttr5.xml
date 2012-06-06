@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="DictAttr5" getall="false">
+    <Inputs>
+      <Attr>aDictAttr3</Attr>
+      <Value operation="1">Y</Value>
+      <Value operation="1">N</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>eDictAttr5</Attr>
+      <Value operation="1">[0,35]</Value>
+      <Value operation="1">[10,50]</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>
