@@ -7,6 +7,7 @@ Fixed reset issue in JavaScript evaluation of SINGLESELECT attribute types in th
 Fixed copy-paste bug in DecisionLogic when copying many cells between multiple tables/MS Excel
 Sorted attribute display alphabetically in the debugging controls
 Made some changes to support wxWidgets 2.9.x beta when compiling DeicsionLogic in VS2010.  This is for future use, standard is still VS2008+wxWidgets 2.8.x  
+Added new resetting/invalidation behaviors to the LinearEngine component
 
 v1.0.3 - 6/5/2012
 Allow BOOLEAN types to omit rule table output in the LinearEngine dictionary
