@@ -81,11 +81,8 @@ void ROMDictionary::LoadDictionary(wstring dictionaryTable)
 		wstring value = m_ROMContext->GetAttribute(dictAttr.Name);
 		if (((value.length() == 0 && dictAttr.RuleTable.length() == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length() > 0 && dictAttr.DefaultValue != L"~")
 		{
-			if (dictAttr.AttributeType == BOOLEANSELECT)
-			{
-				if (dictAttr.DefaultValue.length() > 0)
-					m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue.substr(0, 1));
-			}
+			if (dictAttr.AttributeType == BOOLEANSELECT)			
+				m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue.substr(0, 1));
 			else
 				m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
 		}
