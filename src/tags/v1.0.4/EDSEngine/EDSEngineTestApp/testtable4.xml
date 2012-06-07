@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="testtable4" getall="true">
+    <Inputs>
+      <Attr>inputAttr2</Attr>
+      <Value operation="1">NULL</Value>
+      <Value/>
+      <Value operation="1">NULL</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Inputs>
+      <Attr>inputAttr1</Attr>
+      <Value/>
+      <Value operation="1">NULL</Value>
+      <Value operation="1">NULL</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>outputAttr1</Attr>
+      <Value operation="1">inputAttr2 is NULL</Value>
+      <Value operation="1">inputAttr1 is NULL</Value>
+      <Value operation="1">both attrs are NULL</Value>
+      <Value operation="1">fallout rule</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>
