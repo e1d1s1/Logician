@@ -54,6 +54,7 @@ public:
 	void NewGroup();
 	void RenameGroup(wstring oldGroupName = L"", wstring newGroupName = L"");
 	void DeleteGroup();
+	bool CheckOKCompilePath(wstring savePath);
 	wstring CompileXML(wstring tempFilePath = L"");
 	void CompileZip();
 	void ShowDebugOptions();
@@ -101,6 +102,7 @@ private:
 	DebugOptions m_debugOptions;
 	CompileOptions m_compileOptions;
 	bool m_debug_status;
+	wstring lastCompiledFileName;
 
 	GUIClass *m_gui;
 };

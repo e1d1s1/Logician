@@ -709,7 +709,7 @@ Required table outputs:
 		STATIC - An attribute tht stores text, usually a label.  Internally it is treated the same as a SINGLESELECT.
 		
 		Also, any rules table output prefixed with a "^" will have its attribute "Visible" property set to false.
-	RuleTable: Name of the rules table to evluate to obtain the attribute value.  The rules table should have an output with the same name as the attribute its performing a solve on.
+	RuleTable: Name of the rules table to evluate to obtain the attribute value.  The rules table should have an output with the same name as the attribute its performing a solve on.  It can be omitted for STATIC and BOOLEAN types, in lieu of a table name use a ~ in the cell to keep the tables results aligned.
 	C++:
 		void LoadDictionary(wstring dictionaryTable);
 	C#:

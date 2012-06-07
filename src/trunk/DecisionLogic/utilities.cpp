@@ -140,6 +140,21 @@ wstring UTILS::TrimString(wstring s)
   return s;
 }
 
+wstring UTILS::StripExtension(wstring filename)
+{
+	wstring outFilename;
+	size_t extPos = filename.rfind(L'.');
+	if (extPos != string::npos)
+	{
+		// Copy everything up to (but not including) the '.'
+		outFilename.assign(filename, 0, extPos);
+	}
+	else
+		outFilename = filename;
+	
+	return outFilename;
+}
+
 string UTILS::ToASCIIString(wstring s)
 {
 	string retval(s.begin(), s.end());
