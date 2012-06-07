@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="EDSEngineTestApp" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/EDSEngineTestApp" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="../bin/Debug" />
+				</Compiler>
+				<Linker>
+					<Add directory="../bin/Debug" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/EDSEngineTestApp" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="../bin/Release" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add directory="../bin/Release" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add option="-DUSE_LIBXML" />
+			<Add option="-DUSE_JAVASCRIPT" />
+			<Add directory="C:/msys/1.0/local/include/libxml2" />
+			<Add directory="C:/msys/1.0/local/include" />
+			<Add directory="/usr/include/libxml2" />
+			<Add directory="/usr/include/python2.6" />
+		</Compiler>
+		<Linker>
+			<Add library="libz" />
+			<Add library="libxml2" />
+			<Add library="libpython2.6" />
+			<Add library="libboost_system-mt" />
+			<Add library="libboost_python-mt-py26" />
+			<Add library="libmozjs" />
+			<Add library="libEDSEngine" />
+			<Add directory="C:/msys/1.0/local/lib" />
+			<Add directory="C:/boost_1_39_0/lib" />
+			<Add directory="C:/Python26/libs" />
+			<Add directory="/usr/lib" />
+		</Linker>
+		<Unit filename="EDSEngineTestApp.cpp" />
+		<Unit filename="stdafx.cpp" />
+		<Unit filename="stdafx.h" />
+		<Unit filename="targetver.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

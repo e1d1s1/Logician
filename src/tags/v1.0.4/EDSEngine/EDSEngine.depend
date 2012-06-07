@@ -1,0 +1,332 @@
+# depslib dependency file v1.0
+1258603496 source:/home/eric/Development/EDSEngine/Bimapper.cpp
+	"stdafx.h"
+	"Bimapper.h"
+
+1258603496 /home/eric/Development/EDSEngine/stdafx.h
+	<windows.h>
+	<string>
+	<iostream>
+	<sstream>
+	<stdexcept>
+
+1258603496 /home/eric/Development/EDSEngine/Bimapper.h
+	<hash_map>
+	<ext/hash_map>
+	<tr1/functional>
+
+1258603496 source:/home/eric/Development/EDSEngine/Decode.cpp
+	"stdafx.h"
+	"Decode.h"
+	"utilities.h"
+
+1258603496 /home/eric/Development/EDSEngine/Decode.h
+	<string>
+	"Bimapper.h"
+	"RuleCell.h"
+
+1257253644 /home/eric/Development/EDSEngine/RuleCell.h
+
+1257253644 /home/eric/Development/EDSEngine/utilities.h
+	<string>
+	<vector>
+
+1273557183 source:/home/eric/Development/EDSEngine/KnowledgeBase.cpp
+	"stdafx.h"
+	"KnowledgeBase.h"
+	"utilities.h"
+	<vector>
+	<algorithm>
+	<cstdio>
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<wchar.h>
+	<string>
+	<boost/asio.hpp>
+	<boost/python.hpp>
+	"zlib.h"
+	<direct.h>
+	<jsapi.h>
+
+1259965032 /home/eric/Development/EDSEngine/KnowledgeBase.h
+	"stdafx.h"
+	<string>
+	"RuleTable.h"
+	"TableSet.h"
+	"XMLWrapper.h"
+
+1259964644 /home/eric/Development/EDSEngine/RuleTable.h
+	<vector>
+	<string>
+	<map>
+	<set>
+	"Bimapper.h"
+	"RuleCell.h"
+
+1259949114 /home/eric/Development/EDSEngine/TableSet.h
+	<string>
+	<map>
+	"RuleTable.h"
+
+1257253644 /home/eric/Development/EDSEngine/XMLWrapper.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<assert.h>
+	<libxml/tree.h>
+	<libxml/parser.h>
+	<libxml/xpath.h>
+	<libxml/xpathInternals.h>
+
+1260939219 /usr/include/libxml2/libxml/tree.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/xmlstring.h>
+	<libxml/xmlregexp.h>
+	<libxml/xmlmemory.h>
+
+1260939219 /usr/include/libxml2/libxml/xmlversion.h
+	<libxml/xmlexports.h>
+	<ansidecl.h>
+
+1260939219 /usr/include/libxml2/libxml/xmlexports.h
+
+1260939219 /usr/include/libxml2/libxml/xmlstring.h
+	<stdarg.h>
+	<libxml/xmlversion.h>
+
+1260939219 /usr/include/libxml2/libxml/xmlregexp.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/dict.h>
+
+1260939219 /usr/include/libxml2/libxml/dict.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1260939219 /usr/include/libxml2/libxml/xmlmemory.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/threads.h>
+	<libxml/globals.h>
+
+1260939219 /usr/include/libxml2/libxml/threads.h
+	<libxml/xmlversion.h>
+	<libxml/globals.h>
+
+1260939219 /usr/include/libxml2/libxml/globals.h
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xmlerror.h>
+	<libxml/SAX.h>
+	<libxml/SAX2.h>
+	<libxml/xmlmemory.h>
+	<libxml/threads.h>
+
+1260939219 /usr/include/libxml2/libxml/parser.h
+	<stdarg.h>
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/dict.h>
+	<libxml/hash.h>
+	<libxml/valid.h>
+	<libxml/entities.h>
+	<libxml/xmlerror.h>
+	<libxml/xmlstring.h>
+	<libxml/encoding.h>
+	<libxml/xmlIO.h>
+	<libxml/globals.h>
+
+1260939219 /usr/include/libxml2/libxml/hash.h
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/dict.h>
+
+1260939219 /usr/include/libxml2/libxml/valid.h
+	<libxml/xmlversion.h>
+	<libxml/xmlerror.h>
+	<libxml/tree.h>
+	<libxml/list.h>
+	<libxml/xmlautomata.h>
+	<libxml/xmlregexp.h>
+
+1260939219 /usr/include/libxml2/libxml/xmlerror.h
+	<libxml/parser.h>
+
+1260939219 /usr/include/libxml2/libxml/list.h
+	<libxml/xmlversion.h>
+
+1260939219 /usr/include/libxml2/libxml/xmlautomata.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/xmlregexp.h>
+
+1260939219 /usr/include/libxml2/libxml/entities.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1260939219 /usr/include/libxml2/libxml/encoding.h
+	<libxml/xmlversion.h>
+	<iconv.h>
+	<libxml/tree.h>
+
+1260939219 /usr/include/libxml2/libxml/xmlIO.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/globals.h>
+	<libxml/tree.h>
+	<libxml/parser.h>
+	<libxml/encoding.h>
+
+1260939219 /usr/include/libxml2/libxml/SAX.h
+	<stdio.h>
+	<stdlib.h>
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xlink.h>
+
+1260939219 /usr/include/libxml2/libxml/xlink.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1260939219 /usr/include/libxml2/libxml/SAX2.h
+	<stdio.h>
+	<stdlib.h>
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xlink.h>
+
+1260939219 /usr/include/libxml2/libxml/xpath.h
+	<libxml/xmlversion.h>
+	<libxml/xmlerror.h>
+	<libxml/tree.h>
+	<libxml/hash.h>
+
+1260939219 /usr/include/libxml2/libxml/xpathInternals.h
+	<libxml/xmlversion.h>
+	<libxml/xpath.h>
+
+1273390887 /usr/local/include/mozjs/jsapi.h
+	<stddef.h>
+	<stdio.h>
+	"jspubtd.h"
+	"jsutil.h"
+
+1273390887 /usr/local/include/mozjs/jspubtd.h
+	"jstypes.h"
+	"jscompat.h"
+	"jsproto.tbl"
+
+1273390887 /usr/local/include/mozjs/jstypes.h
+	<stddef.h>
+	"jscpucfg.h"
+	"jsautocfg.h"
+	"jsotypes.h"
+
+1273390887 /usr/local/include/mozjs/jscpucfg.h
+
+1273390716 /usr/local/include/mozjs/jsautocfg.h
+
+1273390887 /usr/local/include/mozjs/jsotypes.h
+	<SupportDefs.h>
+	<sys/types.h>
+	<sys/inttypes.h>
+	<model.h>
+
+1273390887 /usr/local/include/mozjs/jscompat.h
+	"jstypes.h"
+	"jslong.h"
+
+1273390887 /usr/local/include/mozjs/jslong.h
+	"jstypes.h"
+
+1273390996 /usr/local/include/mozjs/jsproto.tbl
+	"jsconfig.h"
+
+1273390887 /usr/local/include/mozjs/jsconfig.h
+
+1273390887 /usr/local/include/mozjs/jsutil.h
+	<stdio.h>
+
+1263846250 source:/home/eric/Development/EDSEngine/RuleTable.cpp
+	"stdafx.h"
+	"RuleTable.h"
+	"Decode.h"
+	<set>
+	<algorithm>
+	<list>
+	<string>
+	"utilities.h"
+
+1259949164 source:/home/eric/Development/EDSEngine/TableSet.cpp
+	"stdafx.h"
+	"TableSet.h"
+	"RuleTable.h"
+	"utilities.h"
+
+1257253644 source:/home/eric/Development/EDSEngine/stdafx.cpp
+	"stdafx.h"
+
+1257253644 source:/home/eric/Development/EDSEngine/utilities.cpp
+	"stdafx.h"
+	"utilities.h"
+	<sstream>
+
+1258603496 source:/home/eric/Development/EDSEngine/EDSEngine.cpp
+	"stdafx.h"
+
+1273392426 /usr/local/include/js/jsapi.h
+	<stddef.h>
+	<stdio.h>
+	"js-config.h"
+	"jspubtd.h"
+	"jsutil.h"
+
+1273392537 /usr/local/include/js/js-config.h
+
+1273392427 /usr/local/include/js/jspubtd.h
+	"jstypes.h"
+	"jscompat.h"
+	"jsproto.tbl"
+
+1273392427 /usr/local/include/js/jstypes.h
+	<stddef.h>
+	"js-config.h"
+	"jscpucfg.h"
+	"jsautocfg.h"
+	"jsinttypes.h"
+	"jsotypes.h"
+
+1273392547 /usr/local/include/js/jsautocfg.h
+
+1273392426 /usr/local/include/js/jsinttypes.h
+	"js-config.h"
+	<stdint.h>
+	<sys/types.h>
+	<stddef.h>
+	<crtdefs.h>
+
+1273392427 /usr/local/include/js/jsotypes.h
+	<SupportDefs.h>
+	<sys/types.h>
+	<sys/inttypes.h>
+
+1273392426 /usr/local/include/js/jscompat.h
+	"jstypes.h"
+	"jslong.h"
+
+1273392426 /usr/local/include/js/jslong.h
+	"jstypes.h"
+
+1273392427 /usr/local/include/js/jsproto.tbl
+	"jsversion.h"
+
+1273392427 /usr/local/include/js/jsversion.h
+
+1273392427 /usr/local/include/js/jsutil.h
+	"jstypes.h"
+	<stdlib.h>
+	<stdio.h>
+	"jscustomallocator.h"
+
