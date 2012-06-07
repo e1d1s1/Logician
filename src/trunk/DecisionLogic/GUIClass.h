@@ -123,7 +123,9 @@ public:
 	}
 	void WriteConfig(wstring configItem, string value)
 	{
-		m_config->Write(configItem.c_str(), value.c_str());
+		wstring val;
+		val.assign(value.begin(), value.end());
+		m_config->Write(configItem.c_str(), val.c_str());
 	}	
 	void WriteConfig(wstring configItem, int value)
 	{

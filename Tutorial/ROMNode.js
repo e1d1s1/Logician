@@ -1683,15 +1683,11 @@ function ROMDictionary(node) {
                 //on load, just set default values and possibilities
                 //only set a default if there is no rules table and no current value
                 var value = this.m_context.GetAttribute(dictAttr.Name, false);
-                if (((value.length == 0 && dictAttr.RuleTable.length == 0) || dictAttr.AttributeType == Enum.ATTRTYPE_E.STATIC) && dictAttr.DefaultValue.length > 0 && dictAttr.DefaultValue != "~" && dictAttr.AttributeType != Enum.ATTRTYPE_E.BOOLEANSELECT) {
-                    this.m_context.SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
-                }
-                if (dictAttr.AttributeType == Enum.ATTRTYPE_E.BOOLEANSELECT && value.length == 0 && dictAttr.RuleTable.length == 0)
-                {
-                    if (dictAttr.DefaultValue.length > 0)
-                        this.m_context.SetAttribute(dictAttr.Name, dictAttr.DefaultValue.substr(0, 1));
+                if (((value.length == 0 && dictAttr.RuleTable.length == 0) || dictAttr.AttributeType == Enum.ATTRTYPE_E.STATIC) && dictAttr.DefaultValue.length > 0 && dictAttr.DefaultValue != "~") {
+                    if (dictAttr.AttributeType == Enum.ATTRTYPE_E.BOOLEANSELECT)
+                        this.m_context.SetAttribute(dictAttr.Name, dictAttr.DefaultValue.substr(0, 1));                    
                     else
-                        this.m_context.SetAttribute(dictAttr.Name, "N");
+                        this.m_context.SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
                 }
 
                 if (dictAttr.RuleTable.length > 0)

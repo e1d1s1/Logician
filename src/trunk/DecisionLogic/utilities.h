@@ -40,6 +40,7 @@ namespace UTILS
 	vector<string> Split(string text, string separators);
 	vector<wstring> Split(wstring text, wstring separators);
 	bool StringIsNumeric(wstring s);
+	wstring StripExtension(wstring filename);
 	wstring TrimString(wstring s);
 	string ToASCIIString(wstring s);
 	vector<string> ToASCIIStringVector(vector<wstring> vectWS);

@@ -1081,19 +1081,34 @@ wstring WorkerClass::CompileXML(wstring tempFilePath)
 	{
 		Save();
 
+		bool bOverWriteTable = false;
 		if (tempFilePath.length() == 0)
 		{
-			wstring savePath = m_gui->SaveDialog("xml", m_pm.GetProjectTitle());
-			if (savePath.length() > 0)
+			if (lastCompiledFileName.length() == 0)
+				lastCompiledFileName = m_pm.GetProjectTitle();
+			wstring savePath = m_gui->SaveDialog("xml", lastCompiledFileName);
+			bOverWriteTable = CheckOKCompilePath(savePath);
+			if (!bOverWriteTable && savePath.length() > 0)
 			{
 				m_pm.WriteAllDataSetsToXMLFile(savePath);
+				lastCompiledFileName = UTILS::StripExtension(savePath);
 				retval = savePath;
+			}
+			else if (bOverWriteTable)
+			{
+				m_gui->PromptMessage(L"You cannot overwrite an existing project table file with compiled output, you would lose your data.\nChoose a new output filename.");
 			}
 		}
 		else
 		{
-			m_pm.WriteAllDataSetsToXMLFile(UTILS::FindAndReplace(tempFilePath, L".gz", L".xml"));
-			retval = tempFilePath;
+			bOverWriteTable = CheckOKCompilePath(tempFilePath);
+			if (!bOverWriteTable)
+			{
+				m_pm.WriteAllDataSetsToXMLFile(UTILS::FindAndReplace(tempFilePath, L".gz", L".xml"));
+				retval = tempFilePath;
+			}
+			else
+				m_gui->PromptMessage(L"You cannot overwrite an existing project table file with compiled output, you would lose your data.\nChoose a new output filename.");
 		}
 	}
 	catch(...)
@@ -1104,13 +1119,27 @@ wstring WorkerClass::CompileXML(wstring tempFilePath)
 	return retval;
 }
 
+bool WorkerClass::CheckOKCompilePath(wstring savePath)
+{
+	bool bExists = UTILS::FileExists(savePath);			
+	//make sure not overwriting one of our own project files
+	vector<wstring> existingFiles = m_pm.GetProjectFilePaths();
+	bool bOverWriteTable = false;
+	if (bExists)
+		bOverWriteTable = find(existingFiles.begin(), existingFiles.end(), savePath) != existingFiles.end();
+	return bOverWriteTable;
+}
+
 void WorkerClass::CompileZip()
 {
 	try
 	{
-		wstring savePath = m_gui->SaveDialog("gz", m_pm.GetProjectTitle());
+		if (lastCompiledFileName.length() == 0)
+			lastCompiledFileName = m_pm.GetProjectTitle();		
+		wstring savePath = m_gui->SaveDialog("gz", lastCompiledFileName);
 		if (savePath.length() > 0)
 		{
+			lastCompiledFileName = UTILS::StripExtension(savePath);
 			CompileXML(savePath);
 			//compress file
 			string sPath = UTILS::WStrToMBCStr(savePath);

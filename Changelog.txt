@@ -1,0 +1,19 @@
+v1.0.1 - 6/1/2011
+Fixed an issue with the way strings were de-tokenized in JavaScript in order to improve performace of the rule table evaluation
+
+v1.0.2 - 5/24/2012
+Added Visual Studio 2012 project files and build script
+Fixed reset issue in JavaScript evaluation of SINGLESELECT attribute types in the LinearEngine functions
+Fixed copy-paste bug in DecisionLogic when copying many cells between multiple tables/MS Excel
+Sorted attribute display alphabetically in the debugging controls
+Made some changes to support wxWidgets 2.9.x beta when compiling DeicsionLogic in VS2010.  This is for future use, standard is still VS2008+wxWidgets 2.8.x  
+
+v1.0.3 - 6/5/2012
+Allow BOOLEAN types to omit rule table output in the LinearEngine dictionary
+Fixed BOOLEAN type initialization bug
+Prevent errors when calling into the libraries for invalid table names
+
+v1.0.4 - 6/7/2012
+Allow BOOLEAN types to set a default value directly in the LinearEngine dictionary
+Prevent DecisionLogic from overwriting table files when compiling to XML
+Cache last filename of compiled output in DecisionLogic

@@ -1021,6 +1021,24 @@ vector<wstring> ProjectManager::GetProjectTableNames()
 	return retval;
 }
 
+vector<wstring> ProjectManager::GetProjectFilePaths()
+{
+	vector<wstring> retval;
+
+	for (size_t rowIndex = 0; rowIndex < m_project_files->Rows(); rowIndex++)
+    {		
+		wstring file_name = m_project_files->GetItem(rowIndex, L"DataSetName");
+		wstring rel_path = m_project_files->GetItem(rowIndex,L"RelativePath");
+		wstring full_path = m_project_working_path + PATHSEP + rel_path;
+		if (rel_path.length() > 0)
+			full_path += PATHSEP;
+		full_path += file_name;
+		retval.push_back(full_path);
+    }
+	
+	return retval;
+}
+
 vector<wstring> ProjectManager::GetProjectTableNames(wstring path)
 {
 	vector<wstring> retval;

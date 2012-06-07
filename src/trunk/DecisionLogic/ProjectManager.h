@@ -66,6 +66,7 @@ public:
 		{m_jsCode = js; m_pyCode = py;}
 	vector<wstring> GetProjectTableNames();
 	vector<wstring> GetProjectTableNames(wstring path);
+	vector<wstring> GetProjectFilePaths();
 	wstring GetConnection() {return m_DebugConnection;}
 	wstring GetJavascriptCode() {return m_jsCode;}
 	wstring GetPythonCode() {return m_pyCode;}
