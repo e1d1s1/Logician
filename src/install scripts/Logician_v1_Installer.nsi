@@ -8,10 +8,10 @@
 ;--------------------------------
 
 ; The name of the installer
-Name "Logician Suite v1.0.4"
+Name "Logician Suite 1.0.5"
 
 ; The file to write
-OutFile "Logician_v104_Setup.exe"
+OutFile "Logician_v105_Setup.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Logician
@@ -66,12 +66,12 @@ Section "Logician Suite"
 	File "zlib-1.2.3.win32\lib\zdll.lib"
 	File "zlib-1.2.3.win32\lib\zlib.lib"
 	
-	File "..\tags\v1.0.4\VC9\EDSEngine.lib"
-	File "..\tags\v1.0.4\VC9\EDSEngineNET.dll"
-	File "..\tags\v1.0.4\VC9\Relational Object Model.lib"
-	File "..\tags\v1.0.4\VC9\ROMNET.dll"
-	File "..\tags\v1.0.4\VC9\LogicianDebuggerWPF.dll"
-	File "..\tags\v1.0.4\VC9\WPFToolkit.dll"
+	File "..\tags\1.0.5\VC9\EDSEngine.lib"
+	File "..\tags\1.0.5\VC9\EDSEngineNET.dll"
+	File "..\tags\1.0.5\VC9\Relational Object Model.lib"
+	File "..\tags\1.0.5\VC9\ROMNET.dll"
+	File "..\tags\1.0.5\VC9\LogicianDebuggerWPF.dll"
+	File "..\tags\1.0.5\VC9\WPFToolkit.dll"
 	
 	
 	SetOutPath $INSTDIR\VC10
@@ -93,33 +93,33 @@ Section "Logician Suite"
 	File "zlib-1.2.3.win32\lib\zdll.lib"
 	File "zlib-1.2.3.win32\lib\zlib.lib"
 	
-	File "..\tags\v1.0.4\VC10\EDSEngine.lib"
-	File "..\tags\v1.0.4\VC10\EDSEngineNET.dll"
-	File "..\tags\v1.0.4\VC10\Relational Object Model.lib"
-	File "..\tags\v1.0.4\VC10\ROMNET.dll"
-	File "..\tags\v1.0.4\VC10\LogicianDebuggerWPF.dll"
-	File "..\tags\v1.0.4\VC10\WPFToolkit.dll"
-	File "..\tags\v1.0.4\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll"
+	File "..\tags\1.0.5\VC10\EDSEngine.lib"
+	File "..\tags\1.0.5\VC10\EDSEngineNET.dll"
+	File "..\tags\1.0.5\VC10\Relational Object Model.lib"
+	File "..\tags\1.0.5\VC10\ROMNET.dll"
+	File "..\tags\1.0.5\VC10\LogicianDebuggerWPF.dll"
+	File "..\tags\1.0.5\VC10\WPFToolkit.dll"
+	File "..\tags\1.0.5\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll"
 
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic
 	; Put file there
-	File "..\tags\v1.0.4\VC9\DecisionLogic.exe"
-	File "..\tags\v1.0.4\DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
-	File "..\tags\v1.0.4\DecisionLogic\vc_mswu\Figure1.png"
-	File "..\tags\v1.0.4\DecisionLogic\vc_mswu\Figure2.png"
-	File "..\tags\v1.0.4\DecisionLogic\vc_mswu\Figure3.png"
-	File "..\tags\v1.0.4\DecisionLogic\vc_mswu\Figure4.png"
-	File "..\tags\v1.0.4\DecisionLogic\vc_mswu\Figure5.png"
-	File "..\tags\v1.0.4\DecisionLogic\vc_mswu\Figure6.png"
+	File "..\tags\1.0.5\VC9\DecisionLogic.exe"
+	File "..\tags\1.0.5\DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
+	File "..\tags\1.0.5\DecisionLogic\vc_mswu\Figure1.png"
+	File "..\tags\1.0.5\DecisionLogic\vc_mswu\Figure2.png"
+	File "..\tags\1.0.5\DecisionLogic\vc_mswu\Figure3.png"
+	File "..\tags\1.0.5\DecisionLogic\vc_mswu\Figure4.png"
+	File "..\tags\1.0.5\DecisionLogic\vc_mswu\Figure5.png"
+	File "..\tags\1.0.5\DecisionLogic\vc_mswu\Figure6.png"
 	
 	SetOutPath $INSTDIR
-	File "..\tags\v1.0.4\LogicianJS\KnowledgeBase.js"
-	File "..\tags\v1.0.4\LogicianJS\ROMNode.js"
-	;File "..\tags\v1.0.4\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
+	File "..\tags\1.0.5\LogicianJS\KnowledgeBase.js"
+	File "..\tags\1.0.5\LogicianJS\ROMNode.js"
+	;File "..\tags\1.0.5\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
 	
 	SetOutPath $INSTDIR\ajaxslt
-	File "..\tags\v1.0.4\LogicianJS\ajaxslt\*.*"	
+	File "..\tags\1.0.5\LogicianJS\ajaxslt\*.*"	
 	
 	SetOutPath $INSTDIR
 	; Write the installation path into the registry
