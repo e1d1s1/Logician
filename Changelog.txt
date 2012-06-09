@@ -18,3 +18,7 @@ v1.0.4 - 6/7/2012
 Allow BOOLEAN types to set a default value directly in the LinearEngine dictionary
 Prevent DecisionLogic from overwriting table files when compiling to XML
 Cache last filename of compiled output in DecisionLogic
+
+v1.0.5 - 6/9/2012
+Fixed issue with subsequent dependencies setting the ChangedByUser flag incorrectly due to recursion issue
+Fixed help HTML file link in DecisionLogic
