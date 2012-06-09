@@ -341,6 +341,10 @@ namespace ROM
 				{
 					m_ROMContext->SetAttribute(dictAttrName, L"Y");
 				}
+				else
+				{
+					m_ROMContext->SetAttribute(dictAttrName, newValue);
+				}
 			}
 			else if (availableValues[0] == L"YY") //force Yes, no other choice
 			{
