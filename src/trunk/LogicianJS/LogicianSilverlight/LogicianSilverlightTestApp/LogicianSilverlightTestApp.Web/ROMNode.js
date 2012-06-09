@@ -2035,6 +2035,9 @@ function LinearEngine(context, dictionaryTable) {
                         if (!this.IsTouchedByUser(dictAttrName)) {
                             this.base.m_context.SetAttribute(dictAttrName, "Y");
                         }
+                        else {
+                            this.base.m_context.SetAttribute(dictAttrName, newValue);
+                        }
                     }
                     else if (availableValues[0] == "YY") //force Yes, no other choice
                     {
