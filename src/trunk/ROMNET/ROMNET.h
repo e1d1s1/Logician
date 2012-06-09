@@ -411,18 +411,6 @@ namespace ROMNET {
 		FLAG = ROM::FLAGINVALIDATE
 	};
 
-	public enum class RESETMODE
-	{
-		RESETBYRULE = ROM::RESETBYRULE,
-		SKIPRESET = ROM::SKIPRESET
-	};
-
-	public enum class TRACKMODE
-	{
-		TRACKUSER = ROM::TRACKUSER,
-		SKIPTRACKUSER = ROM::SKIPTRACKUSER
-	};
-
 	public ref class LinearEngine
 	{
 	public:
@@ -475,36 +463,6 @@ namespace ROMNET {
 			{
 				if (m_LinearEngine)
 					m_LinearEngine->InvalidateMode = static_cast<ROM::INVALIDATEMODE_E>(value);
-			}
-		}
-		property RESETMODE ResetBehavior
-		{
-			virtual RESETMODE get()
-			{
-				if (m_LinearEngine)
-					return static_cast<RESETMODE>(m_LinearEngine->ResetBehavior);
-				else
-					return RESETMODE::SKIPRESET;
-			}
-			virtual void set(RESETMODE value)
-			{
-				if (m_LinearEngine)
-					m_LinearEngine->ResetBehavior = static_cast<ROM::RESETMODE_E>(value);
-			}
-		}
-		property TRACKMODE TrackUserBehavior
-		{
-			virtual TRACKMODE get()
-			{
-				if (m_LinearEngine)
-					return static_cast<TRACKMODE>(m_LinearEngine->TrackUserBehavior);
-				else
-					return TRACKMODE::SKIPTRACKUSER;
-			}
-			virtual void set(TRACKMODE value)
-			{
-				if (m_LinearEngine)
-					m_LinearEngine->TrackUserBehavior = static_cast<ROM::TRACKMODE_E>(value);
 			}
 		}
 

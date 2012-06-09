@@ -678,16 +678,8 @@ Behavioral Properties
 	InvalidateMode
 		- NORMAL (default).  When a dependent attribute is invalid, the system will attempt to either clear the invalid value and/or set it to a new value
 		- FLAG.  When a dependent attribute is invalid, the system will NOT attempt to either clear the invalid value and/or set it to a new value. It will only mark the attribute as Invalid.
-		
-	ResetMode
-		- SKIPRESET (default).
-		- RESETBYRULE.  For each attribute evaluation, evaluate a table named "reset" for a solution on "attr", given the current attribute input as "currentattr".   If a result is found, the existing value will be cleared.
-		
-	TrackUserBehavior
-		- SKIPTRACKUSER (default).
-		- TRACKUSER.  For each attribute evaluation, evaluate a table named "reset_INCBU".  Perform a "reset" on the resulting attributes if they have not been touched/canged by the user.
-	
-LoadDictionary - Loads a group of attribues and sets some defualt values based on the evaluation of a rules table.  
+			
+LoadDictionary - Loads a group of attribues and sets some defualt values based on the evaluation of a "dictionary" rules table.  
 Required table outputs:
 	Name: Name of an attribute
 	Description: Description (usually for GUI) of the attribute
@@ -710,6 +702,11 @@ Required table outputs:
 		
 		Also, any rules table output prefixed with a "^" will have its attribute "Visible" property set to false.
 	RuleTable: Name of the rules table to evluate to obtain the attribute value.  The rules table should have an output with the same name as the attribute its performing a solve on.  It can be omitted for STATIC and BOOLEAN types, in lieu of a table name use a ~ in the cell to keep the tables results aligned.
+
+Optional related tables: Reset, Reset_INCBU
+	The Reset rules table is optional.  Input is "currentattr", output is "attr".  Used during the course of an attribute evaluation to reset another attribute to its initial state.
+	The Reset_INCBU table is similar to the Reset table, except that it will only operate on attributes that have not been changed by the user.
+
 	C++:
 		void LoadDictionary(wstring dictionaryTable);
 	C#:
