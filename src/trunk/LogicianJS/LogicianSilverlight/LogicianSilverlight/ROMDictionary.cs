@@ -452,37 +452,7 @@ namespace LogicianSilverlight
             {
                 m_LinearEngine.SetProperty("InvalidateMode", value);
             }
-        }
-
-        public int ResetBehavior
-        {
-            get
-            {
-                if (m_LinearEngine != null)
-                    return (int)m_LinearEngine.Invoke("ResetBehavior");
-                else
-                    return 0;
-            }
-            set
-            {
-                m_LinearEngine.SetProperty("ResetBehavior", value);
-            }
-        }
-
-        public int TrackUserBehavior
-        {
-            get
-            {
-                if (m_LinearEngine != null)
-                    return (int)m_LinearEngine.Invoke("TrackUserBehavior");
-                else
-                    return 0;
-            }
-            set
-            {
-                m_LinearEngine.SetProperty("TrackUserBehavior", value);
-            }
-        }
+        }        
 
         private ScriptObject m_LinearEngine;
     }

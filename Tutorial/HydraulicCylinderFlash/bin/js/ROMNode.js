@@ -344,8 +344,6 @@ function cleanString(s) {
 //////////////////////////////////////////////////////////
 function Enum(){}
 Enum.INVALIDATEMODE_E = {NORMALINVALIDATE : 0, FLAGINVALIDATE : 1};
-Enum.RESETMODE_E = { RESETBYRULE : 0, SKIPRESET : 1};
-Enum.TRACKMODE_E = { TRACKUSER : 0, SKIPTRACKUSER : 1 };
 Enum.ATTRTYPE_E = { SINGLESELECT : 0, MULTISELECT : 1, BOOLEANSELECT : 2, EDIT : 3, STATIC : 4 };
 
 
@@ -1754,8 +1752,6 @@ function LinearEngine(context, dictionaryTable) {
     this.TBUATTR = "TBU_";
     
     this.InvalidateMode = Enum.INVALIDATEMODE_E.NORMALINVALIDATE;
-    this.ResetBehavior = Enum.RESETMODE_E.SKIPRESET;
-    this.TrackUserBehavior = Enum.TRACKMODE_E.TRACKUSER;
 
     this.base = new ROMDictionary(context);
 
@@ -1808,7 +1804,7 @@ function LinearEngine(context, dictionaryTable) {
             //newValues could be a string or an array
             try {
                 this.ResetValueChanged();
-                if (this.ResetBehavior == Enum.RESETMODE_E.RESETBYRULE && !this.m_EvalInternal)
+                if (!this.m_EvalInternal)
                 {
                     //resets other atts when setting this one
                     this.base.m_context.SetAttribute("currentattr", dictAttrName);
@@ -1821,22 +1817,18 @@ function LinearEngine(context, dictionaryTable) {
                             this.base.m_dict[attrsToReset[i]].Valid = false;
                     }
                     
-                    //resets an attr if it has not been touched by the user 
-                    if (this.TrackUserBehavior == Enum.TRACKMODE_E.TRACKUSER)
+                    //resets an attr if it has not been touched by the user                    
+                    attrsToReset = this.base.m_context.EvaluateTableForAttr("reset_INCBU", "attr");
+                    for (var i = 0; i < attrsToReset.length; i++)
                     {
-                        var attrsToReset = this.base.m_context.EvaluateTableForAttr("reset_INCBU", "attr");
-                        for (var i = 0; i < attrsToReset.length; i++)
+                        if (!this.IsTouchedByUser(attrsToReset[i]))
                         {
-                            if (!this.IsTouchedByUser(attrsToReset[i]))
-                            {
-                                this.base.m_context.SetAttribute(attrsToReset[i], "");
-                                this.RemoveTouchedByUser(attrsToReset[i]);
-                                if (this.base.m_dict[attrsToReset[i]].AvailableValues.length > 0)
-                                    this.base.m_dict[attrsToReset[i]].Valid = false;
-                            }
+                            this.base.m_context.SetAttribute(attrsToReset[i], "");
+                            this.RemoveTouchedByUser(attrsToReset[i]);
+                            if (this.base.m_dict[attrsToReset[i]].AvailableValues.length > 0)
+                                this.base.m_dict[attrsToReset[i]].Valid = false;
                         }
-                    }
-                    
+                    }     
                 }
                 var newVals = new Array();
                 if (typeof newValues == "string")
@@ -1846,8 +1838,8 @@ function LinearEngine(context, dictionaryTable) {
 
                 if (dictAttrName in this.base.m_dict) {
                     this.base.m_dict[dictAttrName].ValueChanged = true;
-                    var bChanged = !this.m_EvalInternal;
-                    if (bChanged)
+                    var bUserChanged = !this.m_EvalInternal;
+                    if (bUserChanged)
                         this.SetTouchedByUser(dictAttrName);
                     switch (this.base.m_dict[dictAttrName].AttributeType) {
                         case Enum.ATTRTYPE_E.SINGLESELECT:
@@ -2020,7 +2012,7 @@ function LinearEngine(context, dictionaryTable) {
                 else
                     this.base.m_dict[dictAttrName].Visible = true;
 
-                var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
+                var currentValue = this.base.m_context.GetAttribute(dictAttrName, true);
                 this.base.m_dict[dictAttrName].Valid = true;
                 this.base.m_dict[dictAttrName].Enabled = true;
 
@@ -2040,7 +2032,7 @@ function LinearEngine(context, dictionaryTable) {
                     }
                     else if (availableValues[0] == "YN") //allow Yes or No with a default of Y
                     {
-                        if (currentValue.length == 0) {
+                        if (!this.IsTouchedByUser(dictAttrName)) {
                             this.base.m_context.SetAttribute(dictAttrName, "Y");
                         }
                     }
@@ -2061,7 +2053,11 @@ function LinearEngine(context, dictionaryTable) {
                         this.base.m_dict[dictAttrName].Enabled = false;
                     }
                     else
+                    {
+                        if (currentValue == "N")
+                            this.base.m_dict[dictAttrName].Enabled = false;
                         this.base.m_context.SetAttribute(dictAttrName, currentValue);
+                    }
                 }
                 else if (newValue.length == 1) //Y or N
                 {
@@ -2074,7 +2070,11 @@ function LinearEngine(context, dictionaryTable) {
                     this.base.m_dict[dictAttrName].Enabled = false;
                 }
                 else
+                {
+                    if (currentValue == "N")
+                        this.base.m_dict[dictAttrName].Enabled = false;
                     this.base.m_context.SetAttribute(dictAttrName, currentValue);
+                }
             }
             catch (err) {
                 ReportError(err);
@@ -2388,6 +2388,7 @@ function LinearEngine(context, dictionaryTable) {
                             var selectedValues = this.GetSelectedValues(this.base.m_dict[attrName]);
                             var bWasChangedByUser = this.base.m_dict[attrName].ChangedByUser;
                             this.EvaluateForAttribute(attrName, selectedValues, true);
+                            this.m_EvalInternal = true;
                             if (bWasChangedByUser) {
                                 var bValuesRemainSame = true;
                                 var newSelectedValues = this.GetSelectedValues(this.base.m_dict[attrName]);
@@ -2423,14 +2424,12 @@ function LinearEngine(context, dictionaryTable) {
         
         this.SetTouchedByUser = function (dictAttrName) {
             this.base.m_dict[dictAttrName].ChangedByUser = true;
-            if (this.TrackUserBehavior == Enum.TRACKMODE_E.TRACKUSER)
-                this.base.m_context.SetAttribute(this.TBUATTR + dictAttrName, "Y");
+            this.base.m_context.SetAttribute(this.TBUATTR + dictAttrName, "Y");
         }
         
         this.RemoveTouchedByUser = function (dictAttrName) {
             this.base.m_dict[dictAttrName].ChangedByUser = false;
-            if (this.TrackUserBehavior == Enum.TRACKMODE_E.TRACKUSER)
-                this.base.m_context.RemoveAttribute(this.TBUATTR + dictAttrName);
+            this.base.m_context.RemoveAttribute(this.TBUATTR + dictAttrName);
         }      
 
         //remove the special character flags from the values
@@ -2544,8 +2543,7 @@ function LinearEngine(context, dictionaryTable) {
                     }
                 }
 
-                if (this.TrackUserBehavior == Enum.TRACKMODE_E.TRACKUSER)
-                    this.LoadTrackingAttrs();
+                this.LoadTrackingAttrs();
                 //based on the triggers, re-order the dictionary
                 m_CurrentRecursion = 0;
                 this.OrderDictionary();

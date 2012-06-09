@@ -65,10 +65,6 @@ package Logician
 		public function DictionaryIsValid():Boolean { if (m_LinearEngine != null) return ExternalInterface.call("eval", "GetEngineObject(\"" + m_LinearEngine + "\").DictionaryIsValid();"); else return false; }
 		public function GetInvalidateMode():int { if (m_ROMDictionaryAttribute != null) { var retval:int = ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").InvalidateMode;"); return retval;} else return 0; }
 		public function SetInvalidateMode(type:int):void { if (m_ROMDictionaryAttribute != null) ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").InvalidateMode = " + type + ";");}
-		public function GetResetBehavior():int { if (m_ROMDictionaryAttribute != null) { var retval:int = ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").ResetBehavior;"); return retval;} else return 0; }
-		public function SetResetBehavior(type:int):void { if (m_ROMDictionaryAttribute != null) ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").ResetBehavior = " + type + ";");}
-		public function GetTrackUserBehavior():int { if (m_ROMDictionaryAttribute != null) { var retval:int = ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").TrackUserBehavior;"); return retval;} else return 0; }
-		public function SetTrackUserBehavior(type:int):void { if (m_ROMDictionaryAttribute != null) ExternalInterface.call("eval", "GetROMDictAttrObject(\"" + m_ROMDictionaryAttribute + "\").TrackUserBehavior = " + type + ";");}
 				
 		private function ObjectToAttr(obj:Object):ROMDictionaryAttribute
 		{

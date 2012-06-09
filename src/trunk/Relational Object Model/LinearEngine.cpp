@@ -24,8 +24,6 @@ namespace ROM
 	void LinearEngine::CreateLinearEngine(ROMNode* context, wstring dictionaryTable)
 	{
 		InvalidateMode = NORMALINVALIDATE;
-		ResetBehavior = SKIPRESET;
-		TrackUserBehavior = SKIPTRACKUSER;
 		TBUATTR = L"TBU_";
 		InitializeEngine(dictionaryTable);		
 	}
@@ -42,8 +40,7 @@ namespace ROM
 			m_vEvalList.clear();
 			m_mapTriggers.clear();
 			LoadDictionary(dictionaryTable);
-			if (TrackUserBehavior == TRACKUSER)
-				LoadTrackingAttrs();
+			LoadTrackingAttrs();
 
 			//open each attr in dict, load its dependency info to create m_vEvalList, m_mapTriggers
 			//build an initial list that matches the dictionary order
@@ -181,7 +178,7 @@ namespace ROM
 	{
 		ResetValueChanged();
 		
-		if (ResetBehavior == RESETBYRULE && !m_EvalInternal)
+		if (!m_EvalInternal)
 		{
 			//resets other atts when setting this one
 			m_ROMContext->SetAttribute(L"currentattr", dictAttrName);
@@ -194,21 +191,19 @@ namespace ROM
 					m_dict[*it].Valid = false;
 			}
 
-			//resets an attr if it has not been touched by the user 
-			if (TrackUserBehavior == TRACKUSER)
+			//resets an attr if it has not been touched by the user			
+			attrsToReset = m_ROMContext->EvaluateTable((wstring)L"reset_INCBU", (wstring)L"attr");
+			for (vector<wstring>::iterator it = attrsToReset.begin(); it != attrsToReset.end(); it++)
 			{
-				vector<wstring> attrsToReset = m_ROMContext->EvaluateTable((wstring)L"reset_INCBU", (wstring)L"attr");
-				for (vector<wstring>::iterator it = attrsToReset.begin(); it != attrsToReset.end(); it++)
+				if (!IsTouchedByUser(*it))
 				{
-					if (!IsTouchedByUser(*it))
-					{
-						m_ROMContext->SetAttribute(*it, L"");
-						RemoveTouchedByUser(*it);
-						if (m_dict[*it].AvailableValues.size() > 0)
-							m_dict[*it].Valid = false;
-					}
+					m_ROMContext->SetAttribute(*it, L"");
+					RemoveTouchedByUser(*it);
+					if (m_dict[*it].AvailableValues.size() > 0)
+						m_dict[*it].Valid = false;
 				}
 			}
+			
 		}
 
 
@@ -264,15 +259,13 @@ namespace ROM
 	void LinearEngine::SetTouchedByUser(wstring dictAttrName)
 	{
 		m_dict[dictAttrName].ChangedByUser = true;
-		if (TrackUserBehavior == TRACKUSER)
-			m_ROMContext->SetAttribute(TBUATTR + dictAttrName, L"Y");
+		m_ROMContext->SetAttribute(TBUATTR + dictAttrName, L"Y");
 	}
 	
 	void LinearEngine::RemoveTouchedByUser(wstring dictAttrName)
 	{
 		m_dict[dictAttrName].ChangedByUser = false;
-		if (TrackUserBehavior == TRACKUSER)
-			m_ROMContext->RemoveAttribute(TBUATTR + dictAttrName);
+		m_ROMContext->RemoveAttribute(TBUATTR + dictAttrName);
 	}
 
 	void LinearEngine::EvaluateAll()
@@ -320,7 +313,7 @@ namespace ROM
 		else
 			m_dict[dictAttrName].Visible = true;
 
-		wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, false);
+		wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, true);
 		m_dict[dictAttrName].Valid = true;
 		m_dict[dictAttrName].Enabled = true;
 
@@ -344,7 +337,7 @@ namespace ROM
 			}
 			else if (availableValues[0] == L"YN") //allow Yes or No with a default of Y
 			{
-				if (currentValue.length() == 0)
+				if (!IsTouchedByUser(dictAttrName))
 				{
 					m_ROMContext->SetAttribute(dictAttrName, L"Y");
 				}
@@ -366,7 +359,11 @@ namespace ROM
 				m_dict[dictAttrName].Enabled = false;
 			}
 			else
+			{
+				if (currentValue == L"N")
+					m_dict[dictAttrName].Enabled = false;
 				m_ROMContext->SetAttribute(dictAttrName, currentValue);
+			}
 		}
 		else if (newValue.length() == 1) //Y or N
 		{
@@ -379,7 +376,11 @@ namespace ROM
 			m_dict[dictAttrName].Enabled = false;
 		}
 		else
+		{
+			if (currentValue == L"N")
+				m_dict[dictAttrName].Enabled = false;
 			m_ROMContext->SetAttribute(dictAttrName, currentValue);
+		}
 	}
 
 	void LinearEngine::EvalEdit(std::wstring dictAttrName, std::wstring newValue)
@@ -765,6 +766,7 @@ namespace ROM
 					vector<wstring> selectedValues = GetSelectedValues(&itFind->second);
 					bool bWasChangedByUser = itFind->second.ChangedByUser;
 					EvaluateForAttribute(*it, selectedValues, true);
+					m_EvalInternal = true;
 					if (bWasChangedByUser)
 					{
 						bool bValuesRemainSame = true;

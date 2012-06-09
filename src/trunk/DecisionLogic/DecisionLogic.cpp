@@ -665,7 +665,10 @@ void DecisionLogicFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
 	wxMimeTypesManager manager;
 	wxFileType * filetype = manager.GetFileTypeFromExtension(_T("htm"));
 	wxString command;
-	wxString path = m_working_directory + PATHSEP + _T("DecisionLogicHelp.htm");
+	wxString path;
+	if (m_working_directory.length() > 0)
+		path += m_working_directory + PATHSEP;
+	path += _T("DecisionLogicHelp.htm");
 	bool ok = filetype->GetOpenCommand(&command, wxFileType::MessageParameters(path));
 	if (ok)
 	{

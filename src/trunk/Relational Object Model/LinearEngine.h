@@ -31,18 +31,6 @@ namespace ROM
 		FLAGINVALIDATE
 	};
 
-	enum RESETMODE_E
-	{
-		RESETBYRULE,
-		SKIPRESET
-	};
-
-	enum TRACKMODE_E
-	{
-		TRACKUSER,
-		SKIPTRACKUSER
-	};
-
 	class LinearEngine : public ROMDictionary
 	{
 	public:
@@ -59,8 +47,6 @@ namespace ROM
 
 		//behavioral properties
 		int InvalidateMode;
-		int ResetBehavior;
-		int TrackUserBehavior;
 
 		//ASCII overloads
 		LinearEngine(ROMNode* context, string dictionaryTable);
