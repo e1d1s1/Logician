@@ -39,7 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LogicianDebuggerWPF">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Logician\LogicianDebuggerWPF.dll</HintPath>
+      <HintPath>..\..\src\trunk\Utilities\LogicianDebuggerWPF\bin\Debug\LogicianDebuggerWPF.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
