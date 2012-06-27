@@ -2017,11 +2017,17 @@ function LinearEngine(context, dictionaryTable) {
                 this.base.m_dict[dictAttrName].Enabled = true;
 
                 //set the dictionary default on load
+                var bOverrideDisabled = false;
                 if (currentValue.length == 0) {
                     if (this.base.m_dict[dictAttrName].DefaultValue != null && this.base.m_dict[dictAttrName].DefaultValue.length > 0)
                         currentValue = this.base.m_dict[dictAttrName].DefaultValue;
                     else
+                    {
                         currentValue = "N";
+                        if (availableValues.length == 1 && availableValues[0].length > 0 &&
+                            availableValues[0][0] == 'Y')
+                            bOverrideDisabled = true;
+                    }
                 }
 
                 if (availableValues.length == 1) //you should only have one value
@@ -2057,7 +2063,7 @@ function LinearEngine(context, dictionaryTable) {
                     }
                     else
                     {
-                        if (currentValue == "N")
+                        if (currentValue == "N" && !bOverrideDisabled)
                             this.base.m_dict[dictAttrName].Enabled = false;
                         this.base.m_context.SetAttribute(dictAttrName, currentValue);
                     }
@@ -2074,7 +2080,7 @@ function LinearEngine(context, dictionaryTable) {
                 }
                 else
                 {
-                    if (currentValue == "N")
+                    if (currentValue == "N" && !bOverrideDisabled)
                         this.base.m_dict[dictAttrName].Enabled = false;
                     this.base.m_context.SetAttribute(dictAttrName, currentValue);
                 }

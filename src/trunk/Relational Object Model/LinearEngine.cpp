@@ -318,12 +318,18 @@ namespace ROM
 		m_dict[dictAttrName].Enabled = true;
 
 		//set a default
+		bool bOverrideDisabled = false;
 		if (currentValue.length() == 0)
 		{
 			if (m_dict[dictAttrName].DefaultValue.length() > 0)
 				currentValue = m_dict[dictAttrName].DefaultValue;
 			else
-				currentValue = L"N";			
+			{
+				currentValue = L"N";	
+				if (availableValues.size() == 1 && availableValues[0].length() > 0 &&
+					availableValues[0][0] == 'Y')
+					bOverrideDisabled = true;
+			}
 		}
 
 		if (availableValues.size() == 1) //you should only have one value
@@ -364,7 +370,7 @@ namespace ROM
 			}
 			else
 			{
-				if (currentValue == L"N")
+				if (currentValue == L"N" && !bOverrideDisabled)
 					m_dict[dictAttrName].Enabled = false;
 				m_ROMContext->SetAttribute(dictAttrName, currentValue);
 			}
@@ -381,7 +387,7 @@ namespace ROM
 		}
 		else
 		{
-			if (currentValue == L"N")
+			if (currentValue == L"N" && !bOverrideDisabled)
 				m_dict[dictAttrName].Enabled = false;
 			m_ROMContext->SetAttribute(dictAttrName, currentValue);
 		}
