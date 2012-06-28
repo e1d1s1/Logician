@@ -462,7 +462,7 @@
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
 				AdditionalDependencies="zlib.lib libboost_system-vc90-mt-gd-1_47.lib"
-				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;$(BOOST_ROOT)\lib"
+				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -528,7 +528,7 @@
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
 				AdditionalDependencies="zlib.lib libboost_system-vc90-mt-1_47.lib"
-				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;$(BOOST_ROOT)\lib"
+				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
