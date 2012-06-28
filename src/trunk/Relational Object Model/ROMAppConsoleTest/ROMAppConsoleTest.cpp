@@ -89,34 +89,18 @@ int main(int argc, char* argv[])
 	char temp[32] = "";
 	wstring path;
 	#ifdef WIN32
-	//path = L"..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.xml";
-	path=L"AccuMaxxConfig.xml";
+	path = L"..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.xml";
 	#else
 	path = L"../../EDSEngine/EDSEngineTestApp/test_project.xml";
 	#endif
 
-	//try
-	//{
-
+	try
+	{
 		Log("Testing ROMNode Objects");
 		Log("Creating root node");
 		ROMNode* rootNode = new ROMNode(L"TestApplication");
 		Log("Root ROMNode created");		
 
-		if (rootNode->LoadRules(path))
-		{
-			rootNode->SetTableDebugHandler(DebugMessage);
-			Log("...loaded");
-			Log("Evaluating table MountType");
-			vector<wstring> res = rootNode->EvaluateTable(wstring(L"MountType"), wstring(L"MountType"));
-			for (vector<wstring>::iterator it = res.begin(); it != res.end(); it++)
-			{
-				Log(*it);
-			}
-			Log("Evaluation complete");
-		}
-
-/*
 		Log("Setting some attributes");
 		rootNode->SetAttribute(L"inputAttr1", L"some value of test1");
 		rootNode->SetAttribute(L"inputAttr2", L"some value of test2");
@@ -403,7 +387,7 @@ int main(int argc, char* argv[])
 	{
 		Log("Error");
 	}
-*/
+
 	Log("Press any key to continue...");
 	getchar();
 	return 0;
