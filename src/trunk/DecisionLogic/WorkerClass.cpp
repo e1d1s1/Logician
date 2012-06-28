@@ -618,7 +618,7 @@ void WorkerClass::InsertTable()
 		vector<wstring> pathParts = UTILS::Split(path, wstrSep);
 		wstring name = UTILS::FindAndReplace(pathParts[pathParts.size() - 1], L".xml", L"");
 
-		wstring target = m_pm.GetProjectWorkingPath() + wstrSep + m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
+		wstring target = m_pm.GetProjectWorkingPath() + m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
 		wstring sourcePath = path;
 		wstring targetPath = target;
 		transform(targetPath.begin(), targetPath.end(), targetPath.begin(), ::tolower);
