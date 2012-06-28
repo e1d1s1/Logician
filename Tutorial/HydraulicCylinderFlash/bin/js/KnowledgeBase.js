@@ -872,6 +872,12 @@ function RuleTable()
 				            break;
 		            } //done column
 		        } //done inputs
+				else if (ArraySize(inputCollection) == 0 && !bGetAll)
+				{
+					if (colResults.length > 0)
+						for (var i = 1; i < colResults.length; i++)
+							colResults[i] = false;
+				}
 
 	            //for the give output, the reuslts are
 	            var results = new Array();
