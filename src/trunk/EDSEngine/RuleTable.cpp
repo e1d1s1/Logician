@@ -164,7 +164,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 	} //done inputs
 	else if (inputCollection.size() == 0 && !bGetAll)
 	{
-		if (colResults.size() > 0) 
+		if (colResults.size() > 1) 
 			for (size_t i = 1; i < colResults.size(); i++)
 				colResults[i] = false;
 	}
