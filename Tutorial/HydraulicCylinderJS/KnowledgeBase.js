@@ -874,7 +874,7 @@ function RuleTable()
 		        } //done inputs
 				else if (ArraySize(inputCollection) == 0 && !bGetAll)
 				{
-					if (colResults.length > 0)
+					if (colResults.length > 1)
 						for (var i = 1; i < colResults.length; i++)
 							colResults[i] = false;
 				}
