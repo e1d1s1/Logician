@@ -385,6 +385,7 @@
 				LinkLibraryDependencies="true"
 				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
 				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML&quot;"
+				IgnoreDefaultLibraryNames="dwmapi.dll"
 			/>
 			<Tool
 				Name="VCALinkTool"
