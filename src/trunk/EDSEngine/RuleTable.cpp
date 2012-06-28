@@ -162,6 +162,12 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 				break;
 		} //done column
 	} //done inputs
+	else if (inputCollection.size() == 0 && !bGetAll)
+	{
+		if (colResults.size() > 0) 
+			for (size_t i = 1; i < colResults.size(); i++)
+				colResults[i] = false;
+	}
 
 	//for the give output, the reuslts are
 	vector<CRuleCell> results;
