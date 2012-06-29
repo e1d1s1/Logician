@@ -19,15 +19,9 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 #include "utilities.h"
 #include <sstream>
 #include <string.h>
-#if defined(POSIX)
-#include <uuid/uuid.h>
-#else
-	#if defined(WIN32)
-	#include "Objbase.h"
-	#else
-	#include <cstdlib>
-	#endif
-#endif
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #ifdef USE_LIBXML
 #include <libxml/tree.h>
 #endif
@@ -209,64 +203,15 @@ string ROMUTIL::stringify(long x)
    return o.str();
 }
 
-//will replace with a boost:: equivalent when UUID is accepted into the library
 string ROMUTIL::MakeGUID()
 {
-	string guid;
 	//guid for each ObjectNode
-	#ifdef _MSC_VER
-		GUID UIDObj;
-		unsigned char* pUIDStr;
-		CoCreateGuid(&UIDObj);
-		// Convert the GUID to a string
-		UuidToString( &UIDObj, &pUIDStr );
-		guid = (const char*)pUIDStr;
-		RpcStringFree(&pUIDStr);
-	#else
-		#ifdef POSIX
-				uuid_t uid;
-				uuid_generate(uid);
-				char cGUID[128] = "";
-				uuid_unparse(uid, cGUID);
-				guid = cGUID;
-		#else
-			char* pGuidStr = new char[32];
-			int i;
-
-			srand(static_cast<unsigned int> (time(NULL))); /*Randomize based on time.*/
-
-			/*Data1 - 8 characters.*/
-			*pGuidStr++ = '{';
-			for(i = 0; i < 8; i++, pGuidStr++)
-			((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
-
-			/*Data2 - 4 characters.*/
-			*pGuidStr++ = '-';
-			for(i = 0; i < 4; i++, pGuidStr++)
-			((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
-
-			/*Data3 - 4 characters.*/
-			*pGuidStr++ = '-';
-			for(i = 0; i < 4; i++, pGuidStr++)
-			((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
-
-			/*Data4 - 4 characters.*/
-			*pGuidStr++ = '-';
-			for(i = 0; i < 4; i++, pGuidStr++)
-			((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
-
-			/*Data5 - 12 characters.*/
-			*pGuidStr++ = '-';
-			for(i = 0; i < 12; i++, pGuidStr++)
-			((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
-
-			*pGuidStr++ = '}';
-			*pGuidStr = '\0';
-
-			guid = pGuidStr;
-			delete[] pGuidStr;
-		#endif
-	#endif
+	string guid;	
+	boost::uuids::random_generator gen;
+	boost::uuids::uuid u = gen();
+	std::stringstream ss;
+	ss << u;
+	guid = ss.str();	
 	return guid;
 }
 

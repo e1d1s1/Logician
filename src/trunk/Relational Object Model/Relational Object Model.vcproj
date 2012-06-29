@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;..\EDSEngine&quot;"
+				AdditionalIncludeDirectories="..\EDSEngine;&quot;$(BOOST_ROOT)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_MSXML"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,9 +62,9 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
-				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML Python&quot;"
-				IgnoreDefaultLibraryNames="dwmapi.dll"
+				AdditionalDependencies="EDSEngine.lib"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML Python&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
+				IgnoreDefaultLibraryNames=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -125,8 +125,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
-				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML Python&quot;"
+				AdditionalDependencies="EDSEngine.lib"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML Python&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -169,7 +169,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\EDSEngine;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\libxslt-1.1.24.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;"
+				AdditionalIncludeDirectories="..\EDSEngine;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\libxslt-1.1.24.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_LIBXML"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -191,7 +191,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib zlib.lib iconv.lib libxml2.lib libexslt.lib libxslt.lib"
-				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxslt-1.1.24.win32\lib&quot;;&quot;..\EDSEngine\Debug Libxml&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;"
+				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxslt-1.1.24.win32\lib&quot;;&quot;..\EDSEngine\Debug Libxml&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
 				IgnoreDefaultLibraryNames="dwmapi.dll"
 			/>
 			<Tool
@@ -234,7 +234,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;..\EDSEngine&quot;;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\libxslt-1.1.24.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;"
+				AdditionalIncludeDirectories="..\EDSEngine;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\libxslt-1.1.24.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_MSXML"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -253,8 +253,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
-				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxslt-1.1.24.win32\lib&quot;;&quot;..\EDSEngine\Debug Libxml&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;"
+				AdditionalDependencies="EDSEngine.lib"
+				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxslt-1.1.24.win32\lib&quot;;&quot;..\EDSEngine\Debug Libxml&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -297,7 +297,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;..\EDSEngine&quot;"
+				AdditionalIncludeDirectories="..\EDSEngine;&quot;$(BOOST_ROOT)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_MSXML"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -319,9 +319,9 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
-				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML&quot;"
-				IgnoreDefaultLibraryNames="dwmapi.dll"
+				AdditionalDependencies="EDSEngine.lib"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Debug MSXML&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
+				IgnoreDefaultLibraryNames=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -363,7 +363,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;..\EDSEngine&quot;"
+				AdditionalIncludeDirectories="..\EDSEngine;&quot;$(BOOST_ROOT)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_MSXML"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -383,9 +383,9 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="EDSEngine.lib Rpcrt4.lib"
-				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML&quot;"
-				IgnoreDefaultLibraryNames="dwmapi.dll"
+				AdditionalDependencies="EDSEngine.lib"
+				AdditionalLibraryDirectories="&quot;..\EDSEngine\Release MSXML&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
+				IgnoreDefaultLibraryNames=""
 			/>
 			<Tool
 				Name="VCALinkTool"

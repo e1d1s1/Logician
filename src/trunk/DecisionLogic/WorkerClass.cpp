@@ -24,7 +24,11 @@
 #include "stdafx.h"
 #include <algorithm>
 #include <string>
-#include <zlib.h>
+#include <fstream>
+#include <iostream>
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
 #include <cctype>
 
 #include "WorkerClass.h"
@@ -1143,28 +1147,30 @@ void WorkerClass::CompileZip()
 			CompileXML(savePath);
 			//compress file
 			string sPath = UTILS::WStrToMBCStr(savePath);
-			FILE *infile = fopen(UTILS::WStrToMBCStr(UTILS::FindAndReplace(savePath, L".gz", L".xml")).c_str(), "rb");
-			gzFile outfile = gzopen(UTILS::WStrToMBCStr(savePath).c_str(), "wb");
-			if (!infile || !outfile) return;
-
-			char inbuffer[128];
-			int num_read = 0;
-			unsigned long total_read = 0;
-			while ((num_read = fread(inbuffer, 1, sizeof(inbuffer), infile)) > 0)
+			ifstream file(UTILS::WStrToMBCStr(UTILS::FindAndReplace(savePath, L".gz", L".xml")).c_str(), std::ifstream::in);
+			ofstream outfile(UTILS::WStrToMBCStr(savePath).c_str(), std::ofstream::out | std::ofstream::binary);
+			if (file.is_open() && outfile.is_open())
 			{
-				total_read += num_read;
-				gzwrite(outfile, inbuffer, num_read);
+				boost::iostreams::filtering_streambuf<boost::iostreams::input> in;
+				in.push(boost::iostreams::gzip_compressor());
+				in.push(file);
+				boost::iostreams::copy(in, outfile);
+				file.close();
+				outfile.close();
+
+				wstring fileToRemove = UTILS::FindAndReplace(savePath, L".gz", L".xml");
+				#ifdef WIN32
+				_wremove(fileToRemove.c_str());
+				#else
+				remove(UTILS::WStrToMBCStr(fileToRemove).c_str());
+				#endif
 			}
-			fclose(infile);
-			gzclose(outfile);
-			wstring fileToRemove = UTILS::FindAndReplace(savePath, L".gz", L".xml");
-			#ifdef WIN32
-			_wremove(fileToRemove.c_str());
-			#else
-			remove(UTILS::WStrToMBCStr(fileToRemove).c_str());
-			#endif
 		}
 
+	}
+	catch (std::exception ex)
+	{
+		ReportError(ex.what());
 	}
 	catch(...)
 	{

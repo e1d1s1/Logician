@@ -89,9 +89,9 @@ int main(int argc, char* argv[])
 	char temp[32] = "";
 	wstring path;
 	#ifdef WIN32
-	path = L"..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.xml";
+	path = L"..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.gz";
 	#else
-	path = L"../../EDSEngine/EDSEngineTestApp/test_project.xml";
+	path = L"../../EDSEngine/EDSEngineTestApp/test_project.gz";
 	#endif
 
 	try
