@@ -90,9 +90,9 @@ int main(int argc, char* argv[])
 	Log("Loading Test project");
 	//load up some sample table
 	#ifndef __GNUC__
-	EDS::CKnowledgeBase knowledge(L"../EDSEngineTestApp/test_project.xml");
+	EDS::CKnowledgeBase knowledge(L"..\\EDSEngineTestApp\\test_project.gz");
 	#else
-	EDS::CKnowledgeBase knowledge(L"test_project.xml");
+	EDS::CKnowledgeBase knowledge(L"test_project.gz");
 	#endif
 	if (!knowledge.IsOpen())
 	{

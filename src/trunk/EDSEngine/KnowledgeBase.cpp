@@ -34,9 +34,12 @@ using boost::asio::ip::tcp;
 #include <boost/python.hpp>
 #endif
 
-#ifndef DISABLE_ZIP
-#include "zlib.h"
-#endif
+#include <fstream>
+#include <iostream>
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+
 #ifdef WIN32
 #include <direct.h>
 #endif
@@ -1028,22 +1031,20 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 			file_name = FindAndReplace(file_name, L".gz", L".xml");
 
 			//unzip
-			gzFile infile = NULL;
 			string s = WStrToMBCStr(knowledge_file);
-			infile = gzopen(s.c_str(), "rb");
-			unzippedFileName += pathSep;
-			unzippedFileName += file_name;
-			FILE *outfile = fopen(WStrToMBCStr(unzippedFileName).c_str(), "wb");
-
-			unsigned char buffer[128];
-			int num_read = 0;
-			gzrewind(infile);
-			while ((num_read = gzread(infile, buffer, sizeof(buffer))) > 0)
+			ifstream file(s.c_str(), std::ifstream::in | std::ifstream::binary);
+			if (file.is_open())
 			{
-				fwrite(buffer, 1, num_read, outfile);
+				boost::iostreams::filtering_streambuf<boost::iostreams::input> in;
+				in.push(boost::iostreams::gzip_decompressor());
+				in.push(file);
+				unzippedFileName += pathSep;
+				unzippedFileName += file_name;
+				ofstream outfile(WStrToMBCStr(unzippedFileName).c_str(), std::ofstream::out);
+				boost::iostreams::copy(in, outfile);
+				file.close();
+				outfile.close();
 			}
-			gzclose(infile);
-			fclose(outfile);
 		}
 		else
 #endif
@@ -1102,6 +1103,10 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 			remove(WStrToMBCStr(unzippedFileName).c_str());
 #endif
 		m_TableSet.Initialize();
+	}
+	catch (std::exception ex)
+	{
+		ReportError(ex.what());
 	}
 	catch (...)
 	{

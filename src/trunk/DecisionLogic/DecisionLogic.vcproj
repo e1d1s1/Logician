@@ -77,11 +77,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw28ud_adv.lib wxmsw28ud_html.lib wxbase28ud_xml.lib wxmsw28ud_core.lib wxbase28ud_net.lib wxbase28ud.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxregexud.lib wxexpatd.lib wxmsw28ud_stc.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib zlib.lib iconv.lib libxml2.lib"
+				AdditionalDependencies="wxmsw28ud_adv.lib wxmsw28ud_html.lib wxbase28ud_xml.lib wxmsw28ud_core.lib wxbase28ud_net.lib wxbase28ud.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxregexud.lib wxexpatd.lib wxmsw28ud_stc.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib iconv.lib libxml2.lib"
 				OutputFile="vc_mswud\DecisionLogic.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;$(WXWIN)\lib\vc_lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
+				AdditionalLibraryDirectories="&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;$(WXWIN)\lib\vc_lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
@@ -152,7 +152,7 @@
 				AdditionalOptions="/EHsc "
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;..\zlib-1.2.3.win32\include&quot;;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\contrib\include&quot;"
+				AdditionalIncludeDirectories="&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\contrib\include&quot;"
 				PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -179,11 +179,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw28u_adv.lib wxmsw28u_html.lib wxbase28u_xml.lib wxmsw28u_core.lib wxbase28u_net.lib wxbase28u.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_stc.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib zlib.lib iconv_a.lib libxml2_a.lib"
+				AdditionalDependencies="wxmsw28u_adv.lib wxmsw28u_html.lib wxbase28u_xml.lib wxmsw28u_core.lib wxbase28u_net.lib wxbase28u.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_stc.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib iconv_a.lib libxml2_a.lib"
 				OutputFile="vc_mswu\DecisionLogic.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;..\zlib-1.2.3.win32\lib&quot;;&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;$(WXWIN)\lib\vc_lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
+				AdditionalLibraryDirectories="&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;$(WXWIN)\lib\vc_lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
 				ProgramDatabaseFile="vc_mswu\DecisionLogic.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"

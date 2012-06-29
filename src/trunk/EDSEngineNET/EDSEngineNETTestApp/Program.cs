@@ -10,7 +10,7 @@ namespace EDSEngineTestApp
         static void Main(string[] args)
         {
             string dir = System.IO.Directory.GetCurrentDirectory();
-            string filename = "..\\..\\..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.xml";
+            string filename = "..\\..\\..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.gz";
             EDSEngine knowledge = new EDSEngine(filename);
             if (knowledge.IsOpen() == false)
             {
