@@ -62,16 +62,11 @@ echo "DecisionLogic build complete"
 
 echo "Building Utilities"
 echo "Building LogicianDebuggerWPF"
-%MSBUILD_PATH% "Utilities\LogicianDebuggerWPF\LogicianDebugger.csproj" /t:rebuild /p:Configuration="Debug"
-%MSBUILD_PATH% "Utilities\LogicianDebuggerWPF\LogicianDebugger.csproj" /t:rebuild /p:Configuration="Release"
+%MSBUILD_PATH% "Utilities\LogicianDebuggerWPF\LogicianDebugger.csproj" /t:clean,rebuild /p:Configuration="Debug"
+%MSBUILD_PATH% "Utilities\LogicianDebuggerWPF\LogicianDebugger.csproj" /t:clean,rebuild /p:Configuration="Release"
 copy "Utilities\LogicianDebuggerWPF\bin\Release\LogicianDebuggerWPF.dll" VC10 /y
 copy "Utilities\LogicianDebuggerWPF\bin\Release\WPFToolkit.dll" VC10 /y
 echo "Building LogicianDebuggerWPF complete"
-
-echo "Building LogicianDebugger"
-%MSBUILD_PATH% "Utilities\LogicianDebugger\ROMDebugApp.vcxproj" /t:clean,rebuild /p:Configuration="Unicode Debug"
-%MSBUILD_PATH% "Utilities\LogicianDebugger\ROMDebugApp.vcxproj" /t:clean,rebuild /p:Configuration="Unicode Release"
-echo "LogicianDebugger build complete"
 
 echo "All builds complete"
 pause

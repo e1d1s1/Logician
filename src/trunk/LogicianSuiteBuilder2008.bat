@@ -69,10 +69,5 @@ copy "Utilities\LogicianDebuggerWPF\bin\Release\LogicianDebuggerWPF.dll" VC9 /y
 copy "Utilities\LogicianDebuggerWPF\bin\Release\WPFToolkit.dll" VC9 /y
 echo "Building LogicianDebuggerWPF complete"
 
-echo "Building LogicianDebugger"
-%MSBUILD_PATH% "Utilities\LogicianDebugger\ROMDebugApp.vcproj" /t:clean,rebuild /p:Configuration="Unicode Debug"
-%MSBUILD_PATH% "Utilities\LogicianDebugger\ROMDebugApp.vcproj" /t:clean,rebuild /p:Configuration="Unicode Release"
-echo "LogicianDebugger build complete"
-
 echo "All builds complete"
 pause

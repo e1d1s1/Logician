@@ -15,11 +15,14 @@ using System.Xml;
 using System.Xml.Linq;
 using ROMNET;
 
-namespace LogicianDebuggerTestApp
+namespace LogicianDebuggerTestApp2010
 {
-    public partial class TestApp : Window
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
     {
-        public TestApp()
+        public MainWindow()
         {
             InitializeComponent();
             SetupApplication();
