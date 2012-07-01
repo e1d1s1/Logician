@@ -64,7 +64,7 @@
     <ClCompile>
       <AdditionalOptions>/EHsc  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\zlib-1.2.3.win32\include;..\libxml2-2.7.3.win32\include;..\iconv-1.9.2.win32\include;C:\wxWidgets-2.9.3\include;C:\wxWidgets-2.9.3\lib\vc_lib\mswud;$(BOOST_ROOT)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\libxml2-2.7.3.win32\include;..\iconv-1.9.2.win32\include;C:\wxWidgets-2.9.3\include;C:\wxWidgets-2.9.3\lib\vc_lib\mswud;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -83,10 +83,10 @@
       <AdditionalIncludeDirectories>.\..\..\lib\vc_lib\mswud;.\..\..\include;.;.\..\..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw29ud_adv.lib;wxbase29ud_net.lib;wxmsw29ud_stc.lib;wxmsw29ud_core.lib;wxbase29ud.lib;wxscintillad.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;odbc32.lib;zlib.lib;iconv.lib;libxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw29ud_adv.lib;wxbase29ud_net.lib;wxmsw29ud_stc.lib;wxmsw29ud_core.lib;wxbase29ud.lib;wxscintillad.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;odbc32.lib;iconv.lib;libxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>vc_mswud\DecisionLogic.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\zlib-1.2.3.win32\lib;..\iconv-1.9.2.win32\lib;..\libxml2-2.7.3.win32\lib;C:\wxWidgets-2.9.3\lib\vc_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\iconv-1.9.2.win32\lib;..\libxml2-2.7.3.win32\lib;C:\wxWidgets-2.9.3\lib\vc_lib;$(BOOST_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -121,7 +121,7 @@ copy "*.png" "vc_mswud\" /Y
       <AdditionalOptions>/EHsc  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\zlib-1.2.3.win32\include;..\libxml2-2.7.3.win32\include;..\iconv-1.9.2.win32\include;C:\wxWidgets-2.9.3\include;C:\wxWidgets-2.9.3\lib\vc_lib\mswu;$(BOOST_ROOT)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\libxml2-2.7.3.win32\include;..\iconv-1.9.2.win32\include;C:\wxWidgets-2.9.3\include;C:\wxWidgets-2.9.3\lib\vc_lib\mswu;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;__WXMSW__;_WINDOWS;NOPCH;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -140,10 +140,10 @@ copy "*.png" "vc_mswud\" /Y
       <AdditionalIncludeDirectories>.\..\..\lib\vc_lib\mswu;.\..\..\include;.;.\..\..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw29u_adv.lib;wxbase29u_net.lib;wxmsw29u_stc.lib;wxmsw29u_core.lib;wxbase29u.lib;wxscintilla.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;odbc32.lib;zlib.lib;iconv_a.lib;libxml2_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw29u_adv.lib;wxbase29u_net.lib;wxmsw29u_stc.lib;wxmsw29u_core.lib;wxbase29u.lib;wxscintilla.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;odbc32.lib;iconv_a.lib;libxml2_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>vc_mswu\DecisionLogic.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\zlib-1.2.3.win32\lib;..\iconv-1.9.2.win32\lib;..\libxml2-2.7.3.win32\lib;C:\wxWidgets-2.9.3\lib\vc_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\iconv-1.9.2.win32\lib;..\libxml2-2.7.3.win32\lib;C:\wxWidgets-2.9.3\lib\vc_lib;$(BOOST_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>vc_mswu\DecisionLogic.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
