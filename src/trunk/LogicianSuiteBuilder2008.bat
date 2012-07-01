@@ -26,13 +26,6 @@ echo "Building EDSEngineNETTestApp..."
 %MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp\EDSEngineNETTestApp2008.csproj" /t:clean,rebuild /p:Configuration="Release"
 echo "EDSEngineNETTestApp build complete"
 
-echo "Building LogicianJS..."
-%MSBUILD_PATH% "LogicianJS\LogicianJS.csproj" /t:clean,rebuild /p:Configuration="Debug"
-%MSBUILD_PATH% "LogicianJS\LogicianJS.csproj" /t:clean,rebuild /p:Configuration="Release"
-echo "LogicianJS build complete"
-
-
-
 echo "Building Relational Object Model..."
 %MSBUILD_PATH% "Relational Object Model\Relational Object Model.vcproj" /t:clean,rebuild /p:Configuration="Debug MSXML"
 %MSBUILD_PATH% "Relational Object Model\Relational Object Model.vcproj" /t:clean,rebuild /p:Configuration="Release MSXML"

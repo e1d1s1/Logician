@@ -4,7 +4,6 @@ echo "MSBUILD.exe Path: %MSBUILD_PATH%"
 echo "Creating VS2010 bin folder..."
 mkdir VC10
 
-
 echo "Building EDSEngine..."
 %MSBUILD_PATH% "EDSEngine\EDSEngine.vcxproj" /t:clean,rebuild /p:Configuration="Debug MSXML"
 %MSBUILD_PATH% "EDSEngine\EDSEngine.vcxproj" /t:clean,rebuild /p:Configuration="Release MSXML"
@@ -26,12 +25,6 @@ echo "Building EDSEngineNETTestApp..."
 %MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp\EDSEngineNETTestApp.csproj" /t:clean,rebuild /p:Configuration="Debug"
 %MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp\EDSEngineNETTestApp.csproj" /t:clean,rebuild /p:Configuration="Release"
 echo "EDSEngineNETTestApp build complete"
-
-echo "Building LogicianJS..."
-%MSBUILD_PATH% "LogicianJS\LogicianJS.csproj" /t:clean,rebuild /p:Configuration="Debug"
-%MSBUILD_PATH% "LogicianJS\LogicianJS.csproj" /t:clean,rebuild /p:Configuration="Release"
-echo "LogicianJS build complete"
-
 
 echo "Building Relational Object Model..."
 %MSBUILD_PATH% "Relational Object Model\Relational Object Model.vcxproj" /t:clean,rebuild /p:Configuration="Debug MSXML"
