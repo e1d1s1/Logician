@@ -5,7 +5,6 @@ Logician relies upon open source and freely available cross-platform tools, so y
 Prerequisites:
 Rules Engine: EDSEngine
 All platforms: 
-- zlib compression library v1.2.3
 - boost C++ libraries v1.47+
 - iconv v1.9.2
 - libxml2 v2.7.3 
@@ -18,13 +17,11 @@ Windows:
 Rule Table Builder GUI: DecisionLogic
 All platforms:
 - wxWidgets GUI toolkit v2.8.10+, v2.9.3+ for VS2010 project
-- zlib compression library v1.2.3
 - iconv v1.9.2
 - libxml2 v2.7.3
 
 C++ Dynamic application modeler: Relational Object Model
 All platforms:
-- zlib compression library v1.2.3
 - iconv v1.9.2
 - libxml2 v2.7.3 
 - libxslt v1.1.24 
@@ -45,7 +42,7 @@ Windows .NET tools:
 - Relation Object Model v1.0
 
 Silverlight Rules Engine and Relational Object Model
-- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  Silverlight v4.0 recommended and tested. Visual Studio 2010 project files provided.  Compiling apps with VS2010 will require end users to have .NET 4.0 and the VC2010 C++ runtime.
+- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  Silverlight v4.0 recommended and tested. Visual Studio 2010 project files provided.
 
 Adobe Flash/Actionscript Rules Engine and Relational Object Model
 - Just a wrapper for the Javascript libraries, interface similar to the .NET library.  However, overloading restrictions cause some function names to differ and in those cases are named similar to the javascript method.  Flash 10.1 tested.  FlashDevelop project files provided.
@@ -63,9 +60,8 @@ USE_JAVASCRIPT: enables javascript runtime scripting support in rules
 USE_WINDOWS_SCRIPTING: on windows when javascript support is enabled, uses the windows scripting host for processing instead of spidermonkey, thereby eliminating that dependency.
 POSIX: compliant (Linux) environments should enable this define
 DISABLE_DECISIONLOGIC_INTEGRATION: In the EDSEngine build, adding this define to a build will disable intergrated DeicisionLogic debugging over a TCP Socket connection.  It's a handy feature to keep around, but you can eliminate this boost library dependency if you wish.
-DISABLE_ZIP: In the EDSEngine build, adding this define to a build will disable support for gzipped xml files and remove the dependency on zlib.
 Windows:
-Visual Studio 2008 project files are included.  Configurations for both MSXML and libxml2 based builds are included, MSXML is recommended at this time.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.
+Visual Studio 2008/2010 project files are included.  Configurations for both MSXML and libxml2 based builds are included, MSXML is recommended at this time.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.  The projects also build fine with the Windows Platform SDK tools, v7 or 7.1.  Just use the included bat files in the trunk directory.  Make sure you have WXWIN and BOOST_ROOT path vairables set when building from the command line.
 
 Linux: (Ubuntu 9.10+)
 All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu has been tested.  A makefile and Code::Blocks project files are provided.
