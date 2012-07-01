@@ -50,7 +50,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHsc "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;..\zlib-1.2.3.win32\include&quot;;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\contrib\include&quot;"
+				AdditionalIncludeDirectories="&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\contrib\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				RuntimeLibrary="3"
