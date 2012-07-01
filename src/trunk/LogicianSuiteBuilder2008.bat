@@ -22,8 +22,8 @@ copy "EDSEngineNET\Release\*.dll" VC9 /y
 echo "EDSEngineNET build complete"
 
 echo "Building EDSEngineNETTestApp..."
-%MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp\EDSEngineNETTestApp2008.csproj" /t:clean,rebuild /p:Configuration="Debug"
-%MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp\EDSEngineNETTestApp2008.csproj" /t:clean,rebuild /p:Configuration="Release"
+%MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp2008\EDSEngineNETTestApp2008.csproj" /t:clean,rebuild /p:Configuration="Debug"
+%MSBUILD_PATH% "EDSEngineNET\EDSEngineNETTestApp2008\EDSEngineNETTestApp2008.csproj" /t:clean,rebuild /p:Configuration="Release"
 echo "EDSEngineNETTestApp build complete"
 
 echo "Building Relational Object Model..."
@@ -44,8 +44,8 @@ copy "ROMNET\Release\*.dll" VC9 /y
 echo "ROMNET build complete"
 
 echo "Building ROMNETTestApplication..."
-%MSBUILD_PATH% "ROMNET\ROMNETTestApplication\ROMNETTestApplication2008.csproj" /t:clean,rebuild /p:Configuration="Debug"
-%MSBUILD_PATH% "ROMNET\ROMNETTestApplication\ROMNETTestApplication2008.csproj" /t:clean,rebuild /p:Configuration="Release"
+%MSBUILD_PATH% "ROMNET\ROMNETTestApplication2008\ROMNETTestApplication2008.csproj" /t:clean,rebuild /p:Configuration="Debug"
+%MSBUILD_PATH% "ROMNET\ROMNETTestApplication2008\ROMNETTestApplication2008.csproj" /t:clean,rebuild /p:Configuration="Release"
 echo "ROMNETTestApplication build complete"
 
 echo "Building DecisionLogic..."
