@@ -740,6 +740,7 @@ void WorkerClass::AddTableToProject(wstring name, bool bCreateNew, bool bSystemT
 				LogicTable table;
 				table.CreateLogicTable(name);
 				table.Path = m_pm.GetProjectWorkingPath();
+				table.bGetAll = true;
 				if (table.Path[table.Path.length() - 1] != PATHSEP)
 					table.Path = table.Path + PATHSEP;
 				wstring subdir = m_gui->GetTreeNodePath(m_gui->GetActiveGroupName());
