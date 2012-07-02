@@ -10,7 +10,7 @@ All platforms:
 - libxml2 v2.7.3 
 - libxslt v1.1.24 
 - Python 2.6 (optional compile-time switch, disabled in default windows build configuration)
-- Mozilla Spidermonkey Javascript engine 1.8 (optional compile-time switch).  Windows can use the integrated Windows Scripting host instead.
+- Mozilla Spidermonkey Javascript engine 1.85 (optional compile-time switch).  Windows can use the integrated Windows Scripting host instead.
 Windows:
 - MSXML v6.0 (preferred build in lieu of libxml, libxslt, and iconv)
 
