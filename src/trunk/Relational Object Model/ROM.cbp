@@ -53,6 +53,9 @@
 		<Linker>
 			<Add library="libEDSEngine" />
 			<Add library="libuuid" />
+			<Add library="libxml2" />
+			<Add library="libxslt" />
+			<Add directory="/usr/lib/x86_64-linux-gnu" />
 		</Linker>
 		<Unit filename="LinearEngine.cpp" />
 		<Unit filename="LinearEngine.h" />

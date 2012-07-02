@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Release" />
+	<ActiveTarget name="Debug" />
 	<File name="CodeControl.cpp" open="1" top="0" tabpos="4">
 		<Cursor position="7638" topLine="127" />
 	</File>
 	<File name="CompileOptions.h" open="1" top="0" tabpos="6">
-		<Cursor position="2350" topLine="67" />
+		<Cursor position="2257" topLine="67" />
 	</File>
 	<File name="DecisionLogic.cpp" open="1" top="0" tabpos="3">
 		<Cursor position="20108" topLine="406" />
@@ -28,14 +28,14 @@
 	<File name="ProjectManager.cpp" open="0" top="0" tabpos="1">
 		<Cursor position="27718" topLine="0" />
 	</File>
-	<File name="ProjectManager.h" open="0" top="0" tabpos="0">
-		<Cursor position="3619" topLine="49" />
+	<File name="ProjectManager.h" open="1" top="1" tabpos="7">
+		<Cursor position="1477" topLine="11" />
 	</File>
 	<File name="StringTable.h" open="0" top="0" tabpos="0">
 		<Cursor position="1233" topLine="0" />
 	</File>
-	<File name="WorkerClass.cpp" open="1" top="1" tabpos="5">
-		<Cursor position="26592" topLine="1010" />
+	<File name="WorkerClass.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="1188" topLine="16" />
 	</File>
 	<File name="WorkerClass.h" open="0" top="0" tabpos="6">
 		<Cursor position="4212" topLine="78" />

@@ -50,14 +50,15 @@
 		<Linker>
 			<Add library="libxml2" />
 			<Add library="libxslt" />
-			<Add library="libpython2.6" />
+			<Add library="libmozjs185" />
+			<Add library="libboost_iostreams" />
 			<Add library="libboost_system-mt" />
-			<Add library="libboost_python-mt-py26" />
-			<Add library="libmozjs" />
-			<Add library="libuuid" />
+			<Add library="libpython2.7" />
+			<Add library="libboost_python-mt-py27" />
 			<Add library="libROM" />
 			<Add library="libEDSEngine" />
 			<Add directory="/usr/lib" />
+			<Add directory="/usr/lib/x86_64-linux-gnu" />
 		</Linker>
 		<Unit filename="ROMAppConsoleTest.cpp" />
 		<Unit filename="stdafx.cpp" />
