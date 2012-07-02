@@ -26,7 +26,7 @@ CFLAGS = -Wall `wx-config --cflags` -DPOSIX
 INCLUDES = -I/usr/include/libxml2 
 LDFLAGS = `wx-config --libs`  -s
 RCFLAGS = 
-LDLIBS = $(T_LDLIBS) -lstdc++ -lwx_baseu-2.8 -lwx_gtk2ud_stc-2.8 -lxml2
+LDLIBS = $(T_LDLIBS) -lstdc++ -lwx_baseu-2.8 -lwx_gtk2ud_stc-2.8 -lxml2 -lboost_iostreams
 
 LINK_exe = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)
 LINK_con = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)

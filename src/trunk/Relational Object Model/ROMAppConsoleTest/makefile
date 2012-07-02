@@ -23,10 +23,10 @@ CFLAGS_C = $(filter-out -include "sdk.h",$(CFLAGS))
 # MAKE_DEP = -MMD -MT $@ -MF $(@:.o=.d)
 
 CFLAGS = -Wall -DUSE_LIBXML -DUSE_JAVASCRIPT -DUSE_PYHTON -DCROSS_COMPILE -DPOSIX
-INCLUDES = -I/usr/include/libxml2 -I/usr/include/libxslt -I/usr/include/python2.6 -I/usr/local/include/js -I../../EDSEngine -I../
+INCLUDES = -I/usr/include/libxml2 -I/usr/include/libxslt -I/usr/include/python2.7 -I/usr/local/include/js -I../../EDSEngine -I../
 LDFLAGS = -L../bin/Release -L/../../EDSEngine/bin/Release -s
 RCFLAGS = 
-LDLIBS = $(T_LDLIBS) -lz -lxml2 -lxslt -lmozjs -lpython2.6 -lboost_system-mt -lboost_python-mt-py26 -luuid -lROM -lEDSEngine -lstdc++
+LDLIBS = $(T_LDLIBS) -lxml2 -lxslt -lmozjs185 -lpython2.7 -lboost_system-mt -lboost_python-mt-py27 -lROM -lEDSEngine -lstdc++
 
 LINK_exe = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)
 LINK_con = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)

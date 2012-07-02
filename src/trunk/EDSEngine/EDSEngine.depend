@@ -79,43 +79,43 @@
 	<libxml/xpath.h>
 	<libxml/xpathInternals.h>
 
-1260939219 /usr/include/libxml2/libxml/tree.h
+1337370724 /usr/include/libxml2/libxml/tree.h
 	<stdio.h>
 	<libxml/xmlversion.h>
 	<libxml/xmlstring.h>
 	<libxml/xmlregexp.h>
 	<libxml/xmlmemory.h>
 
-1260939219 /usr/include/libxml2/libxml/xmlversion.h
+1337370724 /usr/include/libxml2/libxml/xmlversion.h
 	<libxml/xmlexports.h>
 	<ansidecl.h>
 
-1260939219 /usr/include/libxml2/libxml/xmlexports.h
+1337370724 /usr/include/libxml2/libxml/xmlexports.h
 
-1260939219 /usr/include/libxml2/libxml/xmlstring.h
+1337370724 /usr/include/libxml2/libxml/xmlstring.h
 	<stdarg.h>
 	<libxml/xmlversion.h>
 
-1260939219 /usr/include/libxml2/libxml/xmlregexp.h
+1337370724 /usr/include/libxml2/libxml/xmlregexp.h
 	<libxml/xmlversion.h>
 	<libxml/tree.h>
 	<libxml/dict.h>
 
-1260939219 /usr/include/libxml2/libxml/dict.h
+1337370724 /usr/include/libxml2/libxml/dict.h
 	<libxml/xmlversion.h>
 	<libxml/tree.h>
 
-1260939219 /usr/include/libxml2/libxml/xmlmemory.h
+1337370724 /usr/include/libxml2/libxml/xmlmemory.h
 	<stdio.h>
 	<libxml/xmlversion.h>
 	<libxml/threads.h>
 	<libxml/globals.h>
 
-1260939219 /usr/include/libxml2/libxml/threads.h
+1337370724 /usr/include/libxml2/libxml/threads.h
 	<libxml/xmlversion.h>
 	<libxml/globals.h>
 
-1260939219 /usr/include/libxml2/libxml/globals.h
+1337370724 /usr/include/libxml2/libxml/globals.h
 	<libxml/xmlversion.h>
 	<libxml/parser.h>
 	<libxml/xmlerror.h>
@@ -124,7 +124,7 @@
 	<libxml/xmlmemory.h>
 	<libxml/threads.h>
 
-1260939219 /usr/include/libxml2/libxml/parser.h
+1337370724 /usr/include/libxml2/libxml/parser.h
 	<stdarg.h>
 	<libxml/xmlversion.h>
 	<libxml/tree.h>
@@ -138,12 +138,12 @@
 	<libxml/xmlIO.h>
 	<libxml/globals.h>
 
-1260939219 /usr/include/libxml2/libxml/hash.h
+1337370724 /usr/include/libxml2/libxml/hash.h
 	<libxml/xmlversion.h>
 	<libxml/parser.h>
 	<libxml/dict.h>
 
-1260939219 /usr/include/libxml2/libxml/valid.h
+1337370724 /usr/include/libxml2/libxml/valid.h
 	<libxml/xmlversion.h>
 	<libxml/xmlerror.h>
 	<libxml/tree.h>
@@ -151,27 +151,28 @@
 	<libxml/xmlautomata.h>
 	<libxml/xmlregexp.h>
 
-1260939219 /usr/include/libxml2/libxml/xmlerror.h
+1337370724 /usr/include/libxml2/libxml/xmlerror.h
 	<libxml/parser.h>
 
-1260939219 /usr/include/libxml2/libxml/list.h
+1337370724 /usr/include/libxml2/libxml/list.h
 	<libxml/xmlversion.h>
 
-1260939219 /usr/include/libxml2/libxml/xmlautomata.h
+1337370724 /usr/include/libxml2/libxml/xmlautomata.h
 	<libxml/xmlversion.h>
 	<libxml/tree.h>
 	<libxml/xmlregexp.h>
 
-1260939219 /usr/include/libxml2/libxml/entities.h
+1337370724 /usr/include/libxml2/libxml/entities.h
 	<libxml/xmlversion.h>
 	<libxml/tree.h>
 
-1260939219 /usr/include/libxml2/libxml/encoding.h
+1337370724 /usr/include/libxml2/libxml/encoding.h
 	<libxml/xmlversion.h>
 	<iconv.h>
+	<unicode/ucnv.h>
 	<libxml/tree.h>
 
-1260939219 /usr/include/libxml2/libxml/xmlIO.h
+1337370724 /usr/include/libxml2/libxml/xmlIO.h
 	<stdio.h>
 	<libxml/xmlversion.h>
 	<libxml/globals.h>
@@ -179,31 +180,31 @@
 	<libxml/parser.h>
 	<libxml/encoding.h>
 
-1260939219 /usr/include/libxml2/libxml/SAX.h
+1337370724 /usr/include/libxml2/libxml/SAX.h
 	<stdio.h>
 	<stdlib.h>
 	<libxml/xmlversion.h>
 	<libxml/parser.h>
 	<libxml/xlink.h>
 
-1260939219 /usr/include/libxml2/libxml/xlink.h
+1337370724 /usr/include/libxml2/libxml/xlink.h
 	<libxml/xmlversion.h>
 	<libxml/tree.h>
 
-1260939219 /usr/include/libxml2/libxml/SAX2.h
+1337370724 /usr/include/libxml2/libxml/SAX2.h
 	<stdio.h>
 	<stdlib.h>
 	<libxml/xmlversion.h>
 	<libxml/parser.h>
 	<libxml/xlink.h>
 
-1260939219 /usr/include/libxml2/libxml/xpath.h
+1337370724 /usr/include/libxml2/libxml/xpath.h
 	<libxml/xmlversion.h>
 	<libxml/xmlerror.h>
 	<libxml/tree.h>
 	<libxml/hash.h>
 
-1260939219 /usr/include/libxml2/libxml/xpathInternals.h
+1337370724 /usr/include/libxml2/libxml/xpathInternals.h
 	<libxml/xmlversion.h>
 	<libxml/xpath.h>
 
@@ -329,4 +330,177 @@
 	<stdlib.h>
 	<stdio.h>
 	"jscustomallocator.h"
+
+1341125007 source:/home/eric/Development/Logician/src/trunk/EDSEngine/Bimapper.cpp
+	"stdafx.h"
+	"Bimapper.h"
+
+1341125007 /home/eric/Development/Logician/src/trunk/EDSEngine/stdafx.h
+	<windows.h>
+	<string>
+	<iostream>
+	<sstream>
+	<stdexcept>
+
+1341125007 /home/eric/Development/Logician/src/trunk/EDSEngine/Bimapper.h
+	<hash_map>
+	<ext/hash_map>
+	<tr1/functional>
+
+1341125007 source:/home/eric/Development/Logician/src/trunk/EDSEngine/Decode.cpp
+	"stdafx.h"
+	"Decode.h"
+	"utilities.h"
+
+1341125007 /home/eric/Development/Logician/src/trunk/EDSEngine/Decode.h
+	<string>
+	"Bimapper.h"
+	"RuleCell.h"
+
+1341125007 /home/eric/Development/Logician/src/trunk/EDSEngine/RuleCell.h
+
+1341125007 /home/eric/Development/Logician/src/trunk/EDSEngine/utilities.h
+	<string>
+	<vector>
+	"XMLWrapper.h"
+
+1341125007 /home/eric/Development/Logician/src/trunk/EDSEngine/XMLWrapper.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<assert.h>
+	<libxml/tree.h>
+	<libxml/parser.h>
+	<libxml/xpath.h>
+	<libxml/xpathInternals.h>
+
+1341125007 source:/home/eric/Development/Logician/src/trunk/EDSEngine/EDSEngine.cpp
+	"stdafx.h"
+
+1341128686 source:/home/eric/Development/Logician/src/trunk/EDSEngine/KnowledgeBase.cpp
+	"stdafx.h"
+	"KnowledgeBase.h"
+	"utilities.h"
+	<vector>
+	<algorithm>
+	<cstdio>
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<wchar.h>
+	<string>
+	<boost/asio.hpp>
+	<boost/python.hpp>
+	<fstream>
+	<iostream>
+	<boost/iostreams/filtering_streambuf.hpp>
+	<boost/iostreams/copy.hpp>
+	<boost/iostreams/filter/gzip.hpp>
+	<direct.h>
+	<jsapi.h>
+
+1341125007 /home/eric/Development/Logician/src/trunk/EDSEngine/KnowledgeBase.h
+	"stdafx.h"
+	<string>
+	"RuleTable.h"
+	"TableSet.h"
+	"XMLWrapper.h"
+	<comutil.h>
+
+1341125007 /home/eric/Development/Logician/src/trunk/EDSEngine/RuleTable.h
+	<vector>
+	<string>
+	<map>
+	<set>
+	"Bimapper.h"
+	"RuleCell.h"
+
+1341125007 /home/eric/Development/Logician/src/trunk/EDSEngine/TableSet.h
+	<string>
+	<map>
+	"RuleTable.h"
+
+1301598516 /usr/include/js/jsapi.h
+	<stddef.h>
+	<stdio.h>
+	"js-config.h"
+	"jspubtd.h"
+	"jsutil.h"
+
+1325880962 /usr/include/js/js-config.h
+
+1301598516 /usr/include/js/jspubtd.h
+	"jstypes.h"
+	"jscompat.h"
+	"jsval.h"
+	"jsproto.tbl"
+
+1301598516 /usr/include/js/jstypes.h
+	<stddef.h>
+	"js-config.h"
+	"jscpucfg.h"
+	"jsautocfg.h"
+	"jsinttypes.h"
+	"jsotypes.h"
+
+1325880969 /usr/include/js/jsautocfg.h
+
+1301598516 /usr/include/js/jsinttypes.h
+	"js-config.h"
+	<stdint.h>
+	<sys/types.h>
+	<stddef.h>
+	<crtdefs.h>
+
+1301598516 /usr/include/js/jsotypes.h
+	<SupportDefs.h>
+	<sys/types.h>
+	<sys/inttypes.h>
+
+1301598516 /usr/include/js/jscompat.h
+	"jstypes.h"
+	"jslong.h"
+
+1301598516 /usr/include/js/jslong.h
+	"jstypes.h"
+
+1301598516 /usr/include/js/jsval.h
+	"jsutil.h"
+
+1301598516 /usr/include/js/jsutil.h
+	"jstypes.h"
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+	"jscustomallocator.h"
+
+1301598516 /usr/include/js/jsproto.tbl
+	"jsversion.h"
+
+1301598516 /usr/include/js/jsversion.h
+
+1341125007 source:/home/eric/Development/Logician/src/trunk/EDSEngine/RuleTable.cpp
+	"stdafx.h"
+	"RuleTable.h"
+	"Decode.h"
+	<set>
+	<algorithm>
+	<list>
+	<string>
+	"utilities.h"
+
+1341125007 source:/home/eric/Development/Logician/src/trunk/EDSEngine/TableSet.cpp
+	"stdafx.h"
+	"TableSet.h"
+	"RuleTable.h"
+	"utilities.h"
+	<algorithm>
+
+1341125007 source:/home/eric/Development/Logician/src/trunk/EDSEngine/stdafx.cpp
+	"stdafx.h"
+
+1341125007 source:/home/eric/Development/Logician/src/trunk/EDSEngine/utilities.cpp
+	"stdafx.h"
+	"utilities.h"
+	<sstream>
 

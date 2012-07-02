@@ -23,10 +23,10 @@ CFLAGS_C = $(filter-out -include "sdk.h",$(CFLAGS))
 # MAKE_DEP = -MMD -MT $@ -MF $(@:.o=.d)
 
 CFLAGS = -Wall -DUSE_LIBXML -DUSE_PYTHON -DUSE_JAVASCRIPT -DCROSS_COMPILE 
-INCLUDES = -I/usr/include/libxml2 -I/usr/include/python2.6 -I/usr/local/include/js 
+INCLUDES = -I/usr/include/libxml2 -I/usr/include/python2.7 -I/usr/include/js 
 LDFLAGS = -s
 RCFLAGS = 
-LDLIBS = $(T_LDLIBS) -llibz -llibxml2 -llibmozjs  -lstdc++
+LDLIBS = $(T_LDLIBS) -llibxml2 -llibmozjs -lboost_iostreams -lstdc++
 
 LINK_exe = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)
 LINK_con = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)

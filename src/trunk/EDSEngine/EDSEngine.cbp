@@ -45,13 +45,15 @@
 			<Add directory="C:/Python26/include" />
 			<Add directory="/usr/include/libxml2" />
 			<Add directory="/usr/include/python2.6" />
-			<Add directory="/usr/local/include/js" />
+			<Add directory="/usr/include/js" />
+			<Add directory="/usr/include/python2.7" />
 		</Compiler>
 		<Linker>
-			<Add library="libz" />
 			<Add library="libxml2" />
-			<Add library="libmozjs" />
+			<Add library="libmozjs185" />
+			<Add library="libboost_iostreams" />
 			<Add directory="C:/msys/1.0/local/lib" />
+			<Add directory="/usr/lib/x86_64-linux-gnu" />
 		</Linker>
 		<Unit filename="Bimapper.cpp" />
 		<Unit filename="Bimapper.h" />

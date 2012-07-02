@@ -84,7 +84,7 @@ EDS::CKnowledgeBase::CKnowledgeBase()
 #endif
 }
 
-void EDS::CKnowledgeBase::SetDebugHandler(DebugHandler debugger) 
+void EDS::CKnowledgeBase::SetDebugHandler(DebugHandler debugger)
 {
 	m_DebugHandlerPtr = debugger;
 }
@@ -97,7 +97,7 @@ void EDS::CKnowledgeBase::GenerateDebugMessages(bool bGenerate)
 		m_LastDebugMessage.clear();
 }
 
-wstring EDS::CKnowledgeBase::GetDebugMessages() 
+wstring EDS::CKnowledgeBase::GetDebugMessages()
 {
 	return m_LastDebugMessage;
 	m_LastDebugMessage.clear();
@@ -379,12 +379,16 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 
 						if (rval != NULL && ok)
 						{
-							char* s = JS_GetStringBytes(JSVAL_TO_STRING(rval));
+						    JSString* jstr = JSVAL_TO_STRING(rval);
+						    size_t jstrlen = 0;
+							const char* s = (const char*)JS_GetStringCharsAndLength(cx, jstr, &jstrlen);
 							val = MBCStrToWStr(s);
 						}
 						if (stateval != NULL && ok2)
 						{
-							char* s = JS_GetStringBytes(JSVAL_TO_STRING(stateval));
+						    JSString* jstr = JSVAL_TO_STRING(stateval);
+						    size_t jstrlen = 0;
+							const char* s = (const char*)JS_GetStringCharsAndLength(cx, jstr, &jstrlen);
 							m_StateParameter = MBCStrToWStr(s);
 						}
 
@@ -530,7 +534,7 @@ wstring EDS::CKnowledgeBase::GetFirstTableResult(wstring tableName, wstring outp
 	vector<wstring> retAll = EvaluateTable(tableName, outputAttr);
 	if (retAll.size() > 0)
 		retval = retAll[0];
-		
+
 	return retval;
 }
 
@@ -743,7 +747,7 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 	bool retval = false;
 	vector<wstring> FormulaInputs;
 	m_IsOpen = true;
-#ifdef USE_MSXML	
+#ifdef USE_MSXML
 	Node TablesNode = xmlDocument->selectSingleNode("//Tables");
 	wstring debug = VariantToWStr(TablesNode->attributes->getNamedItem("debug")->nodeValue);
 	wstring debugTables = VariantToWStr(TablesNode->attributes->getNamedItem("debugtables")->nodeValue);
@@ -841,7 +845,7 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 		m_jsCode = nodeJS->Gettext() + L"\n";
 	if (nodePY != NULL)
 		m_pyCode = nodePY->Gettext() + L"\n";
-	
+
 #endif
 
 #ifdef USE_LIBXML
@@ -860,7 +864,7 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 		{
 			m_DEBUGGING_CON = con;
 		}
-		
+
 		if (debugTables.length() > 0)
 			m_DebugTables = EDSUTIL::Split(debugTables, L",");
 	}
@@ -978,7 +982,7 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 		m_jsCode = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0])) + L"\n";
 	if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathPY->nodesetval->nodeNr == 1)
 		m_pyCode = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0])) + L"\n";
-	
+
 	xmlXPathFreeObject(xpathJS);
 	xmlXPathFreeObject(xpathPY);
 	xmlXPathFreeObject(xpathTables);
@@ -1051,8 +1055,8 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 		{
 			unzippedFileName = wsFileName;
 		}
-		
-		
+
+
 		//parse the table from xml
 		#ifdef USE_MSXML
 			Document	xmlDocument;
@@ -1073,7 +1077,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 				if (ok)
 				{
 					retval = _parseXML(xmlDocument);
-				}					
+				}
 			}
 			catch(const _com_error& e)
 			{
@@ -1323,7 +1327,7 @@ map<string, vector<string> > EDS::CKnowledgeBase::ReverseEvaluateTable(string ta
 	return retval;
 }
 
-string EDS::CKnowledgeBase::GetEvalParameterA() 
+string EDS::CKnowledgeBase::GetEvalParameterA()
 {
 	return WStrToMBCStr(m_StateParameter);
 }
