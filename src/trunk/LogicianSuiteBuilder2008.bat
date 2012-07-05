@@ -27,14 +27,14 @@ echo "Building EDSEngineNETTestApp..."
 echo "EDSEngineNETTestApp build complete"
 
 echo "Building Relational Object Model..."
-%MSBUILD_PATH% "Relational Object Model\Relational Object Model.vcproj" /t:clean,rebuild /p:Configuration="Debug MSXML"
-%MSBUILD_PATH% "Relational Object Model\Relational Object Model.vcproj" /t:clean,rebuild /p:Configuration="Release MSXML"
-copy "Relational Object Model\Release MSXML\*.lib" VC9 /y
+%MSBUILD_PATH% "RelationalObjectModel\Relational Object Model.vcproj" /t:clean,rebuild /p:Configuration="Debug MSXML"
+%MSBUILD_PATH% "RelationalObjectModel\Relational Object Model.vcproj" /t:clean,rebuild /p:Configuration="Release MSXML"
+copy "RelationalObjectModel\Release MSXML\*.lib" VC9 /y
 echo "Relational Object Model build complete"
 
 echo "Building ROMAppConsoleTest..."
-%MSBUILD_PATH% "Relational Object Model\ROMAppConsoleTest\ROMAppConsoleTest.vcproj" /t:clean,rebuild /p:Configuration="Debug MSXML"
-%MSBUILD_PATH% "Relational Object Model\ROMAppConsoleTest\ROMAppConsoleTest.vcproj" /t:clean,rebuild /p:Configuration="Release MSXML"
+%MSBUILD_PATH% "RelationalObjectModel\ROMAppConsoleTest\ROMAppConsoleTest.vcproj" /t:clean,rebuild /p:Configuration="Debug MSXML"
+%MSBUILD_PATH% "RelationalObjectModel\ROMAppConsoleTest\ROMAppConsoleTest.vcproj" /t:clean,rebuild /p:Configuration="Release MSXML"
 echo "ROMAppConsoleTest build complete"
 
 echo "Building ROMNET..."
