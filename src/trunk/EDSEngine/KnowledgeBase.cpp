@@ -49,6 +49,13 @@ using boost::asio::ip::tcp;
     using namespace MSScriptControl;
     #else
     #include <jsapi.h> //Mozilla SpiderMonkey
+static JSClass global_class = {
+    "global", JSCLASS_GLOBAL_FLAGS,
+    JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
+    JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub,
+    JSCLASS_NO_OPTIONAL_MEMBERS
+};
+
     #endif
 #endif
 
@@ -340,7 +347,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 						/* JS variables. */
 						JSRuntime *rt;
 						JSContext *cx;
-						JSObject  *global;
+                        JSObject  *global;
 
 						/* Create a JS runtime. */
 						rt = JS_NewRuntime(8L * 1024L * 1024L);
@@ -352,13 +359,15 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 						if (cx == NULL)
 							throw;
 						JS_SetOptions(cx, JSOPTION_VAROBJFIX);
-						JS_SetVersion(cx, JSVERSION_DEFAULT);
+                        JS_SetVersion(cx, JSVERSION_DEFAULT);
 						//JS_SetErrorReporter(cx, reportError);
 
+                        JS_BeginRequest(cx);
+
 						/* Create the global object. */
-						global = JS_NewObject(cx, NULL, NULL, NULL);
+                        global = JS_NewCompartmentAndGlobalObject(cx, &global_class, NULL);
 						if (global == NULL)
-							throw;
+                            throw;
 
 						/* Populate the global object with the standard globals,
 						   like Object and Array. */
@@ -379,16 +388,14 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 
 						if (rval != NULL && ok)
 						{
-						    JSString* jstr = JSVAL_TO_STRING(rval);
-						    size_t jstrlen = 0;
-							const char* s = (const char*)JS_GetStringCharsAndLength(cx, jstr, &jstrlen);
+                            JSString* jstr = JS_ValueToString(cx, rval);
+                            const char* s = (const char*)JS_EncodeString(cx, jstr);
 							val = MBCStrToWStr(s);
 						}
 						if (stateval != NULL && ok2)
 						{
-						    JSString* jstr = JSVAL_TO_STRING(stateval);
-						    size_t jstrlen = 0;
-							const char* s = (const char*)JS_GetStringCharsAndLength(cx, jstr, &jstrlen);
+                            JSString* jstr = JS_ValueToString(cx, stateval);
+                            const char* s = (const char*)JS_EncodeString(cx, jstr);
 							m_StateParameter = MBCStrToWStr(s);
 						}
 
@@ -1027,8 +1034,14 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 		if (wsExtension == L"gz")
 		{
 			//get the directory to extract files to
-			char * pcPath;
+            char * pcPath = NULL;
+#ifdef POSIX
+            pcPath = getenv("TMPDIR");
+            if (pcPath == NULL)
+                pcPath = P_tmpdir;
+#else
 			pcPath = getenv("TEMP");
+#endif
 			unzippedFileName = MBCStrToWStr(pcPath);
 
 			file_name = knowledge_file.substr(knowledge_file.find_last_of(pathSep) + 1);
