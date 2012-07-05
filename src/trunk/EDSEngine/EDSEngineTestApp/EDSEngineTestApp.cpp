@@ -83,7 +83,8 @@ void DebugMessage(wstring msg)
 	Log(L"DEBUGGER: " + msg);
 }
 
-int main(int argc, char* argv[])
+int main()
+//int main(int argc, char* argv[])
 {
 	//Loading
 	TestResult res;
