@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="Relational Object Model"
+	Name="RelationalObjectModel"
 	ProjectGUID="{D246970C-C067-4F64-9BF2-47335A1F49F5}"
 	RootNamespace="Relational Object Model"
 	Keyword="Win32Proj"

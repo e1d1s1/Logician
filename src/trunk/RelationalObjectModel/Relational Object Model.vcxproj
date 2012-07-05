@@ -30,6 +30,7 @@
     <ProjectGuid>{D246970C-C067-4F64-9BF2-47335A1F49F5}</ProjectGuid>
     <RootNamespace>Relational Object Model</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>RelationalObjectModel</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release MSXML|Win32'" Label="Configuration">
