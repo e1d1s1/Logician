@@ -18,6 +18,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 #include "stdafx.h"
 #include "utilities.h"
 #include <sstream>
+#include <cstdlib>
 
 using namespace std;
 
