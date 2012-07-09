@@ -1,8 +1,11 @@
-v1.0.7 - TBD
+v1.1.0 - 7/9/2012
+Updated Mozilla Javascript engine linkage to version 1.8.5, Python 2.7, boost 1.48, libxml2 2.7.8, and libxslt 1.1.26.
+Updated Linux builds for compatablility with Ubuntu 12.
 Removed dependencies on zlib and win32 calls for UUID generation.  These features are now handled by the boost C++ libraries for all platforms.  This fixes issues with mixed mode debugging under VS2008.
 New tables in DecisionLogic will default to "GetAll" style.
+Fixed the wording of the Remove/Delete table prompts.
 
-v1.0.6 - 6/27/2010
+v1.0.6 - 6/27/2012
 Fixed issue with boolean enabled/disabled property not set correctly after reset: #3538455
 Fixed file overwrite problem in DecisionLogic when inserting an existing table file: #3538557 
 Table with no inputs always behaves as GetAll regardless of selected behavior: #3538577
