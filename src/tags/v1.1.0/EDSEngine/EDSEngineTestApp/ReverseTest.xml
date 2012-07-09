@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="ReverseTest" getall="false">
+    <Inputs>
+      <Attr>Color1</Attr>
+      <Value operation="1">red</Value>
+      <Value operation="1">blue</Value>
+      <Value operation="1">red</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Inputs>
+      <Attr>Color2</Attr>
+      <Value operation="1">yellow</Value>
+      <Value operation="1">yellow</Value>
+      <Value operation="1">blue</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>OutColor</Attr>
+      <Value operation="1">orange</Value>
+      <Value operation="1">green</Value>
+      <Value operation="1">purple</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>
