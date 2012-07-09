@@ -39,7 +39,7 @@
 #include "folder.xpm"
 #include "folder_open.xpm"
 
-#define VERSION "1.0.6"
+#define VERSION "1.1.0"
 
 //Icon
 #if !defined(__WXMSW__) && !defined(__WXPM__)
@@ -304,10 +304,10 @@ DecisionLogicFrame::DecisionLogicFrame(const wxString& title)
 	tableMenu->Append(DecisionLogic_NewTable, _T("New &Table"), _T("Create a new logic table"));
 	tableMenu->Append(DecisionLogic_InsertTable, _T("&Insert Table"), _T("Insert existing table from disk"));
 	tableMenu->Append(DecisionLogic_RenameTable, _T("&Rename Table"), _T("Rename current logic table"));
-	tableMenu->Append(DecisionLogic_DeleteTable, _T("&Delete Table"), _T("Delete logic table"));
+	tableMenu->Append(DecisionLogic_DeleteTable, _T("Remo&ve Table"), _T("Remove logic table"));
 	tableMenu->Append(DecisionLogic_NewGroup, _T("New &Group"), _T("Create a new table group"));
 	tableMenu->Append(DecisionLogic_RenameGroup, _T("Ren&ame Group"), _T("Rename current table group"));
-	tableMenu->Append(DecisionLogic_DeleteGroup, _T("D&elete Group"), _T("Delete a table group"));
+	tableMenu->Append(DecisionLogic_DeleteGroup, _T("Remove Grou&p"), _T("Remove a table group"));
 	wxMenu *orientationMenu = new wxMenu();
 	tableMenu->AppendSubMenu(orientationMenu, _T("&Orientation"));
 	orientationMenu->AppendRadioItem(DecisionLogic_OrientationHorizontal, _T("&Horizontal"), _T("Horizontal orientaion of tables"));
@@ -1052,14 +1052,14 @@ void DecisionLogicFrame::OnTreeContextMenu(wxTreeEvent &event)
 		m_gui->SetActiveGroup(m_gui->GetTreeNodePath((void*)cur_sel.m_pItem));
 		if (m_tree->GetItemImage(cur_sel) == TreeCtrlIcon_File)
 		{
-			popupMenu.Append(DecisionLogic_DeleteTable, _T("Delete Table"));
+			popupMenu.Append(DecisionLogic_DeleteTable, _T("Remove Table"));
 			popupMenu.Append(DecisionLogic_RenameTable, _T("Rename Table"));
 		}
 		else if (m_tree->GetRootItem() != cur_sel)
 		{
 			popupMenu.Append(DecisionLogic_NewTable, _T("New Table"));
 			popupMenu.Append(DecisionLogic_NewGroup, _T("New Group"));
-			popupMenu.Append(DecisionLogic_DeleteGroup, _T("Delete Group"));
+			popupMenu.Append(DecisionLogic_DeleteGroup, _T("Remove Group"));
 			popupMenu.Append(DecisionLogic_RenameGroup, _T("Rename Group"));
 		}
 		else if (m_tree->GetRootItem() == cur_sel)
