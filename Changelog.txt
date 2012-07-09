@@ -3,7 +3,8 @@ Updated Mozilla Javascript engine linkage to version 1.8.5, Python 2.7, boost 1.
 Updated Linux builds for compatablility with Ubuntu 12.
 Removed dependencies on zlib and win32 calls for UUID generation.  These features are now handled by the boost C++ libraries for all platforms.  This fixes issues with mixed mode debugging under VS2008.
 New tables in DecisionLogic will default to "GetAll" style.
-Fixed the wording of the Remove/Delete table prompts.
+Fixed the wording of the Remove/Delete DecisionLogic table prompts.
+Fixed some build paths and library names to remove whitespace for Linux build compatablity.
 
 v1.0.6 - 6/27/2012
 Fixed issue with boolean enabled/disabled property not set correctly after reset: #3538455
