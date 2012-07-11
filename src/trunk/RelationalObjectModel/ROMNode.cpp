@@ -230,7 +230,7 @@ bool ROMNode::DestroyROMObject()
 	m_nodeValues.clear();
 	m_id.clear();
 	m_parent = NULL;
-	m_bChanged = false;
+	m_bChanged = true;
 	//trigger downstream destructors
 	for (long i = m_children.size() - 1; i >= 0; i--)
 	{
@@ -463,8 +463,8 @@ bool ROMNode::RemoveAttribute(wstring id, wstring name)
 				retval = true;
 			}
 		}
-	}
-	m_bChanged = retval;
+		m_bChanged = retval;
+	}	
 
 	return retval;
 }

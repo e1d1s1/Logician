@@ -1365,7 +1365,7 @@ void ProjectManager::WriteAllDataSetsToXMLFile(wstring savePath)
 				//status, we will skip these rules
 				StringTable<wstring> status = ds.GetTableCopy(UTILS::ToWString(STATUS_TABLE));
 
-				for (long ruleCnt = status.Columns() - 1; ruleCnt > 0 ; ruleCnt--)
+				for (long ruleCnt = status.Columns() - 1; ruleCnt >= 0 ; ruleCnt--)
 				{
 					if (status.GetItem(0, ruleCnt) == L"Disabled")
 					{
