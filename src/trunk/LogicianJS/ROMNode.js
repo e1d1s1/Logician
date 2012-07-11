@@ -814,8 +814,8 @@ function ROMNode(id) {
                         retval = true;
                     }
                 }
-            }
-            this.m_bChanged = retval;
+                this.m_bChanged = retval;
+            }            
         }
         catch (err) {
             ReportError(err);
