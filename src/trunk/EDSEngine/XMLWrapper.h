@@ -35,16 +35,17 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 #endif
 
 #ifdef USE_MSXML
+	#include <atlbase.h>
 	#import "msxml6.dll"
 
 	using namespace MSXML2;
-	typedef MSXML2::IXMLDOMAttributePtr Attribute;
-	typedef MSXML2::IXMLDOMNodePtr Node;
-	typedef MSXML2::IXMLDOMNodeListPtr NodeList;
-	typedef MSXML2::IXMLDOMDocument2Ptr Document;
-	typedef MSXML2::IXMLDOMElementPtr Element;
-	typedef MSXML2::IXMLDOMNamedNodeMapPtr NamedNodeMap;
-	typedef MSXML2::IXMLDOMProcessingInstructionPtr ProcessingInstruction;
+	typedef CComPtr<MSXML2::IXMLDOMAttribute> Attribute;
+	typedef CComPtr<MSXML2::IXMLDOMNode> Node;
+	typedef CComPtr<MSXML2::IXMLDOMNodeList> NodeList;
+	typedef CComPtr<MSXML2::IXMLDOMDocument2> Document;
+	typedef CComPtr<MSXML2::IXMLDOMElement> Element;
+	typedef CComPtr<MSXML2::IXMLDOMNamedNodeMap> NamedNodeMap;
+	typedef CComPtr<MSXML2::IXMLDOMProcessingInstruction> ProcessingInstruction;
 
 	#define X(str) _bstr_t(str)
 #endif
