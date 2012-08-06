@@ -706,7 +706,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 #ifdef USE_MSXML
 	Document	xmlDocument;
 	xmlDocument = NULL;
-	xmlDocument.CreateInstance(L"MSXML2.DOMDocument.6.0");
+	xmlDocument.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
 	xmlDocument->async = VARIANT_FALSE;
 	xmlDocument->resolveExternals = VARIANT_FALSE;
 	xmlDocument->setProperty("SelectionLanguage", "XPath");
@@ -1074,7 +1074,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 		#ifdef USE_MSXML
 			Document	xmlDocument;
 			xmlDocument = NULL;
-			xmlDocument.CreateInstance(L"MSXML2.DOMDocument.6.0");
+			xmlDocument.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
 			xmlDocument->async = VARIANT_FALSE;
 			xmlDocument->resolveExternals = VARIANT_FALSE;
 			xmlDocument->setProperty("SelectionLanguage", "XPath");
@@ -1175,7 +1175,8 @@ vector<pair<wstring, vector<CRuleCell> > > EDS::CKnowledgeBase::GetTableRowFromX
 					}
 				}
 
-				Attribute operNode = currentValue->attributes->getNamedItem("operation");
+				Node operNode = NULL;
+				operNode = currentValue->Getattributes()->getNamedItem("operation");
 				wstring wsOper = L"";
 				long lOper = 0;
 				if (operNode != NULL)
