@@ -1,3 +1,6 @@
+v1.1.2 - 8/15/2012
+Fixed problem with reserved character #, it should only be reserved for edit attribute types: #3558119
+
 v1.1.1 - 7/10/2012
 Fixed DecisionLogic not allowing disable of first table rule in compiled output: #3542354 
 Fixed ROM SaveXML not outputting correctly after a call to RemoveAttribute: #3542353
