@@ -67,7 +67,7 @@ namespace ROM
 		void SetTouchedByUser(wstring dictAttrName);
 		void RemoveTouchedByUser(wstring dictAttrName);
 		void LoadTrackingAttrs();
-		vector<wstring> ParseOutPrefixes(vector<wstring> values, vector<wstring> &valuesWithoutPrefixes); //remove the special character flags from the values
+		vector<wstring> ParseOutPrefixes(int AttributeType, vector<wstring> values, vector<wstring> &valuesWithoutPrefixes); //remove the special character flags from the values
 		vector<wstring> GetSelectedValues(ROMDictionaryAttribute* attr);
 		void ResetValueChanged();		
 

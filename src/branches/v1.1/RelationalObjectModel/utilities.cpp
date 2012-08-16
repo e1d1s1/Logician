@@ -72,6 +72,16 @@ bool ROMUTIL::StringContains(wstring source, wstring target)
 	return retval;
 }
 
+bool ROMUTIL::StringBeginsWith(wstring source, wstring target)
+{
+	bool retval = false;
+
+	if (source.find(target, 0) == 0)
+		retval = true;
+
+	return retval;
+}
+
 vector<string> ROMUTIL::Split(string text, string separators)
 {
 	vector<string> retval;
