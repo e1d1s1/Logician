@@ -38,6 +38,7 @@ namespace ROMUTIL
 	string FindAndReplace (const string& source, const string target, const string replacement);
 	wstring FindAndReplace (const wstring& source, const wstring target, const wstring replacement);
 	bool StringContains(wstring source, wstring target);
+	bool StringBeginsWith(wstring source, wstring target);
 	vector<string> Split(string text, string separators);
 	vector<wstring> Split(wstring text, wstring separators);
 		bool StringIsNumeric(wstring s);
