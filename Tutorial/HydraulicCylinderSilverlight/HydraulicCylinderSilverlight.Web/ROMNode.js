@@ -117,6 +117,35 @@ function MakeGUID() {
         ReportError(err);
     }
 }
+
+var xml_special_to_escaped_one_map = {
+'&': '&amp;',
+'"': '&quot;',
+'\'': '&apos;',
+'<': '&lt;',
+'>': '&gt;'
+};
+
+var escaped_one_to_xml_special_map = {
+'&amp;': '&',
+'&quot;': '"',
+'&apos;': '\'',
+'&lt;': '<',
+'&gt;': '>'
+};
+
+function encodeXml(string) {
+    return string.replace(/([\&"<>])/g, function(str, item) {
+        return xml_special_to_escaped_one_map[item];
+    });
+}
+
+function decodeXml(string) {
+    return string.replace(/(&quot;|&lt;|&gt;|&amp;)/g, function(str, item) {
+            return escaped_one_to_xml_special_map[item];
+    });
+}
+
 // flash support //////////////////////////////////////////////////////////////
 var ActiveROMObjects = new Array(); //for flash access, guid keyed objects
 var ActiveROMDictionaryAttributes = new Array();
@@ -1248,7 +1277,7 @@ function ROMNode(id) {
                         for (var itValue in this.m_attrs[it]) {
                             attrObject += itValue;
                             attrObject += "=\"";
-                            attrObject += this.m_attrs[it][itValue];
+                            attrObject += encodeXml(this.m_attrs[it][itValue]);
                             attrObject += "\" ";
                         }
                         attrObject += "/>";
