@@ -117,6 +117,35 @@ function MakeGUID() {
         ReportError(err);
     }
 }
+
+var xml_special_to_escaped_one_map = {
+'&': '&amp;',
+'"': '&quot;',
+'\'': '&apos;',
+'<': '&lt;',
+'>': '&gt;'
+};
+
+var escaped_one_to_xml_special_map = {
+'&amp;': '&',
+'&quot;': '"',
+'&apos;': '\'',
+'&lt;': '<',
+'&gt;': '>'
+};
+
+function encodeXml(string) {
+    return string.replace(/([\&"<>])/g, function(str, item) {
+        return xml_special_to_escaped_one_map[item];
+    });
+}
+
+function decodeXml(string) {
+    return string.replace(/(&quot;|&lt;|&gt;|&amp;)/g, function(str, item) {
+            return escaped_one_to_xml_special_map[item];
+    });
+}
+
 // flash support //////////////////////////////////////////////////////////////
 var ActiveROMObjects = new Array(); //for flash access, guid keyed objects
 var ActiveROMDictionaryAttributes = new Array();
@@ -1248,7 +1277,7 @@ function ROMNode(id) {
                         for (var itValue in this.m_attrs[it]) {
                             attrObject += itValue;
                             attrObject += "=\"";
-                            attrObject += this.m_attrs[it][itValue];
+                            attrObject += encodeXml(this.m_attrs[it][itValue]);
                             attrObject += "\" ";
                         }
                         attrObject += "/>";
@@ -2004,7 +2033,7 @@ function LinearEngine(context, dictionaryTable) {
                 var res = this.base.m_context.EvaluateTableForAttr(this.base.m_dict[dictAttrName].RuleTable, dictAttrName);
                 var availableValues = new Array();
 
-                var prefixes = this.ParseOutPrefixes(res, availableValues);
+                var prefixes = this.ParseOutPrefixes(Enum.ATTRTYPE_E.BOOLEANSELECT, res, availableValues);
                 this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
 
                 if (prefixes.length > 0 && prefixes[0].length > 0 && prefixes[0].indexOf(this.INVISPREFIX) >= 0)
@@ -2095,7 +2124,7 @@ function LinearEngine(context, dictionaryTable) {
                 var res = this.base.m_context.EvaluateTableForAttr(this.base.m_dict[dictAttrName].RuleTable, dictAttrName);
                 var availableValues = new Array();
 
-                var prefixes = this.ParseOutPrefixes(res, availableValues);
+                var prefixes = this.ParseOutPrefixes(Enum.ATTRTYPE_E.EDIT, res, availableValues);
                 this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
                 this.base.m_dict[dictAttrName].Enabled = true;
                 this.base.m_dict[dictAttrName].Valid = true;
@@ -2213,7 +2242,7 @@ function LinearEngine(context, dictionaryTable) {
                 var res = this.base.m_context.EvaluateTableForAttr(this.base.m_dict[dictAttrName].RuleTable, dictAttrName);
                 var availableValues = new Array();
 
-                var prefixes = this.ParseOutPrefixes(res, availableValues);
+                var prefixes = this.ParseOutPrefixes(Enum.ATTRTYPE_E.MULTISELECT, res, availableValues);
                 this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
                 this.base.m_dict[dictAttrName].Enabled = true;
                 this.base.m_dict[dictAttrName].Valid = true;
@@ -2310,7 +2339,7 @@ function LinearEngine(context, dictionaryTable) {
                 this.base.m_dict[dictAttrName].Valid = true;
 
                 //the list of results is what is available for selection in the control
-                var prefixes = this.ParseOutPrefixes(res, availableValues);
+                var prefixes = this.ParseOutPrefixes(Enum.ATTRTYPE_E.SINGLESELECT, res, availableValues);
                 this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
 
                 var currentValue = this.base.m_context.GetAttribute(dictAttrName, false);
@@ -2442,7 +2471,7 @@ function LinearEngine(context, dictionaryTable) {
         }      
 
         //remove the special character flags from the values
-        this.ParseOutPrefixes = function (values, valuesWithoutPrefixes) {
+        this.ParseOutPrefixes = function (AttributeType, values, valuesWithoutPrefixes) {
             var prefixes = new Array();
             try {
                 var origValues = values;
@@ -2453,21 +2482,21 @@ function LinearEngine(context, dictionaryTable) {
                     var fullPrefix = "";
 
                     //check for leadoff ^ indicating an invisible control
-                    if (val.indexOf(this.INVISPREFIX) >= 0) {
+                    if (val.indexOf(this.INVISPREFIX) == 0) {
                         fullPrefix += this.INVISPREFIX;
-                        val = val.replace(this.INVISPREFIX, "");
+                        val = val.substr(this.INVISPREFIX.length);
                     }
 
                     //check for leadoff @ indicating a default
-                    if (val.indexOf(this.DEFAULTPREFIX) >= 0) {
+                    if (val.indexOf(this.DEFAULTPREFIX) == 0) {
                         fullPrefix += this.DEFAULTPREFIX;
-                        val = val.replace(this.DEFAULTPREFIX, "");
+                        val = val.substr(this.DEFAULTPREFIX.length);
                     }
 
                     //check for leadoff # indicating a locked edit box
-                    if (val.indexOf(this.DISABLEPREFIX) >= 0) {
+                    if (AttributeType == Enum.ATTRTYPE_E.EDIT && val.indexOf(this.DISABLEPREFIX) == 0) {
                         fullPrefix += this.DISABLEPREFIX;
-                        val = val.replace(this.DISABLEPREFIX, "");
+                        val = val.substr(this.DISABLEPREFIX.length);
                     }
 
                     prefixes.push(fullPrefix);
