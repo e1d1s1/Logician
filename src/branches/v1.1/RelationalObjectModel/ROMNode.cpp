@@ -863,7 +863,7 @@ wstring ROMNode::_generateXML(bool bRegen)
 				{
 					attrObject+=itValue->first;
 					attrObject+=L"=\"";
-					attrObject+=itValue->second;
+					attrObject+=ROMUTIL::encodeForXml(itValue->second);
 					attrObject+=L"\" ";
 				}
 				attrObject+=L"/>";

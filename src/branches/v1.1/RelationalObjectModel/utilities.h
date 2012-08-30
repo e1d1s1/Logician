@@ -51,6 +51,7 @@ namespace ROMUTIL
 	string stringify(double x);
 	string stringify(long x);
 	string MakeGUID();
+	wstring encodeForXml(const std::wstring &sSrc);
 #if USE_MSXML
 	wstring ToWString(_variant_t str);
 #endif
