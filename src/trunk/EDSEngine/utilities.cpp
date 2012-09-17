@@ -167,7 +167,7 @@ string EDSUTIL::WStrToMBCStr(wstring wstr)
 	return retval;
 }
 
-wstring EDSUTIL::MBCStrToWStr(string mbStr)
+wstring EDSUTIL::MBCStrToWStr(const string mbStr)
 {
 	if (mbStr.size() == 0)
 		return L"";

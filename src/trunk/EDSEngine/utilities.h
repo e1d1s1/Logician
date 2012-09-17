@@ -45,19 +45,19 @@ namespace EDSUTIL
 {
 	string FindAndReplace (const string& source, const string target, const string replacement);
 	wstring FindAndReplace (const wstring& source, const wstring target, const wstring replacement);
-	bool StringContains(wstring source, wstring target);
-	vector<string> Split(string text, string separators);
-	vector<wstring> Split(wstring text, wstring separators);
-	bool StringIsNumeric(wstring s);
-	wstring TrimString(wstring s);
-	string WStrToMBCStr(wstring wstr);	
+	bool StringContains(const wstring source, const wstring target);
+	vector<string> Split(const string text, const string separators);
+	vector<wstring> Split(const wstring text, const wstring separators);
+	bool StringIsNumeric(const wstring s);
+	wstring TrimString(const wstring s);
+	string WStrToMBCStr(const wstring wstr);	
 	vector<string> ToMBCStringVector(vector<wstring> vectWS);
 	string stringify(double x);
 	string stringify(long x);
 	string stringify(size_t x);
-	wstring MBCStrToWStr(string mbStr);
-	string ToASCIIString(wstring s); //for integer and ASCII only
-	wstring ToWString(string s);
+	wstring MBCStrToWStr(const string mbStr);
+	string ToASCIIString(const wstring s); //for integer and ASCII only
+	wstring ToWString(const string s);
 #ifdef USE_LIBXML
 	wstring XMLStrToWStr(const xmlChar* mbStr);
 	wstring XMLStrToWStr(xmlChar* mbStr);
