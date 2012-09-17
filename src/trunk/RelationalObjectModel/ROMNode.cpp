@@ -278,7 +278,9 @@ vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
 	{
 		for (long i = 0; i < res->length; i++)
 		{
-			nodes.push_back(res->item[i]);
+			Node n;
+			res->get_item(i, &n);
+			nodes.push_back(n);
 		}
 	}
 
@@ -784,7 +786,7 @@ void ROMNode::_createXMLDoc(bool bForceLoad)
 #ifdef USE_MSXML
 		if (m_xmlDoc != NULL)
 			m_xmlDoc.Release();
-		m_xmlDoc.CreateInstance(__uuidof(MSXML2::DOMDocument));
+		m_xmlDoc.CoCreateInstance(__uuidof(MSXML2::DOMDocument60));
 		m_xmlDoc->async = VARIANT_FALSE;
 		m_xmlDoc->resolveExternals = VARIANT_FALSE;
 		m_xmlDoc->setProperty("SelectionLanguage", "XPath");
@@ -909,7 +911,7 @@ bool ROMNode::LoadXML(wstring xmlStr)
 	if (m_xmlDoc != NULL)
 		m_xmlDoc.Release();
 
-	m_xmlDoc.CreateInstance(__uuidof(MSXML2::DOMDocument));
+	m_xmlDoc.CoCreateInstance(__uuidof(MSXML2::DOMDocument60));
 	m_xmlDoc->async = VARIANT_FALSE;
 	m_xmlDoc->resolveExternals = VARIANT_FALSE;
 	m_xmlDoc->setProperty("SelectionLanguage", "XPath");
@@ -1137,7 +1139,7 @@ wstring	ROMNode::EvaluateXPATH(wstring xpath, string guid)
 	if (m_xmlDoc != NULL)
 	{
 #ifdef USE_MSXML
-		xsltDoc.CreateInstance(__uuidof(MSXML2::DOMDocument));
+		xsltDoc.CoCreateInstance(__uuidof(MSXML2::DOMDocument60));
 		xsltDoc->loadXML(xslt_text.c_str());
 		retval = ToWString(m_xmlDoc->transformNode(xsltDoc));
 		xsltDoc.Release();
