@@ -62,19 +62,12 @@ namespace EDS
 		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring tableName, bool bGetAll);
 
 		wstring GetEvalParameter() {return m_StateParameter;}
-	#ifdef _MSC_VER
-		void SetInputValues(stdext::hash_map<wstring, size_t> values) 
+		void SetInputValues(MAPWSTRUINT values) 
 		{
 			m_GlobalInputAttrsValues = values;
 			m_GlobalInputAttrsValues[L""] = EMPTY_STRING;
 			m_GlobalInputAttrsValues[L"NULL"] = EXPLICIT_NULL_STRING;
 		}
-	#else
-		void SetInputValues(__gnu_cxx::hash_map<wstring, size_t> values) 
-		{
-			m_GlobalInputAttrsValues = values;
-		}
-	#endif
 		void SetInputValue(wstring name, wstring value);
 		void ResetTable(wstring tableName);
 
@@ -108,11 +101,8 @@ namespace EDS
 		map<string, vector<string> > ReverseEvaluateTable(const string tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
 		map<string, vector<string> > ReverseEvaluateTable(const string tableName, bool bGetAll);
 		string GetEvalParameterA();
-	#ifdef _MSC_VER
-		void SetInputValues(stdext::hash_map<string, size_t> values);
-	#else
-		void SetInputValues(__gnu_cxx::hash_map<string, size_t> values);
-	#endif
+
+		void SetInputValues(MAPSTRUINT values);
 		void SetInputValue(const string name, const string value);
 		size_t GetInputValuesCount() {return m_GlobalInputAttrsValues.size();}
 		void ResetTable(const string tableName);
@@ -128,11 +118,7 @@ namespace EDS
 		void SendToDebugServer(wstring msg);
 		wstring XMLSafe(wstring str);
 		bool DebugThisTable(wstring tableName);
-	#ifdef _MSC_VER
-		stdext::hash_map<wstring, size_t> m_GlobalInputAttrsValues;
-	#else
-		__gnu_cxx::hash_map<wstring, size_t> m_GlobalInputAttrsValues;
-	#endif
+		MAPWSTRUINT m_GlobalInputAttrsValues;
 		wstring m_StateParameter;
 		CBimapper m_stringsMap;
 		CTableSet m_TableSet;
@@ -145,13 +131,7 @@ namespace EDS
 		wstring m_DEBUGGING_CON;
 		bool m_IsOpen;
 		wstring m_jsCode, m_pyCode;
-
-	#ifdef _MSC_VER
-		stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> > mapBaseIDtoTranslations;
-	#else
-		__gnu_cxx::hash_map<size_t, __gnu_cxx::hash_map<wstring, wstring> > mapBaseIDtoTranslations;
-	#endif
-
+		MAPUINTMAP mapBaseIDtoTranslations;
 
 	//helper functions
 	#ifdef WIN32

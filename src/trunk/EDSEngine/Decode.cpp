@@ -27,7 +27,7 @@ CDecode::~CDecode(void)
 {
 }
 
-CDecode::CDecode(CRuleCell outputCell, hash_map<wstring, size_t> *inputValues, CBimapper *stringMap)
+CDecode::CDecode(CRuleCell outputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap)
 {
 	m_tests = outputCell.Values;
 	m_stringsMap = stringMap;
@@ -35,7 +35,7 @@ CDecode::CDecode(CRuleCell outputCell, hash_map<wstring, size_t> *inputValues, C
 	m_inputValues = inputValues;
 }
 
-CDecode::CDecode(size_t currentValue, CRuleCell inputCell, hash_map<wstring, size_t> *inputValues, CBimapper *stringMap)
+CDecode::CDecode(size_t currentValue, CRuleCell inputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap)
 {
 	m_value = currentValue;
 	m_tests = inputCell.Values;
@@ -299,7 +299,7 @@ wstring CDecode::ReplaceAGet(wstring s, bool bForceZero)
 		bool bFoundAttr = false;
 		if (m_inputValues != NULL && m_inputValues->size() > 0)
 		{
-			hash_map<wstring, size_t>::iterator it = m_inputValues->find(attrName);
+			MAPWSTRUINT::iterator it = m_inputValues->find(attrName);
 
 			if (it != m_inputValues->end())
 			{

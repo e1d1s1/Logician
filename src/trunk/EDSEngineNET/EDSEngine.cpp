@@ -211,7 +211,7 @@ namespace EDSNET
 	{
 		if (m_KnowledgeBase)
 		{
-			stdext::hash_map<wstring, size_t> hash_values;
+			MAPWSTRUINT hash_values;
 			MarshalDictionaryStringUInt(values, hash_values);
 			m_KnowledgeBase->SetInputValues(hash_values);
 		}

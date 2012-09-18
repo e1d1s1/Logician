@@ -16,66 +16,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
     along with EDSEngine.  If not, see <http://www.gnu.org/licenses/>.
 */
 #pragma once
-
-#ifdef _MSC_VER
-#include <hash_map>
-	#if (_MSC_VER < 1600)
-		using namespace stdext;
-	#endif
-#else
-#include <ext/hash_map>
-#include <tr1/functional>
-// Implement string hash functions so that strings of various flavors can
-// be used as keys in STL maps and sets.
-namespace __gnu_cxx {
-
-template<>
-struct hash<wchar_t*> {
-  size_t operator()(const wchar_t* s) const {
-    return std::tr1::hash<const wchar_t*>()(s);
-  }
-};
-
-template<>
-struct hash<const wchar_t*> {
-  size_t operator()(const wchar_t* s) const {
-    return std::tr1::hash<const wchar_t*>()(s);
-  }
-};
-
-template<>
-struct hash<std::wstring> {
-  size_t operator()(const std::wstring& s) const {
-    return std::tr1::hash<std::wstring>()(s);
-  }
-};
-
-template<>
-struct hash<const std::wstring> {
-  size_t operator()(const std::wstring& s) const {
-    return std::tr1::hash<std::wstring>()(s);
-  }
-};
-
-template<>
-struct hash<std::string> {
-  size_t operator()(const std::string& s) const {
-    return std::tr1::hash<std::string>()(s);
-  }
-};
-
-template<>
-struct hash<const std::string> {
-  size_t operator()(const std::string& s) const {
-    return std::tr1::hash<std::string>()(s);
-  }
-};
-}
-namespace std
-{
- using namespace __gnu_cxx;
-}
-#endif
+#include "stdafx.h"
 
 class CBimapper
 {
@@ -90,8 +31,8 @@ public:
 	void ClearUserStrings();
 
 private:
-	hash_map<size_t, wstring> m_IndexToStringsMap;
-	hash_map<wstring, size_t> m_StringsToIndexMap;
+	MAPUINTWSTR m_IndexToStringsMap;
+	MAPWSTRUINT m_StringsToIndexMap;
 	vector<size_t> userStrings;
 	size_t maxID;
 };

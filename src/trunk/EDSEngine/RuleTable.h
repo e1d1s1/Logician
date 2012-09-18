@@ -55,7 +55,7 @@ public:
 
 	vector<wstring> EvaluateTable(wstring outputAttr, bool bGetAll = true, bool bForward = true); //results come back as the full strings
 	map<wstring, vector<wstring> > EvaluateTable(bool bGetAll = true, bool bForward = true);
-	void SetInputValues(hash_map<wstring, size_t> values);
+	void SetInputValues(MAPWSTRUINT values);
 	void SetInputValue(wstring name, wstring value);
 	void SetInvalidAttrs();
 	void ResetTable();
@@ -88,7 +88,7 @@ public:
 private:
 	void DebugEval(wstring outputAttr, vector<size_t> inputValues, map<size_t, set<wstring> > solutions);
 
-	hash_map<wstring, size_t> m_InputAttrsValues;
+	MAPWSTRUINT m_InputAttrsValues;
 	vector<pair<wstring, vector<CRuleCell> > > m_InputAttrsTests; //the test table, input rows
 	vector<wstring> m_FormulaInputs;
 	vector<pair<wstring, vector<CRuleCell> > > m_OutputAttrsValues; //output rows

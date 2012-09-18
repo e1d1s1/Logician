@@ -164,20 +164,17 @@ namespace EDSEngineWinRT
 	{
 		if (m_KnowledgeBase)
 		{
-			stdext::hash_map<wstring, size_t> hash_values;
+			MAPWSTRUINT hash_values;
 			MarshalIMapStringUInt(values, hash_values);
 			m_KnowledgeBase->SetInputValues(hash_values);
 		}
 	}
-/*
+
 	void EDSEngine::SetInputValue(String^ name, String^ value)
 	{
 		if (m_KnowledgeBase)
 		{
-			wstring _name, _value;
-			MarshalString(name, _name);
-			MarshalString(value, _value);
-			m_KnowledgeBase->SetInputValue(_name, _value);
+			m_KnowledgeBase->SetInputValue(name->Data(), value->Data());
 		}
 	}
 
@@ -185,103 +182,80 @@ namespace EDSEngineWinRT
 	{
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
-			m_KnowledgeBase->ResetTable(table);
+			m_KnowledgeBase->ResetTable(tableName->Data());
 		}
 	}
 
-	array<String^>^ EDSEngine::GetInputAttrs(String^ tableName)
+	IVector<String^>^ EDSEngine::GetInputAttrs(String^ tableName)
 	{
-		array<String^>^ retval = nullptr;
+		vector<wstring> retval;
 
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
-			vector<wstring> res = m_KnowledgeBase->GetInputAttrs(table);
-			retval = GetArrayFromVectorStrings(res);
+			retval = m_KnowledgeBase->GetInputAttrs(tableName->Data());
 		}
 
-		return retval;
+		return GetIVectorFromVectorStrings(retval);
 	}
-
-	array<String^>^ EDSEngine::GetInputDependencies(String^ tableName)
+	
+	IVector<String^>^ EDSEngine::GetInputDependencies(String^ tableName)
 	{
-		array<String^>^ retval = nullptr;
+		vector<wstring> retval;
 
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
-			vector<wstring> res = m_KnowledgeBase->GetInputDependencies(table);
-			retval = GetArrayFromVectorStrings(res);
+			retval = m_KnowledgeBase->GetInputDependencies(tableName->Data());
 		}
 
-		return retval;
+		return GetIVectorFromVectorStrings(retval);
 	}
-
-	array<String^>^ EDSEngine::GetOutputAttrs(String^ tableName)
+	
+	IVector<String^>^ EDSEngine::GetOutputAttrs(String^ tableName)
 	{
-		array<String^>^ retval = nullptr;
+		vector<wstring> retval;
 
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
-			vector<wstring> res = m_KnowledgeBase->GetOutputAttrs(table);
-			retval = GetArrayFromVectorStrings(res);
+			retval = m_KnowledgeBase->GetOutputAttrs(tableName->Data());
 		}
 
-		return retval;
+		return GetIVectorFromVectorStrings(retval);
 	}
-
-	array<String^>^ EDSEngine::GetAllPossibleOutputs(String^ tableName, String^ outputName)
+	
+	IVector<String^>^ EDSEngine::GetAllPossibleOutputs(String^ tableName, String^ outputName)
 	{
-		array<String^>^ retval = nullptr;
+		vector<wstring> retval;
 
 		if (m_KnowledgeBase)
 		{
-			wstring table, output;
-			MarshalString(tableName, table);
-			MarshalString(outputName, output);
-			vector<wstring> res = m_KnowledgeBase->GetAllPossibleOutputs(table, output);
-			retval = GetArrayFromVectorStrings(res);
+			retval = m_KnowledgeBase->GetAllPossibleOutputs(tableName->Data(), outputName->Data());
 		}
 
-		return retval;
+		return GetIVectorFromVectorStrings(retval);
 	}
-
+	
 	String^	EDSEngine::DeLocalize(String^ localeValue)
 	{
-		String^ retval = nullptr;
+		wstring retval = L"";
 
 		if (m_KnowledgeBase)
 		{
-			wstring val;
-			MarshalString(localeValue, val);
-			wstring res = m_KnowledgeBase->DeLocalize(val);
-			retval = gcnew String(res.c_str());
+			retval = m_KnowledgeBase->DeLocalize(localeValue->Data());
 		}
 
-		return retval;
+		return ref new String(retval.c_str());
 	}
 
 	String^	EDSEngine::Translate(String^ source, String^ sourceLocale, String^ destLocale)
 	{
-		String^ retval = nullptr;
+		wstring retval = L"";
 
 		if (m_KnowledgeBase)
 		{
-			wstring src, srcLocale, dest;
-			MarshalString(source, src);
-			MarshalString(sourceLocale, srcLocale);
-			MarshalString(destLocale, dest);
-			wstring res = m_KnowledgeBase->Translate(src, srcLocale, dest);
-			retval = gcnew String(res.c_str());
+			retval = m_KnowledgeBase->Translate(source->Data(), sourceLocale->Data(), destLocale->Data());
 		}
 
-		return retval;
+		return ref new String(retval.c_str());
 	}
 
 	void EDSEngine::PumpDebugMessages()
@@ -290,7 +264,7 @@ namespace EDSEngineWinRT
 		{
 			wstring msg = m_KnowledgeBase->GetDebugMessages();
 			if (msg.length() > 0)
-				m_DebugDelegate(String(msg.c_str()));
+				m_DebugDelegate(ref new String(msg.c_str()));
 		}
-	}*/
+	}
 }
