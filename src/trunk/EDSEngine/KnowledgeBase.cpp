@@ -113,9 +113,9 @@ wstring EDS::CKnowledgeBase::GetDebugMessages()
 wstring EDS::CKnowledgeBase::DeLocalize(wstring localeValue)
 {
 	wstring retval = localeValue;
-	for (hash_map<size_t, hash_map<wstring, wstring> >::iterator itAllIndexes = mapBaseIDtoTranslations.begin(); itAllIndexes != mapBaseIDtoTranslations.end(); itAllIndexes++)
+	for (MAPUINTMAP::iterator itAllIndexes = mapBaseIDtoTranslations.begin(); itAllIndexes != mapBaseIDtoTranslations.end(); itAllIndexes++)
 	{
-		for (hash_map<wstring, wstring>::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
+		for (MAPWSTRS::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
 		{
 			if (itTranslations->second == localeValue)
 			{
@@ -135,9 +135,9 @@ wstring EDS::CKnowledgeBase::Translate(wstring source, wstring sourceLocale, wst
 		id = m_stringsMap.GetIDByString(source);
 	else
 	{
-		for (hash_map<size_t, hash_map<wstring, wstring> >::iterator itAllIndexes = mapBaseIDtoTranslations.begin(); itAllIndexes!= mapBaseIDtoTranslations.end(); itAllIndexes++)
+		for (MAPUINTMAP::iterator itAllIndexes = mapBaseIDtoTranslations.begin(); itAllIndexes!= mapBaseIDtoTranslations.end(); itAllIndexes++)
 		{
-			for (hash_map<wstring, wstring>::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
+			for (MAPWSTRS::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
 			{
 				if (itTranslations->first == sourceLocale && itTranslations->second == source)
 				{
@@ -152,10 +152,10 @@ wstring EDS::CKnowledgeBase::Translate(wstring source, wstring sourceLocale, wst
 
 	if (id != INVALID_STRING)
 	{
-		hash_map<size_t, hash_map<wstring, wstring> >::iterator itAllIndexes = mapBaseIDtoTranslations.find(id);
+		MAPUINTMAP::iterator itAllIndexes = mapBaseIDtoTranslations.find(id);
 		if (itAllIndexes != mapBaseIDtoTranslations.end())
 		{
-			for (hash_map<wstring, wstring>::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
+			for (MAPWSTRS::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
 			{
 				if (itTranslations->first == destLocale)
 				{
@@ -826,17 +826,17 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 					pair<wstring, wstring> kvp;
 					kvp.first = langType;
 					kvp.second = langValue;
-					stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
+					MAPUINTMAP::iterator itFind = mapBaseIDtoTranslations.find(id);
 					if (itFind != mapBaseIDtoTranslations.end())
 					{
-						stdext::hash_map<wstring, wstring> *newTranlation = &itFind->second;
+						MAPWSTRS *newTranlation = &itFind->second;
 						newTranlation->insert(kvp);
 					}
 					else
 					{
-						stdext::hash_map<wstring, wstring> newTranslation;
+						MAPWSTRS newTranslation;
 						newTranslation.insert(kvp);
-						pair<size_t, stdext::hash_map<wstring, wstring> > idTrans_kvp;
+						pair<size_t, MAPWSTRS > idTrans_kvp;
 						idTrans_kvp.first = id;
 						idTrans_kvp.second = newTranslation;
 						mapBaseIDtoTranslations.insert(idTrans_kvp);
@@ -946,33 +946,17 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
                         pair<wstring, wstring> kvp;
                         kvp.first = langType;
                         kvp.second = langValue;
-                        #ifdef _MSC_VER
-                        stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
-                        #else
-                        __gnu_cxx::hash_map<size_t, __gnu_cxx::hash_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
-                        #endif
+                        MAPUINTMAP::iterator itFind = mapBaseIDtoTranslations.find(id);
                         if (itFind != mapBaseIDtoTranslations.end())
                         {
-                            #ifdef _MSC_VER
-                            stdext::hash_map<wstring, wstring> *newTranlation = &itFind->second;
-                            #else
-                            __gnu_cxx::hash_map<wstring, wstring> *newTranlation = &itFind->second;
-                            #endif
+                            MAPWSTRS *newTranlation = &itFind->second;
                             newTranlation->insert(kvp);
                         }
                         else
                         {
-                            #ifdef _MSC_VER
-                            stdext::hash_map<wstring, wstring> newTranslation;
-                            #else
-                            __gnu_cxx::hash_map<wstring, wstring> newTranslation;
-                            #endif
+                            MAPWSTRS newTranslation;
                             newTranslation.insert(kvp);
-                            #ifdef _MSC_VER
-                            pair<size_t, stdext::hash_map<wstring, wstring> > idTrans_kvp;
-                            #else
-                            pair<size_t, __gnu_cxx::hash_map<wstring, wstring> > idTrans_kvp;
-                            #endif
+                            pair<size_t, MAPWSTRS > idTrans_kvp;
                             idTrans_kvp.first = id;
                             idTrans_kvp.second = newTranslation;
                             mapBaseIDtoTranslations.insert(idTrans_kvp);
@@ -1346,10 +1330,10 @@ string EDS::CKnowledgeBase::GetEvalParameterA()
 	return WStrToMBCStr(m_StateParameter);
 }
 
-void EDS::CKnowledgeBase::SetInputValues(hash_map<string, size_t> values)
+void EDS::CKnowledgeBase::SetInputValues(MAPSTRUINT values)
 {
-	hash_map<wstring, size_t> wValues;
-	for (hash_map<string, size_t>::iterator it = values.begin(); it != values.end(); it++)
+	MAPWSTRUINT wValues;
+	for (MAPSTRUINT::iterator it = values.begin(); it != values.end(); it++)
 	{
 		wValues[MBCStrToWStr((*it).first)] = (*it).second;
 	}

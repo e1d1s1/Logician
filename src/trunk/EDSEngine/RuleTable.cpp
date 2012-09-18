@@ -131,7 +131,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 		for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = inputCollection.begin(); it != inputCollection.end(); it++)
 		{
 			wstring attr = (*it).first;
-			hash_map<wstring, size_t>::iterator itFind = m_InputAttrsValues.find(attr);
+			MAPWSTRUINT::iterator itFind = m_InputAttrsValues.find(attr);
 			if (itFind != m_InputAttrsValues.end())
 			{
 				values.push_back((*itFind).second);
@@ -267,7 +267,7 @@ void CRuleTable::DebugEval(wstring outputAttr, vector<size_t> inputValues, map<s
 	DebugMessage = xmlBlob;
 }
 
-void CRuleTable::SetInputValues(hash_map<wstring, size_t> values)
+void CRuleTable::SetInputValues(MAPWSTRUINT values)
 {
 	bNullSet = false;
 	m_InputAttrsValues = values;
@@ -279,7 +279,7 @@ void CRuleTable::SetInvalidAttrs()
 	{
 		for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = m_InputAttrsTests.begin(); it != m_InputAttrsTests.end(); it++)
 		{
-			hash_map<wstring, size_t>::iterator itFind = m_InputAttrsValues.find((*it).first);
+			MAPWSTRUINT::iterator itFind = m_InputAttrsValues.find((*it).first);
 			if (itFind == m_InputAttrsValues.end())
 			{
 				m_InputAttrsValues[(*it).first] = INVALID_STRING;

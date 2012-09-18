@@ -34,7 +34,7 @@ void MarshalString ( String ^ s, wstring& os ) {
    Marshal::FreeHGlobal(IntPtr((void*)chars));
 }
 
-void MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict, stdext::hash_map<wstring, size_t> &mp)
+void MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict, MAPWSTRUINT &mp)
 {
 	for each(KeyValuePair<String^, size_t> kvp in dict)
 	{

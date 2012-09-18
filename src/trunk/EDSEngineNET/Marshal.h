@@ -23,6 +23,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include "KnowledgeBase.h"
 using namespace std;
 
 #pragma managed
@@ -33,7 +34,7 @@ using namespace System::Collections::Generic;
 
 void MarshalString ( String ^ s, string& os );
 void MarshalString ( String ^ s, wstring& os );
-void MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict, stdext::hash_map<wstring, size_t> &mp);
+void MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict, MAPWSTRUINT &mp);
 
 array<String^>^ GetArrayFromVectorStrings(vector<wstring> vect);
 Dictionary<String^,	array<String^>^>^ GetDictionaryFromMapStrings(map<wstring, vector<wstring> > mp);

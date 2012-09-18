@@ -29,7 +29,7 @@ IMap<String^, IVector<String^>^>^ GetIMapFromMapStrings(map<wstring, vector<wstr
 	return retval;
 }
 
-void MarshalIMapStringUInt (IMap<String^, size_t>^ dict, stdext::hash_map<wstring, size_t> &mp)
+void MarshalIMapStringUInt (IMap<String^, size_t>^ dict, MAPWSTRUINT &mp)
 {
 	for (IKeyValuePair<String^, size_t>^ item : dict)
 	{

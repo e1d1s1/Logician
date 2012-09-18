@@ -50,11 +50,9 @@ size_t CBimapper::AddUserString(wstring s)
 wstring CBimapper::GetStringByID(size_t id)
 {
 	wstring retval;
-#ifdef _MSC_VER
-	stdext::hash_map<size_t, wstring>::iterator it = m_IndexToStringsMap.find(id);
-#else
-	__gnu_cxx::hash_map<size_t, wstring>::iterator it = m_IndexToStringsMap.find(id);
-#endif
+
+	MAPUINTWSTR::iterator it = m_IndexToStringsMap.find(id);
+
 	if (it != m_IndexToStringsMap.end())
 	{
 		retval = (*it).second;
@@ -65,11 +63,8 @@ wstring CBimapper::GetStringByID(size_t id)
 size_t CBimapper::GetIDByString(std::wstring s)
 {
 	size_t retval = INVALID_STRING;
-#ifdef _MSC_VER
-	stdext::hash_map<wstring, size_t>::iterator it = m_StringsToIndexMap.find(s);
-#else
-	__gnu_cxx::hash_map<wstring, size_t>::iterator it = m_StringsToIndexMap.find(s);
-#endif
+
+	MAPWSTRUINT::iterator it = m_StringsToIndexMap.find(s);
 
 	if (s.length() == 0)
 	{
@@ -90,11 +85,11 @@ void CBimapper::ClearUserStrings()
 		size_t id = *it;
 		wstring s = GetStringByID(id);
 
-		hash_map<wstring, size_t>::iterator itString = m_StringsToIndexMap.find(s);
+		MAPWSTRUINT::iterator itString = m_StringsToIndexMap.find(s);
 		if (itString != m_StringsToIndexMap.end())
 			m_StringsToIndexMap.erase(itString);
 
-		hash_map<size_t, wstring>::iterator itID = m_IndexToStringsMap.find(id);
+		MAPUINTWSTR::iterator itID = m_IndexToStringsMap.find(id);
 		if (itID != m_IndexToStringsMap.end())
 			m_IndexToStringsMap.erase(itID);
 	}
