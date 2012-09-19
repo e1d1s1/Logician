@@ -109,7 +109,7 @@ int main()
 
 	string s = stringifyDouble(knowledge.TableCount());
 	Log("# of Tables loaded: " + s);
-	if (s == "13")
+	if (s == "14")
 	{
 		res.SetResult(true, "");
 	}
@@ -422,6 +422,45 @@ int main()
 		res.SetResult(false, "Did not get proper eval result on NULL test");
 	}
 
+	res.Reset();
+	Log("testing exclusing evaluation");
+	knowledge.SetInputValue(L"inputAttr1", L"A");
+	vector<wstring> result8 = knowledge.EvaluateTable(L"exclusion", L"outputAttr1", true);
+	if (result8.size() == 4 && result8.at(0) == L"not X or Y" &&
+		result8.at(1) == L"not X" &&
+		result8.at(2) == L"not Y" &&
+		result8.at(3) == L"fallout")
+	{
+		Log(result8.at(0));
+		Log(result8.at(1));
+		Log(result8.at(2));
+		Log(result8.at(3));
+		res.SetResult(true, "");
+	}
+	else
+	{
+		res.SetResult(false, "Did not get proper eval result on exclusion test");
+	}
+
+	Log("allowing a match: Y");
+	knowledge.SetInputValue(L"inputAttr1", L"Y");
+	result8 = knowledge.EvaluateTable(L"exclusion", L"outputAttr1", true);
+	if (result8.size() == 4 && result8.at(0) == L"is X or Y" &&
+		result8.at(1) == L"not X" &&
+		result8.at(2) == L"is Y" &&
+		result8.at(3) == L"fallout")
+	{
+		Log(result8.at(0));
+		Log(result8.at(1));
+		Log(result8.at(2));
+		Log(result8.at(3));
+		res.SetResult(true, "");
+	}
+	else
+	{
+		res.SetResult(false, "Did not get proper eval result on exclusion test 2");
+	}
+
 	Log("testing translation of: A");
 	wstring localeValue = knowledge.Localize(L"A", L"en-US");
 	wstring reverse = knowledge.DeLocalize(localeValue);
@@ -433,9 +472,9 @@ int main()
 
 	Log("testing reverse evaluation of ReverseTest table");
 	knowledge.SetInputValue(L"OutColor", L"green");
-	map<wstring, vector<wstring> > result8 = knowledge.ReverseEvaluateTable(L"ReverseTest", true);
-	if (result8.size() == 2 && result8[L"Color1"].at(0) == L"blue" &&
-		result8[L"Color2"].at(0) == L"yellow")
+	map<wstring, vector<wstring> > result9 = knowledge.ReverseEvaluateTable(L"ReverseTest", true);
+	if (result9.size() == 2 && result9[L"Color1"].at(0) == L"blue" &&
+		result9[L"Color2"].at(0) == L"yellow")
 	{
 		res.SetResult(true, "");
 	}
