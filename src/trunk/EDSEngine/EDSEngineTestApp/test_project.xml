@@ -176,30 +176,52 @@
       <Value id="57" operation="1">purple</Value>
     </Outputs>
   </Table>
+  <Table name="exclusion" getall="true">
+    <Inputs>
+      <Attr>inputAttr1</Attr>
+      <Value id="58,22" operation="2">X|Y</Value>
+      <Value id="58,22" operation="1">X|Y</Value>
+      <Value id="58" operation="1">X</Value>
+      <Value id="58" operation="2">X</Value>
+      <Value id="22" operation="2">Y</Value>
+      <Value id="22" operation="1">Y</Value>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>outputAttr1</Attr>
+      <Value id="59" operation="1">not X or Y</Value>
+      <Value id="60" operation="1">is X or Y</Value>
+      <Value id="61" operation="1">is X</Value>
+      <Value id="62" operation="1">not X</Value>
+      <Value id="63" operation="1">not Y</Value>
+      <Value id="64" operation="1">is Y</Value>
+      <Value id="65" operation="1">fallout</Value>
+    </Outputs>
+  </Table>
   <Table name="testtable1" getall="true">
     <Inputs>
       <Attr>inputAttr1</Attr>
-      <Value id="58,59" operation="1">A|Z</Value>
-      <Value id="60" operation="1">C</Value>
+      <Value id="66,67" operation="1">A|Z</Value>
+      <Value id="68" operation="1">C</Value>
       <Value/>
       <Value/>
       <Value/>
       <Value/>
       <Value/>
-      <Value id="61" operation="1">TestParameterJS</Value>
-      <Value id="62" operation="1">TestParameterPY</Value>
+      <Value id="69" operation="1">TestParameterJS</Value>
+      <Value id="70" operation="1">TestParameterPY</Value>
     </Inputs>
     <Inputs>
       <Attr>inputAttr2</Attr>
-      <Value id="63" operation="1">1</Value>
+      <Value id="71" operation="1">1</Value>
       <Value/>
-      <Value id="64" operation="16">9</Value>
+      <Value id="72" operation="16">9</Value>
       <Value/>
       <Value/>
-      <Value id="65" operation="64">50,60</Value>
-      <Value id="66" operation="64">70,80</Value>
-      <Value id="61" operation="1">TestParameterJS</Value>
-      <Value id="62" operation="1">TestParameterPY</Value>
+      <Value id="73" operation="64">50,60</Value>
+      <Value id="74" operation="64">70,80</Value>
+      <Value id="69" operation="1">TestParameterJS</Value>
+      <Value id="70" operation="1">TestParameterPY</Value>
     </Inputs>
     <Outputs>
       <Attr>anotherOutput</Attr>
@@ -215,49 +237,46 @@
     </Outputs>
     <Outputs>
       <Attr>outputAttr1</Attr>
-      <Value id="63,67" operation="1">1|2</Value>
-      <Value id="67" operation="1">2</Value>
-      <Value id="68" operation="2049">get(outsideAttr1) with concat</Value>
-      <Value id="69" operation="1">4</Value>
-      <Value id="70" operation="1">5</Value>
-      <Value id="71" operation="3073">py(get(outsideAttr1) + 2)</Value>
-      <Value id="72" operation="10241">js(get(outsideAttr1) + 2)</Value>
-      <Value id="73" operation="8193">js(alterparameter())</Value>
-      <Value id="74" operation="1025">py(alterparameter())</Value>
+      <Value id="71,75" operation="1">1|2</Value>
+      <Value id="75" operation="1">2</Value>
+      <Value id="76" operation="2049">get(outsideAttr1) with concat</Value>
+      <Value id="77" operation="1">4</Value>
+      <Value id="78" operation="1">5</Value>
+      <Value id="79" operation="3073">py(get(outsideAttr1) + 2)</Value>
+      <Value id="80" operation="10241">js(get(outsideAttr1) + 2)</Value>
+      <Value id="81" operation="8193">js(alterparameter())</Value>
+      <Value id="82" operation="1025">py(alterparameter())</Value>
     </Outputs>
     <FormulaInput>outsideAttr1</FormulaInput>
   </Table>
   <Table name="testtable2" getall="true">
     <Inputs>
       <Attr>in1</Attr>
-      <Value id="75" operation="1">this is a comment</Value>
       <Value/>
       <Value/>
     </Inputs>
     <Inputs>
       <Attr>xpath(//Object[@id='ChildObject']/Attribute[@id='childAttr']/@value)</Attr>
       <Value/>
-      <Value/>
-      <Value id="76" operation="1">some value of value</Value>
+      <Value id="84" operation="1">some value of value</Value>
     </Inputs>
     <Outputs>
       <Attr>out1</Attr>
-      <Value/>
-      <Value id="77" operation="4096">eval(testtable1, outputAttr1)</Value>
-      <Value id="78" operation="1">XPATH Worked and UNICODE check:些些些 3 simplifed chinese U+4E9B</Value>
+      <Value id="85" operation="4096">eval(testtable1, outputAttr1)</Value>
+      <Value id="86" operation="1">XPATH Worked and UNICODE check:些些些 3 simplifed chinese U+4E9B</Value>
     </Outputs>
   </Table>
   <Table name="testtable3" getall="true">
     <Inputs>
       <Attr>inputAttr2</Attr>
-      <Value id="79" operation="2064">get(someAttr)</Value>
-      <Value id="79" operation="2056">get(someAttr)</Value>
+      <Value id="87" operation="2064">get(someAttr)</Value>
+      <Value id="87" operation="2056">get(someAttr)</Value>
     </Inputs>
     <FormulaInput>someAttr</FormulaInput>
     <Outputs>
       <Attr>outputAttr1</Attr>
-      <Value id="80" operation="2049">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Value>
-      <Value id="81" operation="2049">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Value>
+      <Value id="88" operation="2049">inputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)</Value>
+      <Value id="89" operation="2049">inputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)</Value>
     </Outputs>
     <FormulaInput>inputAttr2</FormulaInput>
     <FormulaInput>someAttr</FormulaInput>
@@ -279,15 +298,15 @@
     </Inputs>
     <Outputs>
       <Attr>outputAttr1</Attr>
-      <Value id="82" operation="1">inputAttr2 is NULL</Value>
-      <Value id="83" operation="1">inputAttr1 is NULL</Value>
-      <Value id="84" operation="1">both attrs are NULL</Value>
-      <Value id="85" operation="1">fallout rule</Value>
+      <Value id="90" operation="1">inputAttr2 is NULL</Value>
+      <Value id="91" operation="1">inputAttr1 is NULL</Value>
+      <Value id="92" operation="1">both attrs are NULL</Value>
+      <Value id="93" operation="1">fallout rule</Value>
     </Outputs>
   </Table>
   <Translations>
-    <String id="58" en-US="A trans"/>
-    <String id="59" en-US="Z trans"/>
+    <String id="66" en-US="A trans"/>
+    <String id="67" en-US="Z trans"/>
   </Translations>
   <Scripting>
     <Python>def alterparameter():&#13;
