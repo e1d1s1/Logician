@@ -31,9 +31,9 @@
             knowledge.SetDebugHandler(debugHandler);
                         
             var cnt = knowledge.TableCount();
-            if (cnt == 13)
+            if (cnt == 14)
             {
-                write_result("OK: 13 Tables loaded");
+                write_result("OK: 14 Tables loaded");
             }
             else
             {
@@ -306,7 +306,43 @@
 	        else
 	        {
 	            write_result("FAILURE: Did not get proper eval result on NULL test");
-	        }	
+	        }
+
+            write_result("testing exclusing evaluation");
+	        knowledge.SetInputValue("inputAttr1", "A");
+	        var result8 = knowledge.EvaluateTableForAttr("exclusion", "outputAttr1", true);
+	        if (ArraySize(result8) == 4 && result8[0] == "not X or Y" &&
+		        result8[1] == "not X" &&
+		        result8[2] == "not Y" &&
+		        result8[3] == "fallout")
+	        {
+		        write_result("OK: " + result8[0] + "\n" +
+		        result8[1] + "\n" +
+		        result8[2] + "\n" +
+		        result8[3]);
+	        }
+	        else
+	        {
+		        write_result("FAILURE: Did not get proper eval result on exclusion test");
+	        }
+
+	        write_result("allowing a match: Y");
+	        knowledge.SetInputValue("inputAttr1", "Y");
+	        result8 = knowledge.EvaluateTableForAttr("exclusion", "outputAttr1", true);
+	        if (ArraySize(result8) == 4 && result8[0] == "is X or Y" &&
+		        result8[1] == "not X" &&
+		        result8[2] == "is Y" &&
+		        result8[3] == "fallout")
+	        {
+		         write_result("OK: " + result8[0] + "\n" +
+		        result8[1] + "\n" +
+		        result8[2] + "\n" +
+		        result8[3]);
+	        }
+	        else
+	        {
+		        write_result("FAILURE: Did not get proper eval result on exclusion test #2");
+	        }
 	        
 	        write_result("testing translation of: A");
 	        var localeValue = knowledge.Localize("A", "en-US");
@@ -319,11 +355,11 @@
 	            
 	        write_result("testing reverse evaluation of ReverseTest table");
 	        knowledge.SetInputValue("OutColor","green");
-	        var result8 = knowledge.ReverseEvaluateTable("ReverseTest", true);
-	        if (ArraySize(result8) == 2 && result8["Color1"][0] == "blue" &&
-	            result8["Color2"][0] == "yellow")
+	        var result9 = knowledge.ReverseEvaluateTable("ReverseTest", true);
+	        if (ArraySize(result9) == 2 && result9["Color1"][0] == "blue" &&
+	            result9["Color2"][0] == "yellow")
 	        {
-		        write_result("OK: " + result8["Color1"][0] + ", " + result8["Color2"][0]);
+		        write_result("OK: " + result9["Color1"][0] + ", " + result9["Color2"][0]);
 	        }
 	        else
 	        {
