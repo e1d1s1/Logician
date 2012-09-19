@@ -22,12 +22,12 @@ namespace EDSEngineTestApp
             }
 
             knowledge.DebugDelegate = write_debug;
-            knowledge.SetDebugging(true);
+            knowledge.SetDebugging(false);
 
             var cnt = knowledge.TableCount();
-            if (cnt == 13)
+            if (cnt == 14)
             {
-                write_result("OK: 13 Tables loaded");
+                write_result("OK: 14 Tables loaded");
             }
             else
             {
@@ -263,6 +263,42 @@ namespace EDSEngineTestApp
                 write_result("FAILURE: Did not get proper eval result on NULL test #2");
             }
 
+	        write_result("testing exclusing evaluation");
+	        knowledge.SetInputValue("inputAttr1", "A");
+	        var result8 = knowledge.EvaluateTable("exclusion", "outputAttr1", true);
+	        if (result8.Length == 4 && result8[0] == "not X or Y" &&
+		        result8[1] == "not X" &&
+		        result8[2] == "not Y" &&
+		        result8[3] == "fallout")
+	        {
+		        write_result(result8[0]);
+		        write_result(result8[1]);
+		        write_result(result8[2]);
+		        write_result(result8[3]);
+	        }
+	        else
+	        {
+		        write_result("Did not get proper eval result on exclusion test");
+	        }
+
+	        write_result("allowing a match: Y");
+	        knowledge.SetInputValue("inputAttr1", "Y");
+	        result8 = knowledge.EvaluateTable("exclusion", "outputAttr1", true);
+	        if (result8.Length == 4 && result8[0] == "is X or Y" &&
+		        result8[1] == "not X" &&
+		        result8[2] == "is Y" &&
+		        result8[3] == "fallout")
+	        {
+		        write_result(result8[0]);
+		        write_result(result8[1]);
+		        write_result(result8[2]);
+		        write_result(result8[3]);
+	        }
+	        else
+	        {
+		        write_result("Did not get proper eval result on exclusion test #2");
+	        }
+
             write_result("testing translation of: A");            
             var localeValue = knowledge.Localize("A", "en-US");
             var reverse = knowledge.DeLocalize(localeValue);
@@ -274,9 +310,9 @@ namespace EDSEngineTestApp
 
             write_result("testing reverse evaluation of ReverseTest table");
             knowledge.SetInputValue("OutColor", "green");
-            var result8 = knowledge.ReverseEvaluateTable("ReverseTest", true);
-            if (result8.Count == 2 && result8["Color1"][0] == "blue" &&
-		        result8["Color2"][0] == "yellow")
+            var result9 = knowledge.ReverseEvaluateTable("ReverseTest", true);
+            if (result9.Count == 2 && result9["Color1"][0] == "blue" &&
+                result9["Color2"][0] == "yellow")
 	        {
                 write_result("OK");
 	        }

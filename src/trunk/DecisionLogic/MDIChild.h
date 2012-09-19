@@ -262,6 +262,8 @@ public:
 			{
 				//check for or
 				wstring value = this->GetCellValue(row, col).wc_str();
+				if (value.length() > 2 && (value[0] == L'!' && value[1] == L'=') || (value[0] == L'<' && value[1] == L'>'))
+					value = value.substr(2);
 				if (m_ors != NULL && m_ors->size() > 0 && m_ors->find(value) != m_ors->end())
 				{
 					cellFont.SetWeight(wxBOLD);
