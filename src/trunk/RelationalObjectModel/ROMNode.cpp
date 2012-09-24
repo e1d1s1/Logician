@@ -232,7 +232,7 @@ bool ROMNode::DestroyROMObject()
 	m_parent = NULL;
 	m_bChanged = true;
 	//trigger downstream destructors
-	for (long i = m_children.size() - 1; i >= 0; i--)
+	for (size_t i = m_children.size() - 1; i >= 0; i--)
 	{
 		if (i < m_children.size())
 		{
@@ -252,7 +252,7 @@ ROMNode* ROMNode::Clone()
 	newNode->m_attrs = m_attrs;
 	newNode->m_nodeValues = m_nodeValues;
 	newNode->m_bChanged = false;
-	for (long i = m_children.size() - 1; i >= 0; i--)
+	for (size_t i = m_children.size() - 1; i >= 0; i--)
 	{
 		if (i < m_children.size())
 		{
@@ -396,10 +396,10 @@ wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
 	wstring retval = L"";
 	bool bFound = false;
 
-	FASTMAP_MAPS::iterator it = m_attrs.find(id);
+	MAPWSTRMAP::iterator it = m_attrs.find(id);
 	if (it != m_attrs.end())
 	{
-		FASTMAP::iterator itValue = it->second.find(name);
+		MAPWSTRS::iterator itValue = it->second.find(name);
 		if (itValue != it->second.end())
 		{
 			retval = itValue->second;
@@ -422,10 +422,10 @@ wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
 bool ROMNode::GetAttributeExists(wstring id, wstring name)
 {
 	bool bFound = false;
-	FASTMAP_MAPS::iterator it = m_attrs.find(id);
+	MAPWSTRMAP::iterator it = m_attrs.find(id);
 	if (it != m_attrs.end())
 	{
-		FASTMAP::iterator itValue = it->second.find(name);
+		MAPWSTRS::iterator itValue = it->second.find(name);
 		if (itValue != it->second.end())
 		{
 			bFound = true;
@@ -448,7 +448,7 @@ bool ROMNode::RemoveAttribute(wstring id, wstring name)
 {
 	bool retval = false;
 
-	FASTMAP_MAPS::iterator it = m_attrs.find(id);
+	MAPWSTRMAP::iterator it = m_attrs.find(id);
 	if (it != m_attrs.end())
 	{
 		if (name.length() == 0 || name == L"value")
@@ -458,7 +458,7 @@ bool ROMNode::RemoveAttribute(wstring id, wstring name)
 		}
 		else
 		{
-			FASTMAP::iterator itValue = it->second.find(name);
+			MAPWSTRS::iterator itValue = it->second.find(name);
 			if (itValue != it->second.end())
 			{
 				it->second.erase(itValue);
@@ -486,7 +486,7 @@ wstring ROMNode::GetROMObjectValue(wstring name)
 {
 	wstring retval = L"";
 
-	FASTMAP::iterator it = m_nodeValues.find(name);
+	MAPWSTRS::iterator it = m_nodeValues.find(name);
 	if (it != m_nodeValues.end())
 	{
 		retval = it->second;
@@ -499,7 +499,7 @@ bool ROMNode::RemoveROMObjectValue(wstring name)
 {
 	bool retval = false;
 
-	FASTMAP::iterator it = m_nodeValues.find(name);
+	MAPWSTRS::iterator it = m_nodeValues.find(name);
 	if (it != m_nodeValues.end())
 	{
 		m_nodeValues.erase(it);
@@ -841,7 +841,7 @@ wstring ROMNode::_generateXML(bool bRegen)
 
 		//object values
 		wstring objAttrs = L" ";
-		for (FASTMAP::iterator itObjValue = m_nodeValues.begin(); itObjValue != m_nodeValues.end(); itObjValue++)
+		for (MAPWSTRS::iterator itObjValue = m_nodeValues.begin(); itObjValue != m_nodeValues.end(); itObjValue++)
 		{
 			objAttrs+= itObjValue->first;
 			objAttrs+=L"=\"";
@@ -856,12 +856,12 @@ wstring ROMNode::_generateXML(bool bRegen)
 		{
 			wstring allAttrs = L"";
 			//attributes of this object
-			for (FASTMAP_MAPS::iterator it = m_attrs.begin(); it != m_attrs.end(); it++)
+			for (MAPWSTRMAP::iterator it = m_attrs.begin(); it != m_attrs.end(); it++)
 			{
 				wstring attrObject = L"<Attribute id=\"";
 				attrObject+=it->first;
 				attrObject+=L"\" ";
-				for (FASTMAP::iterator itValue = it->second.begin(); itValue != it->second.end(); itValue++)
+				for (MAPWSTRS::iterator itValue = it->second.begin(); itValue != it->second.end(); itValue++)
 				{
 					attrObject+=itValue->first;
 					attrObject+=L"=\"";

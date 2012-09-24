@@ -34,9 +34,9 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 	typedef xmlNodeSetPtr NodeList;
 #endif
 
-#ifdef USE_MSXML
-	#include <atlbase.h>
+#ifdef USE_MSXML	
 #ifndef _WINRT_DLL
+	#include <atlbase.h>
 	#import "msxml6.dll"
 	using namespace MSXML2;
 
@@ -49,7 +49,8 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 	typedef CComPtr<MSXML2::IXMLDOMProcessingInstruction> ProcessingInstruction;
 #else
 	//#include <objbase.h>
-	#include <MsXml6.h>
+	#include <atlbase.h>
+	#include <msxml6.h>
 
 	typedef CComPtr<IXMLDOMAttribute> Attribute;
 	typedef CComPtr<IXMLDOMNode> Node;
@@ -58,10 +59,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 	typedef CComPtr<IXMLDOMElement> Element;
 	typedef CComPtr<IXMLDOMNamedNodeMap> NamedNodeMap;
 	typedef CComPtr<IXMLDOMProcessingInstruction> ProcessingInstruction;
-#endif
-
-	
-	
+#endif	
 
 	#define X(str) _bstr_t(str)
 #endif

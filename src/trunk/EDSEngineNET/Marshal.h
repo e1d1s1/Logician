@@ -36,5 +36,5 @@ void MarshalString ( String ^ s, string& os );
 void MarshalString ( String ^ s, wstring& os );
 void MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict, MAPWSTRUINT &mp);
 
-array<String^>^ GetArrayFromVectorStrings(vector<wstring> vect);
-Dictionary<String^,	array<String^>^>^ GetDictionaryFromMapStrings(map<wstring, vector<wstring> > mp);
+array<String^>^ GetArrayFromVectorStrings(const vector<wstring> &vect);
+Dictionary<String^,	array<String^>^>^ GetDictionaryFromMapStrings(const map<wstring, vector<wstring> > &mp);

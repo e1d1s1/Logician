@@ -17,6 +17,16 @@ IVector<String^>^ GetIVectorFromVectorStrings(const vector<wstring> &vect)
 	return retval;
 }
 
+vector<wstring> GetVectorFromIVectorStrings(IVector<String^>^ vect)
+{
+	vector<wstring> retval;
+	for (auto iter = begin(vect); iter != end(vect); iter++)
+	{
+		retval.push_back((*iter)->Data());
+	}
+	return retval;
+}
+
 IMap<String^, IVector<String^>^>^ GetIMapFromMapStrings(const map<wstring, vector<wstring> > &mp)
 {
 	Map<String^, IVector<String^>^>^ retval = ref new Map<String^, IVector<String^>^>();
@@ -27,13 +37,4 @@ IMap<String^, IVector<String^>^>^ GetIMapFromMapStrings(const map<wstring, vecto
 		retval->Insert(key, vec);
 	}
 	return retval;
-}
-
-void MarshalIMapStringUInt (IMap<String^, size_t>^ dict, MAPWSTRUINT &mp)
-{
-	for (IKeyValuePair<String^, size_t>^ item : dict)
-	{
-		wstring key(item->Key->Data());
-		mp[key] = item->Value;
-	}
 }

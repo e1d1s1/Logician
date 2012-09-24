@@ -58,6 +58,34 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
 using namespace std;
 
+#ifdef _MSC_VER
+	#if (_MSC_VER <= 1600)
+		#include <hash_map>
+		typedef stdext::hash_map<size_t, wstring> MAPUINTWSTR;
+		typedef stdext::hash_map<wstring, size_t> MAPWSTRUINT;
+		typedef stdext::hash_map<string, size_t> MAPSTRUINT;
+		typedef stdext::hash_map<wstring, wstring> MAPWSTRS;
+		typedef stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> > MAPUINTMAP;
+		typedef stdext::hash_map<wstring, stdext::hash_map<wstring, wstring> > MAPWSTRMAP;
+	#else
+		#include <unordered_map>
+		typedef std::unordered_map<size_t, wstring> MAPUINTWSTR;
+		typedef std::unordered_map<wstring, size_t> MAPWSTRUINT;
+		typedef std::unordered_map<string, size_t> MAPSTRUINT;
+		typedef std::unordered_map<wstring, wstring> MAPWSTRS;
+		typedef std::unordered_map<size_t, std::unordered_map<wstring, wstring> > MAPUINTMAP;
+		typedef std::unordered_map<wstring, std::unordered_map<wstring, wstring> > MAPWSTRMAP;
+	#endif
+#else
+	#include <unordered_map>
+	typedef std::unordered_map<size_t, wstring> MAPUINTWSTR;
+	typedef std::unordered_map<wstring, size_t> MAPWSTRUINT;
+	typedef std::unordered_map<string, size_t> MAPSTRUINT;
+	typedef std::unordered_map<wstring, wstring> MAPWSTRS;
+	typedef std::unordered_map<size_t, std::unordered_map<wstring, wstring> > MAPUINTMAP;
+	typedef std::unordered_map<wstring, std::unordered_map<wstring, wstring> > MAPWSTRMAP;
+#endif
+
 #define ATTRIBUTE_NODE L"Attribute"
 #define OBJECT_NODE L"Object"
 #define XSLT_TOP L"<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><xsl:output method=\"text\" omit-xml-declaration=\"yes\" encoding=\"UTF-8\"/>"

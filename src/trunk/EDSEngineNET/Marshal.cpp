@@ -44,7 +44,7 @@ void MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict, MAPWSTRUINT
 	}
 }
 
-array<String^>^ GetArrayFromVectorStrings(vector<wstring> vect)
+array<String^>^ GetArrayFromVectorStrings(const vector<wstring> &vect)
 {
 	array<String^>^ arr = gcnew array<String^>(vect.size());
 	for (size_t i = 0; i < vect.size(); i++)
@@ -54,11 +54,11 @@ array<String^>^ GetArrayFromVectorStrings(vector<wstring> vect)
 	return arr;
 }
 
-Dictionary<String^, array<String^>^>^ GetDictionaryFromMapStrings(map<wstring, vector<wstring> > mp)
+Dictionary<String^, array<String^>^>^ GetDictionaryFromMapStrings(const map<wstring, vector<wstring> > &mp)
 {
 	Dictionary<String^,	array<String^>^>^ dict = gcnew Dictionary<String^, array<String^>^>();
 
-	for (map<wstring, vector<wstring> >::iterator it = mp.begin(); it != mp.end(); it++)
+	for (map<wstring, vector<wstring> >::const_iterator it = mp.begin(); it != mp.end(); it++)
 	{
 		array<String^>^ arr = gcnew array<String^>(it->second.size());
 		for (size_t i = 0; i < it->second.size(); i++)
