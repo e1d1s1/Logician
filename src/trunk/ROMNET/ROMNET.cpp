@@ -57,7 +57,7 @@ namespace ROMNET
 			ROM::ROMNode *parentNode = m_ROMNode->GetParent();
 			if (parentNode)
 			{
-				retval = gcnew ROMNode(gcnew String(parentNode->GetROMObjectID().c_str()));
+				retval = gcnew ROMNode((IntPtr)parentNode);
 			}
 		}
 		return retval;
@@ -202,7 +202,6 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			ROM::ROMNode* node = m_ROMNode->Clone();
-			delete m_ROMNode;
 			retval = gcnew ROMNode((IntPtr)node);
 		}
 		return retval;
@@ -330,12 +329,12 @@ namespace ROMNET
 		Dictionary<String^, Dictionary<String^, String^>^>^ retval = gcnew Dictionary<String^, Dictionary<String^, String^>^>();
 		if (m_ROMNode)
 		{
-			FASTMAP_MAPS attrs = m_ROMNode->GetAllAttributes();
-			for (FASTMAP_MAPS::iterator it = attrs.begin(); it != attrs.end(); it++)
+			MAPWSTRMAP attrs = m_ROMNode->GetAllAttributes();
+			for (MAPWSTRMAP::iterator it = attrs.begin(); it != attrs.end(); it++)
 			{
 				Dictionary<String^, String^>^ dictAttrs = gcnew Dictionary<String^, String^>();
 				String^ key = gcnew String(it->first.c_str());
-				for (FASTMAP::iterator itValues = it->second.begin(); itValues != it->second.end(); itValues++)
+				for (MAPWSTRS::iterator itValues = it->second.begin(); itValues != it->second.end(); itValues++)
 				{
 					dictAttrs->Add(gcnew String(itValues->first.c_str()), gcnew String(itValues->second.c_str()));
 				}

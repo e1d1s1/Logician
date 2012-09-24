@@ -35,6 +35,6 @@ string MarshalStringA ( String ^ s);
 wstring MarshalString ( String ^ s);
 stdext::hash_map<wstring, size_t> MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict);
 
-array<String^>^ GetArrayFromVectorStrings(vector<wstring> vect);
+array<String^>^ GetArrayFromVectorStrings(const vector<wstring> &vect);
 vector<wstring> GetVectorFromArrayStrings(array<String^>^ arr);
-Dictionary<String^,	array<String^>^>^ GetDictionaryFromMapStrings(map<wstring, vector<wstring> > mp);
+Dictionary<String^,	array<String^>^>^ GetDictionaryFromMapStrings(const map<wstring, vector<wstring> > &mp);

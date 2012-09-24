@@ -2,7 +2,6 @@
 #include "KnowledgeBase.h"
 #include <vector>
 #include <map>
-//#include "Marshal.h"
 using namespace std;
 using namespace Platform;
 using namespace Windows::Foundation::Collections;

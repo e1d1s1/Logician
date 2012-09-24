@@ -36,8 +36,8 @@ namespace EDS
 	public:
 		~CKnowledgeBase(void);
 		CKnowledgeBase();
-		CKnowledgeBase(const wstring knowledge_file);
-		bool CreateKnowledgeBase(const wstring knowledge_file);
+		CKnowledgeBase(wstring knowledge_file);
+		bool CreateKnowledgeBase(wstring knowledge_file);
 		bool CreateKnowledgeBaseFromString(wstring xmlStr);
 		size_t TableCount() {return m_TableSet.Count();}
 		bool IsOpen() {return m_IsOpen;}
@@ -45,21 +45,21 @@ namespace EDS
 		void GenerateDebugMessages(bool bGenerate);
 		wstring GetDebugMessages();
 
-		bool TableHasScript(const wstring tableName);
-		bool TableIsGetAll(const wstring tableName);
-		vector<wstring> EvaluateTableWithParam(const wstring tableName, const wstring outputAttr, const wstring param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
-		vector<wstring> EvaluateTableWithParam(const wstring tableName, const wstring outputAttr, const wstring param, bool bGetAll);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(const wstring tableName,const  wstring param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
-		map<wstring, vector<wstring> > EvaluateTableWithParam(const wstring tableName, const wstring param, bool bGetAll);
-		vector<wstring> EvaluateTable(const wstring tableName, const wstring outputAttr) {return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName));}
-		vector<wstring> EvaluateTable(const wstring tableName, const wstring outputAttr, bool bGetAll);
-		map<wstring, vector<wstring> > EvaluateTable(const wstring tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
-		map<wstring, vector<wstring> > EvaluateTable(const wstring tableName, bool bGetAll);
-		wstring GetFirstTableResult(const wstring tableName, const wstring outputAttr);
-		vector<wstring> ReverseEvaluateTable(const wstring tableName, const wstring inputAttr) {return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName));}
-		vector<wstring> ReverseEvaluateTable(const wstring tableName, const wstring inputAttr, bool bGetAll);
-		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
-		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring tableName, bool bGetAll);
+		bool TableHasScript(wstring tableName);
+		bool TableIsGetAll(wstring tableName);
+		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
+		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param, bool bGetAll);
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param, bool bGetAll);
+		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr) {return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName));}
+		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll);
+		map<wstring, vector<wstring> > EvaluateTable(wstring tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
+		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, bool bGetAll);
+		wstring GetFirstTableResult(wstring tableName, wstring outputAttr);
+		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr) {return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName));}
+		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll);
+		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
+		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName, bool bGetAll);
 
 		wstring GetEvalParameter() {return m_StateParameter;}
 		void SetInputValues(MAPWSTRUINT values) 
@@ -82,34 +82,34 @@ namespace EDS
 		wstring Translate(wstring source, wstring sourceLocale, wstring destLocale);
 
 		//ASCII overloads
-		CKnowledgeBase(const string knowledge_file);
-		bool CreateKnowledgeBase(const string knowledge_file);
-		bool CreateKnowledgeBaseFromString(const string xmlStr);
-		bool TableHasScript(const string tableName);
-		bool TableIsGetAll(const string tableName);
-		vector<string> EvaluateTableWithParam(const string tableName, const string outputAttr, const string param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
-		vector<string> EvaluateTableWithParam(const string tableName, const string outputAttr, const string param, bool bGetAll);
-		map<string, vector<string> > EvaluateTableWithParam(const string tableName, const string param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
-		map<string, vector<string> > EvaluateTableWithParam(const string tableName, const string param, bool bGetAll);
-		vector<string> EvaluateTable(const string tableName, const string outputAttr) {return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName));}
-		vector<string> EvaluateTable(const string tableName, const string outputAttr, bool bGetAll);
-		map<string, vector<string> > EvaluateTable(const string tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
-		map<string, vector<string> > EvaluateTable(const string tableName, bool bGetAll);
-		string GetFirstTableResult(const string tableName, const string outputAttr);
-		vector<string> ReverseEvaluateTable(const string tableName, const string inputAttr) {return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName));}
-		vector<string> ReverseEvaluateTable(const string tableName, const string inputAttr, bool bGetAll);
-		map<string, vector<string> > ReverseEvaluateTable(const string tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
-		map<string, vector<string> > ReverseEvaluateTable(const string tableName, bool bGetAll);
+		CKnowledgeBase(string knowledge_file);
+		bool CreateKnowledgeBase(string knowledge_file);
+		bool CreateKnowledgeBaseFromString(string xmlStr);
+		bool TableHasScript(string tableName);
+		bool TableIsGetAll(string tableName);
+		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
+		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string param, bool bGetAll);
+		map<string, vector<string> > EvaluateTableWithParam(string tableName, string param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
+		map<string, vector<string> > EvaluateTableWithParam(string tableName, string param, bool bGetAll);
+		vector<string> EvaluateTable(string tableName, string outputAttr) {return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName));}
+		vector<string> EvaluateTable(string tableName, string outputAttr, bool bGetAll);
+		map<string, vector<string> > EvaluateTable(string tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
+		map<string, vector<string> > EvaluateTable(string tableName, bool bGetAll);
+		string GetFirstTableResult(string tableName, string outputAttr);
+		vector<string> ReverseEvaluateTable(string tableName, string inputAttr) {return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName));}
+		vector<string> ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll);
+		map<string, vector<string> > ReverseEvaluateTable(string tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
+		map<string, vector<string> > ReverseEvaluateTable(string tableName, bool bGetAll);
 		string GetEvalParameterA();
 
 		void SetInputValues(MAPSTRUINT values);
-		void SetInputValue(const string name, const string value);
+		void SetInputValue(string name, string value);
 		size_t GetInputValuesCount() {return m_GlobalInputAttrsValues.size();}
-		void ResetTable(const string tableName);
-		vector<string> GetInputAttrs(const string tableName);
-		vector<string> GetInputDependencies(const string tableName);
-		vector<string> GetOutputAttrs(const string tableName);
-		vector<string> GetAllPossibleOutputs(const string tableName, const string outputName);
+		void ResetTable(string tableName);
+		vector<string> GetInputAttrs(string tableName);
+		vector<string> GetInputDependencies(string tableName);
+		vector<string> GetOutputAttrs(string tableName);
+		vector<string> GetAllPossibleOutputs(string tableName, string outputName);
 
 
 	private:		
@@ -135,7 +135,7 @@ namespace EDS
 
 	//helper functions
 	#ifdef WIN32
-	wstring VariantToWStr(const _variant_t mVar)
+	wstring VariantToWStr(_variant_t mVar)
 	{
 		wstring retval = mVar.bstrVal;
 		return retval;

@@ -27,19 +27,6 @@ using namespace ROMUTIL;
 using namespace std;
 using namespace EDS;
 
-#ifdef _MSC_VER
-	typedef stdext::hash_map<wstring, wstring> FASTMAP;
-	typedef stdext::hash_map<wstring, stdext::hash_map<wstring, wstring> > FASTMAP_MAPS;
-#else
-	#ifdef __GNUC__
-		typedef __gnu_cxx::hash_map<wstring, wstring> FASTMAP;
-		typedef __gnu_cxx::hash_map<wstring, __gnu_cxx::hash_map<wstring, wstring> > FASTMAP_MAPS;
-	#else
-		typedef std::map<wstring, wstring> FASTMAP;
-		typedef std::map<wstring, std::map<wstring, wstring> > FASTMAP_MAPS;
-	#endif
-#endif
-
 namespace ROM
 {
 	class ROMNode
@@ -89,7 +76,7 @@ namespace ROM
 		wstring				GetROMObjectID() {return m_id;}
 		void				SetROMObjectID(wstring id) {m_id = id;}
 		string				GetROMGUID() {return m_guid;}
-		FASTMAP_MAPS		GetAllAttributes() {return m_attrs;}
+		MAPWSTRMAP			GetAllAttributes() {return m_attrs;}
 
 		//rules
 		bool				LoadRules(wstring knowledge_file);
@@ -179,8 +166,8 @@ namespace ROM
 		vector<ROMNode*> m_children;
 		vector<ROMNode*> m_friends;
 		ROMNode* m_parent;
-		FASTMAP_MAPS m_attrs;
-		FASTMAP m_nodeValues;
+		MAPWSTRMAP m_attrs;
+		MAPWSTRS m_nodeValues;
 
 		EDS::CKnowledgeBase		*m_KnowledgeBase;
 	};

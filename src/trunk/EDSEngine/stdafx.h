@@ -61,6 +61,7 @@ using namespace std;
 		typedef stdext::hash_map<string, size_t> MAPSTRUINT;
 		typedef stdext::hash_map<wstring, wstring> MAPWSTRS;
 		typedef stdext::hash_map<size_t, stdext::hash_map<wstring, wstring> > MAPUINTMAP;
+		typedef stdext::hash_map<wstring, stdext::hash_map<wstring, wstring> > MAPWSTRMAP;
 	#else
 		#include <unordered_map>
 		typedef std::unordered_map<size_t, wstring> MAPUINTWSTR;
@@ -68,6 +69,7 @@ using namespace std;
 		typedef std::unordered_map<string, size_t> MAPSTRUINT;
 		typedef std::unordered_map<wstring, wstring> MAPWSTRS;
 		typedef std::unordered_map<size_t, std::unordered_map<wstring, wstring> > MAPUINTMAP;
+		typedef std::unordered_map<wstring, std::unordered_map<wstring, wstring> > MAPWSTRMAP;
 	#endif
 #else
 	#include <unordered_map>
@@ -76,6 +78,7 @@ using namespace std;
 	typedef std::unordered_map<string, size_t> MAPSTRUINT;
 	typedef std::unordered_map<wstring, wstring> MAPWSTRS;
 	typedef std::unordered_map<size_t, std::unordered_map<wstring, wstring> > MAPUINTMAP;
+	typedef std::unordered_map<wstring, std::unordered_map<wstring, wstring> > MAPWSTRMAP;
 #endif
 
 const unsigned short INVALID_STRING = 0;
