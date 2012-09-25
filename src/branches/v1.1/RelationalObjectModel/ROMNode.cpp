@@ -210,11 +210,6 @@ ROMNode* ROMNode::FindObjectByGUID(string guid)
 bool ROMNode::DestroyROMObject()
 {
 	bool retval = true;
-	//remove any references to self in parent node
-	if (m_parent != NULL)
-	{
-		retval = m_parent->RemoveChildROMObject(this);
-	}
 
 	//clear friends
 	for (vector<ROMNode*>::iterator it = m_friends.begin(); it != m_friends.end(); it++)
@@ -226,21 +221,32 @@ bool ROMNode::DestroyROMObject()
 		}
 	}
 
+	//trigger downstream destructors
+	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); )
+	{
+		ROMNode* node = *it;
+		if (node)
+		{			
+			it = m_children.erase(it);
+			delete node;
+		}
+		else
+			++it;
+	}
+
+	//remove any references to self in parent node
+	if (m_parent != NULL)
+	{
+		retval = m_parent->RemoveChildROMObject(this);
+	}
+
 	m_attrs.clear();
 	m_nodeValues.clear();
 	m_id.clear();
 	m_parent = NULL;
 	m_bChanged = true;
-	//trigger downstream destructors
-	for (long i = m_children.size() - 1; i >= 0; i--)
-	{
-		if (i < m_children.size())
-		{
-			ROMNode* node = m_children[i];
-			if (node)
-				delete node;
-		}
-	}
+	
+	m_friends.clear();
 	m_children.clear();
 
 	return retval;
