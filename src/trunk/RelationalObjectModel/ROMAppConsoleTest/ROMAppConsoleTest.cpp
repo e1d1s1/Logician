@@ -151,13 +151,13 @@ int main(int argc, char* argv[])
 		Log(s2);
 
 		Log("Getting attribute list on the base object");
-		FASTMAP_MAPS allAttrs2 = rootNode->GetAllAttributes();
-		for (FASTMAP_MAPS::iterator it = allAttrs2.begin(); it != allAttrs2.end(); it++)
+		MAPWSTRMAP allAttrs2 = rootNode->GetAllAttributes();
+		for (MAPWSTRMAP::iterator it = allAttrs2.begin(); it != allAttrs2.end(); it++)
 		{
 			wstring attrName = it->first;
-			FASTMAP kvp = it->second;
+			MAPWSTRS kvp = it->second;
 			Log(L"Name: " + attrName);
-			for (FASTMAP::iterator it_kvp = kvp.begin(); it_kvp != kvp.end(); it_kvp++)
+			for (MAPWSTRS::iterator it_kvp = kvp.begin(); it_kvp != kvp.end(); it_kvp++)
 			{
 				Log(L"Key: " + it_kvp->first + L" Value: " + it_kvp->second);
 			}
