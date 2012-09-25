@@ -40,8 +40,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
 #ifdef USE_MSXML	
 #ifndef _WINRT_DLL	
-	#import "msxml6.dll"
-	using namespace MSXML2;
+	#import "msxml6.dll"	
 
 	#ifdef NOATL
 		typedef MSXML2::IXMLDOMAttributePtr Attribute;
