@@ -173,7 +173,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;;C:\Python26\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_MSXML;USE_PYTHON;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_MSXML;USE_PYTHON;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING;NOATL"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -235,7 +235,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;;C:\Python26\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;USE_MSXML;USE_PYTHON;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;USE_MSXML;USE_PYTHON;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING;NOATL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -273,146 +273,6 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release MSXML DLL|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			CharacterSet="1"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_MSXML;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="$(BOOST_ROOT)\lib;C:\Python26\libs"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Debug MSXML DLL|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="$(BOOST_ROOT);C:\Python26\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;USE_MSXML;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="4"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="zlib.lib"
-				AdditionalLibraryDirectories="$(BOOST_ROOT)\lib;C:\Python26\libs"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
 			Name="Debug MSXML|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
@@ -438,7 +298,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\zlib-1.2.3.win32\include&quot;;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;USE_MSXML;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;USE_MSXML;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING;NOATL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -505,7 +365,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;..\zlib-1.2.3.win32\include&quot;;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_MSXML;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_MSXML;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING;NOATL"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"

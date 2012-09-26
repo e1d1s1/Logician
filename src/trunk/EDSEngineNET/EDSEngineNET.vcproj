@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\EDSEngine"
-				PreprocessorDefinitions="USE_MSXML"
+				PreprocessorDefinitions="USE_MSXML;NOATL"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -116,7 +116,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\EDSEngine"
-				PreprocessorDefinitions="USE_MSXML"
+				PreprocessorDefinitions="USE_MSXML;NOATL"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
