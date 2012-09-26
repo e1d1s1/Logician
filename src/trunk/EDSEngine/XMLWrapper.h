@@ -34,7 +34,8 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 	typedef xmlNodeSetPtr NodeList;
 #endif
 
-//Turn this on for express versions of Visual Studio.  Not compatible with WinRT libraries.  Otherwise install 
+//Turn this on for express versions of Visual Studio.
+//Not compatible with WinRT libraries.  Otherwise install 
 //the correct platform SDK or Driver DDK to get ATL.
 //#define NOATL
 
@@ -63,7 +64,6 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 
 	
 #else
-	//#include <objbase.h>
 	#include <atlbase.h>
 	#include <msxml6.h>
 
