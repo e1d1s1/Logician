@@ -675,12 +675,7 @@ function ROMNode(id) {
 
     this.DestroyROMObject = function () {
         var retval = true;
-        try {
-            //remove any references to self in parent node
-            if (this.m_parent != null) {
-                retval = this.m_parent.RemoveChildROMObject(this);
-            }
-			
+        try {      
 			//clean friends
 			for (var i = this.m_friends.length - 1; i >= 0; i--) {
 				var friendNode = this.m_friends[i];
@@ -688,7 +683,21 @@ function ROMNode(id) {
 				{
 					friendNode.RemoveFriend(this);
 				}
-			}
+			}            
+            
+            //trigger downstream destructors
+            for (var i = this.m_children.length - 1; i >= 0; i--) {
+                if (i < this.m_children.length) {
+                    var node = m_children[i];
+                    if (node)
+                        delete node;
+                }
+            }
+
+            //remove any references to self in parent node
+            if (this.m_parent != null) {
+                retval = this.m_parent.RemoveChildROMObject(this);
+            }
 
             if (this.m_attrs != null)
                 delete this.m_attrs;
@@ -699,14 +708,6 @@ function ROMNode(id) {
             this.m_id = "";
             this.m_parent = null;
             this.m_bChanged = false;
-            //trigger downstream destructors
-            for (var i = this.m_children.length - 1; i >= 0; i--) {
-                if (i < this.m_children.length) {
-                    var node = m_children[i];
-                    if (node)
-                        delete node;
-                }
-            }
             if (this.m_children != null)
                 delete this.m_children;
             this.m_children = new Array();
