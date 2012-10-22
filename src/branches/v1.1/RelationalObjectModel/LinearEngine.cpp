@@ -449,9 +449,16 @@ namespace ROM
 				dMax = atof(strMax.c_str());
 #endif
 				if (dNewValue <= dMax && dNewValue >= dMin)
-				{
-					m_ROMContext->SetAttribute(dictAttrName, newValue);
-			
+				{					
+					if (newValue.length() == 0 || !ROMUTIL::StringIsNumeric(newValue))
+					{
+						wstring wstrMin(vals[0].begin(), vals[0].end());
+						m_ROMContext->SetAttribute(dictAttrName, wstrMin);
+					}
+					else
+					{
+						m_ROMContext->SetAttribute(dictAttrName, newValue);
+					}
 				}
 				else if (dNewValue > dMax)
 				{

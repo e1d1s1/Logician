@@ -274,7 +274,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug MSXML|Win32"
-			OutputDirectory="$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="2"
