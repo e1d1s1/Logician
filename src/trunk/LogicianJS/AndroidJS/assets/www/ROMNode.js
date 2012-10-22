@@ -146,6 +146,24 @@ function decodeXml(string) {
     });
 }
 
+var numb = '0123456789';
+var lwr = 'abcdefghijklmnopqrstuvwxyz';
+var upr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+function isValid(parm,val) {
+if (parm == "") return true;
+for (i=0; i<parm.length; i++) {
+if (val.indexOf(parm.charAt(i),0) == -1) return false;
+}
+return true;
+}
+
+function isNumber(parm) {return isValid(parm,numb);}
+function isLower(parm) {return isValid(parm,lwr);}
+function isUpper(parm) {return isValid(parm,upr);}
+function isAlpha(parm) {return isValid(parm,lwr+upr);}
+function isAlphanum(parm) {return isValid(parm,lwr+upr+numb);} 
+
 // flash support //////////////////////////////////////////////////////////////
 var ActiveROMObjects = new Array(); //for flash access, guid keyed objects
 var ActiveROMDictionaryAttributes = new Array();
@@ -675,7 +693,12 @@ function ROMNode(id) {
 
     this.DestroyROMObject = function () {
         var retval = true;
-        try {      
+        try {
+            //remove any references to self in parent node
+            if (this.m_parent != null) {
+                retval = this.m_parent.RemoveChildROMObject(this);
+            }
+			
 			//clean friends
 			for (var i = this.m_friends.length - 1; i >= 0; i--) {
 				var friendNode = this.m_friends[i];
@@ -683,21 +706,7 @@ function ROMNode(id) {
 				{
 					friendNode.RemoveFriend(this);
 				}
-			}            
-            
-            //trigger downstream destructors
-            for (var i = this.m_children.length - 1; i >= 0; i--) {
-                if (i < this.m_children.length) {
-                    var node = m_children[i];
-                    if (node)
-                        delete node;
-                }
-            }
-
-            //remove any references to self in parent node
-            if (this.m_parent != null) {
-                retval = this.m_parent.RemoveChildROMObject(this);
-            }
+			}
 
             if (this.m_attrs != null)
                 delete this.m_attrs;
@@ -708,6 +717,14 @@ function ROMNode(id) {
             this.m_id = "";
             this.m_parent = null;
             this.m_bChanged = false;
+            //trigger downstream destructors
+            for (var i = this.m_children.length - 1; i >= 0; i--) {
+                if (i < this.m_children.length) {
+                    var node = m_children[i];
+                    if (node)
+                        delete node;
+                }
+            }
             if (this.m_children != null)
                 delete this.m_children;
             this.m_children = new Array();
@@ -2163,11 +2180,19 @@ function LinearEngine(context, dictionaryTable) {
 
                         var vals = val.split(",");
                         dNewValue = parseFloat(newValue);
+                        if (isNaN(dNewValue))
+                            dNewValue = 0;
                         dMin = parseFloat(vals[0]);
                         dMax = parseFloat(vals[1]);
 
                         if (dNewValue <= dMax && dNewValue >= dMin) {
-                            this.base.m_context.SetAttribute(dictAttrName, newValue);
+                            if (newValue.length == 0 || !isNumber(newValue))
+                            {
+                                var wstrMin = vals[0];
+                                this.base.m_context.SetAttribute(dictAttrName, wstrMin);
+                            }
+                            else
+                                this.base.m_context.SetAttribute(dictAttrName, newValue);
                         }
                         else if (dNewValue > dMax) {
                             if (setTheValue)

@@ -146,6 +146,24 @@ function decodeXml(string) {
     });
 }
 
+var numb = '0123456789';
+var lwr = 'abcdefghijklmnopqrstuvwxyz';
+var upr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+function isValid(parm,val) {
+if (parm == "") return true;
+for (i=0; i<parm.length; i++) {
+if (val.indexOf(parm.charAt(i),0) == -1) return false;
+}
+return true;
+}
+
+function isNumber(parm) {return isValid(parm,numb);}
+function isLower(parm) {return isValid(parm,lwr);}
+function isUpper(parm) {return isValid(parm,upr);}
+function isAlpha(parm) {return isValid(parm,lwr+upr);}
+function isAlphanum(parm) {return isValid(parm,lwr+upr+numb);} 
+
 // flash support //////////////////////////////////////////////////////////////
 var ActiveROMObjects = new Array(); //for flash access, guid keyed objects
 var ActiveROMDictionaryAttributes = new Array();
@@ -2162,11 +2180,19 @@ function LinearEngine(context, dictionaryTable) {
 
                         var vals = val.split(",");
                         dNewValue = parseFloat(newValue);
+                        if (isNaN(dNewValue))
+                            dNewValue = 0;
                         dMin = parseFloat(vals[0]);
                         dMax = parseFloat(vals[1]);
 
                         if (dNewValue <= dMax && dNewValue >= dMin) {
-                            this.base.m_context.SetAttribute(dictAttrName, newValue);
+                            if (newValue.length == 0 || !isNumber(newValue))
+                            {
+                                var wstrMin = vals[0];
+                                this.base.m_context.SetAttribute(dictAttrName, wstrMin);
+                            }
+                            else
+                                this.base.m_context.SetAttribute(dictAttrName, newValue);
                         }
                         else if (dNewValue > dMax) {
                             if (setTheValue)
