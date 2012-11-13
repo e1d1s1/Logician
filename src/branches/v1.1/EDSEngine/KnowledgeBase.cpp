@@ -704,16 +704,11 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 {
 	bool retval = false;
 #ifdef USE_MSXML
-	Document	xmlDocument;
-	xmlDocument = NULL;
-	xmlDocument.CreateInstance(L"MSXML2.DOMDocument.6.0");
+	Document xmlDocument = _createMSXMLDoc();	
 	xmlDocument->async = VARIANT_FALSE;
 	xmlDocument->resolveExternals = VARIANT_FALSE;
 	xmlDocument->setProperty("SelectionLanguage", "XPath");
-	xmlDocument->setProperty("SelectionNamespaces", "");
-	//// Turn on the new parser in MSXML6 for better standards compliance (leading whitespaces in attr values);
-	////this must be done prior to loading the document
-	xmlDocument->setProperty("NewParser", VARIANT_TRUE);
+	xmlDocument->setProperty("SelectionNamespaces", "");		
 
 	try
 	{
@@ -728,6 +723,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 		ReportError(ToASCIIString((wstring)(e.Description())));
 	}
 	xmlDocument.Release();
+	
 #endif
 
 #ifdef USE_LIBXML
@@ -747,6 +743,34 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 	m_TableSet.Initialize();
 	return retval;
 }
+
+#ifdef USE_MSXML
+Document EDS::CKnowledgeBase::_createMSXMLDoc()
+{
+	Document doc;
+	doc = NULL;
+	HRESULT hr = doc.CreateInstance("MSXML2.DOMDocument.6.0");
+	if (hr == S_OK)
+	{
+		//// Turn on the new parser in MSXML6 for better standards compliance (leading whitespaces in attr values);
+		////this must be done prior to loading the document
+		doc->setProperty("NewParser", VARIANT_TRUE);
+	}
+	hr = (hr == S_OK) ? hr : doc.CreateInstance("MSXML2.DOMDocument.5.0");
+	hr = (hr == S_OK) ? hr : doc.CreateInstance("MSXML2.DOMDocument.4.0");
+	hr = (hr == S_OK) ? hr : doc.CreateInstance("MSXML2.DOMDocument.3.0");
+	if (hr == S_OK)
+	{
+		doc->async = VARIANT_FALSE;
+		doc->resolveExternals = VARIANT_FALSE;
+		doc->setProperty("SelectionLanguage", "XPath");
+		doc->setProperty("SelectionNamespaces", "");
+	}
+	hr = (hr == S_OK) ? hr : doc.CreateInstance("MSXML2.DOMDocument.2.6");
+	hr = (hr == S_OK) ? hr : doc.CreateInstance("MSXML2.DOMDocument");
+	return doc;
+}
+#endif
 
 bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 {
@@ -1072,9 +1096,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 
 		//parse the table from xml
 		#ifdef USE_MSXML
-			Document	xmlDocument;
-			xmlDocument = NULL;
-			xmlDocument.CreateInstance(L"MSXML2.DOMDocument.6.0");
+			Document xmlDocument =	_createMSXMLDoc();			
 			xmlDocument->async = VARIANT_FALSE;
 			xmlDocument->resolveExternals = VARIANT_FALSE;
 			xmlDocument->setProperty("SelectionLanguage", "XPath");
@@ -1097,6 +1119,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 				ReportError(ToASCIIString((wstring)(e.Description())));
 			}
 			xmlDocument.Release();
+			
 		#endif
 
 		#ifdef USE_LIBXML

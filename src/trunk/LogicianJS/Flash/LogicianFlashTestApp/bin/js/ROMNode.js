@@ -2146,6 +2146,13 @@ function LinearEngine(context, dictionaryTable) {
                 this.base.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
                 this.base.m_dict[dictAttrName].Enabled = true;
                 this.base.m_dict[dictAttrName].Valid = true;
+                //if no rules table defined, allow any value
+                if (this.base.m_dict[dictAttrName].RuleTable.length == 0)
+                {
+                    this.base.m_context.SetAttribute(dictAttrName, newValue);
+                    return;
+                }
+
                 var setTheValue = true;
                 if (this.InvalidateMode != Enum.INVALIDATEMODE_E.NORMALINVALIDATE)
                 {

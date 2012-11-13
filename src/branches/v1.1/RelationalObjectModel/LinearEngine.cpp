@@ -398,10 +398,17 @@ namespace ROM
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
 
-		vector<wstring> prefixes = ParseOutPrefixes(EDIT, res, availableValues);
+		vector<wstring> prefixes = ParseOutPrefixes(EDIT, res, availableValues);		
+
 		m_dict[dictAttrName].AvailableValues = availableValues;
 		m_dict[dictAttrName].Enabled = true;
-		m_dict[dictAttrName].Valid = true;
+		m_dict[dictAttrName].Valid = true;		
+		//if no rules table defined, allow any value
+		if (m_dict[dictAttrName].RuleTable.size() == 0)
+		{
+			m_ROMContext->SetAttribute(dictAttrName, newValue);		
+			return;
+		}
 
 		bool setTheValue = true;
 		if (InvalidateMode != NORMALINVALIDATE)

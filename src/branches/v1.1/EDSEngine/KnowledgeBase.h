@@ -133,6 +133,9 @@ namespace EDS
 	#else
 		__gnu_cxx::hash_map<wstring, size_t> m_GlobalInputAttrsValues;
 	#endif
+	#ifdef USE_MSXML
+		Document _createMSXMLDoc();
+	#endif
 		wstring m_StateParameter;
 		CBimapper m_stringsMap;
 		CTableSet m_TableSet;

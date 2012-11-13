@@ -22,7 +22,7 @@ namespace EDSEngineTestApp
             }
 
             knowledge.DebugDelegate = write_debug;
-            knowledge.SetDebugging(true);
+            knowledge.SetDebugging(false);
 
             var cnt = knowledge.TableCount();
             if (cnt == 13)

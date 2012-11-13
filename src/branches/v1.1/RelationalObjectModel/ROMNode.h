@@ -50,13 +50,12 @@ namespace ROM
 		~ROMNode(void);
 		ROMNode(){_init();}
 		ROMNode(wstring id) {CreateROMNode(id);}
-		ROMNode(string id) {CreateROMNode(id);}
+		ROMNode(string id) {CreateROMNode(id);}		
 		void CreateROMNode(wstring id);
 		void CreateROMNode(string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
 		void				SetTableDebugHandler(DebugHandler debugger);
 		void				GenerateTableDebugMessages(bool bGenerate);
-		wstring				GetTableDebugMessages();
-		
+		wstring				GetTableDebugMessages();	
 
 		//relational functions
 		ROMNode*			GetRoot();		
@@ -169,6 +168,9 @@ namespace ROM
 		wstring					_convertXMLDocToString(bool indented);
 		EDS::CKnowledgeBase*	_getKnowledge();
 		void					_init();
+#ifdef USE_MSXML
+		Document				_createMSXMLDoc();
+#endif
 
 		wstring m_id;
 		string m_guid;
