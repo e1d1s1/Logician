@@ -37,7 +37,6 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 #ifdef USE_MSXML
 	#import "msxml6.dll"
 
-	using namespace MSXML2;
 	typedef MSXML2::IXMLDOMAttributePtr Attribute;
 	typedef MSXML2::IXMLDOMNodePtr Node;
 	typedef MSXML2::IXMLDOMNodeListPtr NodeList;
