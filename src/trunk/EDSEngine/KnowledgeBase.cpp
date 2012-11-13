@@ -706,10 +706,10 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 #ifdef USE_MSXML
 	Document	xmlDocument;
 	xmlDocument = NULL;
-#ifdef NOATL
-	xmlDocument.CreateInstance(L"MSXML2.DOMDocument.6.0");
-#else
+#ifdef USEATL
 	xmlDocument.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
+#else
+	xmlDocument.CreateInstance(L"MSXML2.DOMDocument.6.0");
 #endif
 	xmlDocument->async = VARIANT_FALSE;
 	xmlDocument->resolveExternals = VARIANT_FALSE;
@@ -1062,10 +1062,10 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 		#ifdef USE_MSXML
 			Document	xmlDocument;
 			xmlDocument = NULL;
-			#ifdef NOATL
-				xmlDocument.CreateInstance(L"MSXML2.DOMDocument.6.0");
-			#else
+			#ifdef USEATL
 				xmlDocument.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
+			#else
+				xmlDocument.CreateInstance(L"MSXML2.DOMDocument.6.0");
 			#endif
 			xmlDocument->async = VARIANT_FALSE;
 			xmlDocument->resolveExternals = VARIANT_FALSE;

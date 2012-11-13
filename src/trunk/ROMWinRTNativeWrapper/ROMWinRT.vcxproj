@@ -28,10 +28,10 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
-    <ProjectGuid>{372aa644-1819-4ed7-8a7d-605704256e9b}</ProjectGuid>
+    <ProjectGuid>{787b63b6-0879-4f02-800e-6aeb17dedc67}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>EDSEngineWinRT</ProjectName>
-    <RootNamespace>EDSEngineWinRT</RootNamespace>
+    <ProjectName>ROMWinRT</ProjectName>
+    <RootNamespace>ROMWinRT</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -117,13 +117,13 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\EDSEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RelationalObjectModel;..\EDSEngine;$(ProjectDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>runtimeobject.lib;msxml6.lib;EDSEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;msxml6.lib;EDSEngine.lib;RelationalObjectModel.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>..\EDSEngine\Debug MSXML;$(BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\Debug MSXML;..\RelationalObjectModel\Debug MSXML;$(BOOST_ROOT)\lib;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -134,13 +134,13 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\EDSEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RelationalObjectModel;..\EDSEngine;$(ProjectDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>runtimeobject.lib;msxml6.lib;EDSEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;msxml6.lib;EDSEngine.lib;RelationalObjectModel.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>..\EDSEngine\Release MSXML;$(BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\Release MSXML;..\RelationalObjectModel\Release MSXML;$(BOOST_ROOT)\lib;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -206,7 +206,7 @@
   <ItemGroup>
     <ClInclude Include="Marshall.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include=".\EDSEngine.h" />
+    <ClInclude Include=".\ROMWinRT.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Marshall.cpp" />
@@ -218,7 +218,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include=".\EDSEngine.cpp" />
+    <ClCompile Include=".\ROMWinRT.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
