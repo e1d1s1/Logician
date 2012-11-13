@@ -34,24 +34,11 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 	typedef xmlNodeSetPtr NodeList;
 #endif
 
-//Turn this on for express versions of Visual Studio.
-//Not compatible with WinRT libraries.  Otherwise install 
-//the correct platform SDK or Driver DDK to get ATL.
-//#define NOATL
-
 #ifdef USE_MSXML	
-#ifndef _WINRT_DLL	
+#ifndef _WINRT_DLL //future experimental
 	#import "msxml6.dll"	
 
-	#ifdef NOATL
-		typedef MSXML2::IXMLDOMAttributePtr Attribute;
-		typedef MSXML2::IXMLDOMNodePtr Node;
-		typedef MSXML2::IXMLDOMNodeListPtr NodeList;
-		typedef MSXML2::IXMLDOMDocument2Ptr Document;
-		typedef MSXML2::IXMLDOMElementPtr Element;
-		typedef MSXML2::IXMLDOMNamedNodeMapPtr NamedNodeMap;
-		typedef MSXML2::IXMLDOMProcessingInstructionPtr ProcessingInstruction;
-	#else
+	#ifdef USEATL
 		#include <atlbase.h>
 		typedef CComPtr<MSXML2::IXMLDOMAttribute> Attribute;
 		typedef CComPtr<MSXML2::IXMLDOMNode> Node;
@@ -60,9 +47,15 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 		typedef CComPtr<MSXML2::IXMLDOMElement> Element;
 		typedef CComPtr<MSXML2::IXMLDOMNamedNodeMap> NamedNodeMap;
 		typedef CComPtr<MSXML2::IXMLDOMProcessingInstruction> ProcessingInstruction;
-	#endif
-
-	
+	#else
+		typedef MSXML2::IXMLDOMAttributePtr Attribute;
+		typedef MSXML2::IXMLDOMNodePtr Node;
+		typedef MSXML2::IXMLDOMNodeListPtr NodeList;
+		typedef MSXML2::IXMLDOMDocument2Ptr Document;
+		typedef MSXML2::IXMLDOMElementPtr Element;
+		typedef MSXML2::IXMLDOMNamedNodeMapPtr NamedNodeMap;
+		typedef MSXML2::IXMLDOMProcessingInstructionPtr ProcessingInstruction;
+	#endif	
 #else
 	#include <atlbase.h>
 	#include <msxml6.h>

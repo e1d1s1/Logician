@@ -792,10 +792,10 @@ void ROMNode::_createXMLDoc(bool bForceLoad)
 #ifdef USE_MSXML
 		if (m_xmlDoc != NULL)
 			m_xmlDoc.Release();
-#ifdef NOATL
-		m_xmlDoc.CreateInstance(L"MSXML2.DOMDocument.6.0");
-#else
+#ifdef USEATL
 		m_xmlDoc.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
+#else
+		m_xmlDoc.CreateInstance(L"MSXML2.DOMDocument.6.0");
 #endif
 		m_xmlDoc->async = VARIANT_FALSE;
 		m_xmlDoc->resolveExternals = VARIANT_FALSE;
@@ -921,10 +921,10 @@ bool ROMNode::LoadXML(wstring xmlStr)
 	if (m_xmlDoc != NULL)
 		m_xmlDoc.Release();
 
-#ifdef NOATL
-	m_xmlDoc.CreateInstance(L"MSXML2.DOMDocument.6.0");
-#else
+#ifdef USEATL
 	m_xmlDoc.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
+#else
+	m_xmlDoc.CreateInstance(L"MSXML2.DOMDocument.6.0");
 #endif
 	m_xmlDoc->async = VARIANT_FALSE;
 	m_xmlDoc->resolveExternals = VARIANT_FALSE;
@@ -1153,10 +1153,10 @@ wstring	ROMNode::EvaluateXPATH(wstring xpath, string guid)
 	if (m_xmlDoc != NULL)
 	{
 #ifdef USE_MSXML
-#ifdef NOATL
-		xsltDoc.CreateInstance(L"MSXML2.DOMDocument.6.0");
-#else
+#ifdef USEATL
 		xsltDoc.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
+#else
+		xsltDoc.CreateInstance(L"MSXML2.DOMDocument.6.0");
 #endif
 		xsltDoc->loadXML(xslt_text.c_str());
 		retval = ToWString(m_xmlDoc->transformNode(xsltDoc));
