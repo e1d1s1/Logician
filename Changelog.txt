@@ -1,3 +1,6 @@
+v1.1.6 - 11/13/2012
+Fixed issue with EDIT attributes when no rule table is defined, attribute should allow any value. #3586609
+
 v1.1.5 - 10/22/2012
 Fixed bug with EDIT attribute numberic range evaluation #3579038
 
