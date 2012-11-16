@@ -792,15 +792,7 @@ void ROMNode::_createXMLDoc(bool bForceLoad)
 #ifdef USE_MSXML
 		if (m_xmlDoc != NULL)
 			m_xmlDoc.Release();
-#ifdef USEATL
-		m_xmlDoc.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
-#else
-		m_xmlDoc.CreateInstance(L"MSXML2.DOMDocument.6.0");
-#endif
-		m_xmlDoc->async = VARIANT_FALSE;
-		m_xmlDoc->resolveExternals = VARIANT_FALSE;
-		m_xmlDoc->setProperty("SelectionLanguage", "XPath");
-		m_xmlDoc->setProperty("SelectionNamespaces", "");
+		m_xmlDoc = _createMSXMLDoc();
 		VARIANT_BOOL res = m_xmlDoc->loadXML(genXML.c_str()); //-1 is true
 #endif
 #ifdef USE_LIBXML
@@ -811,6 +803,59 @@ void ROMNode::_createXMLDoc(bool bForceLoad)
 		_setAllUnchanged();
 	}
 }
+
+#ifdef USE_MSXML
+Document ROMNode::_createMSXMLDoc()
+{
+	Document doc;
+	doc = NULL;
+	#ifdef USEATL
+		HRESULT hr = doc.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
+	#else
+		HRESULT hr = doc.CreateInstance(L"MSXML2.DOMDocument.6.0");
+	#endif
+
+	#ifdef USEATL
+		hr = (hr == S_OK) ? hr : doc.CoCreateInstance(L"MSXML2.DOMDocument.5.0");
+	#else
+		hr = (hr == S_OK) ? hr : doc.CreateInstance(L"MSXML2.DOMDocument.5.0");
+	#endif
+
+	#ifdef USEATL
+		hr = (hr == S_OK) ? hr : doc.CoCreateInstance(L"MSXML2.DOMDocument.4.0");
+	#else
+		hr = (hr == S_OK) ? hr : doc.CreateInstance(L"MSXML2.DOMDocument.4.0");
+	#endif
+
+	#ifdef USEATL
+		hr = (hr == S_OK) ? hr : doc.CoCreateInstance(L"MSXML2.DOMDocument.3.0");
+	#else
+		hr = (hr == S_OK) ? hr : doc.CreateInstance(L"MSXML2.DOMDocument.3.0");
+	#endif
+
+	if (hr == S_OK)
+	{
+		doc->async = VARIANT_FALSE;
+		doc->resolveExternals = VARIANT_FALSE;
+		doc->setProperty("SelectionLanguage", "XPath");
+		doc->setProperty("SelectionNamespaces", "");
+	}
+
+	#ifdef USEATL
+		hr = (hr == S_OK) ? hr : doc.CoCreateInstance(L"MSXML2.DOMDocument.2.6");
+	#else
+		hr = (hr == S_OK) ? hr : doc.CreateInstance(L"MSXML2.DOMDocument.2.6");
+	#endif
+
+	#ifdef USEATL
+		hr = (hr == S_OK) ? hr : doc.CoCreateInstance(L"MSXML2.DOMDocument");
+	#else
+		hr = (hr == S_OK) ? hr : doc.CreateInstance(L"MSXML2.DOMDocument");
+	#endif
+
+	return doc;
+}
+#endif
 
 bool ROMNode::_anyHasChanged()
 {
@@ -921,15 +966,7 @@ bool ROMNode::LoadXML(wstring xmlStr)
 	if (m_xmlDoc != NULL)
 		m_xmlDoc.Release();
 
-#ifdef USEATL
-	m_xmlDoc.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
-#else
-	m_xmlDoc.CreateInstance(L"MSXML2.DOMDocument.6.0");
-#endif
-	m_xmlDoc->async = VARIANT_FALSE;
-	m_xmlDoc->resolveExternals = VARIANT_FALSE;
-	m_xmlDoc->setProperty("SelectionLanguage", "XPath");
-	m_xmlDoc->setProperty("SelectionNamespaces", "");
+	m_xmlDoc = _createMSXMLDoc();
 
 	try
 	{
@@ -1148,23 +1185,18 @@ wstring	ROMNode::EvaluateXPATH(wstring xpath, string guid)
 	match += ROMUTIL::MBCStrToWStr(guid) + L"\']\"><xsl:value-of select=\"";
 	wstring xslt_text = XSLT_TOP + match + xpath + XSLT_BOTTOM;
 
-	Document xsltDoc = NULL;	
 	_createXMLDoc();
 	if (m_xmlDoc != NULL)
 	{
 #ifdef USE_MSXML
-#ifdef USEATL
-		xsltDoc.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
-#else
-		xsltDoc.CreateInstance(L"MSXML2.DOMDocument.6.0");
-#endif
+		Document xsltDoc =_createMSXMLDoc();		
 		xsltDoc->loadXML(xslt_text.c_str());
 		retval = ToWString(m_xmlDoc->transformNode(xsltDoc));
 		xsltDoc.Release();
 #endif
 #ifdef USE_LIBXML
 		string buff = WStrToMBCStr(xslt_text);
-		xsltDoc = xmlParseMemory(buff.c_str(), (int)buff.length());
+		Document xsltDoc = xmlParseMemory(buff.c_str(), (int)buff.length());
 
 		xsltStylesheetPtr xsl = xsltParseStylesheetDoc(xsltDoc);
 		Document result = xsltApplyStylesheet(xsl, m_xmlDoc, NULL);

@@ -156,6 +156,9 @@ namespace ROM
 		wstring					_convertXMLDocToString(bool indented);
 		EDS::CKnowledgeBase*	_getKnowledge();
 		void					_init();
+#ifdef USE_MSXML
+		Document				_createMSXMLDoc();
+#endif
 
 		wstring m_id;
 		string m_guid;
