@@ -551,7 +551,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bimapper.cpp" />
-    <ClCompile Include="DataBase.cpp" />
     <ClCompile Include="Decode.cpp" />
     <ClCompile Include="EDSEngine.cpp" />
     <ClCompile Include="KnowledgeBase.cpp" />
@@ -562,7 +561,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bimapper.h" />
-    <ClInclude Include="DataBase.h" />
     <ClInclude Include="Decode.h" />
     <ClInclude Include="KnowledgeBase.h" />
     <ClInclude Include="Numerics.h" />
@@ -572,9 +570,6 @@
     <ClInclude Include="TableSet.h" />
     <ClInclude Include="utilities.h" />
     <ClInclude Include="XMLWrapper.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
