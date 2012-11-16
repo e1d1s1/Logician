@@ -305,7 +305,7 @@ namespace ROM
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName, false);
 		vector<wstring> availableValues;
 
-		vector<wstring> prefixes = ParseOutPrefixes(res, availableValues);
+		vector<wstring> prefixes = ParseOutPrefixes(BOOLEANSELECT, res, availableValues);
 		m_dict[dictAttrName].AvailableValues = availableValues;
 
 		if (prefixes.size() > 0 && prefixes[0].length() > 0 && prefixes[0][0] == L'^')
@@ -398,10 +398,17 @@ namespace ROM
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
 
-		vector<wstring> prefixes = ParseOutPrefixes(res, availableValues);
+		vector<wstring> prefixes = ParseOutPrefixes(EDIT, res, availableValues);		
+
 		m_dict[dictAttrName].AvailableValues = availableValues;
 		m_dict[dictAttrName].Enabled = true;
-		m_dict[dictAttrName].Valid = true;
+		m_dict[dictAttrName].Valid = true;		
+		//if no rules table defined, allow any value
+		if (m_dict[dictAttrName].RuleTable.size() == 0)
+		{
+			m_ROMContext->SetAttribute(dictAttrName, newValue);		
+			return;
+		}
 
 		bool setTheValue = true;
 		if (InvalidateMode != NORMALINVALIDATE)
@@ -449,9 +456,16 @@ namespace ROM
 				dMax = atof(strMax.c_str());
 #endif
 				if (dNewValue <= dMax && dNewValue >= dMin)
-				{
-					m_ROMContext->SetAttribute(dictAttrName, newValue);
-			
+				{					
+					if (newValue.length() == 0 || !ROMUTIL::StringIsNumeric(newValue))
+					{
+						wstring wstrMin(vals[0].begin(), vals[0].end());
+						m_ROMContext->SetAttribute(dictAttrName, wstrMin);
+					}
+					else
+					{
+						m_ROMContext->SetAttribute(dictAttrName, newValue);
+					}
 				}
 				else if (dNewValue > dMax)
 				{
@@ -538,7 +552,7 @@ namespace ROM
 		m_dict[dictAttrName].Enabled = true;
 		m_dict[dictAttrName].Valid = true;
 
-		vector<wstring> prefixes = ParseOutPrefixes(res, availableValues);
+		vector<wstring> prefixes = ParseOutPrefixes(MULTISELECT, res, availableValues);
 		m_dict[dictAttrName].AvailableValues = availableValues;
 
 		wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, false);
@@ -641,7 +655,7 @@ namespace ROM
 		m_dict[dictAttrName].Valid = true;
 
 		//the list of results is what is available for selection in the control
-		vector<wstring> prefixes = ParseOutPrefixes(res, availableValues);
+		vector<wstring> prefixes = ParseOutPrefixes(SINGLESELECT, res, availableValues);
 		m_dict[dictAttrName].AvailableValues = availableValues;
 		bool bFound = find(availableValues.begin(), availableValues.end(), newValue) != availableValues.end();
 
@@ -723,7 +737,7 @@ namespace ROM
 		}
 	}
 
-	vector<wstring> LinearEngine::ParseOutPrefixes(vector<wstring> values, vector<wstring> &valuesWithoutPrefixes)
+	vector<wstring> LinearEngine::ParseOutPrefixes(int AttributeType, vector<wstring> values, vector<wstring> &valuesWithoutPrefixes)
 	{
 		vector<wstring> origValues = values;
 		vector<wstring> prefixes;
@@ -738,21 +752,21 @@ namespace ROM
 			if (ROMUTIL::StringContains(val, INVISPREFIX))
 			{
 				fullPrefix+=INVISPREFIX;
-				val = ROMUTIL::FindAndReplace(val, INVISPREFIX, L"");
+				val = val.substr(INVISPREFIX.length());
 			}
 
 			//check for leadoff @ indicating a default
 			if (ROMUTIL::StringContains(val, DEFAULTPREFIX))
 			{
 				fullPrefix+=DEFAULTPREFIX;
-				val = ROMUTIL::FindAndReplace(val, DEFAULTPREFIX, L"");
+				val = val.substr(DEFAULTPREFIX.length());
 			}
 
 			//check for leadoff # indicating a locked edit box
-			if (ROMUTIL::StringContains(val, DISABLEPREFIX))
+			if (AttributeType == EDIT && ROMUTIL::StringContains(val, DISABLEPREFIX))
 			{
 				fullPrefix+=DISABLEPREFIX;
-				val = ROMUTIL::FindAndReplace(val, DISABLEPREFIX, L"");
+				val = val.substr(DISABLEPREFIX.length());
 			}
 
 			prefixes.push_back(fullPrefix);

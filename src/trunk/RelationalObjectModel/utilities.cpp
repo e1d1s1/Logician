@@ -72,6 +72,16 @@ bool ROMUTIL::StringContains(wstring source, wstring target)
 	return retval;
 }
 
+bool ROMUTIL::StringBeginsWith(wstring source, wstring target)
+{
+	bool retval = false;
+
+	if (source.find(target, 0) == 0)
+		retval = true;
+
+	return retval;
+}
+
 vector<string> ROMUTIL::Split(string text, string separators)
 {
 	vector<string> retval;
@@ -213,6 +223,26 @@ string ROMUTIL::MakeGUID()
 	ss << u;
 	guid = ss.str();	
 	return guid;
+}
+
+std::wstring ROMUTIL::encodeForXml(const std::wstring &sSrc)
+{
+    wostringstream sRet;
+    for( wstring::const_iterator iter = sSrc.begin(); iter!=sSrc.end(); iter++ )
+    {
+         wchar_t c = (wchar_t)*iter;
+         switch( c )
+         {
+             case L'&': sRet << L"&amp;"; break;
+             case L'<': sRet << L"&lt;"; break;
+             case L'>': sRet << L"&gt;"; break;
+             case L'"': sRet << L"&quot;"; break;
+             case L'\'': sRet << L"&apos;"; break;
+             default:
+				sRet << c;              
+         }
+    }
+    return sRet.str();
 }
 
 #ifdef USE_MSXML
