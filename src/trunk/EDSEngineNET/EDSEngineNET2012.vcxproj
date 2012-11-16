@@ -120,9 +120,6 @@
     <ClInclude Include=".\Stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include=".\app.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include=".\app.rc" />
   </ItemGroup>
   <ItemGroup>
