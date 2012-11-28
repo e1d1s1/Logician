@@ -47,7 +47,6 @@ using namespace std;
 class CRuleTable
 {
 	friend class CTableSet;
-	friend class CKnowledgeBase;
 
 public:
 	CRuleTable(void);

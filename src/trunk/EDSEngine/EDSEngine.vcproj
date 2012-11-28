@@ -297,8 +297,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;..\zlib-1.2.3.win32\include&quot;;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;USE_MSXML;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING;NOATL"
+				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;USE_MSXML;USE_JAVASCRIPT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -318,7 +318,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="libboost_system-vc90-mt-gd-1_47.lib libboost_iostreams-vc90-mt-gd-1_47.lib"
+				AdditionalDependencies="libboost_system-vc90-mt-gd-1_51.lib libboost_iostreams-vc90-mt-gd-1_51.lib"
 				AdditionalLibraryDirectories="&quot;$(BOOST_ROOT)\lib&quot;"
 			/>
 			<Tool
@@ -364,8 +364,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;..\zlib-1.2.3.win32\include&quot;;&quot;..\libxml2-2.7.3.win32\include&quot;;&quot;..\iconv-1.9.2.win32\include&quot;;&quot;$(BOOST_ROOT)&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_MSXML;USE_JAVASCRIPT;USE_WINDOWS_SCRIPTING;NOATL"
+				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_MSXML;USE_JAVASCRIPT"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -384,7 +384,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="libboost_system-vc90-mt-1_47.lib libboost_iostreams-vc90-mt-1_47.lib"
+				AdditionalDependencies="libboost_system-vc90-mt-1_51.lib libboost_iostreams-vc90-mt-1_51.lib"
 				AdditionalLibraryDirectories="&quot;$(BOOST_ROOT)\lib&quot;"
 			/>
 			<Tool
@@ -412,6 +412,10 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\ashost.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\Bimapper.cpp"
 				>
@@ -454,6 +458,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\ashost.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Bimapper.h"
 				>
