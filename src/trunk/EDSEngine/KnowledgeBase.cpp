@@ -44,18 +44,24 @@ using boost::asio::ip::tcp;
 #include <direct.h>
 #endif
 #ifdef USE_JAVASCRIPT
-    #ifdef USE_WINDOWS_SCRIPTING
-    #import "msscript.ocx"
-    using namespace MSScriptControl;
-    #else
-    #include <jsapi.h> //Mozilla SpiderMonkey
-static JSClass global_class = {
-    "global", JSCLASS_GLOBAL_FLAGS,
-    JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
-    JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub,
-    JSCLASS_NO_OPTIONAL_MEMBERS
-};
-
+	#ifdef _MSC_VER
+		#ifdef USE_WINDOWS_SCRIPTING
+			#import "msscript.ocx"	//32bit apps only
+			using namespace MSScriptControl;
+		#else	//use Active Script Interfaces
+			#include <activscp.h>
+			#pragma warning(disable:4100)
+			#include "ashost.h"
+		#endif
+	#else
+		#define USE_SPIDERMONKEY
+		#include <jsapi.h> //Mozilla SpiderMonkey
+		static JSClass global_class = {
+			"global", JSCLASS_GLOBAL_FLAGS,
+			JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
+			JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub,
+			JSCLASS_NO_OPTIONAL_MEMBERS
+		};
     #endif
 #endif
 
@@ -70,15 +76,17 @@ unsigned long long atoull(const char *str){
 
 using namespace std;
 using namespace EDSUTIL;
+using namespace EDS;
 
-EDS::CKnowledgeBase::~CKnowledgeBase(void)
+
+CKnowledgeBase::~CKnowledgeBase(void)
 {
 #ifdef WIN32
 	CoUninitialize();
 #endif
 }
 
-EDS::CKnowledgeBase::CKnowledgeBase()
+CKnowledgeBase::CKnowledgeBase()
 {
 	m_DEBUGGING_MSGS = false;
 	m_bGenerateMsg = false;
@@ -91,12 +99,12 @@ EDS::CKnowledgeBase::CKnowledgeBase()
 #endif
 }
 
-void EDS::CKnowledgeBase::SetDebugHandler(DebugHandler debugger)
+void CKnowledgeBase::SetDebugHandler(DebugHandler debugger)
 {
 	m_DebugHandlerPtr = debugger;
 }
 
-void EDS::CKnowledgeBase::GenerateDebugMessages(bool bGenerate)
+void CKnowledgeBase::GenerateDebugMessages(bool bGenerate)
 {
 	m_DEBUGGING_MSGS = bGenerate;
 	m_bGenerateMsg = bGenerate;
@@ -104,13 +112,13 @@ void EDS::CKnowledgeBase::GenerateDebugMessages(bool bGenerate)
 		m_LastDebugMessage.clear();
 }
 
-wstring EDS::CKnowledgeBase::GetDebugMessages()
+wstring CKnowledgeBase::GetDebugMessages()
 {
 	return m_LastDebugMessage;
 	m_LastDebugMessage.clear();
 }
 
-wstring EDS::CKnowledgeBase::DeLocalize(wstring localeValue)
+wstring CKnowledgeBase::DeLocalize(wstring localeValue)
 {
 	wstring retval = localeValue;
 	for (MAPUINTMAP::iterator itAllIndexes = mapBaseIDtoTranslations.begin(); itAllIndexes != mapBaseIDtoTranslations.end(); itAllIndexes++)
@@ -127,7 +135,7 @@ wstring EDS::CKnowledgeBase::DeLocalize(wstring localeValue)
 	return retval;
 }
 
-wstring EDS::CKnowledgeBase::Translate(wstring source, wstring sourceLocale, wstring destLocale)
+wstring CKnowledgeBase::Translate(wstring source, wstring sourceLocale, wstring destLocale)
 {
 	wstring retval = source;
 	size_t id = INVALID_STRING;
@@ -168,7 +176,7 @@ wstring EDS::CKnowledgeBase::Translate(wstring source, wstring sourceLocale, wst
 	return retval;
 }
 
-void EDS::CKnowledgeBase::ResetTable(wstring tableName)
+void CKnowledgeBase::ResetTable(wstring tableName)
 {
 	m_stringsMap.ClearUserStrings();
 	iRecursingDepth = 0;
@@ -178,7 +186,7 @@ void EDS::CKnowledgeBase::ResetTable(wstring tableName)
 		table->ResetTable();
 }
 
-vector<wstring> EDS::CKnowledgeBase::GetAllPossibleOutputs(wstring tableName, wstring outputName)
+vector<wstring> CKnowledgeBase::GetAllPossibleOutputs(wstring tableName, wstring outputName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
 	if (table != NULL)
@@ -187,7 +195,7 @@ vector<wstring> EDS::CKnowledgeBase::GetAllPossibleOutputs(wstring tableName, ws
 		return vector<wstring>();
 }
 
-bool EDS::CKnowledgeBase::TableHasScript(wstring tableName)
+bool CKnowledgeBase::TableHasScript(wstring tableName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
 	if (table != NULL)
@@ -196,7 +204,7 @@ bool EDS::CKnowledgeBase::TableHasScript(wstring tableName)
 		return false;
 }
 
-bool EDS::CKnowledgeBase::TableIsGetAll(wstring tableName)
+bool CKnowledgeBase::TableIsGetAll(wstring tableName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
 	if (table != NULL)
@@ -206,17 +214,17 @@ bool EDS::CKnowledgeBase::TableIsGetAll(wstring tableName)
 }
 
 //public functions
-vector<wstring> EDS::CKnowledgeBase::EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll)
+vector<wstring> CKnowledgeBase::EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll)
 {
 	return EvaluateTableWithParam(tableName, outputAttr, L"", bGetAll);
 }
 
-map<wstring, vector<wstring> > EDS::CKnowledgeBase::EvaluateTable(wstring tableName, bool bGetAll)
+map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTable(wstring tableName, bool bGetAll)
 {
 	return EvaluateTableWithParam(tableName, L"", bGetAll);
 }
 
-vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring outputAttr, std::wstring param, bool bGetAll)
+vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring outputAttr, std::wstring param, bool bGetAll)
 {
 	vector<wstring> retval;
 	try
@@ -293,7 +301,6 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 
 		//check for existance of runtime scripting, JavaScript or Python
 	#ifdef USE_JAVASCRIPT
-
 		if (table->HasJS() == true)
 		{
 			vector<wstring> eraseResults;
@@ -305,10 +312,10 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 				{
 					wstring val = L"ERROR";
 					#ifdef USE_WINDOWS_SCRIPTING
-					IScriptControlPtr pScriptControl(__uuidof(ScriptControl));
-					LPSAFEARRAY psa;
-					SAFEARRAYBOUND rgsabound[]  = { 1, 0 }; // 1 element, 0-based
-					psa = SafeArrayCreate(VT_VARIANT, 1, rgsabound);
+						IScriptControlPtr pScriptControl(__uuidof(ScriptControl));
+						LPSAFEARRAY psa;
+						SAFEARRAYBOUND rgsabound[]  = { 1, 0 }; // 1 element, 0-based
+						psa = SafeArrayCreate(VT_VARIANT, 1, rgsabound);
 					#endif
 					try
 					{
@@ -332,81 +339,101 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 						JSCode += "var param = \"" + WStrToMBCStr(m_StateParameter) + "\";\n";
 						JSCode += "function getparam(){return param;}\n";
 						JSCode += WStrToMBCStr(m_jsCode);
-						#ifdef USE_WINDOWS_SCRIPTING
-						if (psa)
-						{
-							pScriptControl->Language = "JScript";
-							pScriptControl->AddCode(JSCode.c_str());
+						#ifdef _MSC_VER
+							#ifdef USE_WINDOWS_SCRIPTING
+								if (psa)
+								{
+									pScriptControl->Language = "JScript";
+									pScriptControl->AddCode(JSCode.c_str());
 
-							val = VariantToWStr(pScriptControl->Run("myfunc", &psa));
-							m_StateParameter = VariantToWStr(pScriptControl->Run("getparam", &psa));
+									val = VariantToWStr(pScriptControl->Run("myfunc", &psa));
+									m_StateParameter = VariantToWStr(pScriptControl->Run("getparam", &psa));
 
-							SafeArrayDestroy(psa);
-						}
-						#else
-						/* JS variables. */
-						JSRuntime *rt;
-						JSContext *cx;
-                        JSObject  *global;
+									SafeArrayDestroy(psa);
+								}
+							#else
+								IActiveScriptHost *activeScriptHost = NULL;
+								HRESULT hr = ScriptHost::Create(&activeScriptHost);
+								if(!FAILED(hr))
+								{
+									activeScriptHost->AddScript(ToWString(JSCode).c_str());
+									VARIANT vRes, vStateParam;
+									DISPPARAMS args;
+									args.cNamedArgs = 0;
+									args.cArgs = 1;
+									VARIANTARG *pVariant = new VARIANTARG;
+									args.rgvarg = pVariant;
+									args.rgvarg[0].vt = VT_BOOL;
+									args.rgvarg[0].boolVal = true;
+									activeScriptHost->Run(L"myfunc", &args, &vRes);
+									activeScriptHost->Run(L"getparam", &args, &vStateParam);
+									val = VariantToWStr(vRes);								
+									m_StateParameter = VariantToWStr(vStateParam);
+									delete pVariant;
+								}
+								if(activeScriptHost) 
+									activeScriptHost->Release();
+							#endif
+						#endif
 
-						/* Create a JS runtime. */
-						rt = JS_NewRuntime(8L * 1024L * 1024L);
-						if (rt == NULL)
-							throw;
+						#ifdef USE_SPIDERMONKEY
+							/* JS variables. */
+							JSRuntime *rt;
+							JSContext *cx;
+							JSObject  *global;
 
-						/* Create a context. */
-						cx = JS_NewContext(rt, 8192);
-						if (cx == NULL)
-							throw;
-						JS_SetOptions(cx, JSOPTION_VAROBJFIX);
-                        JS_SetVersion(cx, JSVERSION_DEFAULT);
-						//JS_SetErrorReporter(cx, reportError);
+							/* Create a JS runtime. */
+							rt = JS_NewRuntime(8L * 1024L * 1024L);
+							if (rt == NULL)
+								throw;
 
-                        JS_BeginRequest(cx);
+							/* Create a context. */
+							cx = JS_NewContext(rt, 8192);
+							if (cx == NULL)
+								throw;
+							JS_SetOptions(cx, JSOPTION_VAROBJFIX);
+							JS_SetVersion(cx, JSVERSION_DEFAULT);
+							//JS_SetErrorReporter(cx, reportError);
 
-						/* Create the global object. */
-                        global = JS_NewCompartmentAndGlobalObject(cx, &global_class, NULL);
-						if (global == NULL)
-                            throw;
+							JS_BeginRequest(cx);
 
-						/* Populate the global object with the standard globals,
-						   like Object and Array. */
-						if (!JS_InitStandardClasses(cx, global))
-							throw;
+							/* Create the global object. */
+							global = JS_NewCompartmentAndGlobalObject(cx, &global_class, NULL);
+							if (global == NULL)
+								throw;
 
-						jsval rval, stateval, funval;
-						JS_EvaluateScript(cx, global, JSCode.c_str(), JSCode.length(), "EDS_JScript", 1, &funval);
+							/* Populate the global object with the standard globals,
+							   like Object and Array. */
+							if (!JS_InitStandardClasses(cx, global))
+								throw;
 
-						jsval argv;
-						/*string cStr = WStrToMBCStr(m_StateParameter).c_str();
-						char* tempStr = (char*)JS_malloc(cx, cStr.length() + 1);
-						strcpy(tempStr, cStr.c_str());
-						JSString *jsStr = JS_NewString(cx, tempStr, strlen(tempStr));
-						argv = STRING_TO_JSVAL(jsStr);*/
-						JSBool ok = JS_CallFunctionName(cx, global, "myfunc", 1, &argv, &rval);
-						JSBool ok2 = JS_CallFunctionName(cx, global, "getparam", 1, &argv, &stateval);
+							jsval rval, stateval, funval;
+							JS_EvaluateScript(cx, global, JSCode.c_str(), JSCode.length(), "EDS_JScript", 1, &funval);
 
-						if (rval != NULL && ok)
-						{
-                            JSString* jstr = JS_ValueToString(cx, rval);
-                            const char* s = (const char*)JS_EncodeString(cx, jstr);
-							val = MBCStrToWStr(s);
-						}
-						if (stateval != NULL && ok2)
-						{
-                            JSString* jstr = JS_ValueToString(cx, stateval);
-                            const char* s = (const char*)JS_EncodeString(cx, jstr);
-							m_StateParameter = MBCStrToWStr(s);
-						}
+							jsval argv;
+							JSBool ok = JS_CallFunctionName(cx, global, "myfunc", 1, &argv, &rval);
+							JSBool ok2 = JS_CallFunctionName(cx, global, "getparam", 1, &argv, &stateval);
 
-						// Cleanup.
-						JS_DestroyContext(cx);
-						JS_DestroyRuntime(rt);
-						JS_ShutDown();
+							if (rval != NULL && ok)
+							{
+								JSString* jstr = JS_ValueToString(cx, rval);
+								const char* s = (const char*)JS_EncodeString(cx, jstr);
+								val = MBCStrToWStr(s);
+							}
+							if (stateval != NULL && ok2)
+							{
+								JSString* jstr = JS_ValueToString(cx, stateval);
+								const char* s = (const char*)JS_EncodeString(cx, jstr);
+								m_StateParameter = MBCStrToWStr(s);
+							}
 
+							// Cleanup.
+							JS_DestroyContext(cx);
+							JS_DestroyRuntime(rt);
+							JS_ShutDown();
 						#endif
 					}
-					#ifdef USE_WINDOWS_SCRIPTING
+					#ifdef _MSC_VER
 					catch(_com_error e)
 					{
 						wstring message = L"Failed to evaluate javascript\n";
@@ -418,12 +445,12 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 						OutputDebugString(message.c_str());
 						val = L"ERROR";
 					}
-					#else
+					#endif
 					catch(...)
 					{
 						val = L"ERROR";
 					}
-					#endif
+					
 					newResults.push_back(val);
 
 					if (DebugThisTable(tableName))
@@ -535,7 +562,7 @@ vector<wstring> EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableNa
 	return retval;
 }
 
-wstring EDS::CKnowledgeBase::GetFirstTableResult(wstring tableName, wstring outputAttr)
+wstring CKnowledgeBase::GetFirstTableResult(wstring tableName, wstring outputAttr)
 {
 	wstring retval = L"";
 	vector<wstring> retAll = EvaluateTable(tableName, outputAttr);
@@ -545,7 +572,7 @@ wstring EDS::CKnowledgeBase::GetFirstTableResult(wstring tableName, wstring outp
 	return retval;
 }
 
-vector<wstring> EDS::CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll)
+vector<wstring> CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll)
 {
 	vector<wstring> retval;
 	//no chaining or scripting in reverse
@@ -566,7 +593,7 @@ vector<wstring> EDS::CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wst
 	return retval;
 }
 
-map<wstring, vector<wstring> > EDS::CKnowledgeBase::ReverseEvaluateTable(wstring tableName, bool bGetAll)
+map<wstring, vector<wstring> > CKnowledgeBase::ReverseEvaluateTable(wstring tableName, bool bGetAll)
 {
 	map<wstring, vector<wstring> > retval;
 
@@ -593,7 +620,7 @@ map<wstring, vector<wstring> > EDS::CKnowledgeBase::ReverseEvaluateTable(wstring
 	return retval;
 }
 
-wstring EDS::CKnowledgeBase::XMLSafe(wstring str)
+wstring CKnowledgeBase::XMLSafe(wstring str)
 {
 	//replace any illegal characters with escapes
 	wstring retval = EDSUTIL::FindAndReplace(str, L"\"", L"&quot;");
@@ -604,7 +631,7 @@ wstring EDS::CKnowledgeBase::XMLSafe(wstring str)
 	return retval;
 }
 
-void EDS::CKnowledgeBase::SendToDebugServer(wstring msg)
+void CKnowledgeBase::SendToDebugServer(wstring msg)
 {
 	try
 	{
@@ -636,7 +663,7 @@ void EDS::CKnowledgeBase::SendToDebugServer(wstring msg)
 	}
 }
 
-bool EDS::CKnowledgeBase::DebugThisTable(wstring tableName)
+bool CKnowledgeBase::DebugThisTable(wstring tableName)
 {
 	if (m_DEBUGGING_MSGS)
 	{
@@ -654,7 +681,7 @@ bool EDS::CKnowledgeBase::DebugThisTable(wstring tableName)
 	return false;
 }
 
-map<wstring, vector<wstring> > EDS::CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring param, bool bGetAll)
+map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring param, bool bGetAll)
 {
 	map<wstring, vector<wstring> > retval;
 
@@ -673,7 +700,7 @@ map<wstring, vector<wstring> > EDS::CKnowledgeBase::EvaluateTableWithParam(std::
 	return retval;
 }
 
-void EDS::CKnowledgeBase::SetInputValue(wstring name, wstring value)
+void CKnowledgeBase::SetInputValue(wstring name, wstring value)
 {
 	size_t id = m_stringsMap.GetIDByString(value);
 	if (id == INVALID_STRING) //wasnt in our existing list
@@ -685,22 +712,22 @@ void EDS::CKnowledgeBase::SetInputValue(wstring name, wstring value)
 }
 
 //loading
-EDS::CKnowledgeBase::CKnowledgeBase(wstring knowledge_file)
+CKnowledgeBase::CKnowledgeBase(wstring knowledge_file)
 {
 	CreateKnowledgeBase(knowledge_file);
 }
 
-bool EDS::CKnowledgeBase::CreateKnowledgeBase(string knowledge_file)
+bool CKnowledgeBase::CreateKnowledgeBase(string knowledge_file)
 {
 	return CreateKnowledgeBase(MBCStrToWStr(knowledge_file.c_str()));
 }
 
-bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(string xmlStr)
+bool CKnowledgeBase::CreateKnowledgeBaseFromString(string xmlStr)
 {
 	return CreateKnowledgeBaseFromString(MBCStrToWStr(xmlStr));
 }
 
-bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
+bool CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 {
 	bool retval = false;
 #ifdef USE_MSXML
@@ -752,7 +779,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 	return retval;
 }
 
-bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
+bool CKnowledgeBase::_parseXML(Document xmlDocument)
 {
 	//parse the table data and create tables in the tableset
 	bool retval = false;
@@ -987,7 +1014,7 @@ bool EDS::CKnowledgeBase::_parseXML(Document xmlDocument)
 	return retval;
 }
 
-bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
+bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 {
 	bool retval = false;
 	m_IsOpen = false;
@@ -1126,7 +1153,7 @@ bool EDS::CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 }
 
 //private
-vector<pair<wstring, vector<CRuleCell> > > EDS::CKnowledgeBase::GetTableRowFromXML(NodeList nodes, Document xmlDocument)
+vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::GetTableRowFromXML(NodeList nodes, Document xmlDocument)
 {
 	vector<pair<wstring, vector<CRuleCell> > > retval;
 	try
@@ -1259,32 +1286,32 @@ vector<pair<wstring, vector<CRuleCell> > > EDS::CKnowledgeBase::GetTableRowFromX
 }
 
 //ASCII Overloads
-bool EDS::CKnowledgeBase::TableHasScript(std::string tableName)
+bool CKnowledgeBase::TableHasScript(std::string tableName)
 {
 	return TableHasScript(MBCStrToWStr(tableName));
 }
 
-bool EDS::CKnowledgeBase::TableIsGetAll(std::string tableName)
+bool CKnowledgeBase::TableIsGetAll(std::string tableName)
 {
 	return TableIsGetAll(MBCStrToWStr(tableName));
 }
 
-vector<string> EDS::CKnowledgeBase::EvaluateTable(string tableName, string outputAttr, bool bGetAll)
+vector<string> CKnowledgeBase::EvaluateTable(string tableName, string outputAttr, bool bGetAll)
 {
 	return EvaluateTableWithParam(tableName, outputAttr, "", bGetAll);
 }
 
-map<string, vector<string> > EDS::CKnowledgeBase::EvaluateTable(string tableName, bool bGetAll)
+map<string, vector<string> > CKnowledgeBase::EvaluateTable(string tableName, bool bGetAll)
 {
 	return EvaluateTableWithParam(tableName, "", bGetAll);
 }
 
-vector<string> EDS::CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string outputAttr, std::string param, bool bGetAll)
+vector<string> CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string outputAttr, std::string param, bool bGetAll)
 {
 	return ToMBCStringVector(EvaluateTableWithParam(MBCStrToWStr(tableName), MBCStrToWStr(outputAttr), MBCStrToWStr(param), bGetAll));
 }
 
-std::map<string, vector<string> > EDS::CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string param, bool bGetAll)
+std::map<string, vector<string> > CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string param, bool bGetAll)
 {
 	std::map<wstring, vector<wstring> > res = EvaluateTableWithParam(MBCStrToWStr(tableName), MBCStrToWStr(param), bGetAll);
 	std::map<string, vector<string> > retval;
@@ -1295,12 +1322,12 @@ std::map<string, vector<string> > EDS::CKnowledgeBase::EvaluateTableWithParam(st
 	return retval;
 }
 
-string EDS::CKnowledgeBase::GetFirstTableResult(string tableName, string ouputAttr)
+string CKnowledgeBase::GetFirstTableResult(string tableName, string ouputAttr)
 {
 	return WStrToMBCStr(GetFirstTableResult(MBCStrToWStr(tableName), MBCStrToWStr(ouputAttr)));
 }
 
-vector<string> EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll)
+vector<string> CKnowledgeBase::ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll)
 {
 	//no chaining or scripting in reverse
 	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
@@ -1314,7 +1341,7 @@ vector<string> EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, strin
 		return vector<string>();
 }
 
-map<string, vector<string> > EDS::CKnowledgeBase::ReverseEvaluateTable(string tableName, bool bGetAll)
+map<string, vector<string> > CKnowledgeBase::ReverseEvaluateTable(string tableName, bool bGetAll)
 {
 	map<string, vector<string> > retval;
 
@@ -1333,12 +1360,12 @@ map<string, vector<string> > EDS::CKnowledgeBase::ReverseEvaluateTable(string ta
 	return retval;
 }
 
-string EDS::CKnowledgeBase::GetEvalParameterA()
+string CKnowledgeBase::GetEvalParameterA()
 {
 	return WStrToMBCStr(m_StateParameter);
 }
 
-void EDS::CKnowledgeBase::SetInputValues(MAPSTRUINT values)
+void CKnowledgeBase::SetInputValues(MAPSTRUINT values)
 {
 	MAPWSTRUINT wValues;
 	for (MAPSTRUINT::iterator it = values.begin(); it != values.end(); it++)
@@ -1349,37 +1376,37 @@ void EDS::CKnowledgeBase::SetInputValues(MAPSTRUINT values)
 }
 
 
-void EDS::CKnowledgeBase::SetInputValue(std::string name, std::string value)
+void CKnowledgeBase::SetInputValue(std::string name, std::string value)
 {
 	SetInputValue(MBCStrToWStr(name), MBCStrToWStr(value));
 }
 
-void EDS::CKnowledgeBase::ResetTable(std::string tableName)
+void CKnowledgeBase::ResetTable(std::string tableName)
 {
 	ResetTable(MBCStrToWStr(tableName));
 }
 
-vector<string> EDS::CKnowledgeBase::GetInputAttrs(std::string tableName)
+vector<string> CKnowledgeBase::GetInputAttrs(std::string tableName)
 {
 	return ToMBCStringVector(GetInputAttrs(MBCStrToWStr(tableName)));
 }
 
-vector<string> EDS::CKnowledgeBase::GetInputDependencies(std::string tableName)
+vector<string> CKnowledgeBase::GetInputDependencies(std::string tableName)
 {
 	return ToMBCStringVector(GetInputDependencies(MBCStrToWStr(tableName)));
 }
 
-vector<string> EDS::CKnowledgeBase::GetOutputAttrs(std::string tableName)
+vector<string> CKnowledgeBase::GetOutputAttrs(std::string tableName)
 {
 	return ToMBCStringVector(GetOutputAttrs(MBCStrToWStr(tableName)));
 }
 
-vector<string> EDS::CKnowledgeBase::GetAllPossibleOutputs(std::string tableName, std::string outputName)
+vector<string> CKnowledgeBase::GetAllPossibleOutputs(std::string tableName, std::string outputName)
 {
 	return ToMBCStringVector(GetAllPossibleOutputs(MBCStrToWStr(tableName), MBCStrToWStr(outputName)));
 }
 
-EDS::CKnowledgeBase::CKnowledgeBase(std::string knowledge_file)
+CKnowledgeBase::CKnowledgeBase(std::string knowledge_file)
 {
 	CKnowledgeBase(MBCStrToWStr(knowledge_file));
 }
