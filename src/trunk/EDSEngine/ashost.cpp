@@ -167,7 +167,6 @@ HRESULT __stdcall ScriptHost::AddScript(const WCHAR *source)
     if (source == NULL)
         return E_POINTER;
 
-	EXCEPINFO info;
 	VARIANT vRes;
 	HRESULT hr = _activeScriptParse->ParseScriptText(source, NULL, NULL, NULL, 0, 0, NULL, &vRes, NULL);
 	return hr;
