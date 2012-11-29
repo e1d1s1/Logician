@@ -421,10 +421,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DataBase.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Decode.cpp"
 				>
 			</File>
@@ -464,10 +460,6 @@
 			</File>
 			<File
 				RelativePath=".\Bimapper.h"
-				>
-			</File>
-			<File
-				RelativePath=".\DataBase.h"
 				>
 			</File>
 			<File

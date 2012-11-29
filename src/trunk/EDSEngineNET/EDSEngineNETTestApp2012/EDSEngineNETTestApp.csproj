@@ -27,7 +27,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -42,9 +42,9 @@
     <StartupObject>EDSEngineTestApp.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EDSEngineNET, Version=1.0.4017.9026, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="EDSEngineNET, Version=1.0.4703.4952, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Release\EDSEngineNET.dll</HintPath>
+      <HintPath>..\x64\Debug\EDSEngineNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

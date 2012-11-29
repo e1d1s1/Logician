@@ -1,4 +1,8 @@
+#pragma once
 
+#ifdef USE_JAVASCRIPT
+	#ifdef _MSC_VER
+		#ifndef USE_WINDOWS_SCRIPTING
 #include "stdafx.h"
 
 #include <activscp.h>
@@ -168,6 +172,8 @@ HRESULT __stdcall ScriptHost::AddScript(const WCHAR *source)
 	HRESULT hr = _activeScriptParse->ParseScriptText(source, NULL, NULL, NULL, 0, 0, NULL, &vRes, NULL);
 	return hr;
 }
-
+#endif
+#endif
+#endif
 
 #pragma endregion 
