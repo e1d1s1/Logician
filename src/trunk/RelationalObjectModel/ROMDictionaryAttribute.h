@@ -30,7 +30,7 @@ namespace ROM
 		wstring DefaultValue;
 		wstring RuleTable;
 		int AttributeType;
-		int Index;
+		size_t Index;
 		bool ValueChanged;
 		bool ChangedByUser;
 		bool Valid;

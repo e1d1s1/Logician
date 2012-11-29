@@ -10,7 +10,7 @@ namespace ROM2NETTestApplication
     {
         static void Main(string[] args)
         {
-            long start = 0, elapsed = 0, testROMTreeStart = 0, testROMTreeEnd = 0, testROMNodeStart = 0, testROMNodeEnd = 0;
+            long start = 0, elapsed = 0, testROMNodeStart = 0, testROMNodeEnd = 0;
             string msg;
             const int iMax = 1000;
             string rulesPath = "..\\..\\..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.gz";
