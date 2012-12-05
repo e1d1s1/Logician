@@ -10,16 +10,21 @@ namespace EDSEngineTestApp
         static void Main(string[] args)
         {
             string dir = System.IO.Directory.GetCurrentDirectory();
-            string filename = "..\\..\\..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.gz";
-            EDSEngine knowledge = new EDSEngine(filename);
+            string filename = "test_project.gz";
+            string path = "..\\..\\..\\..\\..\\EDSEngine\\EDSEngineTestApp\\" + filename;
+            EDSEngine knowledge = new EDSEngine(path);
             if (knowledge.IsOpen() == false)
             {
-                write_result("FAILURE: Could not open rules xml file: " + filename);
+                knowledge = new EDSEngine(filename);
+                if (knowledge.IsOpen() == false)
+                {
+                    write_result("FAILURE: Could not open rules xml file: " + path);
+                    Quit();
+                }
             }
-            else
-            {
-                write_result("OK: File opened");
-            }
+               
+            if (knowledge.IsOpen() == true)            
+                write_result("OK: File opened");                  
 
             knowledge.DebugDelegate = write_debug;
             knowledge.SetDebugging(false);

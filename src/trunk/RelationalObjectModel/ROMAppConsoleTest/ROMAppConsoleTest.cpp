@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 	const int iMax = 1000;
 	char time[32] = "";
 	char temp[32] = "";
-	wstring path;
+	wstring path, filename = L"test_project.gz";
 	#ifdef WIN32
 	path = L"..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.gz";
 	#else
@@ -164,7 +164,9 @@ int main(int argc, char* argv[])
 		}
 
 		Log("loading rules");
-		if (rootNode->LoadRules(path))
+		if (!rootNode->LoadRules(path))
+			rootNode->LoadRules(filename);
+		if (rootNode->GetKnowledgeBase() != NULL && rootNode->GetKnowledgeBase()->IsOpen())
 		{
 			rootNode->SetTableDebugHandler(DebugMessage);
 			Log("...loaded");

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LogicianDebuggerWPF.Properties {
+namespace LogicianDebuggerTestApp2012.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
