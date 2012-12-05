@@ -76,8 +76,8 @@ echo "Building ROMNETTestApplication..."
 %MSBUILD_PATH% "ROMNET\ROMNETTestApplication2012\ROMNETTestApplication.csproj" /t:clean,rebuild /p:Configuration="Release" /p:VisualStudioVersion=11.0 /p:Platform=x86
 %MSBUILD_PATH% "ROMNET\ROMNETTestApplication2012\ROMNETTestApplication.csproj" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=11.0 /p:Platform=x64
 %MSBUILD_PATH% "ROMNET\ROMNETTestApplication2012\ROMNETTestApplication.csproj" /t:clean,rebuild /p:Configuration="Release" /p:VisualStudioVersion=11.0 /p:Platform=x64
-copy "ROMNET\ROMNETTestApplication2012\Release\*.dll" ROMNET\ROMNETTestApplication2012\Release /y
-copy "ROMNET\x64\Release\*.dll" ROMNET\ROMNETTestApplication2012\x64\Release /y
+copy "ROMNET\ROMNETTestApplication2012\bin\x86\Release\ROMNETTestApplication.exe" VC11 /y
+copy "ROMNET\ROMNETTestApplication2012\bin\x86\Release\ROMNETTestApplication.exe" VC11\x64 /y
 echo "ROMNETTestApplication build complete"
 
 echo "Building DecisionLogic..."
@@ -103,7 +103,9 @@ echo "Building LogicianDebuggerTestApp2012..."
 %MSBUILD_PATH% "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\LogicianDebuggerTestApp2012.csproj" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=11.0 /p:Platform=x64
 %MSBUILD_PATH% "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\LogicianDebuggerTestApp2012.csproj" /t:clean,rebuild /p:Configuration="Release" /p:VisualStudioVersion=11.0 /p:Platform=x64
 copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\bin\x86\Release\LogicianDebuggerTestApp2012.exe" VC11 /y
+copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\config.xml" VC11 /y
 copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\bin\x64\Release\LogicianDebuggerTestApp2012.exe" VC11\x64 /y
+copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\config.xml" VC11\x64 /y
 echo "Building LogicianDebuggerTestApp2012 complete"
 
 echo "All builds complete"
