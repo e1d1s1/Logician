@@ -326,9 +326,7 @@ namespace EDSEngineTestApp
                 write_result("FAILURE: reverse evaluation failed");
 	        }
 
-#if DEBUG
             Quit();
-#endif
         }
 
         static void write_result(string s)
