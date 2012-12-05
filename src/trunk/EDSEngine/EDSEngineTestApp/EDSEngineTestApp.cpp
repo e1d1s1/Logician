@@ -92,9 +92,12 @@ int main()
 	//load up some sample table
 	#ifndef __GNUC__
 	EDS::CKnowledgeBase knowledge(L"..\\EDSEngineTestApp\\test_project.gz");
+	if (!knowledge.IsOpen())
+		knowledge.CreateKnowledgeBase(L"test_project.gz");
 	#else
 	EDS::CKnowledgeBase knowledge(L"test_project.gz");
 	#endif
+
 	if (!knowledge.IsOpen())
 	{
 		Log("Could not open rules file");

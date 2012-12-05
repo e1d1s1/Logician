@@ -13,7 +13,8 @@ namespace ROM2NETTestApplication
             long start = 0, elapsed = 0, testROMNodeStart = 0, testROMNodeEnd = 0;
             string msg;
             const int iMax = 1000;
-            string rulesPath = "..\\..\\..\\..\\EDSEngine\\EDSEngineTestApp\\test_project.gz";
+            string filename = "test_project.gz";
+            string rulesPath = "..\\..\\..\\..\\..\\EDSEngine\\EDSEngineTestApp\\" + filename;
             if (args.Length > 0 && !string.IsNullOrEmpty(args[0]))
                 rulesPath = args[0];
 
@@ -56,7 +57,11 @@ namespace ROM2NETTestApplication
             rootNode.SetAttribute("inputAttr2", "10");
             rootNode.SetAttribute("outsideAttr1", "28");
             Log("loading rules: " + rulesPath);
-            if (rootNode.LoadRules(rulesPath))
+            bool bLoaded = rootNode.LoadRules(rulesPath);
+            if (!bLoaded)
+                bLoaded = rootNode.LoadRules(filename);
+
+            if (bLoaded)
             {
                 rootNode.DebugDelegate = DebugMessage;
                 rootNode.SetDebugging(true);
