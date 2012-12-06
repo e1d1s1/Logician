@@ -77,7 +77,7 @@ echo "Building ROMNETTestApplication..."
 %MSBUILD_PATH% "ROMNET\ROMNETTestApplication2012\ROMNETTestApplication.csproj" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=11.0 /p:Platform=x64
 %MSBUILD_PATH% "ROMNET\ROMNETTestApplication2012\ROMNETTestApplication.csproj" /t:clean,rebuild /p:Configuration="Release" /p:VisualStudioVersion=11.0 /p:Platform=x64
 copy "ROMNET\ROMNETTestApplication2012\bin\x86\Release\ROMNETTestApplication.exe" VC11 /y
-copy "ROMNET\ROMNETTestApplication2012\bin\x86\Release\ROMNETTestApplication.exe" VC11\x64 /y
+copy "ROMNET\ROMNETTestApplication2012\bin\x64\Release\ROMNETTestApplication.exe" VC11\x64 /y
 echo "ROMNETTestApplication build complete"
 
 echo "Building DecisionLogic..."
