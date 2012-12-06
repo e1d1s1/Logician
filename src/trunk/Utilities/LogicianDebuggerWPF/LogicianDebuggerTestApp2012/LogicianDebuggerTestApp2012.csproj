@@ -56,8 +56,21 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ROMNET">
-      <HintPath>..\..\..\ROMNET\Debug\ROMNET.dll</HintPath>
+	<Reference Include="LogicianDebuggerWPF.dll" Condition="'$(Platform)'=='x86'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\x86\Release\LogicianDebuggerWPF.dll</HintPath>
+    </Reference>
+    <Reference Include="LogicianDebuggerWPF.dll" Condition="'$(Platform)'=='x64'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\x64\Release\LogicianDebuggerWPF.dll</HintPath>
+    </Reference>	
+    <Reference Include="ROMNET.dll" Condition="'$(Platform)'=='x86'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ROMNET\Release\ROMNET.dll</HintPath>
+    </Reference>
+    <Reference Include="ROMNET.dll" Condition="'$(Platform)'=='x64'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ROMNET\x64\Release\ROMNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -119,12 +132,6 @@
     <None Include="config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LogicianDebugger2012.csproj">
-      <Project>{511f1acf-f59c-4edf-8a32-613b04e3f714}</Project>
-      <Name>LogicianDebugger2012</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
