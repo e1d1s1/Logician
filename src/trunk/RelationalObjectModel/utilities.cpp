@@ -25,6 +25,9 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 #ifdef USE_LIBXML
 #include <libxml/tree.h>
 #endif
+#ifdef USE_MSXML
+#include <comdef.h>
+#endif
 
 using namespace std;
 
@@ -246,9 +249,16 @@ std::wstring ROMUTIL::encodeForXml(const std::wstring &sSrc)
 }
 
 #ifdef USE_MSXML
-		wstring ROMUTIL::ToWString(_variant_t str)
+		wstring ROMUTIL::BSTR_T_ToWString(void *str) //only pass _bstr_t
 		{
-			return (wstring)str.bstrVal;
+			if (str != NULL)
+			{
+				BSTR ms_str = ((_bstr_t*)str)->copy();
+				std::wstring ws(ms_str); 
+				SysFreeString(ms_str);
+				return ws;
+			}
+			return L"";
 		}
 #endif
 		wstring ROMUTIL::MBCStrToWStr(string mbStr)

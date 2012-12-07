@@ -40,8 +40,7 @@ namespace ROMNET {
 	public ref class ROMNode
 	{
 	public:
-		ROMNode() {CreateROMNode(""); m_KnowledgeBase = NULL;}
-		ROMNode(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer(); m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();}
+		ROMNode() {CreateROMNode(""); m_KnowledgeBase = NULL;}		
 		ROMNode(String^ id) {CreateROMNode(id);}
 		bool CreateROMNode(System::String^ id);
 		~ROMNode() {DestroyROMObject(); this->!ROMNode();}
@@ -151,10 +150,12 @@ namespace ROMNET {
 		IntPtr^				GetEDSPtr() {return (IntPtr)m_KnowledgeBase;}
 
 	private:		
+		ROMNode(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer(); m_KnowledgeBase = m_ROMNode->GetKnowledgeBase(); m_canDestroy = false;}
 		array<ROMNode^>^ GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
 
 		ROM::ROMNode		*m_ROMNode;
 		EDS::CKnowledgeBase *m_KnowledgeBase;
+		bool				m_canDestroy;
 	};
 
 	public enum class ATTRTYPE
@@ -169,8 +170,7 @@ namespace ROMNET {
 	public ref class ROMDictionaryAttribute
 	{
 	public:
-		ROMDictionaryAttribute() {m_ROMDictionaryAttribute = NULL;}
-		ROMDictionaryAttribute(IntPtr^ ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr->ToPointer();}
+		ROMDictionaryAttribute() {m_ROMDictionaryAttribute = NULL;}		
 		void CreateROMDictionaryAttribute() {m_ROMDictionaryAttribute = new ROM::ROMDictionaryAttribute();}
 		~ROMDictionaryAttribute() {if (m_ROMDictionaryAttribute) delete m_ROMDictionaryAttribute; this->!ROMDictionaryAttribute();}
 		!ROMDictionaryAttribute() {}
@@ -374,6 +374,9 @@ namespace ROMNET {
 				}
 			}
 		}
+
+	public protected:
+		ROMDictionaryAttribute(IntPtr^ ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr->ToPointer();}
 
 	private:
 		ROM::ROMDictionaryAttribute* m_ROMDictionaryAttribute;

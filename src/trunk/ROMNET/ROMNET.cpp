@@ -26,6 +26,7 @@ namespace ROMNET
 	{
 		wstring wsID = MarshalString(id);
 		m_ROMNode = new ROM::ROMNode(wsID);
+		m_canDestroy = true;
 		if (m_ROMNode)
 		{
 			m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
@@ -187,10 +188,9 @@ namespace ROMNET
 	bool ROMNode::DestroyROMObject()
 	{
 		bool retval = false;
-		if (m_ROMNode)
-		{
-			retval = m_ROMNode->DestroyROMObject();
-			delete m_ROMNode;
+		if (m_ROMNode && m_canDestroy)
+		{			
+			delete m_ROMNode; //will call unmanaged DestroyROMObject
 			m_ROMNode = NULL;
 		}
 		return retval;

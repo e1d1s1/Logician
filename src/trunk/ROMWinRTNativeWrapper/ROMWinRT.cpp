@@ -181,9 +181,8 @@ bool ROMWinRT::ROMNode::RemoveAllFriends()
 bool ROMWinRT::ROMNode::DestroyROMObject()
 {
 	bool retval = false;
-	if (m_ROMNode)
-	{
-		retval = m_ROMNode->DestroyROMObject();
+	if (m_ROMNode && m_canDestroy)
+	{		
 		delete m_ROMNode;
 		m_ROMNode = NULL;
 	}
@@ -566,7 +565,7 @@ String^ ROMWinRT::ROMNode::EvaluateXPATH(String^ xpath, String^ guid)
 
 IVector<ROMWinRT::ROMNode^>^ ROMWinRT::ROMNode::GetArrayFromVectorROM(vector<ROM::ROMNode*> vect)
 {
-	IVector<ROMNode^>^ arr = ref new Vector<ROMNode^>(vect.size());
+	IVector<ROMNode^>^ arr = ref new Vector<ROMNode^>();
 	for (size_t i = 0; i < vect.size(); i++)
 	{
 		arr->Append(ref new ROMNode(vect[i]));

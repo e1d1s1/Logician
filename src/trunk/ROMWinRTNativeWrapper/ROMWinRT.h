@@ -18,10 +18,10 @@ namespace ROMWinRT
 	public ref class ROMNode sealed
 	{
 	public:
-		ROMNode() {CreateROMNode(""); m_KnowledgeBase = NULL;}		
+		ROMNode() {CreateROMNode(""); m_KnowledgeBase = NULL; m_canDestroy = true;}		
 		ROMNode(String^ id) {CreateROMNode(id);}
 		bool CreateROMNode(String^ id);
-		~ROMNode() {DestroyROMObject();}
+		virtual ~ROMNode() {DestroyROMObject();}
 
 		//debugger
 		
@@ -95,13 +95,14 @@ namespace ROMWinRT
 		void*				GetEDSPtr() {return (void*)m_KnowledgeBase;}
 
 	private:		
-		ROMNode(void* ptr) {m_ROMNode = (ROM::ROMNode*)ptr; m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();}
+		ROMNode(void* ptr) {m_ROMNode = (ROM::ROMNode*)ptr; m_KnowledgeBase = m_ROMNode->GetKnowledgeBase(); m_canDestroy = false; }
 
 		IVector<ROMNode^>^	GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);		
 
 		DebugHandlerDelegate^	m_DebugDelegate;
 		ROM::ROMNode			*m_ROMNode;
 		EDS::CKnowledgeBase		*m_KnowledgeBase;
+		bool					m_canDestroy;
 	};
 
 	public enum class ATTRTYPE
@@ -120,17 +121,17 @@ namespace ROMWinRT
 	public:
 		ROMDictionaryAttribute() {m_ROMDictionaryAttribute = NULL;}		
 		void CreateROMDictionaryAttribute() {m_ROMDictionaryAttribute = new ROM::ROMDictionaryAttribute();}
-		~ROMDictionaryAttribute() {if (m_ROMDictionaryAttribute) delete m_ROMDictionaryAttribute;}
+		virtual ~ROMDictionaryAttribute() {if (m_ROMDictionaryAttribute) delete m_ROMDictionaryAttribute;}
 
 		property String^ Name
 		{
-			virtual String^ get()
+			String^ get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return ref new String(m_ROMDictionaryAttribute->Name.c_str());
 				else return "";
 			}
-			virtual void set(String^ value)
+			void set(String^ value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->Name = value->Data();
@@ -138,13 +139,13 @@ namespace ROMWinRT
 		}
 		property String^ Description
 		{
-			virtual String^ get()
+			String^ get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return ref new String(m_ROMDictionaryAttribute->Description.c_str());
 				else return "";
 			}
-			virtual void set(String^ value)
+			void set(String^ value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->Description = value->Data();
@@ -152,13 +153,13 @@ namespace ROMWinRT
 		}
 		property String^ DefaultValue
 		{
-			virtual String^ get()
+			String^ get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return ref new String(m_ROMDictionaryAttribute->DefaultValue.c_str());
 				else return "";
 			}
-			virtual void set(String^ value)
+			void set(String^ value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->DefaultValue = value->Data();
@@ -166,13 +167,13 @@ namespace ROMWinRT
 		}
 		property String^ RuleTable
 		{
-			virtual String^ get()
+			String^ get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return ref new String(m_ROMDictionaryAttribute->RuleTable.c_str());
 				else return "";
 			}
-			virtual void set(String^ value)
+			void set(String^ value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->RuleTable = value->Data();
@@ -180,13 +181,13 @@ namespace ROMWinRT
 		}
 		property ATTRTYPE AttributeType
 		{
-			virtual ATTRTYPE get()
+			ATTRTYPE get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return static_cast<ATTRTYPE>(m_ROMDictionaryAttribute->AttributeType);
 				else return ATTRTYPE::STATIC;
 			}
-			virtual void set(ATTRTYPE value)
+			void set(ATTRTYPE value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->AttributeType = static_cast<ROM::ATTRTYPE_E>(value);
@@ -194,13 +195,13 @@ namespace ROMWinRT
 		}
 		property int Index
 		{
-			virtual int get()
+			int get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->Index;
 				else return 0;
 			}
-			virtual void set(int value)
+			void set(int value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->Index = value;
@@ -208,13 +209,13 @@ namespace ROMWinRT
 		}
 		property bool ValueChanged
 		{
-			virtual bool get()
+			bool get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->ValueChanged;
 				else return false;
 			}
-			virtual void set(bool value)
+			void set(bool value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->ValueChanged = value;
@@ -222,13 +223,13 @@ namespace ROMWinRT
 		}
 		property bool ChangedByUser
 		{
-			virtual bool get()
+			bool get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->ChangedByUser;
 				else return false;
 			}
-			virtual void set(bool value)
+			void set(bool value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->ChangedByUser = value;
@@ -236,13 +237,13 @@ namespace ROMWinRT
 		}
 		property bool Valid
 		{
-			virtual bool get()
+			bool get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->Valid;
 				else return false;
 			}
-			virtual void set(bool value)
+			void set(bool value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->Valid = value;
@@ -250,13 +251,13 @@ namespace ROMWinRT
 		}
 		property bool Visible
 		{
-			virtual bool get()
+			bool get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->Visible;
 				else return false;
 			}
-			virtual void set(bool value)
+			void set(bool value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->Visible = value;
@@ -264,13 +265,13 @@ namespace ROMWinRT
 		}
 		property bool Enabled
 		{
-			virtual bool get()
+			bool get()
 			{
 				if (m_ROMDictionaryAttribute)
 					return m_ROMDictionaryAttribute->Enabled;
 				else return false;
 			}
-			virtual void set(bool value)
+			void set(bool value)
 			{
 				if (m_ROMDictionaryAttribute)
 					m_ROMDictionaryAttribute->Enabled = value;
@@ -278,13 +279,13 @@ namespace ROMWinRT
 		}
 		property IVector<String^>^ PossibleValues
 		{
-			virtual IVector<String^>^ get()
+			IVector<String^>^ get()
 			{
 				if (m_ROMDictionaryAttribute)				
 					return GetIVectorFromVectorStrings(m_ROMDictionaryAttribute->PossibleValues);			
 				else return ref new Vector<String^>(0);
 			}
-			virtual void set(IVector<String^>^ value)
+			void set(IVector<String^>^ value)
 			{
 				if (m_ROMDictionaryAttribute)
 				{
@@ -300,13 +301,13 @@ namespace ROMWinRT
 		}
 		property IVector<String^>^ AvailableValues
 		{
-			virtual IVector<String^>^ get()
+			IVector<String^>^ get()
 			{
 				if (m_ROMDictionaryAttribute)				
 					return GetIVectorFromVectorStrings(m_ROMDictionaryAttribute->AvailableValues);	
 				else return ref new Vector<String^>(0);
 			}
-			virtual void set(IVector<String^>^ value)
+			void set(IVector<String^>^ value)
 			{
 				if (m_ROMDictionaryAttribute)
 				{
@@ -388,7 +389,7 @@ namespace ROMWinRT
 		IMap<String^, IVector<String^>^>^ GetTriggers();
 		property bool DictionaryIsValid
 		{
-			virtual bool get()
+			bool get()
 			{
 				if (m_LinearEngine)
 					return m_LinearEngine->DictionaryIsValid();
@@ -398,14 +399,14 @@ namespace ROMWinRT
 		}
 		property INVALIDATEMODE InvalidateMode
 		{
-			virtual INVALIDATEMODE get()
+			INVALIDATEMODE get()
 			{
 				if (m_LinearEngine)
 					return static_cast<INVALIDATEMODE>(m_LinearEngine->InvalidateMode);
 				else
 					return INVALIDATEMODE::NORMAL;
 			}
-			virtual void set(INVALIDATEMODE value)
+			void set(INVALIDATEMODE value)
 			{
 				if (m_LinearEngine)
 					m_LinearEngine->InvalidateMode = static_cast<ROM::INVALIDATEMODE_E>(value);

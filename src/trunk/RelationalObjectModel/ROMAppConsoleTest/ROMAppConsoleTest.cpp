@@ -103,31 +103,31 @@ int main(int argc, char* argv[])
 	{
 		Log("Testing ROMNode Objects");
 		Log("Creating root node");
-		ROMNode* rootNode = new ROMNode(L"TestApplication");
+		ROMNode rootNode(L"TestApplication");
 		Log("Root ROMNode created");		
 
 		Log("Setting some attributes");
-		rootNode->SetAttribute(L"inputAttr1", L"some value of test1");
-		rootNode->SetAttribute(L"inputAttr2", L"some value of test2");
-		rootNode->SetAttribute(L"inputAttr3", L"some value of test3");
-		rootNode->SetAttribute(L"inputAttr3", L"test3a", L"some sub value of attr3_a");
-		rootNode->SetAttribute(L"inputAttr3", L"test3b", L"some sub value of attr3_b");
+		rootNode.SetAttribute(L"inputAttr1", L"some value of test1");
+		rootNode.SetAttribute(L"inputAttr2", L"some value of test2");
+		rootNode.SetAttribute(L"inputAttr3", L"some value of test3");
+		rootNode.SetAttribute(L"inputAttr3", L"test3a", L"some sub value of attr3_a");
+		rootNode.SetAttribute(L"inputAttr3", L"test3b", L"some sub value of attr3_b");
 		Log("Attrs set");
 
 		Log("Testing what we have set");
-		Log(L"inputAttr1 = " + rootNode->GetAttribute(L"inputAttr1"));
+		Log(L"inputAttr1 = " + rootNode.GetAttribute(L"inputAttr1"));
 
 		Log("Creating a child object");
 		ROMNode *childNode = new ROMNode(L"ChildObject");
-		rootNode->AddChildROMObject(childNode);
+		rootNode.AddChildROMObject(childNode);
 		childNode->SetAttribute(L"childAttr", L"some value of value");
 		//setting a value on the Object Node
 		childNode->SetROMObjectValue(L"valueTest", L"myValue");
 		ROMNode *childOfChild = new ROMNode(L"ChildObject2");
 		childNode->AddChildROMObject(childOfChild);
-		vector<ROMNode*> findTest = rootNode->FindAllObjectsByID("ChildObject", true);
-		vector<ROMNode*> findTestXPATH = rootNode->FindObjects("//Object[@id='ChildObject']");
-		vector<ROMNode*> findTestXPATH2 = rootNode->FindObjects("//Object[@id='ChildObject2']");
+		vector<ROMNode*> findTest = rootNode.FindAllObjectsByID("ChildObject", true);
+		vector<ROMNode*> findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
+		vector<ROMNode*> findTestXPATH2 = rootNode.FindObjects("//Object[@id='ChildObject2']");
 		if (findTest.size() == 1 && findTestXPATH.size() == 1 && findTestXPATH2.size() == 1 &&
 			findTestXPATH[0]->GetROMGUID() == findTest[0]->GetROMGUID() &&
 			findTestXPATH2[0]->GetROMObjectID() == L"ChildObject2")
@@ -137,21 +137,21 @@ int main(int argc, char* argv[])
 
 
 		Log("Dump current xml state");
-		wstring result = rootNode->SaveXML(true);
+		wstring result = rootNode.SaveXML(true);
 		string s(result.begin(), result.end());
 		Log(s);
 
 		Log("Setting attrs to test eval, inputAttr1 = A, inputAttr2 = 1");
-		rootNode->SetAttribute(L"inputAttr1", L"A");
-		rootNode->SetAttribute(L"inputAttr2", L"1");
+		rootNode.SetAttribute(L"inputAttr1", L"A");
+		rootNode.SetAttribute(L"inputAttr2", L"1");
 
 		Log("New xml state");
-		result = rootNode->SaveXML(true);
+		result = rootNode.SaveXML(true);
 		string s2(result.begin(), result.end());
 		Log(s2);
 
 		Log("Getting attribute list on the base object");
-		MAPWSTRMAP allAttrs2 = rootNode->GetAllAttributes();
+		MAPWSTRMAP allAttrs2 = rootNode.GetAllAttributes();
 		for (MAPWSTRMAP::iterator it = allAttrs2.begin(); it != allAttrs2.end(); it++)
 		{
 			wstring attrName = it->first;
@@ -164,14 +164,14 @@ int main(int argc, char* argv[])
 		}
 
 		Log("loading rules");
-		if (!rootNode->LoadRules(path))
-			rootNode->LoadRules(filename);
-		if (rootNode->GetKnowledgeBase() != NULL && rootNode->GetKnowledgeBase()->IsOpen())
+		if (!rootNode.LoadRules(path))
+			rootNode.LoadRules(filename);
+		if (rootNode.GetKnowledgeBase() != NULL && rootNode.GetKnowledgeBase()->IsOpen())
 		{
-			rootNode->SetTableDebugHandler(DebugMessage);
+			rootNode.SetTableDebugHandler(DebugMessage);
 			Log("...loaded");
 			Log("Evaluating table testtable1");
-			vector<wstring> res = rootNode->EvaluateTable(L"testtable1", L"outputAttr1", true);
+			vector<wstring> res = rootNode.EvaluateTable(L"testtable1", L"outputAttr1", true);
 			for (vector<wstring>::iterator it = res.begin(); it != res.end(); it++)
 			{
 				Log(*it);
@@ -179,7 +179,7 @@ int main(int argc, char* argv[])
 			Log("Evaluation complete");
 
 			Log("Evaluating table testtable2: out1");
-			vector<wstring> res2 = rootNode->EvaluateTable(L"testtable2", L"out1", true);
+			vector<wstring> res2 = rootNode.EvaluateTable(L"testtable2", L"out1", true);
 			for (vector<wstring>::iterator it = res2.begin(); it != res2.end(); it++)
 			{
 				Log(*it);
@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 			Log("Evaluation complete");
 
 			Log("Testing the LinearEngine class");
-			LinearEngine engine2(rootNode, L"ClassDictionary");
+			LinearEngine engine2(&rootNode, L"ClassDictionary");
 
 			Log("Checking dictionary size");
 			map<wstring, ROMDictionaryAttribute>* attrs = engine2.GetAllDictionaryAttrs();
@@ -228,18 +228,18 @@ int main(int argc, char* argv[])
 				Log("FAILURE to initially evaluate an attribute");
 
 			engine2.EvaluateForAttribute(L"cDictAttr1", attr1->AvailableValues[0]);
-			string val_pick1 = rootNode->GetAttribute("dDictAttr2");
-			string val_bool1 = rootNode->GetAttribute("aDictAttr3");
-			string val_multi1 = rootNode->GetAttribute("bDictAttr4");
-			string edit1 = rootNode->GetAttribute("eDictAttr5");
+			string val_pick1 = rootNode.GetAttribute("dDictAttr2");
+			string val_bool1 = rootNode.GetAttribute("aDictAttr3");
+			string val_multi1 = rootNode.GetAttribute("bDictAttr4");
+			string edit1 = rootNode.GetAttribute("eDictAttr5");
 			engine2.EvaluateForAttribute(L"cDictAttr1", attr1->AvailableValues[1]);
-			string val_pick2 = rootNode->GetAttribute("dDictAttr2");
-			string val_bool2 = rootNode->GetAttribute("aDictAttr3");
+			string val_pick2 = rootNode.GetAttribute("dDictAttr2");
+			string val_bool2 = rootNode.GetAttribute("aDictAttr3");
 			engine2.EvaluateForAttribute(L"cDictAttr1", attr1->AvailableValues[2]);
-			string val_bool3 = rootNode->GetAttribute("aDictAttr3");
-			string val_multi3 = rootNode->GetAttribute("bDictAttr4");
+			string val_bool3 = rootNode.GetAttribute("aDictAttr3");
+			string val_multi3 = rootNode.GetAttribute("bDictAttr4");
 			engine2.EvaluateForAttribute("eDictAttr5", "999");
-			string edit4 = rootNode->GetAttribute("eDictAttr5");
+			string edit4 = rootNode.GetAttribute("eDictAttr5");
 			if (val_pick1 == "ResultByOption1" && val_pick2 == "Result2" &&
 				val_bool1 == "Y" && val_bool2 == "Y" && val_bool3 == "N" &&
 				val_multi1 == "Selection2|Selection3" && val_multi3 == "Selection2" &&
@@ -249,13 +249,13 @@ int main(int argc, char* argv[])
 				Log("FAILURE to evaluate an attribute");
 
 			engine2.EvaluateForAttribute(L"cDictAttr1", L"Option1");
-			string dictAttr1 = rootNode->GetAttribute("cDictAttr1");
+			string dictAttr1 = rootNode.GetAttribute("cDictAttr1");
 			engine2.EvaluateForAttribute(L"dDictAttr2", L"ResultByOption1");
-			string dictAttr2 = rootNode->GetAttribute("dDictAttr2");
-			string boolDict3 = rootNode->GetAttribute("aDictAttr3");
-			string boolDict6 = rootNode->GetAttribute("eDictAttr6");
+			string dictAttr2 = rootNode.GetAttribute("dDictAttr2");
+			string boolDict3 = rootNode.GetAttribute("aDictAttr3");
+			string boolDict6 = rootNode.GetAttribute("eDictAttr6");
 			engine2.EvaluateForAttribute("eDictAttr6", "Y");
-			boolDict6 = rootNode->GetAttribute("eDictAttr6");
+			boolDict6 = rootNode.GetAttribute("eDictAttr6");
 		}
 		else
 		{
@@ -271,7 +271,7 @@ int main(int argc, char* argv[])
 			cvtInt(i, temp);
 			string attrToSet = "attr";
 			attrToSet+=temp;
-			rootNode->SetAttribute(attrToSet, temp);
+			rootNode.SetAttribute(attrToSet, temp);
 		}
 		Log("Retrieving a bunch of values...");
 		for (int i = 0; i < iMax; i++)
@@ -279,7 +279,7 @@ int main(int argc, char* argv[])
 			cvtInt(i, temp);
 			string attrToGet = "attr";
 			attrToGet+=temp;
-			rootNode->GetAttribute(attrToGet);
+			rootNode.GetAttribute(attrToGet);
 		}
 		elapsed = getTickCount() - start;
 		cvtInt(elapsed, time);
@@ -296,7 +296,7 @@ int main(int argc, char* argv[])
 			string objectToCreate = "SubLevel1Object";
 			objectToCreate+=temp;
 			ROMNode *newNode = new ROMNode(objectToCreate);
-			rootNode->AddChildROMObject(newNode);
+			rootNode.AddChildROMObject(newNode);
 
 			objectToCreate = "SubLevel2Object";
 			objectToCreate+=temp;
@@ -318,7 +318,7 @@ int main(int argc, char* argv[])
 		start = getTickCount();
 		long queryTime = start;
 		string xpath = "sum(//Attribute[@id='sumtester']/@value)";
-		string xpathRes = rootNode->EvaluateXPATH(xpath);
+		string xpathRes = rootNode.EvaluateXPATH(xpath);
 		elapsed = getTickCount() - start;
 		Log(xpath + " result: " + xpathRes);
 		cvtInt(elapsed, time);
@@ -329,7 +329,7 @@ int main(int argc, char* argv[])
 
 		start = getTickCount();
 		string xpath2 = "sum(//Attribute[@id='sumtester2']/@value)";
-		string xpathRes2 = rootNode->EvaluateXPATH(xpath2);
+		string xpathRes2 = rootNode.EvaluateXPATH(xpath2);
 		elapsed = getTickCount() - start;
 		Log(xpath2 + " result: " + xpathRes2);
 		cvtInt(elapsed, time);
@@ -339,11 +339,11 @@ int main(int argc, char* argv[])
 		Log(msg);
 
 		Log("altering the object state");
-		rootNode->SetAttribute("Change", "Y");
+		rootNode.SetAttribute("Change", "Y");
 
 		start = getTickCount();
 		string xpath3 = "sum(//Attribute[@id='sumtester3']/@value)";
-		string xpathRes3 = rootNode->EvaluateXPATH(xpath3);
+		string xpathRes3 = rootNode.EvaluateXPATH(xpath3);
 		elapsed = getTickCount() - start;
 		Log(xpath3 + " result: " + xpathRes3);
 		cvtInt(elapsed, time);
@@ -354,7 +354,7 @@ int main(int argc, char* argv[])
 
 		start = getTickCount();
 		string xpath4 = "//Object[@id='SubLevel2Object10']/Attribute[@id='testvalue']/@value";
-		string xpathRes4 = rootNode->EvaluateXPATH(xpath4);
+		string xpathRes4 = rootNode.EvaluateXPATH(xpath4);
 		long finished = getTickCount();
 		testROMNodeEnd = finished;
 		elapsed = finished - start;
@@ -370,9 +370,6 @@ int main(int argc, char* argv[])
 		msg+=time;
 		msg+="ms";
 		Log(msg);
-
-		delete rootNode;
-
 
 		msg = "stress test total time: ";
 		elapsed = testROMNodeEnd - testROMNodeStart;
