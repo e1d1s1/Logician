@@ -16,18 +16,19 @@ namespace EDSEngineWinRT
         EDSEngine() {m_DebugDelegate = nullptr;}
 		EDSEngine(String^ knowledge_file) {CreateKnowledgeBase(knowledge_file);}
 		bool CreateKnowledgeBase(String^ knowledge_file);
-		~EDSEngine() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = nullptr;}
+		virtual ~EDSEngine() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = nullptr;}
 
 		
-		void									SetDebugging(bool set) {if (m_KnowledgeBase) m_KnowledgeBase->GenerateDebugMessages(set);}
-		void									PumpDebugMessages();
+		void								SetDebugging(bool set) {if (m_KnowledgeBase) m_KnowledgeBase->GenerateDebugMessages(set);}
+		void								SetDebugging(bool set, DebugHandlerDelegate^ debugHandler) { if (m_KnowledgeBase) m_KnowledgeBase->GenerateDebugMessages(set); m_DebugDelegate = debugHandler;}
+		void								PumpDebugMessages();
 
-		size_t									TableCount();
-		bool									IsOpen();		
-		bool									TableHasScript(String^ tableName);
-		bool									TableIsGetAll(String^ tableName);
+		size_t								TableCount();
+		bool								IsOpen();		
+		bool								TableHasScript(String^ tableName);
+		bool								TableIsGetAll(String^ tableName);
 
-		IVector<String^>^					EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param, bool bGetAll);		
+		IVector<String^>^					EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param, bool bGetAll);	
 		IVector<String^>^					EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
 		IMap<String^,	IVector<String^>^>^	EvaluateTableWithParam(String^ tableName, String^ param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
 		IMap<String^,	IVector<String^>^>^	EvaluateTableWithParam(String^ tableName, String^ param, bool bGetAll);
