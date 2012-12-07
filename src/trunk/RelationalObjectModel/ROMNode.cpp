@@ -1191,7 +1191,10 @@ wstring	ROMNode::EvaluateXPATH(wstring xpath, string guid)
 #ifdef USE_MSXML
 		Document xsltDoc =_createMSXMLDoc();		
 		xsltDoc->loadXML(xslt_text.c_str());
-		retval = ToWString(m_xmlDoc->transformNode(xsltDoc));
+		_bstr_t* valPtr = NULL;
+		_bstr_t val = m_xmlDoc->transformNode(xsltDoc);
+		valPtr = &val;
+		retval = BSTR_T_ToWString(valPtr);
 		xsltDoc.Release();
 #endif
 #ifdef USE_LIBXML

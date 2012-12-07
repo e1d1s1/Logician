@@ -242,7 +242,8 @@ function btnTest_onclick() {
         return false;
     }
 
-    knowledge.setDebugging(true, debugHandler);
+    knowledge.setDebugging(true);
+    knowledge.setDebugHandler(debugHandler);
     write_result("testing input get(), and debug");
     tableName = "testtable3";
     knowledge.setInputValue("someAttr", "3");

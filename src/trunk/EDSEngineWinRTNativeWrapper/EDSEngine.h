@@ -20,8 +20,8 @@ namespace EDSEngineWinRT
 
 		
 		void								SetDebugging(bool set) {if (m_KnowledgeBase) m_KnowledgeBase->GenerateDebugMessages(set);}
-		void								SetDebugging(bool set, DebugHandlerDelegate^ debugHandler) { if (m_KnowledgeBase) m_KnowledgeBase->GenerateDebugMessages(set); m_DebugDelegate = debugHandler;}
 		void								PumpDebugMessages();
+		void								SetDebugHandler(DebugHandlerDelegate^ funct) {m_DebugDelegate = funct;}
 
 		size_t								TableCount();
 		bool								IsOpen();		

@@ -26,9 +26,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#ifdef _MSC_VER
-#include <comdef.h>
-#else
+#ifndef _MSC_VER
 #include <time.h>
 #endif
 
@@ -53,7 +51,7 @@ namespace ROMUTIL
 	string MakeGUID();
 	wstring encodeForXml(const std::wstring &sSrc);
 #if USE_MSXML
-	wstring ToWString(_variant_t str);
+	wstring BSTR_T_ToWString(void* bstr); //void* to avoid reference issues when headers included in WinRT project
 #endif
 	wstring MBCStrToWStr(string mbStr);
 	string WStrToMBCStr(wstring wstr);
