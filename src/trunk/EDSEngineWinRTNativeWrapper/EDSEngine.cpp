@@ -101,7 +101,7 @@ namespace EDSEngineWinRT
 
 		if (m_KnowledgeBase)
 		{
-			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTable(tableName->Data(), bGetAll);
+			retval = m_KnowledgeBase->EvaluateTable(tableName->Data(), bGetAll);
 			PumpDebugMessages();
 		}
 

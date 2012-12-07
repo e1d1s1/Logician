@@ -35,7 +35,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 #endif
 
 #ifdef USE_MSXML	
-#ifndef _WINRT_DLL //future experimental
+#ifndef _WINRT_DLL
 	#import "msxml6.dll"	
 
 	#ifdef USEATL
@@ -57,16 +57,13 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 		typedef MSXML2::IXMLDOMProcessingInstructionPtr ProcessingInstruction;
 	#endif	
 #else
-	#include <atlbase.h>
-	#include <msxml6.h>
-
-	typedef CComPtr<IXMLDOMAttribute> Attribute;
-	typedef CComPtr<IXMLDOMNode> Node;
-	typedef CComPtr<IXMLDOMNodeList> NodeList;
-	typedef CComPtr<IXMLDOMDocument2> Document;
-	typedef CComPtr<IXMLDOMElement> Element;
-	typedef CComPtr<IXMLDOMNamedNodeMap> NamedNodeMap;
-	typedef CComPtr<IXMLDOMProcessingInstruction> ProcessingInstruction;
+	typedef void* Attribute;
+	typedef void* Node;
+	typedef void* NodeList;
+	typedef void* Document;
+	typedef void* Element;
+	typedef void* NamedNodeMap;
+	typedef void* ProcessingInstruction;
 #endif	
 
 	#define X(str) _bstr_t(str)
