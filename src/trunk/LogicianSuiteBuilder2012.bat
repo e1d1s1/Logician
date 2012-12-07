@@ -3,7 +3,11 @@ SET MSBUILD_PATH=%systemroot%\Microsoft.NET\Framework\v4.0.30319\msbuild.exe
 echo "MSBUILD.exe Path: %MSBUILD_PATH%"
 echo "Creating VS2012 bin folder..."
 mkdir VC11
+mkdir VC11\EDSEngineWinRT
+mkdir VC11\ROMWinRT
 mkdir VC11\x64
+mkdir VC11\x64\EDSEngineWinRT
+mkdir VC11\x64\ROMWinRT
 mkdir Silverlight
 
 echo "Building EDSEngine..."
@@ -107,6 +111,24 @@ copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\config.xml" VC11
 copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\bin\x64\Release\LogicianDebuggerTestApp2012.exe" VC11\x64 /y
 copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\config.xml" VC11\x64 /y
 echo "Building LogicianDebuggerTestApp2012 complete"
+
+echo "Building EDSEngineWinRTNativeWrapper..."
+%MSBUILD_PATH% "EDSEngineWinRTNativeWrapper\EDSEngineWinRT.vcxproj" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=11.0 /p:Platform=x86
+%MSBUILD_PATH% "EDSEngineWinRTNativeWrapper\EDSEngineWinRT.vcxproj" /t:clean,rebuild /p:Configuration="Release" /p:VisualStudioVersion=11.0 /p:Platform=x86
+%MSBUILD_PATH% "EDSEngineWinRTNativeWrapper\EDSEngineWinRT.vcxproj" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=11.0 /p:Platform=x64
+%MSBUILD_PATH% "EDSEngineWinRTNativeWrapper\EDSEngineWinRT.vcxproj" /t:clean,rebuild /p:Configuration="Release" /p:VisualStudioVersion=11.0 /p:Platform=x64
+copy "EDSEngineWinRTNativeWrapper\Release\EDSEngineWinRT\*.*" VC11\EDSEngineWinRT /y
+copy "EDSEngineWinRTNativeWrapper\x64\Release\EDSEngineWinRT\*.*" VC11\x64\EDSEngineWinRT /y
+echo "EDSEngineWinRTNativeWrapper build complete"
+
+echo "Building ROMWinRTNativeWrapper..."
+%MSBUILD_PATH% "ROMWinRTNativeWrapper\ROMWinRT.vcxproj" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=11.0 /p:Platform=x86
+%MSBUILD_PATH% "ROMWinRTNativeWrapper\ROMWinRT.vcxproj" /t:clean,rebuild /p:Configuration="Release" /p:VisualStudioVersion=11.0 /p:Platform=x86
+%MSBUILD_PATH% "ROMWinRTNativeWrapper\ROMWinRT.vcxproj" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=11.0 /p:Platform=x64
+%MSBUILD_PATH% "ROMWinRTNativeWrapper\ROMWinRT.vcxproj" /t:clean,rebuild /p:Configuration="Release" /p:VisualStudioVersion=11.0 /p:Platform=x64
+copy "ROMWinRTNativeWrapper\Release\ROMWinRT\*.*" VC11\ROMWinRT /y
+copy "ROMWinRTNativeWrapper\x64\Release\ROMWinRT\*.*" VC11\x64\ROMWinRT /y
+echo "ROMWinRTNativeWrapper build complete"
 
 echo "All builds complete"
 pause
