@@ -23,6 +23,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 bool ROMWinRT::ROMNode::CreateROMNode(String^ id)
 {
 	m_ROMNode = new ROM::ROMNode(id->Data());
+	m_canDelete = true;
 	if (m_ROMNode)
 	{
 		m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
@@ -114,6 +115,7 @@ bool ROMWinRT::ROMNode::AddChildROMObject(ROMNode^ child)
 	if (m_ROMNode)
 	{
 		retval = m_ROMNode->AddChildROMObject(child->m_ROMNode);
+		child->m_canDelete = false;
 	}
 	return retval;
 }
@@ -124,6 +126,7 @@ bool ROMWinRT::ROMNode::RemoveChildROMObject(ROMNode^ child)
 	if (m_ROMNode)
 	{
 		retval = m_ROMNode->RemoveChildROMObject(child->m_ROMNode);
+		child->m_canDelete = true;
 	}
 	return retval;
 }
@@ -133,6 +136,7 @@ bool ROMWinRT::ROMNode::RemoveFromParent()
 	if (m_ROMNode)
 	{
 		return m_ROMNode->RemoveFromParent();
+		m_canDelete = true;
 	}
 	return false;
 }
@@ -181,9 +185,10 @@ bool ROMWinRT::ROMNode::RemoveAllFriends()
 bool ROMWinRT::ROMNode::DestroyROMObject()
 {
 	bool retval = false;
-	if (m_ROMNode && m_canDestroy)
+	if (m_ROMNode)
 	{		
-		delete m_ROMNode;
+		if (m_canDelete)
+			delete m_ROMNode;
 		m_ROMNode = NULL;
 	}
 	return retval;
@@ -197,6 +202,7 @@ ROMWinRT::ROMNode^ ROMWinRT::ROMNode::Clone()
 		ROM::ROMNode* node = m_ROMNode->Clone();
 		delete m_ROMNode;
 		retval = ref new ROMNode((void*)node);
+		retval->m_canDelete = true;  //creates a new root node in new memory space ok to delete
 	}
 	return retval;
 }

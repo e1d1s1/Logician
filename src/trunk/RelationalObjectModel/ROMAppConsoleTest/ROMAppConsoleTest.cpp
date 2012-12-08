@@ -85,6 +85,18 @@ void DebugMessage(wstring msg)
 	Log(L"DEBUGGER: " + msg);
 }
 
+void CreateChildNodes(ROMNode *rootNode)
+{
+	Log("Creating a child object");
+	ROMNode *childNode = new ROMNode(L"ChildObject");
+	rootNode->AddChildROMObject(childNode);
+	childNode->SetAttribute(L"childAttr", L"some value of value");
+	//setting a value on the Object Node
+	childNode->SetROMObjectValue(L"valueTest", L"myValue");
+	ROMNode *childOfChild = new ROMNode(L"ChildObject2");
+	childNode->AddChildROMObject(childOfChild);
+}
+
 int main(int argc, char* argv[])
 {
 	long start = 0, elapsed = 0, testROMTreeStart = 0, testROMTreeEnd = 0, testROMNodeStart = 0, testROMNodeEnd = 0;
@@ -117,14 +129,7 @@ int main(int argc, char* argv[])
 		Log("Testing what we have set");
 		Log(L"inputAttr1 = " + rootNode.GetAttribute(L"inputAttr1"));
 
-		Log("Creating a child object");
-		ROMNode *childNode = new ROMNode(L"ChildObject");
-		rootNode.AddChildROMObject(childNode);
-		childNode->SetAttribute(L"childAttr", L"some value of value");
-		//setting a value on the Object Node
-		childNode->SetROMObjectValue(L"valueTest", L"myValue");
-		ROMNode *childOfChild = new ROMNode(L"ChildObject2");
-		childNode->AddChildROMObject(childOfChild);
+		CreateChildNodes(&rootNode);
 		vector<ROMNode*> findTest = rootNode.FindAllObjectsByID("ChildObject", true);
 		vector<ROMNode*> findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
 		vector<ROMNode*> findTestXPATH2 = rootNode.FindObjects("//Object[@id='ChildObject2']");

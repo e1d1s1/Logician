@@ -26,7 +26,7 @@ namespace ROMNET
 	{
 		wstring wsID = MarshalString(id);
 		m_ROMNode = new ROM::ROMNode(wsID);
-		m_canDestroy = true;
+		m_canDelete = true;
 		if (m_ROMNode)
 		{
 			m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
@@ -121,6 +121,7 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			retval = m_ROMNode->AddChildROMObject(child->m_ROMNode);
+			child->m_canDelete = false;
 		}
 		return retval;
 	}
@@ -131,6 +132,7 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			retval = m_ROMNode->RemoveChildROMObject(child->m_ROMNode);
+			child->m_canDelete = true;
 		}
 		return retval;
 	}
@@ -140,6 +142,7 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			return m_ROMNode->RemoveFromParent();
+			m_canDelete = true;
 		}
 		return false;
 	}
@@ -188,9 +191,10 @@ namespace ROMNET
 	bool ROMNode::DestroyROMObject()
 	{
 		bool retval = false;
-		if (m_ROMNode && m_canDestroy)
+		if (m_ROMNode)
 		{			
-			delete m_ROMNode; //will call unmanaged DestroyROMObject
+			if (m_canDelete)
+				delete m_ROMNode;
 			m_ROMNode = NULL;
 		}
 		return retval;
@@ -203,6 +207,7 @@ namespace ROMNET
 		{
 			ROM::ROMNode* node = m_ROMNode->Clone();
 			retval = gcnew ROMNode((IntPtr)node);
+			retval->m_canDelete = true;  //creates a new root node in new memory space ok to delete
 		}
 		return retval;
 	}

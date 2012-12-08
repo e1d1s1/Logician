@@ -30,14 +30,7 @@ namespace ROM2NETTestApplication
             rootNode.SetAttribute("inputAttr3", "test3b", "some sub value of attr3_b");
             Log("Attrs set");
 
-            Log("Creating a child object");
-            ROMNode childNode = new ROMNode("ChildObject");
-            rootNode.AddChildROMObject(childNode);
-            childNode.SetAttribute("childAttr", "some value of value");
-            //setting a value on the Object Node
-            childNode.SetROMObjectValue("valueTest", "myValue");
-            ROMNode childOfChild = new ROMNode("ChildObject2");
-            childNode.AddChildROMObject(childOfChild);
+            CreateChildNodes(rootNode);
             ROMNode[] findTest = rootNode.FindAllObjectsByID("ChildObject", true);
             ROMNode[] findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
             ROMNode[] findTestXPATH2 = rootNode.FindObjects("//Object[@id='ChildObject2']");
@@ -254,6 +247,18 @@ namespace ROM2NETTestApplication
 
             Log("Testing complete...press any key to exit");
             Console.ReadLine();
+        }
+
+        private static void CreateChildNodes(ROMNode rootNode)
+        {
+            Log("Creating a child object");
+            ROMNode childNode = new ROMNode("ChildObject");
+            rootNode.AddChildROMObject(childNode);
+            childNode.SetAttribute("childAttr", "some value of value");
+            //setting a value on the Object Node
+            childNode.SetROMObjectValue("valueTest", "myValue");
+            ROMNode childOfChild = new ROMNode("ChildObject2");
+            childNode.AddChildROMObject(childOfChild);
         }
 
         static void Log(string s)

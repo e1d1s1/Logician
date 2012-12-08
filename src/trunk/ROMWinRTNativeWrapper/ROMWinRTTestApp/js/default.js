@@ -33,6 +33,17 @@
     app.start();
 })();
 
+function CreateChildNodes(rootNode) {
+    write_result("Creating a child object");
+    var childNode = new ROMWinRT.ROMNode("ChildObject");
+    rootNode.addChildROMObject(childNode);
+    childNode.setAttribute("childAttr", "some value of value");
+    //setting a value on the Object Node
+    childNode.setROMObjectValue("valueTest", "myValue");
+    var childOfChild = new ROMWinRT.ROMNode("ChildObject2");
+    childNode.addChildROMObject(childOfChild);
+}
+
 function btnTest2_onclick() {
     var start = 0; var elapsed = 0; var testROMTreeStart = 0; var testROMTreeEnd = 0; var testROMNodeStart = 0; var testROMNodeEnd = 0;
     var msg = new String();
@@ -56,14 +67,7 @@ function btnTest2_onclick() {
         write_result("Testing what we have set");
         write_result("inputAttr1 = " + rootNode.getAttribute("inputAttr1", true));
 
-        write_result("Creating a child object");
-        var childNode = new ROMWinRT.ROMNode("ChildObject");
-        rootNode.addChildROMObject(childNode);
-        childNode.setAttribute("childAttr", "some value of value");
-        //setting a value on the Object Node
-        childNode.setROMObjectValue("valueTest", "myValue");
-        var childOfChild = new ROMWinRT.ROMNode("ChildObject2");
-        childNode.addChildROMObject(childOfChild);
+        CreateChildNodes(rootNode);
         var findTest = rootNode.findAllObjectsByID("ChildObject", true);
         var findTestXPATH = rootNode.findObjects("//Object[@id='ChildObject']");
         var findTestXPATH2 = rootNode.findObjects("//Object[@id='ChildObject2']");
