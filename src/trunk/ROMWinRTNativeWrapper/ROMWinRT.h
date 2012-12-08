@@ -414,7 +414,6 @@ namespace ROMWinRT
 		}
 
 	private:
-		LinearEngine(void* ptr) {m_LinearEngine = (ROM::LinearEngine*)ptr;}
 		ROM::LinearEngine *m_LinearEngine;
 		DebugHandlerDelegate^	m_DebugDelegate;
 	};
