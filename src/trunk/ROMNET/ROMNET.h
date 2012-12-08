@@ -43,8 +43,8 @@ namespace ROMNET {
 		ROMNode() {CreateROMNode(""); m_KnowledgeBase = NULL;}		
 		ROMNode(String^ id) {CreateROMNode(id);}
 		bool CreateROMNode(System::String^ id);
-		~ROMNode() {DestroyROMObject(); this->!ROMNode();}
-		!ROMNode() {}
+		~ROMNode() {this->!ROMNode();}
+		!ROMNode() {DestroyROMObject();}
 
 		//some useful operators/casts for the managed/unmanaged boundry
 		static operator long(ROMNode^ romObj)
@@ -144,18 +144,18 @@ namespace ROMNET {
 		//XPATH
 		String^				EvaluateXPATH(String^ xpath, String^ guid);
 		String^				EvaluateXPATH(String^ xpath) {return EvaluateXPATH(xpath, GetROMGUID());}
-		
 
+	public protected:
 		IntPtr^				GetROMPtr() {return (IntPtr)m_ROMNode;}
 		IntPtr^				GetEDSPtr() {return (IntPtr)m_KnowledgeBase;}
 
 	private:		
-		ROMNode(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer(); m_KnowledgeBase = m_ROMNode->GetKnowledgeBase(); m_canDestroy = false;}
-		array<ROMNode^>^ GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
+		ROMNode(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer(); m_KnowledgeBase = m_ROMNode->GetKnowledgeBase(); m_canDelete = false;}
+		array<ROMNode^>^	GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
 
 		ROM::ROMNode		*m_ROMNode;
 		EDS::CKnowledgeBase *m_KnowledgeBase;
-		bool				m_canDestroy;
+		bool				m_canDelete;
 	};
 
 	public enum class ATTRTYPE
@@ -171,9 +171,9 @@ namespace ROMNET {
 	{
 	public:
 		ROMDictionaryAttribute() {m_ROMDictionaryAttribute = NULL;}		
-		void CreateROMDictionaryAttribute() {m_ROMDictionaryAttribute = new ROM::ROMDictionaryAttribute();}
-		~ROMDictionaryAttribute() {if (m_ROMDictionaryAttribute) delete m_ROMDictionaryAttribute; this->!ROMDictionaryAttribute();}
-		!ROMDictionaryAttribute() {}
+		void CreateROMDictionaryAttribute() {m_ROMDictionaryAttribute = new ROM::ROMDictionaryAttribute(); m_canDelete = true;}
+		~ROMDictionaryAttribute() {this->!ROMDictionaryAttribute();}
+		!ROMDictionaryAttribute() {if (m_ROMDictionaryAttribute && m_canDelete) delete m_ROMDictionaryAttribute; m_ROMDictionaryAttribute = NULL;}
 
 		property String^ Name
 		{
@@ -376,10 +376,11 @@ namespace ROMNET {
 		}
 
 	public protected:
-		ROMDictionaryAttribute(IntPtr^ ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr->ToPointer();}
+		ROMDictionaryAttribute(IntPtr^ ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr->ToPointer(); m_canDelete = false;}
 
 	private:
 		ROM::ROMDictionaryAttribute* m_ROMDictionaryAttribute;
+		bool m_canDelete;
 	};
 
 	public ref class ROMDictionary
@@ -390,9 +391,10 @@ namespace ROMNET {
 		void CreateROMDictionary(ROMNode^ context) 
 		{
 			m_ROMDictionary = new ROM::ROMDictionary((ROM::ROMNode*)context->GetROMPtr()->ToPointer());
+			m_canDelete = true;
 		}
-		virtual ~ROMDictionary() {if (m_ROMDictionary) delete m_ROMDictionary; this->!ROMDictionary();}
-		!ROMDictionary() {}
+		virtual ~ROMDictionary() {this->!ROMDictionary();}
+		!ROMDictionary() {if (m_ROMDictionary && m_canDelete) delete m_ROMDictionary; m_ROMDictionary = NULL;}
 
 		//debugger
 		DebugHandlerDelegate^	DebugDelegate;
@@ -404,8 +406,9 @@ namespace ROMNET {
 		Dictionary<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
 	private:
-		ROMDictionary(IntPtr^ ptr) {m_ROMDictionary = (ROM::ROMDictionary*)ptr->ToPointer();}
+		ROMDictionary(IntPtr^ ptr) {m_ROMDictionary = (ROM::ROMDictionary*)ptr->ToPointer(); m_canDelete = false;}
 		ROM::ROMDictionary *m_ROMDictionary;
+		bool m_canDelete;
 	};		
 
 	public enum class INVALIDATEMODE
@@ -424,8 +427,8 @@ namespace ROMNET {
 			wstring dict = MarshalString(dictionaryTable);
 			m_LinearEngine = new ROM::LinearEngine((ROM::ROMNode*)context->GetROMPtr()->ToPointer(), dict);
 		}
-		virtual ~LinearEngine() {if (m_LinearEngine) delete m_LinearEngine; this->!LinearEngine();}
-		!LinearEngine() {}
+		virtual ~LinearEngine() {this->!LinearEngine();}
+		!LinearEngine() {if (m_LinearEngine) delete m_LinearEngine; m_LinearEngine = NULL;}
 
 		//debugger
 		DebugHandlerDelegate^	DebugDelegate;
@@ -470,7 +473,6 @@ namespace ROMNET {
 		}
 
 	private:
-		LinearEngine(IntPtr^ ptr) {m_LinearEngine = (ROM::LinearEngine*)ptr->ToPointer();}
 		ROM::LinearEngine *m_LinearEngine;
 	};
 

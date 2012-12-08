@@ -18,7 +18,7 @@ namespace ROMWinRT
 	public ref class ROMNode sealed
 	{
 	public:
-		ROMNode() {CreateROMNode(""); m_KnowledgeBase = NULL; m_canDestroy = true;}		
+		ROMNode() {CreateROMNode(""); m_KnowledgeBase = NULL;}		
 		ROMNode(String^ id) {CreateROMNode(id);}
 		bool CreateROMNode(String^ id);
 		virtual ~ROMNode() {DestroyROMObject();}
@@ -95,14 +95,14 @@ namespace ROMWinRT
 		void*				GetEDSPtr() {return (void*)m_KnowledgeBase;}
 
 	private:		
-		ROMNode(void* ptr) {m_ROMNode = (ROM::ROMNode*)ptr; m_KnowledgeBase = m_ROMNode->GetKnowledgeBase(); m_canDestroy = false; }
+		ROMNode(void* ptr) {m_ROMNode = (ROM::ROMNode*)ptr; m_KnowledgeBase = m_ROMNode->GetKnowledgeBase(); m_canDelete = false; }
 
 		IVector<ROMNode^>^	GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);		
 
 		DebugHandlerDelegate^	m_DebugDelegate;
 		ROM::ROMNode			*m_ROMNode;
 		EDS::CKnowledgeBase		*m_KnowledgeBase;
-		bool					m_canDestroy;
+		bool					m_canDelete;
 	};
 
 	public enum class ATTRTYPE
