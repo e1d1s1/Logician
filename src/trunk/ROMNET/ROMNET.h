@@ -391,10 +391,9 @@ namespace ROMNET {
 		void CreateROMDictionary(ROMNode^ context) 
 		{
 			m_ROMDictionary = new ROM::ROMDictionary((ROM::ROMNode*)context->GetROMPtr()->ToPointer());
-			m_canDelete = true;
 		}
 		virtual ~ROMDictionary() {this->!ROMDictionary();}
-		!ROMDictionary() {if (m_ROMDictionary && m_canDelete) delete m_ROMDictionary; m_ROMDictionary = NULL;}
+		!ROMDictionary() {if (m_ROMDictionary) delete m_ROMDictionary; m_ROMDictionary = NULL;}
 
 		//debugger
 		DebugHandlerDelegate^	DebugDelegate;
@@ -406,9 +405,7 @@ namespace ROMNET {
 		Dictionary<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
 	private:
-		ROMDictionary(IntPtr^ ptr) {m_ROMDictionary = (ROM::ROMDictionary*)ptr->ToPointer(); m_canDelete = false;}
 		ROM::ROMDictionary *m_ROMDictionary;
-		bool m_canDelete;
 	};		
 
 	public enum class INVALIDATEMODE

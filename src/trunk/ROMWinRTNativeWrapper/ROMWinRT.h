@@ -120,8 +120,8 @@ namespace ROMWinRT
 	friend ref class LinearEngine;
 	public:
 		ROMDictionaryAttribute() {m_ROMDictionaryAttribute = NULL;}		
-		void CreateROMDictionaryAttribute() {m_ROMDictionaryAttribute = new ROM::ROMDictionaryAttribute();}
-		virtual ~ROMDictionaryAttribute() {if (m_ROMDictionaryAttribute) delete m_ROMDictionaryAttribute;}
+		void CreateROMDictionaryAttribute() {m_ROMDictionaryAttribute = new ROM::ROMDictionaryAttribute(); m_canDelete = true;}
+		virtual ~ROMDictionaryAttribute() {if (m_ROMDictionaryAttribute && m_canDelete) delete m_ROMDictionaryAttribute; m_ROMDictionaryAttribute = NULL;}
 
 		property String^ Name
 		{
@@ -322,8 +322,9 @@ namespace ROMWinRT
 		}
 
 	private:
-		ROMDictionaryAttribute(void* ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr;}
+		ROMDictionaryAttribute(void* ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr; m_canDelete = false;}
 		ROM::ROMDictionaryAttribute* m_ROMDictionaryAttribute;
+		bool m_canDelete;
 	};
 
 	public ref class ROMDictionary sealed
@@ -336,7 +337,7 @@ namespace ROMWinRT
 		{
 			m_ROMDictionary = new ROM::ROMDictionary((ROM::ROMNode*)context->GetROMPtr());
 		}
-		virtual ~ROMDictionary() {if (m_ROMDictionary) delete m_ROMDictionary;}
+		virtual ~ROMDictionary() {if (m_ROMDictionary) delete m_ROMDictionary; m_ROMDictionary = NULL;}
 
 		//debugger
 		
@@ -348,8 +349,7 @@ namespace ROMWinRT
 		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
 		IMap<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
-	private:
-		ROMDictionary(void* ptr) {m_ROMDictionary = (ROM::ROMDictionary*)ptr;}
+	private:		
 		ROM::ROMDictionary		*m_ROMDictionary;
 		DebugHandlerDelegate^	m_DebugDelegate;
 	};		
