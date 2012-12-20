@@ -343,7 +343,7 @@ namespace LogicianSilverlightTestApp
 
         private void btnTest2_Click(object sender, RoutedEventArgs e)
         {
-            var start = 0; var elapsed = 0; var testROMTreeStart = 0; var testROMTreeEnd = 0; var testROMNodeStart = 0; var testROMNodeEnd = 0;
+            var start = 0; var elapsed = 0; var testROMTreeStart = 0; var testROMTreeEnd = 0;
             string msg = "";
             var iMax = 1000;
             try
