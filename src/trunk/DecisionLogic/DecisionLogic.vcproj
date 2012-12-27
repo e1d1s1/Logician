@@ -83,7 +83,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;..\iconv-1.9.2.win32\lib&quot;;&quot;..\libxml2-2.7.3.win32\lib&quot;;&quot;$(WXWIN)\lib\vc_lib&quot;;&quot;$(WXWIN)\lib\vc_amd64_lib&quot;;&quot;$(BOOST_ROOT)\lib&quot;"
 				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="libcpmtd.lib;LIBCMTD.lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="vc_mswud\DecisionLogic.pdb"
 				SubSystem="2"
