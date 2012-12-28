@@ -29,6 +29,7 @@
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
+#include <boost/filesystem.hpp>
 #include <cctype>
 
 #include "WorkerClass.h"
@@ -598,6 +599,7 @@ void WorkerClass::InsertTable()
 {
 	try
 	{
+		bool bInsertedOK = false;
 		if (!bIsSaved && m_gui->GetNodeCount() > 1)
 		{
 			if (!CheckSave())
@@ -622,11 +624,9 @@ void WorkerClass::InsertTable()
 		vector<wstring> pathParts = UTILS::Split(path, wstrSep);
 		wstring name = UTILS::FindAndReplace(pathParts[pathParts.size() - 1], L".xml", L"");
 
-		wstring target = m_pm.GetProjectWorkingPath() + m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
+		wstring target = m_pm.GetProjectWorkingPath() + PATHSEP + m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
 		wstring sourcePath = path;
 		wstring targetPath = target;
-		transform(targetPath.begin(), targetPath.end(), targetPath.begin(), ::tolower);
-		transform(sourcePath.begin(), sourcePath.end(), sourcePath.begin(), ::tolower);
 		if (targetPath != sourcePath)
 		{
 			//copy from source to target
@@ -639,21 +639,39 @@ void WorkerClass::InsertTable()
 			FILE *newFile = fopen(UTILS::WStrToMBCStr(targetPath).c_str(), "wb");
 			#endif
 
-			char *buffer = NULL;
-			fseek(oldFile, 0, SEEK_END);
-			size_t len = ftell(oldFile);
-			buffer = new char[len];
-			rewind(oldFile);
-			size_t result = fread(buffer, 1, len, oldFile);
-			if (result > 0)
-				fwrite(buffer, 1, len, newFile);
-			delete[] buffer;
-			fclose(oldFile);
-			fclose(newFile);
+			if (oldFile != NULL)
+			{
+				if (newFile == NULL)
+				{
+					size_t pos = targetPath.find_last_of(PATHSEP);
+					wstring newPath = targetPath.substr(0, pos);
+					boost::filesystem::create_directories(newPath);
+					newFile = _wfopen(target.c_str(), L"wb");
+				}
+
+				if (newFile != NULL)
+				{
+					char *buffer = NULL;
+					fseek(oldFile, 0, SEEK_END);
+					size_t len = ftell(oldFile);
+					buffer = new char[len];
+					rewind(oldFile);
+					size_t result = fread(buffer, 1, len, oldFile);
+					if (result > 0)
+						fwrite(buffer, 1, len, newFile);
+					delete[] buffer;
+					fclose(newFile);
+					bInsertedOK = true;
+				}
+				fclose(oldFile);
+			}
 		}
 
-		m_pm.AddDataSetFile(name, path);
-		AddTableToProject(name, false, false);
+		if (bInsertedOK)
+		{
+			m_pm.AddDataSetFile(name, targetPath);
+			AddTableToProject(name, false, false);
+		}
 	}
 	catch(...)
 	{
