@@ -157,10 +157,12 @@ namespace HydraulicCylinder
                 return;
 
             string contents = null;
-            StreamReader reader = new StreamReader(dialog.FileName);
-            while (!reader.EndOfStream)
+            using (StreamReader reader = new StreamReader(dialog.FileName))
             {
-                contents = reader.ReadToEnd();
+                while (!reader.EndOfStream)
+                {
+                    contents = reader.ReadToEnd();
+                }
             }
 
             //reload
