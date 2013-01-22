@@ -443,8 +443,8 @@
             this.CylinderStroke.Name = "CylinderStroke";
             this.CylinderStroke.Size = new System.Drawing.Size(67, 20);
             this.CylinderStroke.TabIndex = 16;
-            this.CylinderStroke.Leave += new System.EventHandler(this.text_TextChanged);
             this.CylinderStroke.Enter += new System.EventHandler(this.text_BeginEdit);
+            this.CylinderStroke.Leave += new System.EventHandler(this.text_TextChanged);
             // 
             // tableLayoutPanel4
             // 
@@ -471,8 +471,8 @@
             this.ExtraRodProtection.Name = "ExtraRodProtection";
             this.ExtraRodProtection.Size = new System.Drawing.Size(67, 20);
             this.ExtraRodProtection.TabIndex = 19;
-            this.ExtraRodProtection.Leave += new System.EventHandler(this.text_TextChanged);
             this.ExtraRodProtection.Enter += new System.EventHandler(this.text_BeginEdit);
+            this.ExtraRodProtection.Leave += new System.EventHandler(this.text_TextChanged);
             // 
             // lbExtraRodProtection
             // 
