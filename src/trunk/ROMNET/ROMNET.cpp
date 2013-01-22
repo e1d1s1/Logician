@@ -568,23 +568,6 @@ namespace ROMNET
 		{
 			wstring res = m_ROMNode->SaveXML(indented);
 			retval = gcnew String(res.c_str());
-			#ifdef USE_MSXML
-			//fix the indentation limitation of MSXML DOM
-			if (indented)
-			{
-				System::Xml::XmlDocument^ doc = gcnew System::Xml::XmlDocument();
-				doc->LoadXml(retval);
-				System::IO::MemoryStream^ ms = gcnew System::IO::MemoryStream(); 			
-				System::Xml::XmlWriterSettings^ settings = gcnew System::Xml::XmlWriterSettings();
-				settings->Encoding = System::Text::Encoding::UTF8;
-				settings->Indent = true;
-				System::Xml::XmlWriter^ writer = System::Xml::XmlWriter::Create(ms, settings);
-				doc->Save(writer);
-				writer->Flush();
-				writer->Close();
-				retval = System::Text::Encoding::UTF8->GetString(ms->ToArray());
-			}
-			#endif
 		}
 		return retval;
 	}

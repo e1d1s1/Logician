@@ -39,7 +39,7 @@ namespace ROMUTIL
 	bool StringBeginsWith(wstring source, wstring target);
 	vector<string> Split(string text, string separators);
 	vector<wstring> Split(wstring text, wstring separators);
-		bool StringIsNumeric(wstring s);
+	bool StringIsNumeric(wstring s);
 	wstring TrimString(wstring s);
 	string ToASCIIString(wstring s);
 	vector<string> WStrToMBCStrVector(vector<wstring> vectWS);
