@@ -1253,7 +1253,26 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 				m_xmlDoc->insertBefore(pXMLProcessingNode,vtObject);
 			}
 		}
-		retval = (wstring)m_xmlDoc->Getxml();		
+
+		MSXML2::IMXWriterPtr pWriter = NULL;
+		pWriter.CreateInstance("MSXML2.MXXMLWriter"); 
+
+		MSXML2::ISAXXMLReaderPtr pReader = NULL;
+		pReader.CreateInstance("MSXML2.SAXXMLReader");
+
+		MSXML2::ISAXContentHandlerPtr handler = pWriter;
+
+		if (pWriter != NULL && pReader != NULL)
+		{
+			if (indented)
+				pWriter->put_indent(VARIANT_TRUE);
+
+			pReader->putContentHandler(handler);
+			pReader->parse(m_xmlDoc.GetInterfacePtr());
+			
+			//utf-16 here
+			retval = (wstring)pWriter->output.bstrVal;
+		}
 #endif
 #ifdef USE_LIBXML
 		xmlChar *xmlbuff;

@@ -230,7 +230,7 @@ namespace HydraulicCylinderWinRT
             if (file != null)
             {
                 string outStr = m_rootNode.SaveXML(true);
-                await FileIO.WriteTextAsync(file, outStr, Windows.Storage.Streams.UnicodeEncoding.Utf8);
+                await FileIO.WriteTextAsync(file, outStr);
             }
         }
     }

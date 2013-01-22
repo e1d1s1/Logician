@@ -185,8 +185,7 @@ namespace HydraulicCylinder
                 return;
 
             string outStr = m_rootNode.SaveXML(true);
-            UTF8Encoding encoding = new UTF8Encoding(false);
-            System.IO.File.WriteAllText(dialog.FileName, outStr, encoding);
+            System.IO.File.WriteAllText(dialog.FileName, outStr);
         }
 
         private void showDebuggerToolStripMenuItem_Click(object sender, EventArgs e)
