@@ -17,6 +17,7 @@ Copyright (C) 2009-2011 Eric D. Schmidt, DigiRule Solutions LLC
 */
 #pragma once
 #include "stdafx.h"
+#include <vector>
 
 class CBimapper
 {

@@ -29,3 +29,5 @@ else:unix:!macx: LIBS += -L../ -lRelationalObjectModel
 
 INCLUDEPATH += ../
 DEPENDPATH += ../
+
+QMAKE_CXXFLAGS += -std=c++0x

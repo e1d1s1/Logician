@@ -8,6 +8,7 @@ DEFINES += POSIX \
 
 INCLUDEPATH += /usr/include/libxml2 \
                /usr/include/wx-2.8 \
+               /usr/lib/x86_64-linux-gnu/wx/include/gtk2-unicode-release-2.8 \
                /usr/lib/i386-linux-gnu/wx/include/gtk2-unicode-release-2.8
 
 SOURCES += \
@@ -43,7 +44,9 @@ HEADERS += \
     CodeEditor.h \
     CodeControl.h
 
-DEPENDPATH += /usr/lib/i386-linux-gnu
+DEPENDPATH += /usr/lib \
+              /usr/lib/i386-linux-gnu \
+              /usr/lib/x86_64-linux-gnu
 
 unix:!symbian: LIBS += -lxml2
 unix:!symbian: LIBS += -lstdc++
@@ -54,5 +57,7 @@ unix:!symbian: LIBS += -lwx_baseu_xml-2.8
 unix:!symbian: LIBS += -lwx_gtk2u_stc-2.8
 unix:!symbian: LIBS += -lwx_gtk2u_core-2.8
 unix:!symbian: LIBS += -lwx_baseu_net-2.8
+unix:!symbian: LIBS += -lboost_system
 unix:!symbian: LIBS += -lboost_iostreams
+unix:!symbian: LIBS += -lboost_filesystem
 

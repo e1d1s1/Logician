@@ -5,7 +5,7 @@ CONFIG -= qt
 DEFINES += EDSENGINETESTAPP \
         USE_LIBXML \
         USE_JAVASCRIPT \
-        USE_PYTHON \
+        NOPYTHON \
         POSIX
 
 SOURCES += \
@@ -28,3 +28,5 @@ unix:!symbian: LIBS += -L$$PWD/../ -lEDSEngine
 
 INCLUDEPATH += $$PWD/../
 DEPENDPATH += $$PWD/../
+
+QMAKE_CXXFLAGS += -std=c++0x

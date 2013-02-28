@@ -646,7 +646,11 @@ void WorkerClass::InsertTable()
 					size_t pos = targetPath.find_last_of(PATHSEP);
 					wstring newPath = targetPath.substr(0, pos);
 					boost::filesystem::create_directories(newPath);
-					newFile = _wfopen(target.c_str(), L"wb");
+                    #ifdef WIN32
+                        newFile = _wfopen(target.c_str(), L"wb");
+                    #else
+                        newFile = fopen(UTILS::WStrToMBCStr(target).c_str(), "wb");
+                    #endif
 				}
 
 				if (newFile != NULL)
