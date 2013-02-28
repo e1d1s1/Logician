@@ -68,13 +68,15 @@ public:
 	}
 };
 
-#ifndef __GNUC__
 void pause()
 {
+#ifndef __GNUC__
 	std::puts("Press any key to continue...");
  	std::getchar();
+#else
+    std::cin.get();
+ #endif
 }
-#endif
 
 vector<TestResult> testResults;
 

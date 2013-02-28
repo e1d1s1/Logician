@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2012-07-02T14:24:40
+# Project created by QtCreator 2013-02-21T02:53:03
 #
 #-------------------------------------------------
 
@@ -12,7 +12,7 @@ TEMPLATE = lib
 DEFINES += EDSENGINE_LIBRARY \
         USE_LIBXML \
         USE_JAVASCRIPT \
-        USE_PYTHON \
+        NOPYTHON \
         POSIX
 
 INCLUDEPATH += /usr/include/libxml2 \
@@ -22,13 +22,12 @@ INCLUDEPATH += /usr/include/libxml2 \
 SOURCES += \
     utilities.cpp \
     TableSet.cpp \
+    stdafx.cpp \
     RuleTable.cpp \
     KnowledgeBase.cpp \
     EDSEngine.cpp \
     Decode.cpp \
-    DataBase.cpp \
-    Bimapper.cpp \
-    stdafx.cpp
+    Bimapper.cpp
 
 HEADERS += \
     XMLWrapper.h \
@@ -40,12 +39,11 @@ HEADERS += \
     Numerics.h \
     KnowledgeBase.h \
     Decode.h \
-    DataBase.h \
     Bimapper.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
-    TARGET.UID3 = 0xE5E0D08A
+    TARGET.UID3 = 0xE8C2997C
     TARGET.CAPABILITY = 
     TARGET.EPOCALLOWDLLDATA = 1
     addFiles.sources = EDSEngine.dll
@@ -75,3 +73,5 @@ unix:!symbian: LIBS += -lboost_python-py27
 unix:!symbian: LIBS += -lboost_iostreams-mt
 
 unix:!symbian: LIBS += -lboost_system
+
+QMAKE_CXXFLAGS += -std=c++0x

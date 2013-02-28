@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2012-07-08T02:29:47
+# Project created by QtCreator 2013-02-27T22:05:02
 #
 #-------------------------------------------------
 
@@ -12,9 +12,6 @@ TEMPLATE = lib
 DEFINES += RELATIONALOBJECTMODEL_LIBRARY \
            USE_LIBXML \
            POSIX
-
-INCLUDEPATH += /usr/include/libxml2 \
-               ../EDSEngine
 
 SOURCES += \
     utilities.cpp \
@@ -33,7 +30,7 @@ HEADERS += \
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
-    TARGET.UID3 = 0xE3F70F56
+    TARGET.UID3 = 0xE8C5DEAF
     TARGET.CAPABILITY = 
     TARGET.EPOCALLOWDLLDATA = 1
     addFiles.sources = RelationalObjectModel.dll
@@ -59,3 +56,5 @@ else:unix:!macx: LIBS += -L../EDSEngine/ -lEDSEngine
 
 INCLUDEPATH += ../EDSEngine
 DEPENDPATH += ../EDSEngine
+
+QMAKE_CXXFLAGS += -std=c++0x
