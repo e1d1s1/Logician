@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EDSEngineNET">
+      <HintPath>..\..\src\trunk\VC11\EDSEngineNET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,12 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\trunk\EDSEngineNET\EDSEngineNET2012.vcxproj">
-      <Project>{c035245f-9d98-4585-8350-6e1cdd5adac3}</Project>
-      <Name>EDSEngineNET</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ColorRules.xml">
