@@ -63,7 +63,7 @@ Visual Studio 2008/2010/2012 project files are included.  Configurations for bot
 Only Visual Studio 2012 supports building x64 libraries at this time.
 
 Linux: (Ubuntu 9.10+, 12.04 recommended)
-All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu has been tested.  A makefile and QT Creator project files are provided.  The current builds link against libxml 2.7.8, libxslt 1.1.26, libboost 1.48, Python 2.7, and wxWidgets 2.8.12.
+All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu has been tested.  A makefile and QT Creator project files are provided.  The current builds link against libxml 2.7.8, libxslt 1.1.26, libboost 1.49, and wxWidgets 2.8.12.
 
 Apple OSX:
 Coming soon...should work since all the same *nix tools are available.  Need to test.
