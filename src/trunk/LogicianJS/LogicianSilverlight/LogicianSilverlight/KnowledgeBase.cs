@@ -1,6 +1,6 @@
 ﻿/*
 This file is part of the LogicianSilverlight Library.
-Copyright (C) 2009 - 2011 Eric D. Schmidt
+Copyright (C) 2009 - 2013 Eric D. Schmidt
 
     LogicianSilverlight is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -49,52 +49,60 @@ SectionEnd
 Section "Logician Suite"
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\VC9
-	;3rd party libs
-	File "iconv-1.9.2.win32\bin\iconv.dll"
-	File "iconv-1.9.2.win32\lib\iconv.lib"
-	File "iconv-1.9.2.win32\lib\iconv_a.lib"
-	File "libxml2-2.7.3.win32\bin\libxml2.dll"
-	File "libxml2-2.7.3.win32\lib\libxml2.lib"
-	File "libxml2-2.7.3.win32\lib\libxml2_a.lib"
-	File "libxml2-2.7.3.win32\lib\libxml2_a_dll.lib"
-	File "libxslt-1.1.24.win32\bin\libexslt.dll"
-	File "libxslt-1.1.24.win32\bin\libxslt.dll"
-	File "libxslt-1.1.24.win32\lib\libexslt.lib"
-	File "libxslt-1.1.24.win32\lib\libexslt_a.lib"
-	File "libxslt-1.1.24.win32\lib\libxslt.lib"
-	File "libxslt-1.1.24.win32\lib\libxslt_a.lib"
-	
 	File "..\trunk\VC9\EDSEngine.lib"
 	File "..\trunk\VC9\EDSEngineNET.dll"
 	File "..\trunk\VC9\RelationalObjectModel.lib"
 	File "..\trunk\VC9\ROMNET.dll"
 	File "..\trunk\VC9\LogicianDebuggerWPF.dll"
-	File "..\trunk\VC9\WPFToolkit.dll"
+	File "..\trunk\VC9\WPFToolkit.dll"	
 	
-	
-	SetOutPath $INSTDIR\VC10
-	;3rd party libs
-	File "iconv-1.9.2.win32\bin\iconv.dll"
-	File "iconv-1.9.2.win32\lib\iconv.lib"
-	File "iconv-1.9.2.win32\lib\iconv_a.lib"
-	File "libxml2-2.7.3.win32\bin\libxml2.dll"
-	File "libxml2-2.7.3.win32\lib\libxml2.lib"
-	File "libxml2-2.7.3.win32\lib\libxml2_a.lib"
-	File "libxml2-2.7.3.win32\lib\libxml2_a_dll.lib"
-	File "libxslt-1.1.24.win32\bin\libexslt.dll"
-	File "libxslt-1.1.24.win32\bin\libxslt.dll"
-	File "libxslt-1.1.24.win32\lib\libexslt.lib"
-	File "libxslt-1.1.24.win32\lib\libexslt_a.lib"
-	File "libxslt-1.1.24.win32\lib\libxslt.lib"
-	File "libxslt-1.1.24.win32\lib\libxslt_a.lib"
-	
+	SetOutPath $INSTDIR\VC10	
 	File "..\trunk\VC10\EDSEngine.lib"
 	File "..\trunk\VC10\EDSEngineNET.dll"
 	File "..\trunk\VC10\RelationalObjectModel.lib"
 	File "..\trunk\VC10\ROMNET.dll"
 	File "..\trunk\VC10\LogicianDebuggerWPF.dll"
 	File "..\trunk\VC10\WPFToolkit.dll"
+	
+	SetOutPath $INSTDIR\VC11
+	File "..\trunk\VC11\EDSEngine.lib"
+	File "..\trunk\VC11\EDSEngineNET.dll"
+	File "..\trunk\VC11\RelationalObjectModel.lib"
+	File "..\trunk\VC11\ROMNET.dll"
+	File "..\trunk\VC11\LogicianDebuggerWPF.dll"
+	File "..\trunk\VC11\WPFToolkit.dll"
 	File "..\trunk\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll"
+	SetOutPath $INSTDIR\VC11\EDSEngineWinRT
+	File "..\trunk\VC11\EDSEngineWinRT\EDSEngineWinRT.winmd"
+	File "..\trunk\VC11\EDSEngineWinRT\EDSEngineWinRT.pri"
+	File "..\trunk\VC11\EDSEngineWinRT\EDSEngineWinRT.lib"
+	File "..\trunk\VC11\EDSEngineWinRT\EDSEngineWinRT.exp"
+	File "..\trunk\VC11\EDSEngineWinRT\EDSEngineWinRT.dll"
+	SetOutPath $INSTDIR\VC11\ROMWinRT
+	File "..\trunk\VC11\ROMWinRT\ROMWinRT.winmd"
+	File "..\trunk\VC11\ROMWinRT\ROMWinRT.pri"
+	File "..\trunk\VC11\ROMWinRT\ROMWinRT.lib"
+	File "..\trunk\VC11\ROMWinRT\ROMWinRT.exp"
+	File "..\trunk\VC11\ROMWinRT\ROMWinRT.dll"
+	SetOutPath $INSTDIR\VC11\x64
+	File "..\trunk\VC11\x64\EDSEngine.lib"
+	File "..\trunk\VC11\x64\EDSEngineNET.dll"
+	File "..\trunk\VC11\x64\RelationalObjectModel.lib"
+	File "..\trunk\VC11\x64\ROMNET.dll"
+	File "..\trunk\VC11\x64\LogicianDebuggerWPF.dll"
+	File "..\trunk\VC11\x64\WPFToolkit.dll"
+	SetOutPath $INSTDIR\VC11\x64\EDSEngineWinRT
+	File "..\trunk\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.winmd"
+	File "..\trunk\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.pri"
+	File "..\trunk\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.lib"
+	File "..\trunk\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.exp"
+	File "..\trunk\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.dll"	
+	SetOutPath $INSTDIR\VC11\x64\ROMWinRT
+	File "..\trunk\VC11\x64\ROMWinRT\ROMWinRT.winmd"
+	File "..\trunk\VC11\x64\ROMWinRT\ROMWinRT.pri"
+	File "..\trunk\VC11\x64\ROMWinRT\ROMWinRT.lib"
+	File "..\trunk\VC11\x64\ROMWinRT\ROMWinRT.exp"
+	File "..\trunk\VC11\x64\ROMWinRT\ROMWinRT.dll"
 
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic
