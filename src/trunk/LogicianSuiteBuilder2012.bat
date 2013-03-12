@@ -8,7 +8,6 @@ mkdir VC11\ROMWinRT
 mkdir VC11\x64
 mkdir VC11\x64\EDSEngineWinRT
 mkdir VC11\x64\ROMWinRT
-mkdir Silverlight
 
 echo "Building EDSEngine..."
 %MSBUILD_PATH% "EDSEngine\EDSEngine2012.vcxproj" /t:clean,rebuild /p:Configuration="Debug MSXML" /p:VisualStudioVersion=11.0 /p:Platform=Win32
@@ -111,6 +110,12 @@ copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\config.xml" VC11
 copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\bin\x64\Release\LogicianDebuggerTestApp2012.exe" VC11\x64 /y
 copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2012\config.xml" VC11\x64 /y
 echo "Building LogicianDebuggerTestApp2012 complete"
+
+echo "Building LogicianSilverlight..."
+%MSBUILD_PATH% "LogicianJS\LogicianSilverlight\LogicianSilverlight.sln" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=11.0
+%MSBUILD_PATH% "LogicianJS\LogicianSilverlight\LogicianSilverlight.sln" /t:clean,rebuild /p:Configuration="Release" /p:VisualStudioVersion=11.0
+copy "LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll" VC11 /y
+echo "Building LogicianSilverlight complete"
 
 echo "Building EDSEngineWinRTNativeWrapper..."
 %MSBUILD_PATH% "EDSEngineWinRTNativeWrapper\EDSEngineWinRT.vcxproj" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=11.0 /p:Platform=x86

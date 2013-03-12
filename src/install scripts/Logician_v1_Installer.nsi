@@ -8,10 +8,10 @@
 ;--------------------------------
 
 ; The name of the installer
-Name "Logician Suite 1.1.7"
+Name "Logician Suite 1.2"
 
 ; The file to write
-OutFile "Logician_v117_Setup.exe"
+OutFile "Logician_v120_Setup.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Logician
@@ -46,74 +46,11 @@ Section "Visual C++ 2008 Runtime"
 SectionEnd
 
 Section "Logician Suite"
-	; Set output path to the installation directory.
-	SetOutPath $INSTDIR\VC9
-	;3rd party libs
-	File "iconv-1.9.2.win32\bin\iconv.dll"
-	File "iconv-1.9.2.win32\lib\iconv.lib"
-	File "iconv-1.9.2.win32\lib\iconv_a.lib"
-	File "libxml2-2.7.8.win32\bin\libxml2.dll"
-	File "libxml2-2.7.8.win32\lib\libxml2.lib"
-	File "libxml2-2.7.8.win32\lib\libxml2_a.lib"
-	File "libxml2-2.7.8.win32\lib\libxml2_a_dll.lib"
-	File "libxslt-1.1.26.win32\bin\libexslt.dll"
-	File "libxslt-1.1.26.win32\bin\libxslt.dll"
-	File "libxslt-1.1.26.win32\lib\libexslt.lib"
-	File "libxslt-1.1.26.win32\lib\libexslt_a.lib"
-	File "libxslt-1.1.26.win32\lib\libxslt.lib"
-	File "libxslt-1.1.26.win32\lib\libxslt_a.lib"
-
-	File "..\tags\v1.1.7\VC9\EDSEngine.lib"
-	File "..\tags\v1.1.7\VC9\EDSEngineNET.dll"
-	File "..\tags\v1.1.7\VC9\RelationalObjectModel.lib"
-	File "..\tags\v1.1.7\VC9\ROMNET.dll"
-	File "..\tags\v1.1.7\VC9\LogicianDebuggerWPF.dll"
-	File "..\tags\v1.1.7\VC9\WPFToolkit.dll"
 	
-	
-	SetOutPath $INSTDIR\VC10
-	;3rd party libs
-	File "iconv-1.9.2.win32\bin\iconv.dll"
-	File "iconv-1.9.2.win32\lib\iconv.lib"
-	File "iconv-1.9.2.win32\lib\iconv_a.lib"
-	File "libxml2-2.7.8.win32\bin\libxml2.dll"
-	File "libxml2-2.7.8.win32\lib\libxml2.lib"
-	File "libxml2-2.7.8.win32\lib\libxml2_a.lib"
-	File "libxml2-2.7.8.win32\lib\libxml2_a_dll.lib"
-	File "libxslt-1.1.26.win32\bin\libexslt.dll"
-	File "libxslt-1.1.26.win32\bin\libxslt.dll"
-	File "libxslt-1.1.26.win32\lib\libexslt.lib"
-	File "libxslt-1.1.26.win32\lib\libexslt_a.lib"
-	File "libxslt-1.1.26.win32\lib\libxslt.lib"
-	File "libxslt-1.1.26.win32\lib\libxslt_a.lib"
-	
-	File "..\tags\v1.1.7\VC10\EDSEngine.lib"
-	File "..\tags\v1.1.7\VC10\EDSEngineNET.dll"
-	File "..\tags\v1.1.7\VC10\RelationalObjectModel.lib"
-	File "..\tags\v1.1.7\VC10\ROMNET.dll"
-	File "..\tags\v1.1.7\VC10\LogicianDebuggerWPF.dll"
-	File "..\tags\v1.1.7\VC10\WPFToolkit.dll"
-	File "..\tags\v1.1.7\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll"
-
-	; Set output path to the installation directory.
-	SetOutPath $INSTDIR\DecisionLogic
-	; Put file there
-	File "..\tags\v1.1.7\VC9\DecisionLogic.exe"
-	File "..\tags\v1.1.7\DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
-	File "..\tags\v1.1.7\DecisionLogic\vc_mswu\Figure1.png"
-	File "..\tags\v1.1.7\DecisionLogic\vc_mswu\Figure2.png"
-	File "..\tags\v1.1.7\DecisionLogic\vc_mswu\Figure3.png"
-	File "..\tags\v1.1.7\DecisionLogic\vc_mswu\Figure4.png"
-	File "..\tags\v1.1.7\DecisionLogic\vc_mswu\Figure5.png"
-	File "..\tags\v1.1.7\DecisionLogic\vc_mswu\Figure6.png"
-	
-	SetOutPath $INSTDIR
-	File "..\tags\v1.1.7\LogicianJS\KnowledgeBase.js"
-	File "..\tags\v1.1.7\LogicianJS\ROMNode.js"
-	;File "..\tags\v1.1.7\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
+	;File "..\tags\v1.2\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
 	
 	SetOutPath $INSTDIR\ajaxslt
-	File "..\tags\v1.1.7\LogicianJS\ajaxslt\*.*"	
+	File "..\tags\v1.2\LogicianJS\ajaxslt\*.*"	
 	
 	SetOutPath $INSTDIR
 	; Write the installation path into the registry
