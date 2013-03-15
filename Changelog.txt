@@ -1,3 +1,8 @@
+v1.2 - 3/15/2012
+Added support for 64-bit applications.
+New WinRT wrapper libraries.
+Javascript backend updated to use IE10 (Chakra) on Windows if available.
+
 v1.1.7 - 12/28/2012
 Fixed a crash in DecisionLogic when inserting a table into a new group: #3598709
 
