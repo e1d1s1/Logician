@@ -164,6 +164,12 @@ Section "un.LogicianSuite"
 
 	; Remove files and uninstaller
 	Delete $INSTDIR\DecisionLogic\*.*
+	Delete $INSTDIR\VC11\x64\EDSEngineWinRT\*.*
+	Delete $INSTDIR\VC11\x64\ROMWinRT\*.*
+	Delete $INSTDIR\VC11\x64\*.*
+	Delete $INSTDIR\VC11\EDSEngineWinRT\*.*
+	Delete $INSTDIR\VC11\ROMWinRT\*.*
+	Delete $INSTDIR\VC11\*.*
 	Delete $INSTDIR\VC10\*.*
 	Delete $INSTDIR\VC9\*.*
 	Delete $INSTDIR\ajaxslt\*.*
@@ -178,6 +184,12 @@ Section "un.LogicianSuite"
 	RMDir "$INSTDIR\DecisionLogic"
 	RMDir "$INSTDIR\VC9"
 	RMDir "$INSTDIR\VC10"
+	RMDir "$INSTDIR\VC11\x64\EDSEngineWinRT"
+	RMDir "$INSTDIR\VC11\x64\ROMWinRT"
+	RMDir "$INSTDIR\VC11\x64"
+	RMDir "$INSTDIR\VC11\EDSEngineWinRT"
+	RMDir "$INSTDIR\VC11\ROMWinRT"
+	RMDir "$INSTDIR\VC11"
 	RMDir "$INSTDIR\ajaxslt"
 	RMDir "$INSTDIR"
 
