@@ -46,7 +46,78 @@ Section "Visual C++ 2008 Runtime"
 SectionEnd
 
 Section "Logician Suite"
+	; Set output path to the installation directory.
+	SetOutPath $INSTDIR\VC9
+	File "..\tags\v1.2\VC9\EDSEngine.lib"
+	File "..\tags\v1.2\VC9\EDSEngineNET.dll"
+	File "..\tags\v1.2\VC9\RelationalObjectModel.lib"
+	File "..\tags\v1.2\VC9\ROMNET.dll"
+	File "..\tags\v1.2\VC9\LogicianDebuggerWPF.dll"
+	File "..\tags\v1.2\VC9\WPFToolkit.dll"	
 	
+	SetOutPath $INSTDIR\VC10	
+	File "..\tags\v1.2\VC10\EDSEngine.lib"
+	File "..\tags\v1.2\VC10\EDSEngineNET.dll"
+	File "..\tags\v1.2\VC10\RelationalObjectModel.lib"
+	File "..\tags\v1.2\VC10\ROMNET.dll"
+	File "..\tags\v1.2\VC10\LogicianDebuggerWPF.dll"
+	File "..\tags\v1.2\VC10\WPFToolkit.dll"
+	
+	SetOutPath $INSTDIR\VC11
+	File "..\tags\v1.2\VC11\EDSEngine.lib"
+	File "..\tags\v1.2\VC11\EDSEngineNET.dll"
+	File "..\tags\v1.2\VC11\RelationalObjectModel.lib"
+	File "..\tags\v1.2\VC11\ROMNET.dll"
+	File "..\tags\v1.2\VC11\LogicianDebuggerWPF.dll"
+	File "..\tags\v1.2\VC11\WPFToolkit.dll"
+	File "..\tags\v1.2\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll"
+	SetOutPath $INSTDIR\VC11\EDSEngineWinRT
+	File "..\tags\v1.2\VC11\EDSEngineWinRT\EDSEngineWinRT.winmd"
+	File "..\tags\v1.2\VC11\EDSEngineWinRT\EDSEngineWinRT.pri"
+	File "..\tags\v1.2\VC11\EDSEngineWinRT\EDSEngineWinRT.lib"
+	File "..\tags\v1.2\VC11\EDSEngineWinRT\EDSEngineWinRT.exp"
+	File "..\tags\v1.2\VC11\EDSEngineWinRT\EDSEngineWinRT.dll"
+	SetOutPath $INSTDIR\VC11\ROMWinRT
+	File "..\tags\v1.2\VC11\ROMWinRT\ROMWinRT.winmd"
+	File "..\tags\v1.2\VC11\ROMWinRT\ROMWinRT.pri"
+	File "..\tags\v1.2\VC11\ROMWinRT\ROMWinRT.lib"
+	File "..\tags\v1.2\VC11\ROMWinRT\ROMWinRT.exp"
+	File "..\tags\v1.2\VC11\ROMWinRT\ROMWinRT.dll"
+	SetOutPath $INSTDIR\VC11\x64
+	File "..\tags\v1.2\VC11\x64\EDSEngine.lib"
+	File "..\tags\v1.2\VC11\x64\EDSEngineNET.dll"
+	File "..\tags\v1.2\VC11\x64\RelationalObjectModel.lib"
+	File "..\tags\v1.2\VC11\x64\ROMNET.dll"
+	File "..\tags\v1.2\VC11\x64\LogicianDebuggerWPF.dll"
+	File "..\tags\v1.2\VC11\x64\WPFToolkit.dll"
+	SetOutPath $INSTDIR\VC11\x64\EDSEngineWinRT
+	File "..\tags\v1.2\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.winmd"
+	File "..\tags\v1.2\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.pri"
+	File "..\tags\v1.2\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.lib"
+	File "..\tags\v1.2\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.exp"
+	File "..\tags\v1.2\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.dll"	
+	SetOutPath $INSTDIR\VC11\x64\ROMWinRT
+	File "..\tags\v1.2\VC11\x64\ROMWinRT\ROMWinRT.winmd"
+	File "..\tags\v1.2\VC11\x64\ROMWinRT\ROMWinRT.pri"
+	File "..\tags\v1.2\VC11\x64\ROMWinRT\ROMWinRT.lib"
+	File "..\tags\v1.2\VC11\x64\ROMWinRT\ROMWinRT.exp"
+	File "..\tags\v1.2\VC11\x64\ROMWinRT\ROMWinRT.dll"
+
+	; Set output path to the installation directory.
+	SetOutPath $INSTDIR\DecisionLogic
+	; Put file there
+	File "..\tags\v1.2\VC9\DecisionLogic.exe"
+	File "..\tags\v1.2\DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
+	File "..\tags\v1.2\DecisionLogic\vc_mswu\Figure1.png"
+	File "..\tags\v1.2\DecisionLogic\vc_mswu\Figure2.png"
+	File "..\tags\v1.2\DecisionLogic\vc_mswu\Figure3.png"
+	File "..\tags\v1.2\DecisionLogic\vc_mswu\Figure4.png"
+	File "..\tags\v1.2\DecisionLogic\vc_mswu\Figure5.png"
+	File "..\tags\v1.2\DecisionLogic\vc_mswu\Figure6.png"
+	
+	SetOutPath $INSTDIR
+	File "..\tags\v1.2\LogicianJS\KnowledgeBase.js"
+	File "..\tags\v1.2\LogicianJS\ROMNode.js"
 	;File "..\tags\v1.2\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
 	
 	SetOutPath $INSTDIR\ajaxslt
@@ -93,6 +164,12 @@ Section "un.LogicianSuite"
 
 	; Remove files and uninstaller
 	Delete $INSTDIR\DecisionLogic\*.*
+	Delete $INSTDIR\VC11\x64\EDSEngineWinRT\*.*
+	Delete $INSTDIR\VC11\x64\ROMWinRT\*.*
+	Delete $INSTDIR\VC11\x64\*.*
+	Delete $INSTDIR\VC11\EDSEngineWinRT\*.*
+	Delete $INSTDIR\VC11\ROMWinRT\*.*
+	Delete $INSTDIR\VC11\*.*
 	Delete $INSTDIR\VC10\*.*
 	Delete $INSTDIR\VC9\*.*
 	Delete $INSTDIR\ajaxslt\*.*
@@ -107,6 +184,12 @@ Section "un.LogicianSuite"
 	RMDir "$INSTDIR\DecisionLogic"
 	RMDir "$INSTDIR\VC9"
 	RMDir "$INSTDIR\VC10"
+	RMDir "$INSTDIR\VC11\x64\EDSEngineWinRT"
+	RMDir "$INSTDIR\VC11\x64\ROMWinRT"
+	RMDir "$INSTDIR\VC11\x64"
+	RMDir "$INSTDIR\VC11\EDSEngineWinRT"
+	RMDir "$INSTDIR\VC11\ROMWinRT"
+	RMDir "$INSTDIR\VC11"
 	RMDir "$INSTDIR\ajaxslt"
 	RMDir "$INSTDIR"
 
