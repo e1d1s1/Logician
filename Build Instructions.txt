@@ -5,10 +5,10 @@ Logician relies upon open source and freely available cross-platform tools, so y
 Prerequisites:
 Rules Engine: EDSEngine
 All platforms: 
-- boost C++ libraries v1.47+
+- boost C++ libraries v1.49+
 - iconv v1.9.2
-- libxml2 v2.7.3+
-- libxslt v1.1.24+
+- libxml2 v2.7.8+
+- libxslt v1.1.26+
 - Python 2.6+ (optional compile-time switch, disabled in default windows build configuration)
 - Mozilla Spidermonkey Javascript engine 1.85 (optional compile-time switch).  Windows builds the integrated Windows Scripting or Chakra, depending on what is available on the host.
 Windows:
@@ -18,13 +18,13 @@ Rule Table Builder GUI: DecisionLogic
 All platforms:
 - wxWidgets GUI toolkit v2.8.10+, v2.9.3+ for VS2010 project
 - iconv v1.9.2
-- libxml2 v2.7.3+
+- libxml2 v2.7.8+
 
 C++ Dynamic application modeler: Relational Object Model
 All platforms:
 - iconv v1.9.2
-- libxml2 v2.7.3+ 
-- libxslt v1.1.24 
+- libxml2 v2.7.8+
+- libxslt v1.1.26+
 - EDSEngine v1.0
 Windows:
 - MSXML v6.0 (preferred build in lieu of libxml, libxslt, and iconv)
@@ -38,6 +38,8 @@ Windows .NET tools:
 - .NET 3.5+
 - EDSEngine v1.0
 - Relation Object Model v1.0
+
+WinRT wrappers have the same basic requirements as .NET.  If you can build the base C++ libraries, VS2012 will have no problem building the wrappers.
 
 Silverlight Rules Engine and Relational Object Model
 - Just a wrapper for the Javascript libraries, interface similar to the .NET library.  Silverlight v4.0 recommended and tested. Visual Studio 2010 project files provided.
@@ -55,15 +57,15 @@ USE_MSXML: on widows platform, enables use of MSXML 6.0
 USE_LIBXML: optional on windows, required on all other platforms to enable use of libxml2 and libxslt.
 USE_PYTHON: enables python runtime scripting support in rules.  You will need the Python and Boost libraries.  On Windows this may mean you will have to distribute the boost-python DLL along with your compiled code.
 USE_JAVASCRIPT: enables javascript runtime scripting support in rules
-USE_WINDOWS_SCRIPTING: on windows when javascript support is enabled, uses the windows scripting host for processing instead of spidermonkey, thereby eliminating that dependency.
+USE_WINDOWS_SCRIPTING: on windows when javascript support is enabled, uses the windows scripting host for processing instead of spidermonkey, thereby eliminating that dependency.  If the IE10 (Chakra) engine is available on your OS, that engine will be preferred.
 POSIX: compliant (Linux) environments should enable this define
 DISABLE_DECISIONLOGIC_INTEGRATION: In the EDSEngine build, adding this define to a build will disable intergrated DeicisionLogic debugging over a TCP Socket connection.  It's a handy feature to keep around, but you can eliminate this boost library dependency if you wish.
 Windows:
 Visual Studio 2008/2010/2012 project files are included.  Configurations for both MSXML and libxml2 based builds are included, MSXML is recommended at this time.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.  The projects also build fine with the Windows Platform SDK tools, v7 or 7.1.  Just use the included bat files in the trunk directory.  Make sure you have WXWIN and BOOST_ROOT path vairables set when building from the command line.
-Only Visual Studio 2012 supports building x64 libraries at this time.
+Only Visual Studio 2012 projects support building x64 libraries at this time.
 
-Linux: (Ubuntu 9.10+, 12.04 recommended)
-All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu has been tested.  A makefile and QT Creator project files are provided.  The current builds link against libxml 2.7.8, libxslt 1.1.26, libboost 1.49, and wxWidgets 2.8.12.
+Linux: (Ubuntu 9.10+, 12.04 recommended, or Mint 14+)
+All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu/Mint has been tested.  A makefile and QT Creator project files are provided.  The current builds link against libxml 2.7.8, libxslt 1.1.26, libboost 1.49, and wxWidgets 2.8.12.
 
 Apple OSX:
 Coming soon...should work since all the same *nix tools are available.  Need to test.
