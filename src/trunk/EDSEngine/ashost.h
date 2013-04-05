@@ -1,3 +1,7 @@
+#ifdef USE_JAVASCRIPT
+	#ifdef _MSC_VER
+		#ifndef USE_WINDOWS_SCRIPTING
+
 #ifndef __ASHOST_H__
 #define __ASHOST_H__
 
@@ -157,3 +161,7 @@ public:
 };
 
 #endif // __ASHOST_H__
+
+#endif
+#endif
+#endif

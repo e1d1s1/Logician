@@ -1,5 +1,3 @@
-#pragma once
-
 #ifdef USE_JAVASCRIPT
 	#ifdef _MSC_VER
 		#ifndef USE_WINDOWS_SCRIPTING
@@ -174,5 +172,3 @@ HRESULT __stdcall ScriptHost::AddScript(const WCHAR *source)
 #endif
 #endif
 #endif
-
-#pragma endregion 
