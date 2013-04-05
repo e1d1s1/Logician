@@ -93,7 +93,8 @@ CKnowledgeBase::CKnowledgeBase()
 	m_DEBUGGING_CON = L"localhost:11000";
 	m_IsOpen = false;
 	mapBaseIDtoTranslations.clear();
-
+	iRecursingDepth = 0;
+	m_DebugHandlerPtr = NULL;
 #ifdef WIN32
 	HRESULT hr = CoInitialize(NULL);
 #endif
@@ -114,8 +115,9 @@ void CKnowledgeBase::GenerateDebugMessages(bool bGenerate)
 
 wstring CKnowledgeBase::GetDebugMessages()
 {
-	return m_LastDebugMessage;
+	wstring res = m_LastDebugMessage;
 	m_LastDebugMessage.clear();
+	return res;
 }
 
 wstring CKnowledgeBase::DeLocalize(wstring localeValue)
@@ -1140,7 +1142,7 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 #endif
 		m_TableSet.Initialize();
 	}
-	catch (std::exception ex)
+	catch (std::exception &ex)
 	{
 		ReportError(ex.what());
 	}
@@ -1408,5 +1410,12 @@ vector<string> CKnowledgeBase::GetAllPossibleOutputs(std::string tableName, std:
 
 CKnowledgeBase::CKnowledgeBase(std::string knowledge_file)
 {
+	m_DEBUGGING_MSGS = false;
+	m_bGenerateMsg = false;
+	m_DEBUGGING_CON = L"localhost:11000";
+	m_IsOpen = false;
+	mapBaseIDtoTranslations.clear();
+	iRecursingDepth = 0;
+	m_DebugHandlerPtr = NULL;
 	CKnowledgeBase(MBCStrToWStr(knowledge_file));
 }
