@@ -1,3 +1,8 @@
+1.2.1 - 4/8/2013
+Fixed possbile memory leak when debugging EDSEngine table evaluations.
+Upgraded boost libraries to v1.53.
+Added Code::Blocks project files
+
 v1.2 - 3/15/2013
 Added support for 64-bit applications.
 New WinRT wrapper libraries.

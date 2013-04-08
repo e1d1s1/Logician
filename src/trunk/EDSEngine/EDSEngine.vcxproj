@@ -112,7 +112,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>zlib.lib;iconv_a.lib;libxml2_a.lib;libboost_system-vc100-mt-gd-1_51.lib;libboost_iostreams-vc100-mt-gd-1_51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;iconv_a.lib;libxml2_a.lib;libboost_system-vc100-mt-gd-1_53.lib;libboost_iostreams-vc100-mt-gd-1_53.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\zlib-1.2.3.win32\lib;..\libxml2-2.7.3.win32\lib;..\iconv-1.9.2.win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -130,7 +130,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>zlib.lib;iconv_a.lib;libxml2_a.lib;libboost_system-vc100-mt-gd-1_51.lib;libboost_iostreams-vc100-mt-gd-1_51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;iconv_a.lib;libxml2_a.lib;libboost_system-vc100-mt-gd-1_53.lib;libboost_iostreams-vc100-mt-gd-1_53.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\zlib-1.2.3.win32\lib;..\libxml2-2.7.3.win32\lib;..\iconv-1.9.2.win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -148,7 +148,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>libboost_system-vc100-mt-1_51.lib;libboost_iostreams-vc100-mt-1_51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libboost_system-vc100-mt-1_53.lib;libboost_iostreams-vc100-mt-1_53.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -187,7 +187,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Lib>
-      <AdditionalDependencies>libboost_system-vc100-mt-gd-1_51.lib;libboost_iostreams-vc100-mt-gd-1_51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libboost_system-vc100-mt-gd-1_53.lib;libboost_iostreams-vc100-mt-gd-1_53.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -208,7 +208,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Lib>
-      <AdditionalDependencies>libboost_system-vc100-mt-1_51.lib;libboost_iostreams-vc100-mt-1_51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libboost_system-vc100-mt-1_53.lib;libboost_iostreams-vc100-mt-1_53.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
