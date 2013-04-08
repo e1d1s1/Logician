@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="GlobalORs" getall="true">
+    <Inputs>
+      <Attr>OR:Test1</Attr>
+      <Value operation="1">A</Value>
+      <Value operation="1">Z</Value>
+      <Value/>
+    </Inputs>
+    <Inputs>
+      <Attr>OR:Test3</Attr>
+      <Value operation="1">X</Value>
+      <Value operation="1">Y</Value>
+      <Value/>
+    </Inputs>
+  </Table>
+</Tables>

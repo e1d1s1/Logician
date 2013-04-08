@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="DecisionLogic" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/DecisionLogic" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/DecisionLogic" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="`wx-config --cflags`" />
+			<Add option="-DPOSIX" />
+			<Add option="-D__WXGTK__" />
+			<Add directory="/usr/include/libxml2" />
+			<Add directory="/usr/include/wx-2.8" />
+		</Compiler>
+		<Linker>
+			<Add option="`wx-config --libs`" />
+			<Add library="wx_gtk2u_stc-2.8" />
+			<Add library="xml2" />
+			<Add library="boost_system" />
+			<Add library="boost_iostreams" />
+			<Add library="boost_filesystem" />
+		</Linker>
+		<Unit filename="CodeControl.cpp" />
+		<Unit filename="CodeControl.h" />
+		<Unit filename="CodeEditor.h" />
+		<Unit filename="CompileOptions.h" />
+		<Unit filename="DataSet.h" />
+		<Unit filename="DebugOptions.h" />
+		<Unit filename="DecisionLogic.cpp" />
+		<Unit filename="DecisionLogic.h" />
+		<Unit filename="EditorPrefs.cpp" />
+		<Unit filename="EditorPrefs.h" />
+		<Unit filename="FindReplaceDialog.cpp" />
+		<Unit filename="FindReplaceDialog.h" />
+		<Unit filename="GUIClass.cpp" />
+		<Unit filename="GUIClass.h" />
+		<Unit filename="LogicTable.cpp" />
+		<Unit filename="LogicTable.h" />
+		<Unit filename="MDIChild.cpp" />
+		<Unit filename="MDIChild.h" />
+		<Unit filename="OpenLogicTable.h" />
+		<Unit filename="ProjectManager.cpp" />
+		<Unit filename="ProjectManager.h" />
+		<Unit filename="StringTable.h" />
+		<Unit filename="WorkerClass.cpp" />
+		<Unit filename="WorkerClass.h" />
+		<Unit filename="resource.h" />
+		<Unit filename="stdafx.cpp" />
+		<Unit filename="stdafx.h" />
+		<Unit filename="utilities.cpp" />
+		<Unit filename="utilities.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
