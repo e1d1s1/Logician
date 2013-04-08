@@ -318,7 +318,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="libboost_system-vc90-mt-gd-1_51.lib libboost_iostreams-vc90-mt-gd-1_51.lib"
+				AdditionalDependencies="libboost_system-vc90-mt-gd-1_53.lib libboost_iostreams-vc90-mt-gd-1_53.lib"
 				AdditionalLibraryDirectories="&quot;$(BOOST_ROOT)\lib&quot;"
 			/>
 			<Tool
@@ -384,7 +384,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="libboost_system-vc90-mt-1_51.lib libboost_iostreams-vc90-mt-1_51.lib"
+				AdditionalDependencies="libboost_system-vc90-mt-1_53.lib libboost_iostreams-vc90-mt-1_53.lib"
 				AdditionalLibraryDirectories="&quot;$(BOOST_ROOT)\lib&quot;"
 			/>
 			<Tool

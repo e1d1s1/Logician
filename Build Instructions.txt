@@ -63,6 +63,7 @@ DISABLE_DECISIONLOGIC_INTEGRATION: In the EDSEngine build, adding this define to
 Windows:
 Visual Studio 2008/2010/2012 project files are included.  Configurations for both MSXML and libxml2 based builds are included, MSXML is recommended at this time.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.  The projects also build fine with the Windows Platform SDK tools, v7 or 7.1.  Just use the included bat files in the trunk directory.  Make sure you have WXWIN and BOOST_ROOT path vairables set when building from the command line.
 Only Visual Studio 2012 projects support building x64 libraries at this time.
+Get prebuilt Boost binaries from: http://boost.teeks99.com/ or SourceForge.
 
 Linux: (Ubuntu 9.10+, 12.04 recommended, or Mint 14+)
 All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu/Mint has been tested.  A makefile and QT Creator project files are provided.  The current builds link against libxml 2.7.8, libxslt 1.1.26, libboost 1.49, and wxWidgets 2.8.12.
