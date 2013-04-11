@@ -579,7 +579,7 @@ void ProjectManager::GetXMLValuesForCell(wstring cellText, long &operation, wstr
 				}
 				break;
 			default:
-				if (UTILS::StringContains(cellText, L"eval("))
+				if (UTILS::StringContains(cellText, L"eval(") && UTILS::StringContains(cellText, L")"))
 					operation = CHAIN;
 				else
 					operation = EQUALS;
@@ -587,11 +587,11 @@ void ProjectManager::GetXMLValuesForCell(wstring cellText, long &operation, wstr
 				break;
 		}
 
-		if (UTILS::StringContains(cellText, L"get("))
+		if (UTILS::StringContains(cellText, L"get(") && UTILS::StringContains(cellText, L")"))
 			operation += GETS;
-		if (UTILS::StringContains(cellText, L"py("))
+		if (UTILS::StringContains(cellText, L"py(") && UTILS::StringContains(cellText, L")"))
 			operation += PYTHON;
-		else if (UTILS::StringContains(cellText, L"js("))
+		else if (UTILS::StringContains(cellText, L"js(") && UTILS::StringContains(cellText, L")"))
 			operation += JAVASCRIPT;
 
 		//check for ORs
@@ -629,7 +629,7 @@ vector<wstring> ProjectManager::ParseValueForGets(wstring val)
 			wstring attrName = ReplaceAGet(fullString);
 			if (attrName.length() > 0)
 				foundAttrs.push_back(attrName);
-		} while (UTILS::StringContains(fullString, L"get("));
+		} while (UTILS::StringContains(fullString, L"get(") && UTILS::StringContains(fullString, L")"));
 	}
 	catch (...)
     {
@@ -1026,7 +1026,7 @@ vector<wstring> ProjectManager::GetProjectFilePaths()
 	vector<wstring> retval;
 
 	for (size_t rowIndex = 0; rowIndex < m_project_files->Rows(); rowIndex++)
-    {		
+    {
 		wstring file_name = m_project_files->GetItem(rowIndex, L"DataSetName");
 		wstring rel_path = m_project_files->GetItem(rowIndex,L"RelativePath");
 		wstring full_path = m_project_working_path + PATHSEP + rel_path;
@@ -1035,7 +1035,7 @@ vector<wstring> ProjectManager::GetProjectFilePaths()
 		full_path += file_name;
 		retval.push_back(full_path);
     }
-	
+
 	return retval;
 }
 
@@ -1330,11 +1330,11 @@ void ProjectManager::WriteAllDataSetsToXMLFile(wstring savePath)
 		if (m_deubgStaus) strDebug = "true";
 		wstring tables;
 		if (m_SelectedTables.size() > 0)
-		{			
+		{
 			for (vector<wstring>::iterator it = m_SelectedTables.begin(); it != m_SelectedTables.end(); it++)
 				tables += *it + L",";
 			if (tables.length() > 0)
-				tables = tables.substr(0, tables.length() - 1);			
+				tables = tables.substr(0, tables.length() - 1);
 		}
 		xmlSetProp(tablesRootNode, (xmlChar*)"debugtables", (xmlChar*)UTILS::WStrToMBCStr(tables).c_str());
 		xmlSetProp(tablesRootNode, (xmlChar*)"debug", (xmlChar*)strDebug.c_str());
