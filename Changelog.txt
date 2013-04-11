@@ -1,3 +1,6 @@
+1.2.2 - 4/10/2013
+Fixed a freeze when saving a table in DecisionLogic with a malformed "get()" expression, where the closing parenthesis is missing: #3610507
+
 1.2.1 - 4/8/2013
 Fixed possbile memory leak when debugging EDSEngine table evaluations.
 Upgraded boost libraries to v1.53.
