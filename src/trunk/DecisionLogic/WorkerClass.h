@@ -95,6 +95,7 @@ private:
 	void AddTableToProject(wstring name, bool bCreateNew, bool bSystemTable);
 	void GetSettings();
 	void SaveApplicationSettings();
+	bool ChangeXMLTableName(wstring oldpath, wstring newpath, wstring oldName, wstring newName);
 
 
 	ProjectManager m_pm;

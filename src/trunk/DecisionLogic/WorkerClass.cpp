@@ -258,10 +258,10 @@ bool WorkerClass::Save(OpenLogicTable *targetTable)
 					if (current_table.logic_table.Name != GLOBALORS_TABLE_NAME &&
 						current_table.logic_table.Name != TRANSLATIONS_TABLE_NAME)
 					{
-						//set path according to its place in the tree, relative to working directory	
+						//set path according to its place in the tree, relative to working directory
 						wstring subdir = m_gui->GetTreeNodePath(m_gui->GetActiveGroupName());
 						if (subdir.length() > 1)
-							current_table.logic_table.Path = current_table.logic_table.Path + subdir;				
+							current_table.logic_table.Path = current_table.logic_table.Path + subdir;
 						current_table.logic_table.Path = current_table.logic_table.Path + current_table.logic_table.Name + L".xml";
 					}
 					else
@@ -577,15 +577,12 @@ void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
 				m_gui->DeleteTreeNode(existingName);
 
 				//rename the file on disk
-				#ifdef WIN32
-				_wrename(oldPath.c_str(), path.c_str());
-				#else
-				rename(UTILS::WStrToMBCStr(oldPath).c_str(), UTILS::WStrToMBCStr(path).c_str());
-				#endif
-
-				if (opened.child_window_ptr)
-					LoadTable(newName);
-				Save();
+				if (ChangeXMLTableName(oldPath, path, existingName, newName))
+				{
+                    if (opened.child_window_ptr)
+                        LoadTable(newName);
+                    Save();
+				}
 			}
 		}
 		else
@@ -593,6 +590,40 @@ void WorkerClass::RenameTable(wstring oldTableName, wstring newTableName)
 			m_gui->PromptMessage(L"This table name already exists.");
 		}
 	}
+}
+
+bool WorkerClass::ChangeXMLTableName(wstring oldpath, wstring newpath, wstring oldName, wstring newName)
+{
+    bool retval = false;
+    xmlDocPtr doc = xmlParseFile(UTILS::WStrToMBCStr(oldpath).c_str());
+
+    wstring srcStr = L"//Tables/Table[@name='";
+    srcStr += oldName;
+    srcStr += L"']";
+
+    xmlXPathContextPtr xpathCtx = xmlXPathNewContext(doc);
+    string xpathExpression = UTILS::WStrToMBCStr(srcStr);
+    xmlChar* tableXPath = (xmlChar*)xpathExpression.c_str();
+    xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression(tableXPath, xpathCtx);
+    xmlNodeSetPtr allRes= xpathObj->nodesetval;
+
+    if (allRes != NULL && allRes->nodeNr == 1)
+    {
+        xmlNodePtr TableNode = allRes->nodeTab[0];
+        xmlSetProp(TableNode, (xmlChar*)"name", (xmlChar*)UTILS::WStrToMBCStr(newName).c_str());
+        if (doc != NULL)
+		{
+			xmlSaveFormatFileEnc(UTILS::WStrToMBCStr(newpath).c_str(), doc, "UTF-8", 1);
+		}
+		xmlFreeDoc(doc);
+		#ifdef WIN32
+        _wremove(oldpath.c_str());
+        #else
+        remove(UTILS::WStrToMBCStr(oldpath).c_str());
+        #endif
+        retval = true;
+    }
+    return retval;
 }
 
 void WorkerClass::InsertTable()
@@ -624,7 +655,8 @@ void WorkerClass::InsertTable()
 		vector<wstring> pathParts = UTILS::Split(path, wstrSep);
 		wstring name = UTILS::FindAndReplace(pathParts[pathParts.size() - 1], L".xml", L"");
 
-		wstring target = m_pm.GetProjectWorkingPath() + PATHSEP + m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
+		wstring target = m_pm.GetProjectWorkingPath();
+        target += m_gui->GetTreeNodePath(m_gui->GetActiveGroupName()) + name + L".xml";
 		wstring sourcePath = path;
 		wstring targetPath = target;
 		if (targetPath != sourcePath)
@@ -669,6 +701,10 @@ void WorkerClass::InsertTable()
 				}
 				fclose(oldFile);
 			}
+		}
+		else
+		{
+            bInsertedOK = true;
 		}
 
 		if (bInsertedOK)
@@ -1148,7 +1184,7 @@ wstring WorkerClass::CompileXML(wstring tempFilePath)
 
 bool WorkerClass::CheckOKCompilePath(wstring savePath)
 {
-	bool bExists = UTILS::FileExists(savePath);			
+	bool bExists = UTILS::FileExists(savePath);
 	//make sure not overwriting one of our own project files
 	vector<wstring> existingFiles = m_pm.GetProjectFilePaths();
 	bool bOverWriteTable = false;
@@ -1162,7 +1198,7 @@ void WorkerClass::CompileZip()
 	try
 	{
 		if (lastCompiledFileName.length() == 0)
-			lastCompiledFileName = m_pm.GetProjectTitle();		
+			lastCompiledFileName = m_pm.GetProjectTitle();
 		wstring savePath = m_gui->SaveDialog("gz", lastCompiledFileName);
 		if (savePath.length() > 0)
 		{

@@ -564,12 +564,12 @@ public:
 		{
 			if (j >= labelOffset)
 				this->SetRowLabelValue(j, GetRowLabelValue(j));
-		}		
+		}
 
 		for (int i = 0; i < this->GetNumberCols(); i++)
 		{
-			if (i >= labelOffset)				
-				this->SetColLabelValue(i, GetColLabelValue(i));				
+			if (i >= labelOffset)
+				this->SetColLabelValue(i, GetColLabelValue(i));
 		}
 	}
 
@@ -1295,12 +1295,11 @@ private:
 			OnClearCells(dummyevent);
 
 		//place the result in the clipboard
-		 wxClipboard clip;
-		 clip.Open();
-		 clip.Clear();
-		 clip.SetData(new wxTextDataObject(text.c_str()));
-		 clip.Flush();
-		 clip.Close();
+		 if (wxTheClipboard->Open())
+		 {
+             wxTheClipboard->SetData(new wxTextDataObject(text.c_str()));
+             wxTheClipboard->Close();
+		 }
 	}
 
 	inline void GetSelectionFromClipboard()
@@ -1322,13 +1321,12 @@ private:
 		int j_offset = m_sel_range.GetTop();
 		int i_offset = m_sel_range.GetLeft();
 
-		wxClipboard clip;
-		if (clip.Open())
+		if (wxTheClipboard->Open())
 		{
-			if (clip.IsSupported(wxDF_TEXT))
+			if (wxTheClipboard->IsSupported(wxDF_TEXT))
 			{
 				wxTextDataObject data;
-				clip.GetData(data);
+				wxTheClipboard->GetData(data);
 				wstring val = data.GetText().wc_str();
 				if (val.length() > 0)
 				{
@@ -1380,7 +1378,7 @@ private:
 					UpdateUndo();
 				}
 			}
-			clip.Close();
+			wxTheClipboard->Close();
 		}
 	}
 

@@ -36,20 +36,20 @@ class GUIClass
 public:
 	GUIClass(wxMDIParentFrame* parent, wxTreeCtrl* tree, wxTextCtrl* log, ProjectManager* pm, bool(*ChildOpenTableCallback)(wstring))
 	{
-		m_parent = parent; 
-		m_tree = tree; m_server = NULL; 
+		m_parent = parent;
+		m_tree = tree; m_server = NULL;
 		m_pm = pm;
 		m_log = log;
-		m_config = new wxConfig(_T("DecisionLogic")); 
+		m_config = new wxConfig(_T("DecisionLogic"));
 		wxtid_active_group = m_tree->GetRootItem();
 		m_OpenTableCallback = ChildOpenTableCallback;
 		m_opened_windows = new vector<OpenLogicTable>();
 	}
-	~GUIClass() 
+	~GUIClass()
 	{
-		if (m_server) 
-			delete m_server; 
-		if (m_config) 
+		if (m_server)
+			delete m_server;
+		if (m_config)
 			delete m_config;
 		if (m_opened_windows)
 			delete m_opened_windows;
@@ -60,7 +60,7 @@ public:
 	wstring GetTreeNodePath(void* nodePtr);
 	wstring GetSelectedNodeName();
 	void AddTreeNodeToActiveGroup(wstring preValue, wstring name, string type = "Table", bool bSelect = true);
-	void DeleteTreeNode(wstring name);		
+	void DeleteTreeNode(wstring name);
 	void SelectAnItem(wstring name);
 	wstring GetActiveGroupName(){return (wstring)m_tree->GetItemText(wxtid_active_group);}
 	unsigned int GetNodeCount() {return m_tree->GetCount();}
@@ -126,7 +126,7 @@ public:
 		wstring val;
 		val.assign(value.begin(), value.end());
 		m_config->Write(configItem.c_str(), val.c_str());
-	}	
+	}
 	void WriteConfig(wstring configItem, int value)
 	{
 		m_config->Write(configItem.c_str(), value);
@@ -156,7 +156,7 @@ public:
 	bool ServerReady();
 	void StartServer(int server_id, DebugOptions *debug);
 	void ShutdownServer();
-	
+
 
 	//find
 	void FindTextInActiveTable(wstring strToFind, wxPoint *startPos,
@@ -165,10 +165,10 @@ public:
 		bool bMatchCase, bool bMatchWholeWord, bool bDoReplace = false, wstring strReplace = L"");
 
 
-	
+
 private:
 	wxTreeItemId FindItemNamed(wxTreeItemId root, const wxString& sSearchFor, bool bCaseSensitive = true, bool bExactMatch = true);
-	wxTreeItemId AddTreeNode(wxTreeItemId parent, wxTreeItemId previous, wstring name, string type = "Table");	
+	wxTreeItemId AddTreeNode(wxTreeItemId parent, wxTreeItemId previous, wstring name, string type = "Table");
 	vector<OpenLogicTable> *m_opened_windows;
 	bool TestStringTextMatch(wxString test, wxString find, bool bMatchCase, bool bMatchWholeWord);
 	void DebugInfoReceived(wstring buff);
