@@ -63,16 +63,16 @@ namespace ROM
 		ROMNode*			Clone();
 
 		//attribute functions
-		wstring				GetAttribute(wstring id, wstring name, bool immediate = false);
-		wstring				GetAttribute(wstring id, bool immediate = false) {return GetAttribute(id, L"value", immediate);}
-		bool				GetAttributeExists(wstring id, wstring name = L"value");
-		bool				SetAttribute(wstring id, wstring name, wstring value);
-		bool				SetAttribute(wstring id, wstring value) {return SetAttribute(id, L"value", value);}
-		bool				SetAttributeValue(wstring id, wstring value) {return SetAttribute(id, value);}
-		bool				RemoveAttribute(wstring id, wstring name = L"value");	
-		bool				SetROMObjectValue(wstring name, wstring value);
-		wstring				GetROMObjectValue(wstring name);
-		bool				RemoveROMObjectValue(wstring name);	
+		virtual wstring		GetAttribute(wstring id, wstring name, bool immediate = false);
+		virtual wstring		GetAttribute(wstring id, bool immediate = false) {return GetAttribute(id, L"value", immediate);}
+		virtual bool		GetAttributeExists(wstring id, wstring name = L"value");
+		virtual bool		SetAttribute(wstring id, wstring name, wstring value);
+		virtual bool		SetAttribute(wstring id, wstring value) {return SetAttribute(id, L"value", value);}
+		virtual bool		SetAttributeValue(wstring id, wstring value) {return SetAttribute(id, value);}
+		virtual bool		RemoveAttribute(wstring id, wstring name = L"value");	
+		virtual bool		SetROMObjectValue(wstring name, wstring value);
+		virtual wstring		GetROMObjectValue(wstring name);
+		virtual bool		RemoveROMObjectValue(wstring name);	
 		wstring				GetROMObjectID() {return m_id;}
 		void				SetROMObjectID(wstring id) {m_id = id;}
 		string				GetROMGUID() {return m_guid;}
