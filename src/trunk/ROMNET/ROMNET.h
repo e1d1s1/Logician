@@ -102,18 +102,18 @@ namespace ROMNET {
 		ROMNode^			Clone();
 
 		//attribute functions
-		String^				GetAttribute(String^ id, String^ name, bool immediate);
-		String^				GetAttribute(String^ id, bool immediate) {return GetAttribute(id, "value", immediate);}
-		String^				GetAttribute(String^ id) {return GetAttribute(id, "value", false);}
-		bool				GetAttributeExists(String^ id, String^ name);
-		bool				GetAttributeExists(String^ id) {return GetAttributeExists(id, "value");}
-		bool				SetAttribute(String^ id, String^ name, String^ value);
-		bool				SetAttribute(String^ id, String^ value) {return SetAttribute(id, L"value", value);}
-		bool				RemoveAttribute(String^ id, String^ name);
-		bool				RemoveAttribute(String^ id) {return RemoveAttribute(id, "value");} 	
-		bool				SetROMObjectValue(String^ name, String^ value);
-		String^				GetROMObjectValue(String^ name);
-		bool				RemoveROMObjectValue(String^ name);	
+		virtual String^		GetAttribute(String^ id, String^ name, bool immediate);
+		virtual String^		GetAttribute(String^ id, bool immediate) {return GetAttribute(id, "value", immediate);}
+		virtual String^		GetAttribute(String^ id) {return GetAttribute(id, "value", false);}
+		virtual bool		GetAttributeExists(String^ id, String^ name);
+		virtual bool		GetAttributeExists(String^ id) {return GetAttributeExists(id, "value");}
+		virtual bool		SetAttribute(String^ id, String^ name, String^ value);
+		virtual bool		SetAttribute(String^ id, String^ value) {return SetAttribute(id, L"value", value);}
+		virtual bool		RemoveAttribute(String^ id, String^ name);
+		virtual bool		RemoveAttribute(String^ id) {return RemoveAttribute(id, "value");} 	
+		virtual bool		SetROMObjectValue(String^ name, String^ value);
+		virtual String^		GetROMObjectValue(String^ name);
+		virtual bool		RemoveROMObjectValue(String^ name);	
 		String^				GetROMObjectID();
 		void				SetROMObjectID(String^ name);
 		String^				GetROMGUID();
