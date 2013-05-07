@@ -1,9 +1,0 @@
-﻿<Window x:Class="LogicianDebuggerTestApp2012.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:debugger="clr-namespace:LogicianDebuggerWPF;assembly=LogicianDebuggerWPF"
-        Title="MainWindow" Height="1024" Width="800">
-    <Grid>
-        <debugger:LogicianDebugCtrl Name="Debugger" HorizontalAlignment="Stretch" VerticalAlignment="Top" Width="800" Height="1024"/>
-    </Grid>
-</Window>
