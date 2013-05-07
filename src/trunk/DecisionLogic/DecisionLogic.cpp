@@ -39,7 +39,7 @@
 #include "folder.xpm"
 #include "folder_open.xpm"
 
-#define VERSION "1.2.2"
+#define VERSION "1.3"
 
 //Icon
 #if !defined(__WXMSW__) && !defined(__WXPM__)
