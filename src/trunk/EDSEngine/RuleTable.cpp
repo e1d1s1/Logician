@@ -109,26 +109,26 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 	vector<wstring> retval;
 	vector<size_t> values;
 	map<size_t, set<wstring> > solutions;
-	vector<pair<wstring, vector<CRuleCell> > > inputCollection;
-	vector<pair<wstring, vector<CRuleCell> > > outputCollection;
+	vector<pair<wstring, vector<CRuleCell> > > *inputCollection;
+	vector<pair<wstring, vector<CRuleCell> > > *outputCollection;
 	if (bForward)
 	{
-		inputCollection = m_InputAttrsTests;
-		outputCollection = m_OutputAttrsValues;
+		inputCollection = &m_InputAttrsTests;
+		outputCollection = &m_OutputAttrsValues;
 	}
 	else
 	{
-		inputCollection = m_OutputAttrsValues;
-		outputCollection = m_InputAttrsTests;
+		inputCollection = &m_OutputAttrsValues;
+		outputCollection = &m_InputAttrsTests;
 	}
 
 
 	SetInvalidAttrs();
 	vector<bool> colResults (m_Tests, true); //a table need not have any inputs
-	if (m_InputAttrsValues.size() > 0 && inputCollection.size() > 0)
+	if (m_InputAttrsValues.size() > 0 && inputCollection->size() > 0)
 	{
 		//get the current values of all input attrs
-		for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = inputCollection.begin(); it != inputCollection.end(); it++)
+		for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = inputCollection->begin(); it != inputCollection->end(); it++)
 		{
 			wstring attr = (*it).first;
 			MAPWSTRUINT::iterator itFind = m_InputAttrsValues.find(attr);
@@ -146,7 +146,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 		{
 			//sweep through the inputs
 			size_t inputCnt = 0;
-			for (vector< pair<wstring, vector<CRuleCell> > >::iterator itTests = inputCollection.begin(); itTests != inputCollection.end(); itTests++)
+			for (vector< pair<wstring, vector<CRuleCell> > >::iterator itTests = inputCollection->begin(); itTests != inputCollection->end(); itTests++)
 			{
 				if ( testCnt < (*itTests).second.size())
 				{
@@ -162,20 +162,20 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 				break;
 		} //done column
 	} //done inputs
-	else if (inputCollection.size() == 0 && !bGetAll)
+	else if (inputCollection->size() == 0 && !bGetAll)
 	{
-		if (colResults.size() > 1) 
+		if (colResults.size() > 1)
 			for (size_t i = 1; i < colResults.size(); i++)
 				colResults[i] = false;
 	}
 
 	//for the give output, the reuslts are
 	vector<CRuleCell> results;
-	for (size_t result = 0; result < outputCollection.size(); result++)
+	for (size_t result = 0; result < outputCollection->size(); result++)
 	{
-		if (outputCollection[result].first == outputAttr)
+		if ((*outputCollection)[result].first == outputAttr)
 		{
-			results = outputCollection[result].second;
+			results = (*outputCollection)[result].second;
 		}
 	}
 
@@ -185,7 +185,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 		if (colResults[result] && result < results.size())
 		{
 			CRuleCell outputCell = results[result];
-			CDecode decoder(outputCell, &m_InputAttrsValues, m_stringsMap);				
+			CDecode decoder(outputCell, &m_InputAttrsValues, m_stringsMap);
 			if (outputCell.Operation & CHAIN)
 				bHasChain = true;
 			if (outputCell.Operation & PYTHON)
@@ -211,7 +211,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 			}
 		}
 	}
-	
+
 
 	//report the eval results over a tcp socket connection
 	if (m_DEBUGGING)
@@ -230,7 +230,7 @@ void CRuleTable::DebugEval(wstring outputAttr, vector<size_t> inputValues, map<s
 	xmlBlob += L"\" output=\"";
 	xmlBlob += outputAttr;
 	xmlBlob += L"\">";
-	
+
 	if (m_InputAttrsTests.size() == inputValues.size())
 	{
 		xmlBlob += L"<Inputs>";
@@ -238,12 +238,12 @@ void CRuleTable::DebugEval(wstring outputAttr, vector<size_t> inputValues, map<s
 		{
 			pair<wstring, vector<CRuleCell> > currentPair = m_InputAttrsTests[i];
 			wstring attr = currentPair.first;
-			wstring value = m_stringsMap->GetStringByID(inputValues[i]);			
+			wstring value = m_stringsMap->GetStringByID(inputValues[i]);
 			xmlBlob += L"<Input name = \"";
 			xmlBlob += attr;
 			xmlBlob += L"\" value=\"";
 			xmlBlob += value;
-			xmlBlob += L"\"/>"; 
+			xmlBlob += L"\"/>";
 		}
 		xmlBlob += L"</Inputs>";
 	} //else something is wrong
@@ -258,7 +258,7 @@ void CRuleTable::DebugEval(wstring outputAttr, vector<size_t> inputValues, map<s
 			xmlBlob += *itOut;
 			xmlBlob += L"\" index=\"";
 			xmlBlob += EDSUTIL::ToWString(EDSUTIL::stringify(index));
-			xmlBlob += L"\"/>"; 
+			xmlBlob += L"\"/>";
 		}
 	}
 	xmlBlob+= L"</Outputs>";
