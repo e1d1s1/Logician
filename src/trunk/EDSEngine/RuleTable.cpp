@@ -150,7 +150,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 			{
 				if ( testCnt < (*itTests).second.size())
 				{
-					CDecode decoder(values[inputCnt], (*itTests).second[testCnt], &m_InputAttrsValues, m_stringsMap);
+					CDecode decoder(values[inputCnt], &(*itTests).second[testCnt], &m_InputAttrsValues, m_stringsMap);
 					bHaveSolution = decoder.EvaluateInputCell();
 				}
 				inputCnt++;
@@ -185,7 +185,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 		if (colResults[result] && result < results.size())
 		{
 			CRuleCell outputCell = results[result];
-			CDecode decoder(outputCell, &m_InputAttrsValues, m_stringsMap);
+			CDecode decoder(&outputCell, &m_InputAttrsValues, m_stringsMap);
 			if (outputCell.Operation & CHAIN)
 				bHasChain = true;
 			if (outputCell.Operation & PYTHON)

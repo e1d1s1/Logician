@@ -27,20 +27,20 @@ CDecode::~CDecode(void)
 {
 }
 
-CDecode::CDecode(CRuleCell outputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap)
+CDecode::CDecode(CRuleCell *outputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap)
 {
-	m_tests = outputCell.Values;
+	m_tests = &outputCell->Values;
 	m_stringsMap = stringMap;
-	m_operator = outputCell.Operation;
+	m_operator = outputCell->Operation;
 	m_inputValues = inputValues;
 }
 
-CDecode::CDecode(size_t currentValue, CRuleCell inputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap)
+CDecode::CDecode(size_t currentValue, CRuleCell *inputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap)
 {
 	m_value = currentValue;
-	m_tests = inputCell.Values;
+	m_tests = &inputCell->Values;
 	m_stringsMap = stringMap;
-	m_operator = inputCell.Operation;
+	m_operator = inputCell->Operation;
 	m_inputValues = inputValues;
 
 	CheckForInputGets();
@@ -70,9 +70,9 @@ bool CDecode::EvaluateInputCell()
 		//no string compares needed here for speed
 		if (m_operator & EQUALS)
 		{
-			for (size_t i = 0; i < m_tests.size(); i++) //possible OR
+			for (size_t i = 0; i < m_tests->size(); i++) //possible OR
 			{
-				size_t test = m_tests[i];
+				size_t test = (*m_tests)[i];
 
 				if (test == m_value && test > 0)
 				{
@@ -89,9 +89,9 @@ bool CDecode::EvaluateInputCell()
 		}
 		else if (m_operator & NOT_EQUAL)
 		{
-			for (size_t i = 0; i < m_tests.size(); i++) //possible OR
+			for (size_t i = 0; i < m_tests->size(); i++) //possible OR
 			{
-				size_t test = m_tests[i];
+				size_t test = (*m_tests)[i];
 
 				if (test == m_value)
 				{
@@ -107,7 +107,7 @@ bool CDecode::EvaluateInputCell()
 		//there are no "ORs" in these cases
 		else if (m_operator & LESS_THAN || m_operator & LESS_THAN_EQUAL || m_operator & GREATER_THAN || m_operator & GREATER_THAN_EQUAL)
 		{
-			wstring currentTest = GetString(m_tests[0]);
+			wstring currentTest = GetString((*m_tests)[0]);
 			wstring currentValue = GetString(m_value);
 			bool bIsNum = false;
 
@@ -191,7 +191,7 @@ bool CDecode::EvaluateInputCell()
 		else if (m_operator & RANGE_INCLUSIVE || m_operator & RANGE_END_INCLUSIVE ||
 			m_operator & RANGE_START_INCLUSIVE ||m_operator & RANGE_NOT_INCLUSIVE)
 		{
-			wstring testString = GetString(m_tests[0]);
+			wstring testString = GetString((*m_tests)[0]);
 			wstring currentValue = GetString(m_value);
 			double min = 0, max = 0, dCurrentValue = 0;
 			vector<wstring> parts = EDSUTIL::Split(testString.c_str(), L",");
@@ -265,7 +265,7 @@ vector<wstring> CDecode::EvaluateOutputCell()
 
 	try
 	{
-		for (vector<size_t>::iterator it = m_tests.begin(); it != m_tests.end(); it++)
+		for (vector<size_t>::iterator it = m_tests->begin(); it != m_tests->end(); it++)
 		{
 			if (m_operator & GETS)
 			{
@@ -347,10 +347,10 @@ wstring CDecode::ParseStringForGets(size_t lKey, bool bForceZero)
 void CDecode::CheckForInputGets()
 {
 	if (m_operator & GETS)
-	for (size_t i = 0; i < m_tests.size(); i++)
+	for (size_t i = 0; i < m_tests->size(); i++)
 	{
 		//replace the GET with the actual value (pay a performance penalty here, but convienient)
-		wstring val = ParseStringForGets(m_tests[i], false);
-		m_tests[i] = m_stringsMap->GetIDByString(val);
+		wstring val = ParseStringForGets((*m_tests)[i], false);
+		(*m_tests)[i] = m_stringsMap->GetIDByString(val);
 	}
 }

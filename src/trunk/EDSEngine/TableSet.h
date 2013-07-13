@@ -31,8 +31,8 @@ public:
 	CTableSet(void);
 	~CTableSet(void);
 
-	void AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests, 
-		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues, 
+	void AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
+		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
 		vector<wstring> formulaInputs, CBimapper *stringMap, wstring name = L"defualt", bool GetAll = false);
 	void Initialize();
 	CRuleTable* GetTable(wstring tableName);
@@ -40,7 +40,7 @@ public:
 	vector<wstring> GetInputDependencies(wstring tableName);
 	vector<wstring> GetOutputAttrs(wstring tableName);
 	size_t Count();
-	void LoadTableInfo(CRuleTable table);
+	void LoadTableInfo(CRuleTable *table);
 private:
 	vector<wstring> ParseTablesAndChainsForInputs(wstring tableName);
 	map<wstring, CRuleTable> m_tables;

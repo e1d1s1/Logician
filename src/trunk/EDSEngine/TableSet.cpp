@@ -41,29 +41,29 @@ void CTableSet::Initialize()
 {
 	for (map<wstring, CRuleTable>::iterator it = m_tables.begin(); it != m_tables.end(); it++)
 	{
-		LoadTableInfo((*it).second);
-	}	
+		LoadTableInfo(&(*it).second);
+	}
 	bInitialized = true;
 }
 
-void CTableSet::LoadTableInfo(CRuleTable table)
+void CTableSet::LoadTableInfo(CRuleTable *table)
 {
 	//get the input info for this table
-	vector<wstring> inputs = table.GetAllInputAttrNames();	
+	vector<wstring> inputs = table->GetAllInputAttrNames();
 	if (inputs.size() > 0)
-		m_inputAttrsByTable[table.m_Name] = inputs;
+		m_inputAttrsByTable[table->m_Name] = inputs;
 
 	//outputs
-	vector<wstring> outputs = table.GetAllOutputAttrNames();	
+	vector<wstring> outputs = table->GetAllOutputAttrNames();
 	if (outputs.size() > 0)
-		m_outputAttrsByTable[table.m_Name] = outputs;
+		m_outputAttrsByTable[table->m_Name] = outputs;
 
 	//dependancies
-	vector<wstring> inputDeps = table.GetAllInputDependencies();	
+	vector<wstring> inputDeps = table->GetAllInputDependencies();
 	for (vector<wstring>::iterator it = outputs.begin(); it != outputs.end(); it++)
 	{
 		//check for table chaining
-		vector<wstring> values = table.GetAllPossibleOutputs((*it));
+		vector<wstring> values = table->GetAllPossibleOutputs((*it));
 		for (vector<wstring>::iterator itValue = values.begin(); itValue != values.end(); itValue++)
 		{
 			if (StringContains(*itValue, L"eval("))
@@ -82,10 +82,10 @@ void CTableSet::LoadTableInfo(CRuleTable table)
 			}
 		}
 	}
-	
+
 	if (inputDeps.size() > 0)
-		m_inputDependenciesByTable[table.m_Name] = inputDeps;
-	
+		m_inputDependenciesByTable[table->m_Name] = inputDeps;
+
 }
 
 vector<wstring> CTableSet::ParseTablesAndChainsForInputs(wstring tableName)
