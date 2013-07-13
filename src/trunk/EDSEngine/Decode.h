@@ -33,8 +33,8 @@ using namespace __gnu_cxx;
 class CDecode
 {
 public:
-	CDecode(CRuleCell outputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap);
-	CDecode(size_t currentValue, CRuleCell cell, MAPWSTRUINT *inputValues, CBimapper *stringMap);
+	CDecode(CRuleCell *outputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap);
+	CDecode(size_t currentValue, CRuleCell *cell, MAPWSTRUINT *inputValues, CBimapper *stringMap);
 	~CDecode(void);
 	bool EvaluateInputCell();
 	vector<wstring> EvaluateOutputCell();
@@ -46,7 +46,7 @@ private:
 	void CheckForInputGets();
 
 	size_t m_value;
-	vector<size_t> m_tests;
+	vector<size_t> *m_tests;
 	long m_operator;
 	CBimapper *m_stringsMap;
 	MAPWSTRUINT *m_inputValues;
