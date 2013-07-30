@@ -106,7 +106,7 @@ bool ROMNode::RemoveChildROMObject(ROMNode *child)
 		retval = true;
 		m_bChanged = retval;
 	}
-	
+
 	return retval;
 }
 
@@ -147,7 +147,7 @@ bool ROMNode::AddFriend(ROMNode *friendObj)
 			m_bChanged = true;
 			return true;
 		}
-		return false;		
+		return false;
 	}
 	else
 		return false;
@@ -169,7 +169,7 @@ bool ROMNode::RemoveFriend(ROMNode *friendObj)
 			m_bChanged = retval;
 		}
 	}
-	
+
 	return retval;
 }
 
@@ -179,14 +179,14 @@ bool ROMNode::RemoveAllFriends()
 	for (vector<ROMNode*>::iterator it = m_friends.begin(); it != m_friends.end(); it++)
 	{
 		retval = RemoveFriend(*it);
-	}	
+	}
 	return retval;
 }
 
 vector<ROMNode*> ROMNode::FindAllObjectsByID(wstring id, bool recurs)
 {
 	vector<ROMNode*> retval;
-	
+
 	if (m_id == id)
 		retval.push_back(this);
 	_findObjects(id, recurs, &retval);
@@ -226,7 +226,7 @@ bool ROMNode::DestroyROMObject()
 	{
 		ROMNode* node = *it;
 		if (node)
-		{			
+		{
 			it = m_children.erase(it);
 			delete node;
 		}
@@ -245,7 +245,7 @@ bool ROMNode::DestroyROMObject()
 	m_id.clear();
 	m_parent = NULL;
 	m_bChanged = true;
-	
+
 	m_friends.clear();
 	m_children.clear();
 
@@ -291,7 +291,7 @@ vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
 	}
 
 	for (vector<Node>::iterator it = nodes.begin(); it != nodes.end(); it++)
-	{		
+	{
 		Node objNode = (*it);
 		wstring guid = objNode->attributes->getNamedItem("guid")->nodeValue.bstrVal;
 		if (guid.length() > 0)
@@ -317,7 +317,7 @@ vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
 	xmlXPathFreeContext(xpathCtx);
 
 	for (vector<Node>::iterator it = nodes.begin(); it != nodes.end(); it++)
-	{		
+	{
 		Node objNode = (*it);
 		wstring guid = XMLStrToWStr(xmlGetProp(objNode, (xmlChar*)"guid"));
 		if (guid.length() > 0)
@@ -379,21 +379,21 @@ void ROMNode::_findAllChildObjects(vector<ROMNode*>* res)
 
 void ROMNode::SetTableDebugHandler(DebugHandler debugger)
 {
-	if (m_KnowledgeBase) 
+	if (m_KnowledgeBase)
 		m_KnowledgeBase->SetDebugHandler(debugger);
 }
 
 void ROMNode::GenerateTableDebugMessages(bool bGenerate)
 {
-	if (m_KnowledgeBase) 
+	if (m_KnowledgeBase)
 		m_KnowledgeBase->GenerateDebugMessages(bGenerate);
 }
 
 wstring ROMNode::GetTableDebugMessages()
 {
-	if (m_KnowledgeBase) 
-		return m_KnowledgeBase->GetDebugMessages(); 
-	else 
+	if (m_KnowledgeBase)
+		return m_KnowledgeBase->GetDebugMessages();
+	else
 		return L"";
 }
 
@@ -472,7 +472,7 @@ bool ROMNode::RemoveAttribute(wstring id, wstring name)
 			}
 		}
 		m_bChanged = retval;
-	}	
+	}
 
 	return retval;
 }
@@ -920,7 +920,7 @@ wstring ROMNode::_generateXML(bool bRegen)
 				{
 					attrObject+=itValue->first;
 					attrObject+=L"=\"";
-					attrObject+=itValue->second;
+					attrObject+=ROMUTIL::encodeForXml(itValue->second);
 					attrObject+=L"\" ";
 				}
 				attrObject+=L"/>";
@@ -979,12 +979,12 @@ bool ROMNode::LoadXML(wstring xmlStr)
 		}
 		else
 		{
-			if (m_xmlDoc != NULL && m_xmlDoc->parseError->errorCode != 0)			
-				ReportROMError(ToASCIIString((wstring)(m_xmlDoc->parseError->reason)));			
+			if (m_xmlDoc != NULL && m_xmlDoc->parseError->errorCode != 0)
+				ReportROMError(ToASCIIString((wstring)(m_xmlDoc->parseError->reason)));
 			else
 				ReportROMError("Error loading XML");
 		}
-			
+
 	}
 	catch(const _com_error& e)
 	{
@@ -1013,7 +1013,7 @@ bool ROMNode::LoadXML(wstring xmlStr)
 		{
 			Node objectNode = allObjs->nodeTab[0];
 			if (_buildObject(objectNode, NULL) != NULL)
-				retval = true;			
+				retval = true;
 		}
 	}
 	catch(...)
@@ -1052,7 +1052,7 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 	for (long i = 0; i < objectNode->attributes->Getlength(); i++)
 	{
 		Node objAttr = objectNode->attributes->Getitem(i);
-		wstring attrName = objAttr->nodeName.GetBSTR();		
+		wstring attrName = objAttr->nodeName.GetBSTR();
 		if (attrName != L"id" && attrName != L"guid")
 		{
 			wstring attrValue = objAttr->nodeValue.bstrVal;
@@ -1189,7 +1189,7 @@ wstring	ROMNode::EvaluateXPATH(wstring xpath, string guid)
 	if (m_xmlDoc != NULL)
 	{
 #ifdef USE_MSXML
-		Document xsltDoc =_createMSXMLDoc();		
+		Document xsltDoc =_createMSXMLDoc();
 		xsltDoc->loadXML(xslt_text.c_str());
 		_bstr_t* valPtr = NULL;
 		_bstr_t val = m_xmlDoc->transformNode(xsltDoc);
@@ -1229,12 +1229,12 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 		MSXML2::IXMLDOMNodePtr pXMLFirstChild = m_xmlDoc->GetfirstChild();
 		MSXML2::IXMLDOMNodePtr pXMLEncodNode = NULL;
 		// A map of the a attributes (vesrsion, encoding) values (1.0, UTF-8) pair
-		MSXML2::IXMLDOMNamedNodeMapPtr pXMLAttributeMap =  NULL;	
-		
+		MSXML2::IXMLDOMNamedNodeMapPtr pXMLAttributeMap =  NULL;
+
 		if (pXMLFirstChild != NULL)
 		{
 			pXMLAttributeMap = pXMLFirstChild->Getattributes();
-			pXMLAttributeMap->getNamedItem(bstr_t("encoding")); 			
+			pXMLAttributeMap->getNamedItem(bstr_t("encoding"));
 		}
 		if (pXMLEncodNode != NULL)
 			pXMLEncodNode->PutnodeValue(bstr_t("utf-8")); //encoding = UTF-8. Serializer usually omits it in output, it is the default encoding
@@ -1243,7 +1243,7 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 			MSXML2::IXMLDOMElementPtr pXMLRootElem = m_xmlDoc->GetdocumentElement();
 			if (pXMLRootElem != NULL)
 			{
-				MSXML2::IXMLDOMProcessingInstructionPtr pXMLProcessingNode =    
+				MSXML2::IXMLDOMProcessingInstructionPtr pXMLProcessingNode =
 					m_xmlDoc->createProcessingInstruction("xml", " version='1.0' encoding='UTF-8'");
 				_variant_t vtObject;
 				vtObject.vt = VT_DISPATCH;
@@ -1255,7 +1255,7 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 		}
 
 		MSXML2::IMXWriterPtr pWriter = NULL;
-		pWriter.CreateInstance("MSXML2.MXXMLWriter"); 
+		pWriter.CreateInstance("MSXML2.MXXMLWriter");
 
 		MSXML2::ISAXXMLReaderPtr pReader = NULL;
 		pReader.CreateInstance("MSXML2.SAXXMLReader");
@@ -1269,7 +1269,7 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 
 			pReader->putContentHandler(handler);
 			pReader->parse(m_xmlDoc.GetInterfacePtr());
-			
+
 			//utf-16 here
 			retval = (wstring)pWriter->output.bstrVal;
 		}
@@ -1294,7 +1294,7 @@ EDS::CKnowledgeBase* ROMNode::_getKnowledge()
 	if (current->m_KnowledgeBase != NULL)
 		knowledge = m_KnowledgeBase;
 	else
-	{		
+	{
 		while (knowledge == NULL)
 		{
 			ROMNode* parent = current->GetParent();
@@ -1309,7 +1309,7 @@ EDS::CKnowledgeBase* ROMNode::_getKnowledge()
 					current = parent;
 			}
 			else
-				return NULL;		
+				return NULL;
 		}
 	}
 	return knowledge;
