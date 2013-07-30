@@ -88,14 +88,14 @@ CRuleTable::CRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTest
 map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bForward)
 {
 	map<wstring, vector<wstring> > retval;
-	vector<pair<wstring, vector<CRuleCell> > > resultCollection;
+	vector<pair<wstring, vector<CRuleCell> > > *resultCollection;
 	if (bForward)
-		resultCollection = m_OutputAttrsValues;
+		resultCollection = &m_OutputAttrsValues;
 	else
-		resultCollection = m_InputAttrsTests;
+		resultCollection = &m_InputAttrsTests;
 
 	//for all the outputs get the results
-	for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = resultCollection.begin(); itOut != resultCollection.end(); itOut++)
+	for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = resultCollection->begin(); itOut != resultCollection->end(); itOut++)
 	{
 		vector<wstring> result = EvaluateTable((*itOut).first, bGetAll, bForward);
 		retval[(*itOut).first] = result;
