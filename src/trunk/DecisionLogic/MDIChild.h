@@ -1370,8 +1370,11 @@ private:
 								OnAppendColumn(false);
 							for (size_t i = 0; i < cells.size(); i++)
 							{
-								this->SetCellValue(j + j_offset, i + i_offset, cells[i]);
-								UpdateCellFormat(j + j_offset, i + i_offset);
+                                if (cells.size() > 0 && cells[i] != L"\r")
+                                {
+                                    this->SetCellValue(j + j_offset, i + i_offset, cells[i]);
+                                    UpdateCellFormat(j + j_offset, i + i_offset);
+								}
 							}
 						}
 					}
