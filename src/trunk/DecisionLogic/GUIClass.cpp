@@ -329,8 +329,8 @@ void GUIClass::SetActiveGroup(wstring groupPath)
 				grpItem = FindItemNamed(m_tree->GetRootItem(), pathParts[0]);
 		}
 		else if (pathParts.size() > 1)
-		{			
-			grpItem = FindItemNamed(m_tree->GetRootItem(), pathParts[pathParts.size() - 1]);			
+		{
+			grpItem = FindItemNamed(m_tree->GetRootItem(), pathParts[pathParts.size() - 1]);
 		}
 	}
 	else
@@ -667,6 +667,7 @@ void GUIClass::FindTextInActiveTable(wstring strToFind, wxPoint *startPos, bool 
 	MDIChild *childForm = (MDIChild*)m_parent->GetActiveChild();
 	if (childForm)
 	{
+
 		if (!bDoReplace)
 			retval = childForm->FindText(strToFind, *startPos, bMatchCase, bMatchWholeWord);
 		else

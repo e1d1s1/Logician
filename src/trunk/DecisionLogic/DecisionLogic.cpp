@@ -973,7 +973,7 @@ void DecisionLogicFrame::OnFindDialog(wxFindDialogEvent& event)
 		}
 		else
 		{
-			if (type == wxEVT_COMMAND_FIND || (m_last_find_pos->x == -1 && m_last_find_pos->y == -1))
+			if (type == wxEVT_COMMAND_FIND || (m_last_find_pos != NULL && (m_last_find_pos->x == -1 && m_last_find_pos->y == -1)))
 			{
 				if (m_last_find_pos)
 				{
@@ -984,6 +984,8 @@ void DecisionLogicFrame::OnFindDialog(wxFindDialogEvent& event)
 			}
 
 			//highlight on current open table
+			if (!m_last_find_pos)
+				m_last_find_pos = new wxPoint(0,0);
 			m_gui->FindTextInActiveTable((wstring)event.GetFindString(), m_last_find_pos, bMatchCase, bMatchWholeWord);
 			if (m_last_find_pos->x == -1 && m_last_find_pos->y == -1)
 			{
