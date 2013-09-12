@@ -959,7 +959,7 @@ void DecisionLogicFrame::OnFindDialog(wxFindDialogEvent& event)
 		{
 			if (!m_last_find_pos)
 				m_last_find_pos = new wxPoint(0,0);
-			bool res = m_gui->FindTextInAnyTable((wstring)event.GetFindString(), m_last_find_pos, &m_found_name, m_worker->GetProjectManager(), bMatchCase, bMatchWholeWord);
+			bool res = m_gui->FindTextInAnyTable((wstring)event.GetFindString(), m_last_find_pos, m_found_name, m_worker->GetProjectManager(), bMatchCase, bMatchWholeWord);
 			if (res == false)
 			{
 				wxMessageBox(_T("No more matches"));

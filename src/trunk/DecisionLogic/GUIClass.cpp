@@ -541,7 +541,7 @@ void GUIClass::GenerateRecentFileList(wxMenu *listMenu, int RecentFile_ID_BEGIN,
 	}
 }
 
-bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring *last_found_name, ProjectManager *pm, bool bMatchCase, bool bMatchWholeWord, bool bDoReplace, wstring strReplace)
+bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring &last_found_name, ProjectManager *pm, bool bMatchCase, bool bMatchWholeWord, bool bDoReplace, wstring strReplace)
 {
 	bool bFoundAnything = false;
 	vector<wstring> allTables = pm->GetProjectTableNames();
@@ -549,23 +549,23 @@ bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring 
 		return false;
 
 	bool bNextTable = true;
-	if (last_found_name->length() == 0)
+	if (last_found_name.length() == 0)
 	{
-		*last_found_name = allTables[0].c_str();
+		last_found_name = allTables[0];
 		bNextTable = false;
 	}
 
 	bool bFoundInTable = true;
 	if (startPos->x == 0 && startPos->y == 0)
 	{
-		vector<wstring>::iterator itFind = find(allTables.begin(), allTables.end(), last_found_name->c_str());
+		vector<wstring>::iterator itFind = find(allTables.begin(), allTables.end(), last_found_name);
 		for (vector<wstring>::iterator itTable = itFind; itTable != allTables.end(); itTable++)
 		{
 			if (bNextTable)
 				itTable++;
 			if (itTable == allTables.end())
 			{
-				last_found_name->empty();
+				last_found_name.clear();
 				startPos->x = -1;
 				startPos->y = -1;
 				break;
@@ -612,7 +612,7 @@ bool GUIClass::FindTextInAnyTable(wstring strToFind, wxPoint *startPos, wstring 
 
 			if (bFoundInTable)
 			{
-				*last_found_name = itTable->c_str();
+				last_found_name = itTable->c_str();
 				if (m_OpenTableCallback(*itTable))
 				{
 					bFoundAnything = true;
