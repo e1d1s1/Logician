@@ -1302,8 +1302,6 @@ private:
 		 }
 	}
 
-	inline static bool isCarriageReturn(char c) { return c=='\r'; }
-
 	inline void GetSelectionFromClipboard()
 	{
 		//get the top corner of selection
@@ -1375,7 +1373,7 @@ private:
                                 if (cells.size() > 0 && cells[i] != L"\r")
                                 {
                                     wstring value = cells[i];
-                                    value.erase(remove_if(value.begin(), value.end(), isCarriageReturn), value.end());
+                                    value.erase(remove(value.begin(), value.end(), '\r'), value.end());
                                     this->SetCellValue(j + j_offset, i + i_offset, cells[i]);
                                     UpdateCellFormat(j + j_offset, i + i_offset);
 								}
