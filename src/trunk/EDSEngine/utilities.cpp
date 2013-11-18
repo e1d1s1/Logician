@@ -172,7 +172,7 @@ wstring EDSUTIL::MBCStrToWStr(const string mbStr)
 	if (mbStr.size() == 0)
 		return L"";
 
-	size_t requiredSize = mbstowcs(NULL, mbStr.c_str(), 0) + 1;
+	size_t requiredSize = mbstowcs(nullptr, mbStr.c_str(), 0) + 1;
 	wchar_t *wStr = new wchar_t[requiredSize];
 	mbstowcs(wStr, mbStr.c_str(), requiredSize);
 	wstring retval = wStr;
@@ -222,10 +222,10 @@ wstring EDSUTIL::ToWString(string s)
 	return retval;
 }
 
-#ifdef USE_LIBXML	
+#ifdef USE_LIBXML
 wstring EDSUTIL::XMLStrToWStr(const xmlChar* mbStr)
 {
-	if (mbStr == NULL)
+	if (mbStr == nullptr)
 		return L"";
 
 	std::wstring result;

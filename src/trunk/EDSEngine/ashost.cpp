@@ -36,7 +36,7 @@ ULONG __stdcall ScriptHost::Release(void)
 
 HRESULT __stdcall ScriptHost::QueryInterface(REFIID iid, void **obj)
 {
-    *obj = NULL;
+    *obj = nullptr;
     if (IsEqualIID(iid, IID_IUnknown) == TRUE)
         *obj = (IUnknown *)((IActiveScriptHost *)this);
     else if (IsEqualIID(iid, IID_IActiveScriptSite) == TRUE)
@@ -90,7 +90,7 @@ HRESULT __stdcall ScriptHost::OnScriptError(IActiveScriptError *error)
     return S_OK;
 }
 
-#pragma endregion 
+#pragma endregion
 
 #pragma region ScriptHost Impl (Important)
 // ============================================================================
@@ -100,7 +100,7 @@ HRESULT __stdcall ScriptHost::GetItemInfo(LPCOLESTR name,
                                                  DWORD returnMask,
                                                  IUnknown **item,
                                                  ITypeInfo **typeInfo)
-{	
+{
     MapIter iter = rootList.find(name);
     if (iter != rootList.end())
     {
@@ -116,12 +116,12 @@ HRESULT __stdcall ScriptHost::GetItemInfo(LPCOLESTR name,
 // ============================================================================
 HRESULT __stdcall ScriptHost::Inject(const WCHAR *name, IUnknown *unkn)
 {
-    assert(name != NULL);
+    assert(name != nullptr);
 
-    if (name == NULL)
+    if (name == nullptr)
         return E_POINTER;
 
-    _activeScript->AddNamedItem(name, SCRIPTITEM_GLOBALMEMBERS | SCRIPTITEM_ISVISIBLE );		
+    _activeScript->AddNamedItem(name, SCRIPTITEM_GLOBALMEMBERS | SCRIPTITEM_ISVISIBLE );
     rootList.insert(InjectPair(std::wstring(name), unkn));
 
     return S_OK;
@@ -132,41 +132,41 @@ HRESULT __stdcall ScriptHost::Inject(const WCHAR *name, IUnknown *unkn)
 // ============================================================================
 HRESULT __stdcall ScriptHost::Eval(const WCHAR *source, VARIANT *result)
 {
-    assert(source != NULL);
+    assert(source != nullptr);
 
-    if (source == NULL)
+    if (source == nullptr)
         return E_POINTER;
 
-    return _activeScriptParse->ParseScriptText(source, NULL, NULL, NULL, 0, 0, SCRIPTTEXT_ISEXPRESSION, result, NULL);
+    return _activeScriptParse->ParseScriptText(source, nullptr, nullptr, nullptr, 0, 0, SCRIPTTEXT_ISEXPRESSION, result, NULL);
 }
 
 HRESULT __stdcall ScriptHost::Run(WCHAR *procname, DISPPARAMS *args, VARIANT *results)
 {
-    assert(procname != NULL);
+    assert(procname != nullptr);
 
-    if (procname == NULL)
+    if (procname == nullptr)
         return E_POINTER;
 
-	IDispatch *disp = NULL;
-	_activeScript->GetScriptDispatch(NULL, &disp);
+	IDispatch *disp = nullptr;
+	_activeScript->GetScriptDispatch(nullptr, &disp);
 	DISPID dispid = 0;
 	disp->GetIDsOfNames(IID_NULL, &procname, 1, LOCALE_SYSTEM_DEFAULT, &dispid);
 	EXCEPINFO info;
 	UINT argErr;
 	args->rgdispidNamedArgs = &dispid;
-	HRESULT hr = disp->Invoke(dispid, IID_NULL, NULL, DISPATCH_METHOD, args, results, &info, &argErr);
+	HRESULT hr = disp->Invoke(dispid, IID_NULL, nullptr, DISPATCH_METHOD, args, results, &info, &argErr);
 	return hr;
 }
 
 HRESULT __stdcall ScriptHost::AddScript(const WCHAR *source)
 {
-	assert(source != NULL);
+	assert(source != nullptr);
 
-    if (source == NULL)
+    if (source == nullptr)
         return E_POINTER;
 
 	VARIANT vRes;
-	HRESULT hr = _activeScriptParse->ParseScriptText(source, NULL, NULL, NULL, 0, 0, NULL, &vRes, NULL);
+	HRESULT hr = _activeScriptParse->ParseScriptText(source, nullptr, nullptr, nullptr, 0, 0, nullptr, &vRes, nullptr);
 	return hr;
 }
 #endif

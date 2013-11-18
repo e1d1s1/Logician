@@ -39,17 +39,17 @@ RuleTable - table to evaluate to obtain the value (will override default if exis
 void ROMDictionary::LoadDictionary(wstring dictionaryTable)
 {
 	m_dict.clear();
-	map<wstring, vector<wstring> > res = m_ROMContext->EvaluateTable(dictionaryTable, true);	
+	map<wstring, vector<wstring> > res = m_ROMContext->EvaluateTable(dictionaryTable, true);
 	vector<wstring> allNames = res[L"Name"];
 
 	for (size_t i = 0; i < allNames.size(); i++)
-	{		
+	{
 		ROMDictionaryAttribute dictAttr;
-		dictAttr.Name = allNames[i];		
+		dictAttr.Name = allNames[i];
 		dictAttr.Index = i;
 		if (res[L"DefaultValue"].size() > 0 && res[L"DefaultValue"][i] != L"~") dictAttr.DefaultValue = res[L"DefaultValue"][i];
 		if (res[L"Description"].size() > 0 && res[L"Description"][i] != L"~") dictAttr.Description = res[L"Description"][i];
-		if (res[L"RuleTable"].size() > 0 && res[L"RuleTable"][i] != L"~") dictAttr.RuleTable = res[L"RuleTable"][i];		
+		if (res[L"RuleTable"].size() > 0 && res[L"RuleTable"][i] != L"~") dictAttr.RuleTable = res[L"RuleTable"][i];
 
 		string strAttrType;
 		if (res[L"AttributeType"].size() > 0  && res[L"AttributeType"][i] != L"~") strAttrType = ToASCIIString(res[L"AttributeType"][i]);
@@ -77,11 +77,11 @@ void ROMDictionary::LoadDictionary(wstring dictionaryTable)
 		}
 
 		//on load, just set default values and possibilities
-		//only set a default if there is no rules table and no current value		
+		//only set a default if there is no rules table and no current value
 		wstring value = m_ROMContext->GetAttribute(dictAttr.Name);
 		if (((value.length() == 0 && dictAttr.RuleTable.length() == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length() > 0 && dictAttr.DefaultValue != L"~")
 		{
-			if (dictAttr.AttributeType == BOOLEANSELECT)			
+			if (dictAttr.AttributeType == BOOLEANSELECT)
 				m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue.substr(0, 1));
 			else
 				m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
@@ -96,7 +96,7 @@ void ROMDictionary::LoadDictionary(wstring dictionaryTable)
 
 ROMDictionaryAttribute* ROMDictionary::GetDictionaryAttr(wstring dictAttrName)
 {
-	ROMDictionaryAttribute* retval = NULL;
+	ROMDictionaryAttribute* retval = nullptr;
 
 	map<wstring, ROMDictionaryAttribute>::iterator itFind = m_dict.find(dictAttrName);
 	if (itFind != m_dict.end())

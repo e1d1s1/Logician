@@ -297,7 +297,7 @@ wstring CDecode::ReplaceAGet(wstring s, bool bForceZero)
 		wstring getText = L"get(" + attrName + L")";
 		//get the value of the input attr
 		bool bFoundAttr = false;
-		if (m_inputValues != NULL && m_inputValues->size() > 0)
+		if (m_inputValues != nullptr && m_inputValues->size() > 0)
 		{
 			MAPWSTRUINT::iterator it = m_inputValues->find(attrName);
 

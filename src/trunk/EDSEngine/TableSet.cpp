@@ -129,7 +129,7 @@ CRuleTable* CTableSet::GetTable(std::wstring tableName)
 	if (m_tables.find(tableName) != m_tables.end())
 		return &m_tables[tableName];
 	else
-		return NULL;
+		return nullptr;
 }
 
 vector<wstring> CTableSet::GetInputAttrs(std::wstring tableName)

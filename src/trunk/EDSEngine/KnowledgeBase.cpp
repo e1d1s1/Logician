@@ -68,7 +68,7 @@ using boost::asio::ip::tcp;
 #if defined(WIN32) && defined(_MSC_VER)
 // ascii to unsigned long long
 unsigned long long atoull(const char *str){
-        return _strtoui64(str, NULL, 10);
+        return _strtoui64(str, nullptr, 10);
 }
 #else
 #define atoull(x) strtoull(x, 0, 10);
@@ -78,6 +78,7 @@ using namespace std;
 using namespace EDSUTIL;
 using namespace EDS;
 
+std::mutex CKnowledgeBase::RuleLoadingMutex;
 
 CKnowledgeBase::~CKnowledgeBase(void)
 {
@@ -94,9 +95,9 @@ CKnowledgeBase::CKnowledgeBase()
 	m_IsOpen = false;
 	mapBaseIDtoTranslations.clear();
 	iRecursingDepth = 0;
-	m_DebugHandlerPtr = NULL;
+	m_DebugHandlerPtr = nullptr;
 #ifdef WIN32
-	HRESULT hr = CoInitialize(NULL);
+	HRESULT hr = CoInitialize(nullptr);
 #endif
 }
 
@@ -184,14 +185,14 @@ void CKnowledgeBase::ResetTable(wstring tableName)
 	iRecursingDepth = 0;
 
 	CRuleTable *table = m_TableSet.GetTable(tableName);
-	if (table != NULL)
+	if (table != nullptr)
 		table->ResetTable();
 }
 
 vector<wstring> CKnowledgeBase::GetAllPossibleOutputs(wstring tableName, wstring outputName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
-	if (table != NULL)
+	if (table != nullptr)
 		return m_TableSet.GetTable(tableName)->GetAllPossibleOutputs(outputName);
 	else
 		return vector<wstring>();
@@ -200,7 +201,7 @@ vector<wstring> CKnowledgeBase::GetAllPossibleOutputs(wstring tableName, wstring
 bool CKnowledgeBase::TableHasScript(wstring tableName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
-	if (table != NULL)
+	if (table != nullptr)
 		return (table->HasJS() || table->HasPython());
 	else
 		return false;
@@ -209,7 +210,7 @@ bool CKnowledgeBase::TableHasScript(wstring tableName)
 bool CKnowledgeBase::TableIsGetAll(wstring tableName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
-	if (table != NULL)
+	if (table != nullptr)
 		return table->IsGetAll();
 	else
 		return false;
@@ -233,7 +234,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 	{
 		CRuleTable *table = m_TableSet.GetTable(tableName);
 
-		if (table == NULL)
+		if (table == nullptr)
 			return retval;
 
 		if (iRecursingDepth == 0)
@@ -242,7 +243,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 		}
 		iRecursingDepth++;
 
-		if (table == NULL)
+		if (table == nullptr)
 			return retval;
 
 		table->EnbleDebugging(DebugThisTable(tableName));
@@ -354,7 +355,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 									SafeArrayDestroy(psa);
 								}
 							#else
-								IActiveScriptHost *activeScriptHost = NULL;
+								IActiveScriptHost *activeScriptHost = nullptr;
 								HRESULT hr = ScriptHost::Create(&activeScriptHost);
 								if(!FAILED(hr))
 								{
@@ -369,11 +370,11 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 									args.rgvarg[0].boolVal = true;
 									activeScriptHost->Run(L"myfunc", &args, &vRes);
 									activeScriptHost->Run(L"getparam", &args, &vStateParam);
-									val = VariantToWStr(vRes);								
+									val = VariantToWStr(vRes);
 									m_StateParameter = VariantToWStr(vStateParam);
 									delete pVariant;
 								}
-								if(activeScriptHost) 
+								if(activeScriptHost)
 									activeScriptHost->Release();
 							#endif
 						#endif
@@ -386,12 +387,12 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 
 							/* Create a JS runtime. */
 							rt = JS_NewRuntime(8L * 1024L * 1024L);
-							if (rt == NULL)
+							if (rt == nullptr)
 								throw;
 
 							/* Create a context. */
 							cx = JS_NewContext(rt, 8192);
-							if (cx == NULL)
+							if (cx == nullptr)
 								throw;
 							JS_SetOptions(cx, JSOPTION_VAROBJFIX);
 							JS_SetVersion(cx, JSVERSION_DEFAULT);
@@ -400,8 +401,8 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 							JS_BeginRequest(cx);
 
 							/* Create the global object. */
-							global = JS_NewCompartmentAndGlobalObject(cx, &global_class, NULL);
-							if (global == NULL)
+							global = JS_NewCompartmentAndGlobalObject(cx, &global_class, nullptr);
+							if (global == nullptr)
 								throw;
 
 							/* Populate the global object with the standard globals,
@@ -416,13 +417,13 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 							JSBool ok = JS_CallFunctionName(cx, global, "myfunc", 1, &argv, &rval);
 							JSBool ok2 = JS_CallFunctionName(cx, global, "getparam", 1, &argv, &stateval);
 
-							if (rval != NULL && ok)
+							if (rval != 0 && ok)
 							{
 								JSString* jstr = JS_ValueToString(cx, rval);
 								const char* s = (const char*)JS_EncodeString(cx, jstr);
 								val = MBCStrToWStr(s);
 							}
-							if (stateval != NULL && ok2)
+							if (stateval != 0 && ok2)
 							{
 								JSString* jstr = JS_ValueToString(cx, stateval);
 								const char* s = (const char*)JS_EncodeString(cx, jstr);
@@ -452,7 +453,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 					{
 						val = L"ERROR";
 					}
-					
+
 					newResults.push_back(val);
 
 					if (DebugThisTable(tableName))
@@ -581,7 +582,7 @@ vector<wstring> CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wstring 
 	try
 	{
 		CRuleTable *table = m_TableSet.GetTable(tableName);
-		if (table != NULL)
+		if (table != nullptr)
 		{
 			table->EnbleDebugging(DebugThisTable(tableName));
 			table->SetInputValues(m_GlobalInputAttrsValues);
@@ -602,7 +603,7 @@ map<wstring, vector<wstring> > CKnowledgeBase::ReverseEvaluateTable(wstring tabl
 	try
 	{
 		CRuleTable *table = m_TableSet.GetTable(tableName);
-		if (table == NULL)
+		if (table == nullptr)
 			return retval;
 		table->EnbleDebugging(DebugThisTable(tableName));
 		table->SetInputValues(m_GlobalInputAttrsValues);
@@ -688,7 +689,7 @@ map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(std::wstri
 	map<wstring, vector<wstring> > retval;
 
 	CRuleTable *table = m_TableSet.GetTable(tableName);
-	if (table != NULL)
+	if (table != nullptr)
 	{
 		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues = table->GetOutputAttrsValues();
 		//for all the outputs get the results
@@ -732,9 +733,12 @@ bool CKnowledgeBase::CreateKnowledgeBaseFromString(string xmlStr)
 bool CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 {
 	bool retval = false;
+
+	lock_guard<mutex> lock(RuleLoadingMutex);
+
 #ifdef USE_MSXML
 	Document	xmlDocument;
-	xmlDocument = NULL;
+	xmlDocument = nullptr;
 #ifdef USEATL
 	xmlDocument.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
 #else
@@ -765,10 +769,10 @@ bool CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 
 #ifdef USE_LIBXML
 	xmlInitParser();
-	Document xmlDocument = NULL;
+	Document xmlDocument = nullptr;
 	string buff = WStrToMBCStr(xmlStr);
 	xmlDocument = xmlParseMemory(buff.c_str(), (int)buff.size());
-	if (xmlDocument != NULL)
+	if (xmlDocument != nullptr)
 	{
 		retval = _parseXML(xmlDocument);
 
@@ -826,7 +830,7 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 			bGetAll = true;
 
 		NodeList formulaInputNodes = TableNode->selectNodes("FormulaInput");
-		if (formulaInputNodes != NULL)
+		if (formulaInputNodes != nullptr)
 		{
 			for (int j = 0; j < formulaInputNodes->length; j++)
 			{
@@ -881,9 +885,9 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 
 	Node nodeJS = xmlDocument->selectSingleNode("//Javascript");
 	Node nodePY = xmlDocument->selectSingleNode("//Python");
-	if (nodeJS != NULL)
+	if (nodeJS != nullptr)
 		m_jsCode = nodeJS->Gettext() + L"\n";
-	if (nodePY != NULL)
+	if (nodePY != nullptr)
 		m_pyCode = nodePY->Gettext() + L"\n";
 
 #endif
@@ -915,7 +919,7 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 	xmlXPathObjectPtr xpathTable = xmlXPathEvalExpression(tableXPath, xpathCtx);
 	NodeList allTables = xpathTable->nodesetval;
 
-	if (allTables != NULL)
+	if (allTables != nullptr)
 	{
 		for (int i = 0; i < allTables->nodeNr; i++)
 		{
@@ -960,16 +964,16 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 	xpathCtx->node = xmlDocGetRootElement(xmlDocument);
 	xmlChar* stringXPath = (xmlChar*)"//Translations/String";
 	xmlXPathObjectPtr xpathStrings = xmlXPathEvalExpression(stringXPath, xpathCtx);
-	if (xpathStrings != NULL)
+	if (xpathStrings != nullptr)
 	{
 		NodeList allTranslations = xpathStrings->nodesetval;
-		if (allTranslations != NULL)
+		if (allTranslations != nullptr)
 		{
 			for (int i = 0; i < allTranslations->nodeNr; i++)
 			{
 				Node StringNode = allTranslations->nodeTab[i];
 				size_t id = atoull(EDSUTIL::ToASCIIString(EDSUTIL::XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)"id"))).c_str());
-				for (Attribute childAttr = StringNode->properties; childAttr != NULL; childAttr = childAttr->next)
+				for (Attribute childAttr = StringNode->properties; childAttr != nullptr; childAttr = childAttr->next)
 				{
                     wstring name = EDSUTIL::XMLStrToWStr(childAttr->name);
                     if (name != L"id")
@@ -1002,9 +1006,9 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 
 	xmlXPathObjectPtr xpathJS = xmlXPathEvalExpression((xmlChar*)"//Javascript", xpathCtx);
 	xmlXPathObjectPtr xpathPY = xmlXPathEvalExpression((xmlChar*)"//Python", xpathCtx);
-	if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathJS->nodesetval->nodeNr == 1)
+	if (xpathJS != nullptr && xpathJS->nodesetval != nullptr && xpathJS->nodesetval->nodeNr == 1)
 		m_jsCode = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0])) + L"\n";
-	if (xpathJS != NULL && xpathJS->nodesetval != NULL && xpathPY->nodesetval->nodeNr == 1)
+	if (xpathJS != nullptr && xpathJS->nodesetval != nullptr && xpathPY->nodesetval->nodeNr == 1)
 		m_pyCode = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0])) + L"\n";
 
 	xmlXPathFreeObject(xpathJS);
@@ -1019,9 +1023,12 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 {
 	bool retval = false;
+
+	lock_guard<mutex> lock(RuleLoadingMutex);
+
 	m_IsOpen = false;
 	iRecursingDepth = 0;
-	m_DebugHandlerPtr = NULL;
+	m_DebugHandlerPtr = nullptr;
 	m_DEBUGGING_MSGS = false;
 	m_bGenerateMsg = false;
 	mapBaseIDtoTranslations.clear();
@@ -1029,7 +1036,7 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 	m_GlobalInputAttrsValues[L""] = EMPTY_STRING;
 	m_GlobalInputAttrsValues[L"NULL"] = EXPLICIT_NULL_STRING;
 #ifdef WIN32
-	HRESULT hr = CoInitialize(NULL);
+	HRESULT hr = CoInitialize(nullptr);
 #endif
 
 	try
@@ -1051,10 +1058,10 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 		if (wsExtension == L"gz")
 		{
 			//get the directory to extract files to
-            char * pcPath = NULL;
+            char * pcPath = nullptr;
 #ifdef POSIX
             pcPath = getenv("TMPDIR");
-            if (pcPath == NULL)
+            if (pcPath == nullptr)
                 pcPath = P_tmpdir;
 #else
 			pcPath = getenv("TEMP");
@@ -1090,7 +1097,7 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 		//parse the table from xml
 		#ifdef USE_MSXML
 			Document	xmlDocument;
-			xmlDocument = NULL;
+			xmlDocument = nullptr;
 			#ifdef USEATL
 				xmlDocument.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
 			#else
@@ -1122,10 +1129,10 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 
 		#ifdef USE_LIBXML
 			xmlInitParser();
-			Document xmlDocument = NULL;
+			Document xmlDocument = nullptr;
 			std::string strBuff(unzippedFileName.begin(), unzippedFileName.end());
 			xmlDocument = xmlParseFile(strBuff.c_str());
-			if (xmlDocument != NULL)
+			if (xmlDocument != nullptr)
 			{
 				retval = _parseXML(xmlDocument);
 
@@ -1178,7 +1185,7 @@ vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::GetTableRowFromXML(No
 				wstring wsIDs;
 				CRuleCell cell;
 
-				if (idNode != NULL)
+				if (idNode != nullptr)
 				{
 					wsIDs = VariantToWStr(idNode->nodeValue);
 					vector<wstring> cellValues = Split((wstring)(currentValue->Gettext()), L"|");
@@ -1196,11 +1203,11 @@ vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::GetTableRowFromXML(No
 					}
 				}
 
-				Node operNode = NULL;
+				Node operNode = nullptr;
 				operNode = currentValue->Getattributes()->getNamedItem("operation");
 				wstring wsOper = L"";
 				long lOper = 0;
-				if (operNode != NULL)
+				if (operNode != nullptr)
 				{
 					wsOper = VariantToWStr(operNode->nodeValue);
 					string sOper(wsOper.begin(), wsOper.end());
@@ -1232,7 +1239,7 @@ vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::GetTableRowFromXML(No
 
 			wstring attrName = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(attrNode));
 			currentAttrRow.first = attrName;
-			if (values != NULL)
+			if (values != nullptr)
 			{
 				for (int j = 0; j < values->nodeNr; j++)
 				{
@@ -1333,7 +1340,7 @@ vector<string> CKnowledgeBase::ReverseEvaluateTable(string tableName, string inp
 {
 	//no chaining or scripting in reverse
 	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
-	if (table != NULL)
+	if (table != nullptr)
 	{
 		table->EnbleDebugging(DebugThisTable(MBCStrToWStr(tableName)));
 		table->SetInputValues(m_GlobalInputAttrsValues);
@@ -1348,7 +1355,7 @@ map<string, vector<string> > CKnowledgeBase::ReverseEvaluateTable(string tableNa
 	map<string, vector<string> > retval;
 
 	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
-	if (table != NULL)
+	if (table != nullptr)
 	{
 		vector<pair<wstring, vector<CRuleCell> > > outputCollection = table->GetInputAttrsTests();
 		//for all the outputs get the results
@@ -1416,6 +1423,6 @@ CKnowledgeBase::CKnowledgeBase(std::string knowledge_file)
 	m_IsOpen = false;
 	mapBaseIDtoTranslations.clear();
 	iRecursingDepth = 0;
-	m_DebugHandlerPtr = NULL;
+	m_DebugHandlerPtr = nullptr;
 	CKnowledgeBase(MBCStrToWStr(knowledge_file));
 }
