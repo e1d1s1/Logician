@@ -18,6 +18,8 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #pragma once
 #include "stdafx.h"
 #include <string>
+#include <mutex>
+
 #include "RuleTable.h"
 #include "TableSet.h"
 #include "XMLWrapper.h"
@@ -27,7 +29,7 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 
 using namespace std;
 
-typedef void (*DebugHandler) (wstring); 
+typedef void (*DebugHandler) (wstring);
 
 namespace EDS
 {
@@ -62,7 +64,7 @@ namespace EDS
 		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName, bool bGetAll);
 
 		wstring GetEvalParameter() {return m_StateParameter;}
-		void SetInputValues(MAPWSTRUINT values) 
+		void SetInputValues(MAPWSTRUINT values)
 		{
 			m_GlobalInputAttrsValues = values;
 			m_GlobalInputAttrsValues[L""] = EMPTY_STRING;
@@ -111,8 +113,10 @@ namespace EDS
 		vector<string> GetOutputAttrs(string tableName);
 		vector<string> GetAllPossibleOutputs(string tableName, string outputName);
 
+		static mutex RuleLoadingMutex;
 
-	private:		
+
+	private:
 		bool _parseXML(Document xmlDocument);
 		vector<pair<wstring, vector<CRuleCell> > > GetTableRowFromXML(NodeList nodes, Document xmlDocument);
 		void SendToDebugServer(wstring msg);
@@ -143,3 +147,5 @@ namespace EDS
 	#endif
 	};
 }
+
+

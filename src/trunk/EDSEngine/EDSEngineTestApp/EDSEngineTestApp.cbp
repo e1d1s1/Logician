@@ -22,8 +22,9 @@
 					<Add library="EDSEngine" />
 					<Add library="mozjs185" />
 					<Add library="xml2" />
-					<Add library="boost_iostreams-mt" />
+					<Add library="boost_iostreams" />
 					<Add library="boost_system" />
+					<Add library="pthread" />
 					<Add directory="../bin/Debug" />
 				</Linker>
 			</Target>
@@ -34,14 +35,19 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-DUSE_LIBXML" />
+					<Add option="-DUSE_JAVASCRIPT" />
+					<Add option="-DNOPYTHON" />
+					<Add option="-DPOSIX" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="EDSEngine" />
 					<Add library="mozjs185" />
 					<Add library="xml2" />
-					<Add library="boost_iostreams-mt" />
+					<Add library="boost_iostreams" />
 					<Add library="boost_system" />
+					<Add library="pthread" />
 					<Add directory="../bin/Release" />
 				</Linker>
 			</Target>
@@ -60,6 +66,16 @@
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

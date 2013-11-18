@@ -47,12 +47,12 @@ void ROMNode::_init()
 	xmlInitParser();
 #endif
 #ifdef USE_MSXML
-	CoInitialize(NULL);
+	CoInitialize(nullptr);
 #endif
 	m_guid = MakeGUID();
-	m_parent = NULL;
-	m_xmlDoc = NULL;
-	m_KnowledgeBase = NULL;
+	m_parent = nullptr;
+	m_xmlDoc = nullptr;
+	m_KnowledgeBase = nullptr;
 	m_children.reserve(256);
 	m_bChanged = true;
 }
@@ -64,7 +64,7 @@ ROMNode::~ROMNode(void)
 	xmlCleanupParser();
 #endif
 #ifdef USE_MSXML
-	if (m_xmlDoc != NULL)
+	if (m_xmlDoc != nullptr)
 		m_xmlDoc.Release();
 	CoUninitialize();
 #endif
@@ -75,9 +75,9 @@ ROMNode* ROMNode::GetRoot()
 	ROMNode *nextParent = this;
 	do
 	{
-		if (nextParent != NULL)
+		if (nextParent != nullptr)
 			nextParent = nextParent->GetParent();
-	} while (nextParent != NULL);
+	} while (nextParent != nullptr);
 
 	if (!nextParent)
 		nextParent = this;
@@ -86,7 +86,7 @@ ROMNode* ROMNode::GetRoot()
 
 bool ROMNode::AddChildROMObject(ROMNode *child)
 {
-	if (child->m_parent == NULL)
+	if (child->m_parent == nullptr)
 	{
 		m_children.push_back(child);
 		child->m_parent = this;
@@ -112,7 +112,7 @@ bool ROMNode::RemoveChildROMObject(ROMNode *child)
 
 bool ROMNode::RemoveFromParent()
 {
-	if (m_parent != NULL)
+	if (m_parent != nullptr)
 	{
 		return m_parent->RemoveChildROMObject(this);
 	}
@@ -196,7 +196,7 @@ vector<ROMNode*> ROMNode::FindAllObjectsByID(wstring id, bool recurs)
 
 ROMNode* ROMNode::FindObjectByGUID(string guid)
 {
-	ROMNode* retval = NULL;
+	ROMNode* retval = nullptr;
 
 	ROMNode* rootNode = GetRoot();
 	if (rootNode->m_guid == guid)
@@ -235,7 +235,7 @@ bool ROMNode::DestroyROMObject()
 	}
 
 	//remove any references to self in parent node
-	if (m_parent != NULL)
+	if (m_parent != nullptr)
 	{
 		retval = m_parent->RemoveChildROMObject(this);
 	}
@@ -243,7 +243,7 @@ bool ROMNode::DestroyROMObject()
 	m_attrs.clear();
 	m_nodeValues.clear();
 	m_id.clear();
-	m_parent = NULL;
+	m_parent = nullptr;
 	m_bChanged = true;
 
 	m_friends.clear();
@@ -280,7 +280,7 @@ vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
 	vector<Node> nodes;
 #ifdef USE_MSXML
 	NodeList res = m_xmlDoc->selectNodes(xpath.c_str());
-	if (res != NULL)
+	if (res != nullptr)
 	{
 		for (long i = 0; i < res->length; i++)
 		{
@@ -297,7 +297,7 @@ vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
 		if (guid.length() > 0)
 		{
 			ROMNode* node = FindObjectByGUID(guid);
-			if (node != NULL)
+			if (node != nullptr)
 				retval.push_back(node);
 		}
 	}
@@ -306,7 +306,7 @@ vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
 	xmlXPathContextPtr xpathCtx = xmlXPathNewContext(m_xmlDoc);
 	xmlXPathObjectPtr xpathObjSearch = xmlXPathEvalExpression((xmlChar*)WStrToMBCStr(xpath).c_str(), xpathCtx);
 	NodeList res = xpathObjSearch->nodesetval;
-	if (res != NULL)
+	if (res != nullptr)
 	{
 		for (int i = 0; i < res->nodeNr; i++)
 		{
@@ -323,7 +323,7 @@ vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
 		if (guid.length() > 0)
 		{
 			ROMNode* node = FindObjectByGUID(guid);
-			if (node != NULL)
+			if (node != nullptr)
 				retval.push_back(node);
 		}
 	}
@@ -333,7 +333,7 @@ vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
 
 ROMNode* ROMNode::_findObjectGUID(string guid)
 {
-	ROMNode* retval = NULL;
+	ROMNode* retval = nullptr;
 	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
 	{
 		if ((*it)->m_guid == guid)
@@ -344,7 +344,7 @@ ROMNode* ROMNode::_findObjectGUID(string guid)
 		else
 		{
 			retval = (*it)->_findObjectGUID(guid);
-			if (retval != NULL)
+			if (retval != nullptr)
 				break;
 		}
 	}
@@ -355,7 +355,7 @@ void ROMNode::_findObjects(wstring id, bool recurs, vector<ROMNode*>* res)
 {
 	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
 	{
-		if (recurs && (*it)->m_id == id && res != NULL)
+		if (recurs && (*it)->m_id == id && res != nullptr)
 		{
 			res->push_back(*it);
 			if ((*it)->m_children.size() > 0)
@@ -368,7 +368,7 @@ void ROMNode::_findAllChildObjects(vector<ROMNode*>* res)
 {
 	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
 	{
-		if (res != NULL)
+		if (res != nullptr)
 		{
 			res->push_back(*it);
 			if ((*it)->m_children.size() > 0)
@@ -416,7 +416,7 @@ wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
 	if (!immediate && !bFound)
 	{
 		ROMNode *parent = GetParent();
-		if (parent != NULL)
+		if (parent != nullptr)
 		{
 			retval = parent->GetAttribute(id, name, immediate);
 		}
@@ -522,10 +522,10 @@ bool ROMNode::LoadRules(wstring knowledge_file)
 	if (m_KnowledgeBase)
 	{
 		delete m_KnowledgeBase;
-		m_KnowledgeBase = NULL;
+		m_KnowledgeBase = nullptr;
 	}
 
-	if (m_parent == NULL) //only the root will have the reference to the rules
+	if (m_parent == nullptr) //only the root will have the reference to the rules
 	{
 		m_KnowledgeBase = new EDS::CKnowledgeBase();
 		return m_KnowledgeBase->CreateKnowledgeBase(knowledge_file);
@@ -539,10 +539,10 @@ bool ROMNode::LoadRulesFromString(wstring xmlStr)
 	if (m_KnowledgeBase)
 	{
 		delete m_KnowledgeBase;
-		m_KnowledgeBase = NULL;
+		m_KnowledgeBase = nullptr;
 	}
 
-	if (m_parent == NULL) //only the root will have the reference to the rules
+	if (m_parent == nullptr) //only the root will have the reference to the rules
 	{
 		m_KnowledgeBase = new EDS::CKnowledgeBase();
 		return m_KnowledgeBase->CreateKnowledgeBaseFromString(xmlStr);
@@ -790,13 +790,13 @@ void ROMNode::_createXMLDoc(bool bForceLoad)
 	{
 		wstring genXML = _generateXML(bChanged);
 #ifdef USE_MSXML
-		if (m_xmlDoc != NULL)
+		if (m_xmlDoc != nullptr)
 			m_xmlDoc.Release();
 		m_xmlDoc = _createMSXMLDoc();
 		VARIANT_BOOL res = m_xmlDoc->loadXML(genXML.c_str()); //-1 is true
 #endif
 #ifdef USE_LIBXML
-		m_xmlDoc = NULL;
+		m_xmlDoc = nullptr;
 		string buff = WStrToMBCStr(genXML);
 		m_xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
 #endif
@@ -808,7 +808,7 @@ void ROMNode::_createXMLDoc(bool bForceLoad)
 Document ROMNode::_createMSXMLDoc()
 {
 	Document doc;
-	doc = NULL;
+	doc = nullptr;
 	#ifdef USEATL
 		HRESULT hr = doc.CoCreateInstance(L"MSXML2.DOMDocument.6.0");
 	#else
@@ -963,7 +963,7 @@ bool ROMNode::LoadXML(wstring xmlStr)
 	bool retval = false;
 
 #ifdef USE_MSXML
-	if (m_xmlDoc != NULL)
+	if (m_xmlDoc != nullptr)
 		m_xmlDoc.Release();
 
 	m_xmlDoc = _createMSXMLDoc();
@@ -974,12 +974,12 @@ bool ROMNode::LoadXML(wstring xmlStr)
 		if (ok == VARIANT_TRUE)
 		{
 			Node objectNode = m_xmlDoc->selectSingleNode("Object");
-			if (_buildObject(objectNode, NULL) != NULL)
+			if (_buildObject(objectNode, nullptr) != nullptr)
 				retval = true;
 		}
 		else
 		{
-			if (m_xmlDoc != NULL && m_xmlDoc->parseError->errorCode != 0)
+			if (m_xmlDoc != nullptr && m_xmlDoc->parseError->errorCode != 0)
 				ReportROMError(ToASCIIString((wstring)(m_xmlDoc->parseError->reason)));
 			else
 				ReportROMError("Error loading XML");
@@ -1001,7 +1001,7 @@ bool ROMNode::LoadXML(wstring xmlStr)
 #ifdef USE_LIBXML
 	try
 	{
-		m_xmlDoc = NULL;
+		m_xmlDoc = nullptr;
 		string buff = WStrToMBCStr(xmlStr);
 		m_xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
 
@@ -1009,10 +1009,10 @@ bool ROMNode::LoadXML(wstring xmlStr)
 		xmlChar* objXPath = (xmlChar*)"Object";
 		xmlXPathObjectPtr xpathObjs = xmlXPathEvalExpression(objXPath, xpathCtx);
 		NodeList allObjs = xpathObjs->nodesetval;
-		if (allObjs != NULL)
+		if (allObjs != nullptr)
 		{
 			Node objectNode = allObjs->nodeTab[0];
-			if (_buildObject(objectNode, NULL) != NULL)
+			if (_buildObject(objectNode, nullptr) != nullptr)
 				retval = true;
 		}
 	}
@@ -1030,12 +1030,12 @@ bool ROMNode::LoadXML(wstring xmlStr)
 ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 {
 	//create object
-	ROMNode* newNode = NULL;
+	ROMNode* newNode = nullptr;
 
 #ifdef USE_MSXML
 	wstring id = objectNode->attributes->getNamedItem("id")->nodeValue.bstrVal;
 	wstring guid = objectNode->attributes->getNamedItem("guid")->nodeValue.bstrVal;
-	if (parent == NULL)
+	if (parent == nullptr)
 	{
 		DestroyROMObject();
 		m_id = id;
@@ -1082,7 +1082,7 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 	{
 		Node childNode = childNodes->item[childCnt];
 		ROMNode *newChildObject = _buildObject(childNode, this);
-		if (newChildObject != NULL && newNode != NULL)
+		if (newChildObject != nullptr && newNode != nullptr)
 		{
 			newNode->AddChildROMObject(newChildObject);
 		}
@@ -1092,7 +1092,7 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 #ifdef USE_LIBXML
 	wstring id = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)"id"));
 	wstring guid = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)"guid"));
-	if (parent == NULL)
+	if (parent == nullptr)
 	{
 		DestroyROMObject();
 		m_id = id;
@@ -1106,7 +1106,7 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 	}
 
 	//set object values
-	for (Attribute objValue = objectNode->properties; objValue != NULL; objValue = objValue->next)
+	for (Attribute objValue = objectNode->properties; objValue != nullptr; objValue = objValue->next)
 	{
 		wstring attrName = XMLStrToWStr(objValue->name);
 		if (attrName != L"id" && attrName != L"guid")
@@ -1121,13 +1121,13 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 	xmlChar* attrXPath = (xmlChar*)"Attribute";
 	xmlXPathObjectPtr xpathAttrs = xmlXPathEvalExpression(attrXPath, xpathCtx);
 	NodeList allAttrs = xpathAttrs->nodesetval;
-	if (allAttrs != NULL)
+	if (allAttrs != nullptr)
 	{
 		for (int i = 0; i < allAttrs->nodeNr; i++)
 		{
 			Node attrNode = allAttrs->nodeTab[i];
 			wstring idAttr = XMLStrToWStr(xmlGetProp(attrNode, (xmlChar*)"id"));
-			for (Attribute attr = attrNode->properties; attr != NULL; attr = attr->next)
+			for (Attribute attr = attrNode->properties; attr != nullptr; attr = attr->next)
 			{
 				wstring name = XMLStrToWStr(attr->name);
 				if (name != L"id")
@@ -1143,13 +1143,13 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 	xmlChar* objXPath = (xmlChar*)"Object";
 	xmlXPathObjectPtr xpathObjects = xmlXPathEvalExpression(objXPath, xpathCtx);
 	NodeList allObjs = xpathObjects->nodesetval;
-	if (allObjs != NULL)
+	if (allObjs != nullptr)
 	{
 		for (int i = 0; i < allObjs->nodeNr; i++)
 		{
 			Node childNode = allObjs->nodeTab[i];
 			ROMNode *newChildObject = _buildObject(childNode, this);
-			if (newChildObject != NULL && newNode != NULL)
+			if (newChildObject != nullptr && newNode != nullptr)
 			{
 				newNode->AddChildROMObject(newChildObject);
 			}
@@ -1186,12 +1186,12 @@ wstring	ROMNode::EvaluateXPATH(wstring xpath, string guid)
 	wstring xslt_text = XSLT_TOP + match + xpath + XSLT_BOTTOM;
 
 	_createXMLDoc();
-	if (m_xmlDoc != NULL)
+	if (m_xmlDoc != nullptr)
 	{
 #ifdef USE_MSXML
 		Document xsltDoc =_createMSXMLDoc();
 		xsltDoc->loadXML(xslt_text.c_str());
-		_bstr_t* valPtr = NULL;
+		_bstr_t* valPtr = nullptr;
 		_bstr_t val = m_xmlDoc->transformNode(xsltDoc);
 		valPtr = &val;
 		retval = BSTR_T_ToWString(valPtr);
@@ -1202,7 +1202,7 @@ wstring	ROMNode::EvaluateXPATH(wstring xpath, string guid)
 		Document xsltDoc = xmlParseMemory(buff.c_str(), (int)buff.length());
 
 		xsltStylesheetPtr xsl = xsltParseStylesheetDoc(xsltDoc);
-		Document result = xsltApplyStylesheet(xsl, m_xmlDoc, NULL);
+		Document result = xsltApplyStylesheet(xsl, m_xmlDoc, nullptr);
 
 		xmlChar *xmlbuff;
 		int buffersize = 0;
@@ -1221,27 +1221,27 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 	wstring retval;
 	retval.reserve(BIGSTRING);
 
-	if (m_xmlDoc != NULL)
+	if (m_xmlDoc != nullptr)
 	{
 #ifdef USE_MSXML
 		//By default it is writing the encoding = UTF-16. Change the encoding to UTF-8
 		// <?xml version="1.0" encoding="UTF-8"?>
 		MSXML2::IXMLDOMNodePtr pXMLFirstChild = m_xmlDoc->GetfirstChild();
-		MSXML2::IXMLDOMNodePtr pXMLEncodNode = NULL;
+		MSXML2::IXMLDOMNodePtr pXMLEncodNode = nullptr;
 		// A map of the a attributes (vesrsion, encoding) values (1.0, UTF-8) pair
-		MSXML2::IXMLDOMNamedNodeMapPtr pXMLAttributeMap =  NULL;
+		MSXML2::IXMLDOMNamedNodeMapPtr pXMLAttributeMap =  nullptr;
 
-		if (pXMLFirstChild != NULL)
+		if (pXMLFirstChild != nullptr)
 		{
 			pXMLAttributeMap = pXMLFirstChild->Getattributes();
 			pXMLAttributeMap->getNamedItem(bstr_t("encoding"));
 		}
-		if (pXMLEncodNode != NULL)
+		if (pXMLEncodNode != nullptr)
 			pXMLEncodNode->PutnodeValue(bstr_t("utf-8")); //encoding = UTF-8. Serializer usually omits it in output, it is the default encoding
 		else
 		{
 			MSXML2::IXMLDOMElementPtr pXMLRootElem = m_xmlDoc->GetdocumentElement();
-			if (pXMLRootElem != NULL)
+			if (pXMLRootElem != nullptr)
 			{
 				MSXML2::IXMLDOMProcessingInstructionPtr pXMLProcessingNode =
 					m_xmlDoc->createProcessingInstruction("xml", " version='1.0' encoding='UTF-8'");
@@ -1254,15 +1254,15 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 			}
 		}
 
-		MSXML2::IMXWriterPtr pWriter = NULL;
+		MSXML2::IMXWriterPtr pWriter = nullptr;
 		pWriter.CreateInstance("MSXML2.MXXMLWriter");
 
-		MSXML2::ISAXXMLReaderPtr pReader = NULL;
+		MSXML2::ISAXXMLReaderPtr pReader = nullptr;
 		pReader.CreateInstance("MSXML2.SAXXMLReader");
 
 		MSXML2::ISAXContentHandlerPtr handler = pWriter;
 
-		if (pWriter != NULL && pReader != NULL)
+		if (pWriter != nullptr && pReader != nullptr)
 		{
 			if (indented)
 				pWriter->put_indent(VARIANT_TRUE);
@@ -1289,13 +1289,13 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 
 EDS::CKnowledgeBase* ROMNode::_getKnowledge()
 {
-	EDS::CKnowledgeBase *knowledge = NULL;
+	EDS::CKnowledgeBase *knowledge = nullptr;
 	ROMNode* current = this;
-	if (current->m_KnowledgeBase != NULL)
+	if (current->m_KnowledgeBase != nullptr)
 		knowledge = m_KnowledgeBase;
 	else
 	{
-		while (knowledge == NULL)
+		while (knowledge == nullptr)
 		{
 			ROMNode* parent = current->GetParent();
 			if (parent)
@@ -1309,7 +1309,7 @@ EDS::CKnowledgeBase* ROMNode::_getKnowledge()
 					current = parent;
 			}
 			else
-				return NULL;
+				return nullptr;
 		}
 	}
 	return knowledge;
