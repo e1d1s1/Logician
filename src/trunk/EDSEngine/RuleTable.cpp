@@ -22,13 +22,17 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #include <algorithm>
 #include <list>
 #include <string>
+#include <thread>
 #include "utilities.h"
+
+#define THREAD_THRESHOLD 20 //at least this many rules to trigger threading
 
 using namespace std;
 
 CRuleTable::CRuleTable(void)
 {
 	m_DEBUGGING = false;
+	m_Threads = 1;
 	ResetTable();
 }
 
@@ -45,7 +49,7 @@ void CRuleTable::ResetTable()
 	bHasJavascript = false;
 	bGetAll = false;
 	bNullSet = false;
-
+	m_ThreadingEnabled = false;
 
 	m_InputAttrsTests.clear();
 	m_InputAttrsValues.clear();
@@ -66,7 +70,11 @@ void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inpu
 	m_OutputAttrsValues = outputAttrsValues;
 
 	if (m_OutputAttrsValues.size() > 0)
-		m_Tests = m_OutputAttrsValues[0].second.size();
+    {
+        m_Tests = m_OutputAttrsValues[0].second.size();
+        if (m_Threads > 1)
+            m_ThreadingEnabled = m_Tests >= THREAD_THRESHOLD;
+    }
 
 	m_Name = name;
 	m_stringsMap = stringMap;
@@ -139,28 +147,8 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 		}
 
 		//sweep down the table for all inputs and do test(s)
-		bool bHaveSolution = true;
-		vector<bool> colResultsDefault (m_Tests, false);
-		colResults = colResultsDefault;
-		for (size_t testCnt = 0; testCnt < m_Tests; testCnt++)
-		{
-			//sweep through the inputs
-			size_t inputCnt = 0;
-			for (vector< pair<wstring, vector<CRuleCell> > >::iterator itTests = inputCollection->begin(); itTests != inputCollection->end(); itTests++)
-			{
-				if ( testCnt < (*itTests).second.size())
-				{
-					CDecode decoder(values[inputCnt], &(*itTests).second[testCnt], &m_InputAttrsValues, m_stringsMap);
-					bHaveSolution = decoder.EvaluateInputCell();
-				}
-				inputCnt++;
-				if (!bHaveSolution)
-					break;
-			}
-			colResults[testCnt] = bHaveSolution;
-			if (bHaveSolution && !bGetAll)
-				break;
-		} //done column
+		colResults = _runTests(bGetAll, inputCollection, &values);
+
 	} //done inputs
 	else if (inputCollection->size() == 0 && !bGetAll)
 	{
@@ -220,6 +208,65 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 	}
 
 	return retval;
+}
+
+vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<size_t>* values)
+{
+    //sweep down the table for all inputs and do test(s)
+    vector<bool> colResultsDefault (m_Tests, false);
+    vector<bool> colResults = colResultsDefault;
+
+    if (m_ThreadingEnabled)
+    {
+        size_t testsPerThread = m_Tests/m_Threads;
+        unique_ptr<thread[]> threads = unique_ptr<thread[]>(new thread[m_Threads]);
+        for (size_t i = 0; i < m_Threads; i++)
+        {
+            size_t startIndex = i * testsPerThread;
+            size_t endIndex = i == m_Threads - 1 ? m_Tests : (i + 1) * testsPerThread;
+            function<bool(void)> worker = [&]()
+            {
+                return _runTestGroup(bGetAll, startIndex, endIndex, inputCollection, values, &colResults);
+            };
+            threads[i] = thread(worker);
+        }
+
+        for (size_t i = 0; i < m_Threads; i++)
+        {
+            threads[i].join();
+        }
+    }
+    else
+    {
+        _runTestGroup(bGetAll, 0, m_Tests, inputCollection, values, &colResults);
+    }
+
+    return colResults;
+}
+
+bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<size_t>* values, vector<bool>* colResults)
+{
+    bool bHaveSolution = true;
+    for (size_t testIndex = startIndex; testIndex < endIndex; testIndex++)
+    {
+        //sweep through the inputs
+        size_t inputCnt = 0;
+        for (auto itTests = inputCollection->begin(); itTests != inputCollection->end(); itTests++)
+        {
+            if ( testIndex < (*itTests).second.size())
+            {
+                CDecode decoder((*values)[inputCnt], &(*itTests).second[testIndex], &m_InputAttrsValues, m_stringsMap);
+                bHaveSolution = decoder.EvaluateInputCell();
+            }
+            inputCnt++;
+            if (!bHaveSolution)
+                break;
+        }
+        (*colResults)[testIndex] = bHaveSolution;
+        if (bHaveSolution && !bGetAll)
+            break;
+    } //done column (rule)
+    return bHaveSolution;
 }
 
 void CRuleTable::DebugEval(wstring outputAttr, vector<size_t> inputValues, map<size_t, set<wstring> > solutions)

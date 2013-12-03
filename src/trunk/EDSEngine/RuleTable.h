@@ -81,11 +81,14 @@ public:
 		vector<wstring> formulaInputs, CBimapper *stringMap,
 		wstring name = L"defualt", bool GetAll = false);
 	void EnbleDebugging(bool enable) { m_DEBUGGING = enable; }
+	void SetThreadCount(unsigned short threads) { m_Threads = threads; }
 
 	wstring DebugMessage;
 
 private:
 	void DebugEval(wstring outputAttr, vector<size_t> inputValues, map<size_t, set<wstring> > solutions);
+    vector<bool> _runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<size_t>* values);
+    bool _runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<size_t>* values, vector<bool>* colResults);
 
 	MAPWSTRUINT m_InputAttrsValues;
 	vector<pair<wstring, vector<CRuleCell> > > m_InputAttrsTests; //the test table, input rows
@@ -100,6 +103,8 @@ private:
 	bool bGetAll;
 	bool bNullSet;
 	bool m_DEBUGGING;
+	unsigned short m_Threads;
+	bool m_ThreadingEnabled;
 };
 
 
