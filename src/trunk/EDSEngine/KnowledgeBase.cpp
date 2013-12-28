@@ -78,8 +78,6 @@ using namespace std;
 using namespace EDSUTIL;
 using namespace EDS;
 
-std::mutex CKnowledgeBase::RuleLoadingMutex;
-
 CKnowledgeBase::~CKnowledgeBase(void)
 {
 #ifdef WIN32
@@ -734,8 +732,6 @@ bool CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 {
 	bool retval = false;
 
-	lock_guard<mutex> lock(RuleLoadingMutex);
-
 #ifdef USE_MSXML
 	Document	xmlDocument;
 	xmlDocument = nullptr;
@@ -1023,9 +1019,6 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 {
 	bool retval = false;
-
-	lock_guard<mutex> lock(RuleLoadingMutex);
-
 	m_IsOpen = false;
 	iRecursingDepth = 0;
 	m_DebugHandlerPtr = nullptr;

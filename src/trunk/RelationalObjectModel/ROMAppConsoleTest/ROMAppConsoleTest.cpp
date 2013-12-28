@@ -145,6 +145,19 @@ int runTest(int thread_id)
     string s(result.begin(), result.end());
     Log(s);
 
+    Log("Testing Cloning");
+    auto clone = unique_ptr<ROMNode>(rootNode.Clone());
+    findTest = clone->FindAllObjectsByID("ChildObject", true);
+    findTestXPATH = clone->FindObjects("//Object[@id='ChildObject']");
+    findTestXPATH2 = clone->FindObjects("//Object[@id='ChildObject2']");
+    if (findTest.size() == 1 && findTestXPATH.size() == 1 && findTestXPATH2.size() == 1 &&
+        findTestXPATH[0]->GetROMGUID() == findTest[0]->GetROMGUID() &&
+        findTestXPATH2[0]->GetROMObjectID() == L"ChildObject2")
+        Log("Clone OK");
+    else
+        Log("FAILURE cloning");
+
+
     Log("Setting attrs to test eval, inputAttr1 = A, inputAttr2 = 1");
     rootNode.SetAttribute(L"inputAttr1", L"A");
     rootNode.SetAttribute(L"inputAttr2", L"1");
@@ -384,7 +397,7 @@ int runTest(int thread_id)
     Log("Testing complete...press any key to exit");
 }
 
-const int NUM_THREADS = 6;
+const int NUM_THREADS = 1;
 int main(int argc, char* argv[])
 {
     try

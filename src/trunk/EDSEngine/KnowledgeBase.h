@@ -18,7 +18,6 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #pragma once
 #include "stdafx.h"
 #include <string>
-#include <mutex>
 
 #include "RuleTable.h"
 #include "TableSet.h"
@@ -112,8 +111,6 @@ namespace EDS
 		vector<string> GetInputDependencies(string tableName);
 		vector<string> GetOutputAttrs(string tableName);
 		vector<string> GetAllPossibleOutputs(string tableName, string outputName);
-
-		static mutex RuleLoadingMutex;
 
 
 	private:
