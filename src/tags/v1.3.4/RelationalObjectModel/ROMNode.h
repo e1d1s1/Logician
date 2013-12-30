@@ -42,8 +42,7 @@ namespace ROM
 		void CreateROMNode(string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
 		void				SetTableDebugHandler(DebugHandler debugger);
 		void				GenerateTableDebugMessages(bool bGenerate);
-		wstring				GetTableDebugMessages();
-		
+		wstring				GetTableDebugMessages();		
 
 		//relational functions
 		ROMNode*			GetRoot();		
@@ -141,6 +140,9 @@ namespace ROM
 		string				EvaluateXPATH(string xpath) {return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath), m_guid));}
 
 	private:
+		ROMNode(const ROMNode&);                 // Prevent copy-construction
+		ROMNode& operator=(const ROMNode&);      // Prevent assignment
+
 		vector<wstring>			LoadInputs(wstring evalTable);
 		vector<wstring>			LoadOutputs(wstring evalTable);
 		vector<wstring>			GetPossibleValues(wstring evalTable, wstring outputName);

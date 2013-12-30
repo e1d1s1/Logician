@@ -257,17 +257,13 @@ ROMNode* ROMNode::Clone()
 	ROMNode* newNode = new ROMNode(m_id);
 	newNode->m_attrs = m_attrs;
 	newNode->m_nodeValues = m_nodeValues;
-	newNode->m_bChanged = false;
-	for (size_t i = m_children.size() - 1; i >= 0; i--)
+	for (size_t i = 0; i < m_children.size(); i++)
 	{
-		if (i < m_children.size())
+		ROMNode* node = m_children[i];
+		if (node)
 		{
-			ROMNode* node = m_children[i];
-			if (node)
-			{
-				ROMNode* newChild = node->Clone();
-				newNode->AddChildROMObject(newChild);
-			}
+			ROMNode* newChild = node->Clone();
+			newNode->AddChildROMObject(newChild);
 		}
 	}
 	return newNode;

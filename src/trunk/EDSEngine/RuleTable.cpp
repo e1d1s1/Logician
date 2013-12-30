@@ -23,6 +23,7 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #include <list>
 #include <string>
 #include <thread>
+#include <memory>
 #include "utilities.h"
 
 #define THREAD_THRESHOLD 20 //at least this many rules to trigger threading

@@ -420,6 +420,22 @@
 	            write_result("Dump current xml state");
 	            var result = rootNode.SaveXML(true);
 	            write_result(result);
+				
+				write_result("Testing clone");
+				var clone = rootNode.Clone();
+	            var findTest = clone.FindAllObjectsByID("ChildObject", true);
+	            var findTestXPATH = clone.FindObjects("//Object[@id='ChildObject']");
+	            var findTestXPATH2 = clone.FindObjects("//Object[@id='ChildObject2']");
+                if (ArraySize(findTest) == 1 && ArraySize(findTestXPATH) == 1 && ArraySize(findTestXPATH2) == 1 &&
+                    findTest[0].GetROMGUID() == findTestXPATH[0].GetROMGUID() &&
+                    findTestXPATH2[0].GetROMObjectID() == "ChildObject2")
+                    write_result("Clone OK");
+                else
+                    write_result("FAILURE cloning/obtaining child object"); 
+
+	            write_result("Dump clone xml state");
+	            var result = clone.SaveXML(true);
+	            write_result(result);
 
 	            write_result("Setting attrs to test eval, inputAttr1 = A, inputAttr2 = 1");
 	            rootNode.SetAttribute("inputAttr1", "A");

@@ -154,7 +154,7 @@ HRESULT __stdcall ScriptHost::Run(WCHAR *procname, DISPPARAMS *args, VARIANT *re
 	EXCEPINFO info;
 	UINT argErr;
 	args->rgdispidNamedArgs = &dispid;
-	HRESULT hr = disp->Invoke(dispid, IID_NULL, nullptr, DISPATCH_METHOD, args, results, &info, &argErr);
+	HRESULT hr = disp->Invoke(dispid, IID_NULL, NULL, DISPATCH_METHOD, args, results, &info, &argErr);
 	return hr;
 }
 
@@ -166,7 +166,7 @@ HRESULT __stdcall ScriptHost::AddScript(const WCHAR *source)
         return E_POINTER;
 
 	VARIANT vRes;
-	HRESULT hr = _activeScriptParse->ParseScriptText(source, nullptr, nullptr, nullptr, 0, 0, nullptr, &vRes, nullptr);
+	HRESULT hr = _activeScriptParse->ParseScriptText(source, nullptr, nullptr, nullptr, 0, 0, NULL, &vRes, nullptr);
 	return hr;
 }
 #endif

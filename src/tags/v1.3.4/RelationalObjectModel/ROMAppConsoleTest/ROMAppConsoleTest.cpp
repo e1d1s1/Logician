@@ -118,6 +118,8 @@ int main(int argc, char* argv[])
 		ROMNode rootNode(L"TestApplication");
 		Log("Root ROMNode created");		
 
+		//ROMNode copyTest = rootNode;
+
 		Log("Setting some attributes");
 		rootNode.SetAttribute(L"inputAttr1", L"some value of test1");
 		rootNode.SetAttribute(L"inputAttr2", L"some value of test2");
@@ -145,6 +147,25 @@ int main(int argc, char* argv[])
 		wstring result = rootNode.SaveXML(true);
 		string s(result.begin(), result.end());
 		Log(s);
+
+		Log("Testing Cloning");
+		ROMNode* clone = rootNode.Clone();
+		findTest = clone->FindAllObjectsByID("ChildObject", true);
+		findTestXPATH = clone->FindObjects("//Object[@id='ChildObject']");
+		findTestXPATH2 = clone->FindObjects("//Object[@id='ChildObject2']");
+		if (findTest.size() == 1 && findTestXPATH.size() == 1 && findTestXPATH2.size() == 1 &&
+			findTestXPATH[0]->GetROMGUID() == findTest[0]->GetROMGUID() &&
+			findTestXPATH2[0]->GetROMObjectID() == L"ChildObject2")
+			Log("Clone OK");
+		else
+			Log("FAILURE cloning");
+
+		Log("Dump clone xml state");
+		result = clone->SaveXML(true);
+		string sClone(result.begin(), result.end());
+		Log(sClone);
+
+		delete clone;
 
 		Log("Setting attrs to test eval, inputAttr1 = A, inputAttr2 = 1");
 		rootNode.SetAttribute(L"inputAttr1", L"A");
