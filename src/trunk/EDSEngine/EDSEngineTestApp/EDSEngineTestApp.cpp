@@ -493,7 +493,7 @@ int runTest(int thread_id)
 
 	return 0;
 }
-const int NUM_THREADS = 6;
+const int NUM_THREADS = 1;
 int main()
 {
     try

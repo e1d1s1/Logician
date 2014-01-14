@@ -38,6 +38,8 @@ namespace ROM
 		ROMNode(){_init();}
 		ROMNode(wstring id) {CreateROMNode(id);}
 		ROMNode(string id) {CreateROMNode(id);}
+		ROMNode(const ROMNode&) = delete;             // Prevent copy-construction
+		ROMNode& operator=(const ROMNode&) = delete;  // Prevent assignment
 		void CreateROMNode(wstring id);
 		void CreateROMNode(string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
 		void				SetTableDebugHandler(DebugHandler debugger);

@@ -257,7 +257,6 @@ ROMNode* ROMNode::Clone()
 	ROMNode* newNode = new ROMNode(m_id);
 	newNode->m_attrs = m_attrs;
 	newNode->m_nodeValues = m_nodeValues;
-	newNode->m_bChanged = false;
 	for (ROMNode* node : m_children)
 	{
         ROMNode* newChild = node->Clone();

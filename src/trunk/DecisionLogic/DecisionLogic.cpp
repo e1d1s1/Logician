@@ -4,7 +4,7 @@
 // Author:      Eric D. Schmidt
 // Modified by:
 // Created:     07/01/2010
-// Copyright:   (c) 2009 - 2013 Eric D. Schmidt, DigiRule Solutions LLC
+// Copyright:   (c) 2009 - 2014 Eric D. Schmidt, DigiRule Solutions LLC
 // Licence:     GNU GPLv2
 /*
 	DecisionLogic is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 #include "folder.xpm"
 #include "folder_open.xpm"
 
-#define VERSION "1.3.3"
+#define VERSION "2.0.0"
 
 //Icon
 #if !defined(__WXMSW__) && !defined(__WXPM__)
@@ -63,7 +63,7 @@ wxPageSetupData *g_pageSetupData = (wxPageSetupData*) NULL;
 // the event tables connect the wxWidgets events with the functions (event
 // handlers) which process them. It can be also done at run-time, but for the
 // simple menu events like this the static method is much simpler.
-BEGIN_EVENT_TABLE(DecisionLogicFrame, wxFrame)
+BEGIN_EVENT_TABLE(DecisionLogicFrame, wxMDIParentFrame)
 	//MENUS/////////////////////////////////////////////////////////////////////////
     EVT_MENU(DecisionLogic_Quit, DecisionLogicFrame::OnQuit)
 	EVT_MENU(DecisionLogic_NewProject, DecisionLogicFrame::OnNewProject)
@@ -651,7 +651,7 @@ void DecisionLogicFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
     wxMessageBox(wxString::Format(
         _T("This is DecisionLogic v")
 		_T(VERSION)
-        _T(" running under %s.\nCoded by Eric D. Schmidt\n(c) 2008 - 2013 DigiRule Solutions LLC"),
+        _T(" running under %s.\nCoded by Eric D. Schmidt\n(c) 2008 - 2014 DigiRule Solutions LLC"),
         wxGetOsDescription().c_str()
      ),
      _T("About DecisionLogic"),

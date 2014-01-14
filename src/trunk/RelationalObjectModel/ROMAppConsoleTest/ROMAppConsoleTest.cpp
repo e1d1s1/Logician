@@ -6,51 +6,14 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <memory>
 #include "ROMNode.h"
 #include "LinearEngine.h"
 
 using namespace std;
 using namespace ROM;
 
-#ifdef WIN32
-#include <iostream>
-#include <windows.h>
-
-std::wostream& operator<< (std::wostream& o, const wchar_t * const s) throw(...)
-{
-	const UINT cp = CP_UTF8;
-	bool error = false;
-	if (s)
-	{
-		int bufferSize = WideCharToMultiByte(cp, 0, s, -1, NULL,          0, NULL, NULL);
-		char* m = new char[bufferSize];
-		//Remember the old console codepage.
-		UINT oldcp = GetConsoleOutputCP();
-		//Change it to what we want.
-		SetConsoleOutputCP (cp);
-		/*            */ WideCharToMultiByte(cp, 0, s, -1,    m, bufferSize, NULL, NULL);
-		if (o == std::wcout) fwprintf(stdout, L"%S", m);
-		else if (o == std::wcerr) fwprintf(stderr, L"%S", m);
-		else error = true;
-		//It would be nice to have this instead, but unfortunately it does not work.
-		//o << m;
-		//Revert to the old codepage.
-		SetConsoleOutputCP (oldcp);
-		delete[] m;
-	}
-	else
-	{
-		//If s == NULL we must not try to convert with WideCharToMultiByte or we will get junk.
-		//We go straight to fwprintf instead that prints "(null)" - We do not need to convert "(null)"
-		//because there are no Unicode characters in it ;)
-		if (o == std::wcout) fwprintf(stdout, L"%s", s);
-		else if (o == std::wcerr) fwprintf(stderr, L"%s", s);
-		else error = true;
-	}
-	if (error) throw "Not wcout or wcerr";
-	return o;
-}
-#else
+#ifndef WIN32
 #include <sys/time.h>
 #endif
 
@@ -157,6 +120,10 @@ int runTest(int thread_id)
     else
         Log("FAILURE cloning");
 
+	Log("Dump clone xml state");
+	result = clone->SaveXML(true);
+	string sClone(result.begin(), result.end());
+	Log(sClone);
 
     Log("Setting attrs to test eval, inputAttr1 = A, inputAttr2 = 1");
     rootNode.SetAttribute(L"inputAttr1", L"A");
@@ -395,6 +362,8 @@ int runTest(int thread_id)
     msg+="ms";
     Log(msg);
     Log("Testing complete...press any key to exit");
+
+	return 0;
 }
 
 const int NUM_THREADS = 1;
