@@ -46,63 +46,55 @@ Section "Visual C++ 2008 Runtime"
 	Delete /REBOOTOK "vcredist_x86.exe"
 SectionEnd
 
+Section "Visual C++ 2013 Runtime"
+	; VS2013 Redist
+	SetOutPath $TEMP
+	File "vcredist_x86.exe"
+	ExecWait '"vcredist_x86.exe" /q:a /c:"VCREDI~1.EXE /q:a /c:""msiexec /i vcredist.msi /qb!"" "'
+	Delete /REBOOTOK "vcredist_x86.exe"
+SectionEnd
+
 Section "Logician Suite"
 	; Set output path to the installation directory.
-	SetOutPath $INSTDIR\VC9
-	File "..\trunk\VC9\EDSEngine.lib"
-	File "..\trunk\VC9\EDSEngineNET.dll"
-	File "..\trunk\VC9\RelationalObjectModel.lib"
-	File "..\trunk\VC9\ROMNET.dll"
-	File "..\trunk\VC9\LogicianDebuggerWPF.dll"
-	File "..\trunk\VC9\WPFToolkit.dll"	
-	
-	SetOutPath $INSTDIR\VC10	
-	File "..\trunk\VC10\EDSEngine.lib"
-	File "..\trunk\VC10\EDSEngineNET.dll"
-	File "..\trunk\VC10\RelationalObjectModel.lib"
-	File "..\trunk\VC10\ROMNET.dll"
-	File "..\trunk\VC10\LogicianDebuggerWPF.dll"
-	File "..\trunk\VC10\WPFToolkit.dll"
-	
 	SetOutPath $INSTDIR\VC11
-	File "..\trunk\VC11\EDSEngine.lib"
-	File "..\trunk\VC11\EDSEngineNET.dll"
-	File "..\trunk\VC11\RelationalObjectModel.lib"
-	File "..\trunk\VC11\ROMNET.dll"
-	File "..\trunk\VC11\LogicianDebuggerWPF.dll"
-	File "..\trunk\VC11\WPFToolkit.dll"
+	File "..\trunk\VC12\EDSEngine.lib"
+	File "..\trunk\VC12\EDSEngineNET.dll"
+	File "..\trunk\VC12\RelationalObjectModel.lib"
+	File "..\trunk\VC12\ROMNET.dll"
+	File "..\trunk\VC12\LogicianDebuggerWPF.dll"
+	File "..\trunk\VC12\WPFToolkit.dll"
 	File "..\trunk\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll"
-	SetOutPath $INSTDIR\VC11\EDSEngineWinRT
-	File "..\trunk\VC11\EDSEngineWinRT\EDSEngineWinRT.winmd"
-	File "..\trunk\VC11\EDSEngineWinRT\EDSEngineWinRT.pri"
-	File "..\trunk\VC11\EDSEngineWinRT\EDSEngineWinRT.lib"
-	File "..\trunk\VC11\EDSEngineWinRT\EDSEngineWinRT.exp"
-	File "..\trunk\VC11\EDSEngineWinRT\EDSEngineWinRT.dll"
-	SetOutPath $INSTDIR\VC11\ROMWinRT
-	File "..\trunk\VC11\ROMWinRT\ROMWinRT.winmd"
-	File "..\trunk\VC11\ROMWinRT\ROMWinRT.pri"
-	File "..\trunk\VC11\ROMWinRT\ROMWinRT.lib"
-	File "..\trunk\VC11\ROMWinRT\ROMWinRT.exp"
-	File "..\trunk\VC11\ROMWinRT\ROMWinRT.dll"
-	SetOutPath $INSTDIR\VC11\x64
-	File "..\trunk\VC11\x64\EDSEngine.lib"
-	File "..\trunk\VC11\x64\EDSEngineNET.dll"
-	File "..\trunk\VC11\x64\RelationalObjectModel.lib"
-	File "..\trunk\VC11\x64\ROMNET.dll"
-	File "..\trunk\VC11\x64\LogicianDebuggerWPF.dll"
-	File "..\trunk\VC11\x64\WPFToolkit.dll"
-	SetOutPath $INSTDIR\VC11\x64\EDSEngineWinRT
-	File "..\trunk\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.winmd"
-	File "..\trunk\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.pri"
-	File "..\trunk\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.lib"
-	File "..\trunk\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.exp"
-	File "..\trunk\VC11\x64\EDSEngineWinRT\EDSEngineWinRT.dll"	
-	SetOutPath $INSTDIR\VC11\x64\ROMWinRT
-	File "..\trunk\VC11\x64\ROMWinRT\ROMWinRT.winmd"
-	File "..\trunk\VC11\x64\ROMWinRT\ROMWinRT.pri"
-	File "..\trunk\VC11\x64\ROMWinRT\ROMWinRT.lib"
-	File "..\trunk\VC11\x64\ROMWinRT\ROMWinRT.exp"
-	File "..\trunk\VC11\x64\ROMWinRT\ROMWinRT.dll"
+	SetOutPath $INSTDIR\VC12\EDSEngineWinRT
+	File "..\trunk\VC12\EDSEngineWinRT\EDSEngineWinRT.winmd"
+	File "..\trunk\VC12\EDSEngineWinRT\EDSEngineWinRT.pri"
+	File "..\trunk\VC12\EDSEngineWinRT\EDSEngineWinRT.lib"
+	File "..\trunk\VC12\EDSEngineWinRT\EDSEngineWinRT.exp"
+	File "..\trunk\VC12\EDSEngineWinRT\EDSEngineWinRT.dll"
+	SetOutPath $INSTDIR\VC12\ROMWinRT
+	File "..\trunk\VC12\ROMWinRT\ROMWinRT.winmd"
+	File "..\trunk\VC12\ROMWinRT\ROMWinRT.pri"
+	File "..\trunk\VC12\ROMWinRT\ROMWinRT.lib"
+	File "..\trunk\VC12\ROMWinRT\ROMWinRT.exp"
+	File "..\trunk\VC12\ROMWinRT\ROMWinRT.dll"
+	SetOutPath $INSTDIR\VC12\x64
+	File "..\trunk\VC12\x64\EDSEngine.lib"
+	File "..\trunk\VC12\x64\EDSEngineNET.dll"
+	File "..\trunk\VC12\x64\RelationalObjectModel.lib"
+	File "..\trunk\VC12\x64\ROMNET.dll"
+	File "..\trunk\VC12\x64\LogicianDebuggerWPF.dll"
+	File "..\trunk\VC12\x64\WPFToolkit.dll"
+	SetOutPath $INSTDIR\VC12\x64\EDSEngineWinRT
+	File "..\trunk\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.winmd"
+	File "..\trunk\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.pri"
+	File "..\trunk\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.lib"
+	File "..\trunk\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.exp"
+	File "..\trunk\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.dll"	
+	SetOutPath $INSTDIR\VC12\x64\ROMWinRT
+	File "..\trunk\VC12\x64\ROMWinRT\ROMWinRT.winmd"
+	File "..\trunk\VC12\x64\ROMWinRT\ROMWinRT.pri"
+	File "..\trunk\VC12\x64\ROMWinRT\ROMWinRT.lib"
+	File "..\trunk\VC12\x64\ROMWinRT\ROMWinRT.exp"
+	File "..\trunk\VC12\x64\ROMWinRT\ROMWinRT.dll"
 
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic
@@ -164,11 +156,17 @@ Section "un.LogicianSuite"
 
 	; Remove files and uninstaller
 	Delete $INSTDIR\DecisionLogic\*.*
+	Delete $INSTDIR\VC12\x64\EDSEngineWinRT\*.*
+	Delete $INSTDIR\VC12\x64\ROMWinRT\*.*
+	Delete $INSTDIR\VC12\x64\*.*
+	Delete $INSTDIR\VC12\EDSEngineWinRT\*.*
+	Delete $INSTDIR\VC12\ROMWinRT\*.*
 	Delete $INSTDIR\VC11\x64\EDSEngineWinRT\*.*
 	Delete $INSTDIR\VC11\x64\ROMWinRT\*.*
 	Delete $INSTDIR\VC11\x64\*.*
 	Delete $INSTDIR\VC11\EDSEngineWinRT\*.*
 	Delete $INSTDIR\VC11\ROMWinRT\*.*
+	Delete $INSTDIR\VC12\*.*
 	Delete $INSTDIR\VC11\*.*
 	Delete $INSTDIR\VC10\*.*
 	Delete $INSTDIR\VC9\*.*
@@ -184,11 +182,11 @@ Section "un.LogicianSuite"
 	RMDir "$INSTDIR\DecisionLogic"
 	RMDir "$INSTDIR\VC9"
 	RMDir "$INSTDIR\VC10"
-	RMDir "$INSTDIR\VC11\x64\EDSEngineWinRT"
-	RMDir "$INSTDIR\VC11\x64\ROMWinRT"
-	RMDir "$INSTDIR\VC11\x64"
-	RMDir "$INSTDIR\VC11\EDSEngineWinRT"
-	RMDir "$INSTDIR\VC11\ROMWinRT"
+	RMDir "$INSTDIR\VC12\x64\EDSEngineWinRT"
+	RMDir "$INSTDIR\VC12\x64\ROMWinRT"
+	RMDir "$INSTDIR\VC12\x64"
+	RMDir "$INSTDIR\VC12\EDSEngineWinRT"
+	RMDir "$INSTDIR\VC12\ROMWinRT"
 	RMDir "$INSTDIR\VC11"
 	RMDir "$INSTDIR\ajaxslt"
 	RMDir "$INSTDIR"
