@@ -88,14 +88,15 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>..\EDSEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>runtimeobject.lib;EDSEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>EDSEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>..\EDSEngine\Debug MSXML;$(BOOST_ROOT)\lib</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
+      <AdditionalLibraryDirectories>..\EDSEngine\Debug MSXML;$(BOOST_ROOT)\lib;$(VCInstallDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -112,7 +113,7 @@
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>runtimeobject.lib;EDSEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>..\EDSEngine\Release MSXML;$(BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\Release MSXML;$(BOOST_ROOT)\lib;$(VCInstallDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -129,7 +130,7 @@
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>runtimeobject.lib;;EDSEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>..\EDSEngine\x64\Debug MSXML;$(BOOST_ROOT64)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\x64\Debug MSXML;$(BOOST_ROOT64)\lib;$(VCInstallDir)\lib\amd64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,7 +147,7 @@
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>runtimeobject.lib;EDSEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>..\EDSEngine\x64\Release MSXML;$(BOOST_ROOT64)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\x64\Release MSXML;$(BOOST_ROOT64)\lib;$(VCInstallDir)\lib\amd64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
