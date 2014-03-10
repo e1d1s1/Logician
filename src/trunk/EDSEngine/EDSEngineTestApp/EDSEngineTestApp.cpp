@@ -83,7 +83,7 @@ void pause()
 
 vector<TestResult> testResults;
 
-void DebugMessage(wstring msg)
+void DebugMessage(const wstring& msg)
 {
 	Log(L"DEBUGGER: " + msg, -1);
 }
@@ -91,6 +91,7 @@ void DebugMessage(wstring msg)
 int runTest(int thread_id)
 //int main(int argc, char* argv[])
 {
+	map<wstring, wstring> state;
 	//Loading
 	TestResult res;
 	Log("Loading Test project", thread_id);
@@ -110,10 +111,19 @@ int runTest(int thread_id)
 		return 0;
 	}
 
-	//push-style callback debugging
-	knowledge.SetDebugHandler(DebugMessage);
-	//pull-style debugging
-	//knowledge.GenerateDebugMessages(true);
+	//debugging
+	knowledge.DebugHandlerPtr = DebugMessage;
+
+	knowledge.InputValueGetterPtr = [&](const wstring& attrName)
+	{
+		wstring retval;
+		auto it = state.find(attrName);
+		if (it != end(state))
+		{
+			retval = it->second;
+		}
+		return retval;
+	};
 
 	string s = stringifyDouble(knowledge.TableCount());
 	Log("# of Tables loaded: " + s, thread_id);
@@ -214,7 +224,7 @@ int runTest(int thread_id)
 	//testing table evaluation
 	res.Reset();
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', get first only", thread_id);
-	knowledge.SetInputValue(L"inputAttr1", L"C");
+	state[L"inputAttr1"] = L"C";
 	map<wstring, vector<wstring> > results2 = knowledge.EvaluateTable(tableName, false);
 	if (results2.size() == 2 && results2[L"outputAttr1"].size() == 1 &&
 		results2[L"outputAttr1"].at(0) == L"2")
@@ -230,7 +240,7 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', get all", thread_id);
-	knowledge.SetInputValue(L"inputAttr1", L"C");
+	state[L"inputAttr1"] = L"C";
 	map<wstring, vector<wstring> > results = knowledge.EvaluateTable(tableName, bIsGetAll);
 	if (results.size() == 2 && results[L"outputAttr1"].size() == 3 &&
 		results[L"outputAttr1"].at(0) == L"2" &&
@@ -249,8 +259,8 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 10, get all", thread_id);
-	knowledge.SetInputValue(L"inputAttr1", L"C");
-	knowledge.SetInputValue(L"inputAttr2", L"10");
+	state[L"inputAttr1"] = L"C";
+	state[L"inputAttr2"] = L"10";
 	map<wstring, vector<wstring> > results3 = knowledge.EvaluateTable(tableName, bIsGetAll);
 	if (results3.size() == 2 && results3[L"outputAttr1"].size() == 4 &&
 		results3[L"outputAttr1"].at(0) == L"2" &&
@@ -271,9 +281,9 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing evaluation (Javascript) of testtable1 with inputAttr1 = 'C', inputAttr2 = 78, get all, outsideAttr1 = 28", thread_id);
-	knowledge.SetInputValue(L"inputAttr1", L"C");
-	knowledge.SetInputValue(L"inputAttr2", L"78");
-	knowledge.SetInputValue(L"outsideAttr1", L"28");
+	state[L"inputAttr1"] = L"C";
+	state[L"inputAttr2"] = L"78";
+	state[L"outsideAttr1"] = L"28";
 	map<wstring, vector<wstring> > results4 = knowledge.EvaluateTable(tableName, bIsGetAll);
 	if (results4.size() == 2 && results4[L"outputAttr1"].size() == 5 &&
 		results4[L"outputAttr1"].at(0) == L"2" &&
@@ -296,12 +306,13 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing evaluation (Javascript) with state parameter on testtable1 with inputAttr1 = 'TestParameterJS' and inputAttr2 = 'TestParameterJS'", thread_id);
-	knowledge.SetInputValue(L"inputAttr1", L"TestParameterJS");
-	knowledge.SetInputValue(L"inputAttr2", L"TestParameterJS");
-	vector<wstring> results9 = knowledge.EvaluateTableWithParam(tableName, (wstring)L"outputAttr1", (wstring)L"PassedValue");
-	wstring retParam = knowledge.GetEvalParameter();
+	state[L"inputAttr1"] = L"TestParameterJS";
+	state[L"inputAttr2"] = L"TestParameterJS";
+	wstring paramValue = L"PassedValue";
+	wstring origValue = paramValue;
+	vector<wstring> results9 = knowledge.EvaluateTableWithParam(tableName, (wstring)L"outputAttr1", paramValue);
 	if (results9.size() == 4 && results9.at(3) == L"eval ok" &&
-		retParam == L"PassedValue modified")
+		paramValue == L"PassedValue modified")
 	{
 		Log("Javascript state parameter working", thread_id);
 		res.SetResult(true, "", thread_id);
@@ -313,8 +324,8 @@ int runTest(int thread_id)
 #ifndef NOPYTHON
 	res.Reset();
 	Log("testing evaluation (Python) with state parameter on testtable1 with inputAttr1 = 'TestParameterPY' and inputAttr2 = 'TestParameterPY'");
-	knowledge.SetInputValue(L"inputAttr1", L"TestParameterPY");
-	knowledge.SetInputValue(L"inputAttr2", L"TestParameterPY");
+	state[L"inputAttr1"] = L"TestParameterPY";
+	state[L"inputAttr2"] = L"TestParameterPY";
 	vector<wstring> results10 = knowledge.EvaluateTableWithParam(tableName, (wstring)L"outputAttr1", (wstring)L"PassedValue");
 	retParam = knowledge.GetEvalParameter();
 	if (results10.size() == 4 && results10.at(3) == L"eval ok" &&
@@ -331,9 +342,9 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing evaluation (Python) of testtable1 with inputAttr1 = 'C', inputAttr2 = 58, get all, outsideAttr1 = 28", thread_id);
-	knowledge.SetInputValue(L"inputAttr1", L"C");
-	knowledge.SetInputValue(L"inputAttr2", L"58");
-	knowledge.SetInputValue(L"outsideAttr1", L"28");
+	state[L"inputAttr1"] = L"C";
+	state[L"inputAttr2"] = L"58";
+	state[L"outsideAttr1"] = L"28";
 	results4 = knowledge.EvaluateTable(tableName, true);
 	if (results4.size() == 2 && results4[L"outputAttr1"].size() == 5 &&
 		results4[L"outputAttr1"].at(0) == L"2" &&
@@ -356,9 +367,9 @@ int runTest(int thread_id)
 #endif
 
 	res.Reset();
-	knowledge.SetInputValue(L"inputAttr1", L"C");
-	knowledge.SetInputValue(L"inputAttr2", L"58");
-	knowledge.SetInputValue(L"outsideAttr1", L"28");
+	state[L"inputAttr1"] = L"C";
+	state[L"inputAttr2"] = L"58";
+	state[L"outsideAttr1"] = L"28";
 	Log("testing table chaining", thread_id);
 	vector<wstring> result5 = knowledge.EvaluateTable(L"testtable2", L"out1", true);
 	if (result5.size() == 5 &&
@@ -386,7 +397,7 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing input get()", thread_id);
-	knowledge.SetInputValue(L"someAttr", L"3");
+	state[L"someAttr"] = L"3";
 	vector<wstring> result6 = knowledge.EvaluateTable(L"testtable3", L"outputAttr1", true);
 	if (result6.size() == 1 && result6.at(0) == L"inputAttr2: 58 is greater than someAttr: 3")
 	{
@@ -400,8 +411,8 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing NULL conditions", thread_id);
-	knowledge.SetInputValue(L"inputAttr1", L"");
-	knowledge.SetInputValue(L"inputAttr2", L"");
+	state[L"inputAttr1"] = L"";
+	state[L"inputAttr2"] = L"";
 	vector<wstring> result7 = knowledge.EvaluateTable(L"testtable4", L"outputAttr1", true);
 	if (result7.size() == 4 && result7.at(2) == L"both attrs are NULL")
 	{
@@ -416,8 +427,8 @@ int runTest(int thread_id)
 		res.SetResult(false, "Did not get proper eval result on NULL test", thread_id);
 	}
 
-	knowledge.SetInputValue(L"inputAttr1", L"blah");
-	knowledge.SetInputValue(L"c", L"");
+	state[L"inputAttr1"] = L"blah";
+	state[L"c"] = L"";
 	result7 = knowledge.EvaluateTable(L"testtable4", L"outputAttr1", true);
 	if (result7.size() == 2 && result7.at(0) == L"inputAttr2 is NULL")
 	{
@@ -432,7 +443,7 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing exclusing evaluation", thread_id);
-	knowledge.SetInputValue(L"inputAttr1", L"A");
+	state[L"inputAttr1"] = L"A";
 	vector<wstring> result8 = knowledge.EvaluateTable(L"exclusion", L"outputAttr1", true);
 	if (result8.size() == 4 && result8.at(0) == L"not X or Y" &&
 		result8.at(1) == L"not X" &&
@@ -451,7 +462,7 @@ int runTest(int thread_id)
 	}
 
 	Log("allowing a match: Y", thread_id);
-	knowledge.SetInputValue(L"inputAttr1", L"Y");
+	state[L"inputAttr1"] = L"Y";
 	result8 = knowledge.EvaluateTable(L"exclusion", L"outputAttr1", true);
 	if (result8.size() == 4 && result8.at(0) == L"is X or Y" &&
 		result8.at(1) == L"not X" &&
@@ -479,7 +490,7 @@ int runTest(int thread_id)
 		res.SetResult(false, "translation failed", thread_id);
 
 	Log("testing reverse evaluation of ReverseTest table", thread_id);
-	knowledge.SetInputValue(L"OutColor", L"green");
+	state[L"OutColor"] = L"green";
 	map<wstring, vector<wstring> > result9 = knowledge.ReverseEvaluateTable(L"ReverseTest", true);
 	if (result9.size() == 2 && result9[L"Color1"].at(0) == L"blue" &&
 		result9[L"Color2"].at(0) == L"yellow")

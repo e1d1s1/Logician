@@ -20,24 +20,8 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #include <vector>
 #include <string>
 #include <map>
-/*
-This file is part of the EDSEngine Library.
-Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
-
-    EDSEngine is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
-
-    EDSEngine is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with EDSEngine.  If not, see <http://www.gnu.org/licenses/>.
-*/
 #include <set>
+#include <functional>
 
 #include "Bimapper.h"
 #include "RuleCell.h"
@@ -54,10 +38,6 @@ public:
 
 	vector<wstring> EvaluateTable(wstring outputAttr, bool bGetAll = true, bool bForward = true); //results come back as the full strings
 	map<wstring, vector<wstring> > EvaluateTable(bool bGetAll = true, bool bForward = true);
-	void SetInputValues(MAPWSTRUINT values);
-	void SetInputValue(wstring name, wstring value);
-	void SetInvalidAttrs();
-	void ResetTable();
 	bool HasChain() {return bHasChain;}
 	bool HasJS() {return bHasJavascript;}
 	bool HasPython() {return bHasPython;}
@@ -84,13 +64,14 @@ public:
 	void SetThreadCount(unsigned short threads) { m_Threads = threads; }
 
 	wstring DebugMessage;
+	function<wstring(const wstring&)> InputValueGetter;
 
 private:
-	void DebugEval(wstring outputAttr, vector<size_t> inputValues, map<size_t, set<wstring> > solutions);
-    vector<bool> _runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<size_t>* values);
-    bool _runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<size_t>* values, vector<bool>* colResults);
+	void DebugEval(const wstring& outputAttr, const vector<CToken>& inputValues, const map<size_t, set<wstring>>& solutions);
+    vector<bool> _runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values);
+    bool _runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, vector<bool>& colResults);
+	void _init();
 
-	MAPWSTRUINT m_InputAttrsValues;
 	vector<pair<wstring, vector<CRuleCell> > > m_InputAttrsTests; //the test table, input rows
 	vector<wstring> m_FormulaInputs;
 	vector<pair<wstring, vector<CRuleCell> > > m_OutputAttrsValues; //output rows
@@ -101,7 +82,6 @@ private:
 	bool bHasPython;
 	bool bHasJavascript;
 	bool bGetAll;
-	bool bNullSet;
 	bool m_DEBUGGING;
 	unsigned short m_Threads;
 	bool m_ThreadingEnabled;

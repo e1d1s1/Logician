@@ -88,43 +88,23 @@ CKnowledgeBase::~CKnowledgeBase(void)
 CKnowledgeBase::CKnowledgeBase()
 {
 	m_DEBUGGING_MSGS = false;
-	m_bGenerateMsg = false;
 	m_DEBUGGING_CON = L"localhost:11000";
 	m_IsOpen = false;
 	mapBaseIDtoTranslations.clear();
 	iRecursingDepth = 0;
-	m_DebugHandlerPtr = nullptr;
+	DebugHandlerPtr = nullptr;
+	InputValueGetterPtr = nullptr;
 #ifdef WIN32
 	HRESULT hr = CoInitialize(nullptr);
 #endif
 }
 
-void CKnowledgeBase::SetDebugHandler(DebugHandler debugger)
-{
-	m_DebugHandlerPtr = debugger;
-}
-
-void CKnowledgeBase::GenerateDebugMessages(bool bGenerate)
-{
-	m_DEBUGGING_MSGS = bGenerate;
-	m_bGenerateMsg = bGenerate;
-	if (!m_bGenerateMsg)
-		m_LastDebugMessage.clear();
-}
-
-wstring CKnowledgeBase::GetDebugMessages()
-{
-	wstring res = m_LastDebugMessage;
-	m_LastDebugMessage.clear();
-	return res;
-}
-
 wstring CKnowledgeBase::DeLocalize(wstring localeValue)
 {
 	wstring retval = localeValue;
-	for (MAPUINTMAP::iterator itAllIndexes = mapBaseIDtoTranslations.begin(); itAllIndexes != mapBaseIDtoTranslations.end(); itAllIndexes++)
+	for (unordered_map<size_t, std::unordered_map<wstring, wstring> >::iterator itAllIndexes = mapBaseIDtoTranslations.begin(); itAllIndexes != mapBaseIDtoTranslations.end(); itAllIndexes++)
 	{
-		for (MAPWSTRS::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
+		for (unordered_map<wstring, wstring>::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
 		{
 			if (itTranslations->second == localeValue)
 			{
@@ -144,9 +124,9 @@ wstring CKnowledgeBase::Translate(wstring source, wstring sourceLocale, wstring 
 		id = m_stringsMap.GetIDByString(source);
 	else
 	{
-		for (MAPUINTMAP::iterator itAllIndexes = mapBaseIDtoTranslations.begin(); itAllIndexes!= mapBaseIDtoTranslations.end(); itAllIndexes++)
+		for (unordered_map<size_t, std::unordered_map<wstring, wstring> >::iterator itAllIndexes = mapBaseIDtoTranslations.begin(); itAllIndexes!= mapBaseIDtoTranslations.end(); itAllIndexes++)
 		{
-			for (MAPWSTRS::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
+			for (unordered_map<wstring, wstring>::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
 			{
 				if (itTranslations->first == sourceLocale && itTranslations->second == source)
 				{
@@ -161,10 +141,10 @@ wstring CKnowledgeBase::Translate(wstring source, wstring sourceLocale, wstring 
 
 	if (id != INVALID_STRING)
 	{
-		MAPUINTMAP::iterator itAllIndexes = mapBaseIDtoTranslations.find(id);
+		unordered_map<size_t, std::unordered_map<wstring, wstring> >::iterator itAllIndexes = mapBaseIDtoTranslations.find(id);
 		if (itAllIndexes != mapBaseIDtoTranslations.end())
 		{
-			for (MAPWSTRS::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
+			for (unordered_map<wstring, wstring>::iterator itTranslations = itAllIndexes->second.begin(); itTranslations != itAllIndexes->second.end(); itTranslations++)
 			{
 				if (itTranslations->first == destLocale)
 				{
@@ -175,16 +155,6 @@ wstring CKnowledgeBase::Translate(wstring source, wstring sourceLocale, wstring 
 		}
 	}
 	return retval;
-}
-
-void CKnowledgeBase::ResetTable(wstring tableName)
-{
-	m_stringsMap.ClearUserStrings();
-	iRecursingDepth = 0;
-
-	CRuleTable *table = m_TableSet.GetTable(tableName);
-	if (table != nullptr)
-		table->ResetTable();
 }
 
 vector<wstring> CKnowledgeBase::GetAllPossibleOutputs(wstring tableName, wstring outputName)
@@ -217,15 +187,17 @@ bool CKnowledgeBase::TableIsGetAll(wstring tableName)
 //public functions
 vector<wstring> CKnowledgeBase::EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll)
 {
-	return EvaluateTableWithParam(tableName, outputAttr, L"", bGetAll);
+	wstring param = L"";
+	return EvaluateTableWithParam(tableName, outputAttr, param, bGetAll);
 }
 
 map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTable(wstring tableName, bool bGetAll)
 {
-	return EvaluateTableWithParam(tableName, L"", bGetAll);
+	wstring param = L"";
+	return EvaluateTableWithParam(tableName, param, bGetAll);
 }
 
-vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring outputAttr, std::wstring param, bool bGetAll)
+vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring outputAttr, std::wstring& param, bool bGetAll)
 {
 	vector<wstring> retval;
 	try
@@ -235,10 +207,6 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 		if (table == nullptr)
 			return retval;
 
-		if (iRecursingDepth == 0)
-		{
-			m_StateParameter = param;
-		}
 		iRecursingDepth++;
 
 		if (table == nullptr)
@@ -246,7 +214,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 
 		table->EnbleDebugging(DebugThisTable(tableName));
 
-		table->SetInputValues(m_GlobalInputAttrsValues);
+		table->InputValueGetter = InputValueGetterPtr;
 
 		vector<wstring> results = table->EvaluateTable(outputAttr, bGetAll);
 		//check for existance of table chain
@@ -337,7 +305,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 							codeBody += L"\n";
 						}
 						string JSCode = "function myfunc(){\n" + WStrToMBCStr(codeBody) + "}\n";
-						JSCode += "var param = \"" + WStrToMBCStr(m_StateParameter) + "\";\n";
+						JSCode += "var param = \"" + WStrToMBCStr(param) + "\";\n";
 						JSCode += "function getparam(){return param;}\n";
 						JSCode += WStrToMBCStr(m_jsCode);
 						#ifdef _MSC_VER
@@ -369,7 +337,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 									activeScriptHost->Run(L"myfunc", &args, &vRes);
 									activeScriptHost->Run(L"getparam", &args, &vStateParam);
 									val = VariantToWStr(vRes);
-									m_StateParameter = VariantToWStr(vStateParam);
+									param = VariantToWStr(vStateParam);
 									delete pVariant;
 								}
 								if(activeScriptHost)
@@ -556,6 +524,10 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 
 		retval = results;
 	}
+	catch (exception& except)
+	{
+		ReportError(except.what());
+	}
 	catch (...)
 	{
 		ReportError("CKnowledgeBase::EvaluateTableWithParam\nCheck your table name.");
@@ -583,8 +555,8 @@ vector<wstring> CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wstring 
 		if (table != nullptr)
 		{
 			table->EnbleDebugging(DebugThisTable(tableName));
-			table->SetInputValues(m_GlobalInputAttrsValues);
-			retval = table->EvaluateTable(inputAttr, bGetAll, false);
+			table->InputValueGetter = InputValueGetterPtr;
+			retval = table->EvaluateTable(inputAttr, bGetAll, false);		
 		}
 	}
 	catch (...)
@@ -604,7 +576,7 @@ map<wstring, vector<wstring> > CKnowledgeBase::ReverseEvaluateTable(wstring tabl
 		if (table == nullptr)
 			return retval;
 		table->EnbleDebugging(DebugThisTable(tableName));
-		table->SetInputValues(m_GlobalInputAttrsValues);
+		table->InputValueGetter = InputValueGetterPtr;
 		vector<pair<wstring, vector<CRuleCell> > > outputCollection = table->GetInputAttrsTests();
 		//for all the outputs get the results
 		for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = outputCollection.begin(); itOut != outputCollection.end(); itOut++)
@@ -635,26 +607,21 @@ wstring CKnowledgeBase::XMLSafe(wstring str)
 void CKnowledgeBase::SendToDebugServer(wstring msg)
 {
 	try
-	{
-		if (m_bGenerateMsg)
-			m_LastDebugMessage += msg + L"\n";
-		else
+	{		
+		if (DebugHandlerPtr)
 		{
-			if (m_DebugHandlerPtr)
-			{
-				(*m_DebugHandlerPtr)(msg);
-			}
-#ifndef DISABLE_DECISIONLOGIC_INTEGRATION
-			boost::asio::io_service io_service;
-			tcp::resolver resolver(io_service);
-			vector<string> con = EDSUTIL::Split(EDSUTIL::ToASCIIString(m_DEBUGGING_CON), ":");
-			tcp::resolver::query query(tcp::v4(), con[0], con[1]);
-			tcp::resolver::iterator iterator = resolver.resolve(query);
-			tcp::socket sock(io_service);
-			sock.connect(*iterator);
-			boost::asio::write(sock, boost::asio::buffer(msg.c_str(), msg.length()*sizeof(wchar_t)));
-#endif
+			DebugHandlerPtr(msg);
 		}
+#ifndef DISABLE_DECISIONLOGIC_INTEGRATION
+		boost::asio::io_service io_service;
+		tcp::resolver resolver(io_service);
+		vector<string> con = EDSUTIL::Split(EDSUTIL::ToASCIIString(m_DEBUGGING_CON), ":");
+		tcp::resolver::query query(tcp::v4(), con[0], con[1]);
+		tcp::resolver::iterator iterator = resolver.resolve(query);
+		tcp::socket sock(io_service);
+		sock.connect(*iterator);
+		boost::asio::write(sock, boost::asio::buffer(msg.c_str(), msg.length()*sizeof(wchar_t)));
+#endif		
 	}
 	catch (std::exception& e)
 	{
@@ -682,7 +649,7 @@ bool CKnowledgeBase::DebugThisTable(wstring tableName)
 	return false;
 }
 
-map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring param, bool bGetAll)
+map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring& param, bool bGetAll)
 {
 	map<wstring, vector<wstring> > retval;
 
@@ -699,17 +666,6 @@ map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(std::wstri
 	}
 
 	return retval;
-}
-
-void CKnowledgeBase::SetInputValue(wstring name, wstring value)
-{
-	size_t id = m_stringsMap.GetIDByString(value);
-	if (id == INVALID_STRING) //wasnt in our existing list
-	{
-		//add a new tokenized string
-		id = m_stringsMap.AddUserString(value);
-	}
-	m_GlobalInputAttrsValues[name] = id;
 }
 
 //loading
@@ -859,17 +815,17 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 					pair<wstring, wstring> kvp;
 					kvp.first = langType;
 					kvp.second = langValue;
-					MAPUINTMAP::iterator itFind = mapBaseIDtoTranslations.find(id);
+					unordered_map<size_t, std::unordered_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
 					if (itFind != mapBaseIDtoTranslations.end())
 					{
-						MAPWSTRS *newTranlation = &itFind->second;
+						unordered_map<wstring, wstring> *newTranlation = &itFind->second;
 						newTranlation->insert(kvp);
 					}
 					else
 					{
-						MAPWSTRS newTranslation;
+						unordered_map<wstring, wstring> newTranslation;
 						newTranslation.insert(kvp);
-						pair<size_t, MAPWSTRS > idTrans_kvp;
+						pair<size_t, unordered_map<wstring, wstring> > idTrans_kvp;
 						idTrans_kvp.first = id;
 						idTrans_kvp.second = newTranslation;
 						mapBaseIDtoTranslations.insert(idTrans_kvp);
@@ -979,17 +935,17 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
                         pair<wstring, wstring> kvp;
                         kvp.first = langType;
                         kvp.second = langValue;
-                        MAPUINTMAP::iterator itFind = mapBaseIDtoTranslations.find(id);
+                        unordered_map<size_t, std::unordered_map<wstring, wstring> >::iterator itFind = mapBaseIDtoTranslations.find(id);
                         if (itFind != mapBaseIDtoTranslations.end())
                         {
-                            MAPWSTRS *newTranlation = &itFind->second;
+                            unordered_map<wstring, wstring> *newTranlation = &itFind->second;
                             newTranlation->insert(kvp);
                         }
                         else
                         {
-                            MAPWSTRS newTranslation;
+                            unordered_map<wstring, wstring> newTranslation;
                             newTranslation.insert(kvp);
-                            pair<size_t, MAPWSTRS > idTrans_kvp;
+                            pair<size_t, unordered_map<wstring, wstring> > idTrans_kvp;
                             idTrans_kvp.first = id;
                             idTrans_kvp.second = newTranslation;
                             mapBaseIDtoTranslations.insert(idTrans_kvp);
@@ -1021,13 +977,10 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 	bool retval = false;
 	m_IsOpen = false;
 	iRecursingDepth = 0;
-	m_DebugHandlerPtr = nullptr;
+	DebugHandlerPtr = nullptr;
+	InputValueGetterPtr = nullptr;
 	m_DEBUGGING_MSGS = false;
-	m_bGenerateMsg = false;
 	mapBaseIDtoTranslations.clear();
-	m_GlobalInputAttrsValues.clear();
-	m_GlobalInputAttrsValues[L""] = EMPTY_STRING;
-	m_GlobalInputAttrsValues[L"NULL"] = EXPLICIT_NULL_STRING;
 #ifdef WIN32
 	HRESULT hr = CoInitialize(nullptr);
 #endif
@@ -1169,49 +1122,52 @@ vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::GetTableRowFromXML(No
 			Node currentInputAttr = nodes->item[i];
 			NodeList values = currentInputAttr->selectNodes("Value");
 			Node attrNode = currentInputAttr->selectSingleNode("Attr");
-			wstring attrName = (wstring)(attrNode->Gettext());
-			currentAttrRow.first = attrName;
-			for (long j = 0; j < values->length; j++)
+			if (attrNode != nullptr)
 			{
-				Node currentValue = values->item[j];
-				Node idNode = currentValue->attributes->getNamedItem("id");
-				wstring wsIDs;
-				CRuleCell cell;
-
-				if (idNode != nullptr)
+				wstring attrName = (wstring)(attrNode->Gettext());
+				currentAttrRow.first = attrName;
+				for (long j = 0; j < values->length; j++)
 				{
-					wsIDs = VariantToWStr(idNode->nodeValue);
-					vector<wstring> cellValues = Split((wstring)(currentValue->Gettext()), L"|");
-					string sIDs(wsIDs.begin(), wsIDs.end()); //contains numerical so this ok
-					vector<string> ids = Split(sIDs, ",");
-					if (ids.size() != cellValues.size())
-						throw "Bad OR";
+					Node currentValue = values->item[j];
+					Node idNode = currentValue->attributes->getNamedItem("id");
+					wstring wsIDs;
+					CRuleCell cell;
 
-					for (long idCnt = 0; idCnt < ids.size(); idCnt++)
+					if (idNode != nullptr)
 					{
-						long id = atoull(ids[idCnt].c_str());
-						wstring value = cellValues[idCnt];
-						m_stringsMap.AddString(id, value);
-						cell.Values.push_back(id);
+						wsIDs = VariantToWStr(idNode->nodeValue);
+						vector<wstring> cellValues = Split((wstring)(currentValue->Gettext()), L"|");
+						string sIDs(wsIDs.begin(), wsIDs.end()); //contains numerical so this ok
+						vector<string> ids = Split(sIDs, ",");
+						if (ids.size() != cellValues.size())
+							throw "Bad OR";
+
+						for (auto idCnt = 0; idCnt < ids.size(); idCnt++)
+						{
+							long id = atoull(ids[idCnt].c_str());
+							wstring value = cellValues[idCnt];
+							m_stringsMap.AddString(id, value);
+							cell.Values.push_back(id);
+						}
 					}
-				}
 
-				Node operNode = nullptr;
-				operNode = currentValue->Getattributes()->getNamedItem("operation");
-				wstring wsOper = L"";
-				long lOper = 0;
-				if (operNode != nullptr)
-				{
-					wsOper = VariantToWStr(operNode->nodeValue);
-					string sOper(wsOper.begin(), wsOper.end());
-					lOper = atoull(sOper.c_str());
-				}
-				cell.Operation = lOper;
-				currentAttrRow.second.push_back(cell);
+					Node operNode = nullptr;
+					operNode = currentValue->Getattributes()->getNamedItem("operation");
+					wstring wsOper = L"";
+					long lOper = 0;
+					if (operNode != nullptr)
+					{
+						wsOper = VariantToWStr(operNode->nodeValue);
+						string sOper(wsOper.begin(), wsOper.end());
+						lOper = atoull(sOper.c_str());
+					}
+					cell.Operation = lOper;
+					currentAttrRow.second.push_back(cell);
 
+				}
+				if (attrName.length() > 0)
+					retval.push_back(currentAttrRow);
 			}
-			if (attrName.length() > 0)
-				retval.push_back(currentAttrRow);
 		}
 	#endif
 
@@ -1228,49 +1184,52 @@ vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::GetTableRowFromXML(No
 			xmlXPathObjectPtr xmlXPathObjValues = xmlXPathEvalExpression((xmlChar*)"Value", xpathCtx);
 			xmlXPathObjectPtr xmlXPathObjAttr = xmlXPathEvalExpression((xmlChar*)"Attr", xpathCtx);
 			NodeList values = xmlXPathObjValues->nodesetval;
-			Node attrNode = xmlXPathObjAttr->nodesetval->nodeTab[0];
-
-			wstring attrName = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(attrNode));
-			currentAttrRow.first = attrName;
-			if (values != nullptr)
+			if (xmlXPathObjAttr->nodesetval->nodeNr > 0)
 			{
-				for (int j = 0; j < values->nodeNr; j++)
+				Node attrNode = xmlXPathObjAttr->nodesetval->nodeTab[0];
+
+				wstring attrName = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(attrNode));
+				currentAttrRow.first = attrName;
+				if (values != nullptr)
 				{
-					Node currentValue = values->nodeTab[j];
-					wstring wsIDs = EDSUTIL::XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"id"));
-
-					CRuleCell cell;
-					if (wsIDs.length() > 0)
+					for (int j = 0; j < values->nodeNr; j++)
 					{
-						vector<wstring> cellValues = Split(EDSUTIL::XMLStrToWStr(xmlNodeGetContent(currentValue)), L"|");
-						string sIDs(wsIDs.begin(), wsIDs.end()); //contains numerical so this ok
-						vector<string> ids = Split(sIDs, ",");
-						if (ids.size() != cellValues.size())
-							throw "Bad OR";
+						Node currentValue = values->nodeTab[j];
+						wstring wsIDs = EDSUTIL::XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"id"));
 
-						for (size_t i = 0; i < ids.size(); i++)
+						CRuleCell cell;
+						if (wsIDs.length() > 0)
 						{
-							size_t id = atoull(ids[i].c_str());
-							wstring value = cellValues[i];
-							m_stringsMap.AddString(id, value);
-							cell.Values.push_back(id);
+							vector<wstring> cellValues = Split(EDSUTIL::XMLStrToWStr(xmlNodeGetContent(currentValue)), L"|");
+							string sIDs(wsIDs.begin(), wsIDs.end()); //contains numerical so this ok
+							vector<string> ids = Split(sIDs, ",");
+							if (ids.size() != cellValues.size())
+								throw "Bad OR";
+
+							for (size_t i = 0; i < ids.size(); i++)
+							{
+								size_t id = atoull(ids[i].c_str());
+								wstring value = cellValues[i];
+								m_stringsMap.AddString(id, value);
+								cell.Values.push_back(id);
+							}
 						}
+
+						wstring wsOper = EDSUTIL::XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"operation"));
+						long lOper = 0;
+						if (wsOper.length() > 0)
+						{
+							string sOper(wsOper.begin(), wsOper.end());
+							lOper = atoull(sOper.c_str());
+						}
+						cell.Operation = lOper;
+						currentAttrRow.second.push_back(cell);
 					}
 
-					wstring wsOper = EDSUTIL::XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"operation"));
-					long lOper = 0;
-					if (wsOper.length() > 0)
-					{
-						string sOper(wsOper.begin(), wsOper.end());
-						lOper = atoull(sOper.c_str());
-					}
-					cell.Operation = lOper;
-					currentAttrRow.second.push_back(cell);
 				}
-
+				if (attrName.length() > 0)
+					retval.push_back(currentAttrRow);
 			}
-			if (attrName.length() > 0)
-				retval.push_back(currentAttrRow);
 
 			xmlXPathFreeObject(xmlXPathObjValues);
 			xmlXPathFreeObject(xmlXPathObjAttr);
@@ -1278,6 +1237,10 @@ vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::GetTableRowFromXML(No
 		xmlXPathFreeContext(xpathCtx);
 	#endif
 
+	}
+	catch (exception& ex)
+	{
+		ReportError(ex.what());
 	}
 	catch(...)
 	{
@@ -1300,27 +1263,31 @@ bool CKnowledgeBase::TableIsGetAll(std::string tableName)
 
 vector<string> CKnowledgeBase::EvaluateTable(string tableName, string outputAttr, bool bGetAll)
 {
-	return EvaluateTableWithParam(tableName, outputAttr, "", bGetAll);
+	string param = "";
+	return EvaluateTableWithParam(tableName, outputAttr, param, bGetAll);
 }
 
 map<string, vector<string> > CKnowledgeBase::EvaluateTable(string tableName, bool bGetAll)
 {
-	return EvaluateTableWithParam(tableName, "", bGetAll);
+	string param = "";
+	return EvaluateTableWithParam(tableName, param, bGetAll);
 }
 
-vector<string> CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string outputAttr, std::string param, bool bGetAll)
+vector<string> CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string outputAttr, std::string& param, bool bGetAll)
 {
 	return ToMBCStringVector(EvaluateTableWithParam(MBCStrToWStr(tableName), MBCStrToWStr(outputAttr), MBCStrToWStr(param), bGetAll));
 }
 
-std::map<string, vector<string> > CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string param, bool bGetAll)
+std::map<string, vector<string> > CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string& param, bool bGetAll)
 {
-	std::map<wstring, vector<wstring> > res = EvaluateTableWithParam(MBCStrToWStr(tableName), MBCStrToWStr(param), bGetAll);
+	wstring wsParam = MBCStrToWStr(param);
+	std::map<wstring, vector<wstring> > res = EvaluateTableWithParam(MBCStrToWStr(tableName), wsParam, bGetAll);
 	std::map<string, vector<string> > retval;
 	for (std::map<wstring, vector<wstring> >::iterator it = res.begin(); it != res.end(); it++)
 	{
 		retval[ToASCIIString((*it).first)] = ToMBCStringVector((*it).second);
 	}
+	param = EDSUTIL::WStrToMBCStr(wsParam);
 	return retval;
 }
 
@@ -1336,7 +1303,7 @@ vector<string> CKnowledgeBase::ReverseEvaluateTable(string tableName, string inp
 	if (table != nullptr)
 	{
 		table->EnbleDebugging(DebugThisTable(MBCStrToWStr(tableName)));
-		table->SetInputValues(m_GlobalInputAttrsValues);
+		table->InputValueGetter = InputValueGetterPtr;
 		return ToMBCStringVector(table->EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false));
 	}
 	else
@@ -1362,32 +1329,6 @@ map<string, vector<string> > CKnowledgeBase::ReverseEvaluateTable(string tableNa
 	return retval;
 }
 
-string CKnowledgeBase::GetEvalParameterA()
-{
-	return WStrToMBCStr(m_StateParameter);
-}
-
-void CKnowledgeBase::SetInputValues(MAPSTRUINT values)
-{
-	MAPWSTRUINT wValues;
-	for (MAPSTRUINT::iterator it = values.begin(); it != values.end(); it++)
-	{
-		wValues[MBCStrToWStr((*it).first)] = (*it).second;
-	}
-	SetInputValues(wValues);
-}
-
-
-void CKnowledgeBase::SetInputValue(std::string name, std::string value)
-{
-	SetInputValue(MBCStrToWStr(name), MBCStrToWStr(value));
-}
-
-void CKnowledgeBase::ResetTable(std::string tableName)
-{
-	ResetTable(MBCStrToWStr(tableName));
-}
-
 vector<string> CKnowledgeBase::GetInputAttrs(std::string tableName)
 {
 	return ToMBCStringVector(GetInputAttrs(MBCStrToWStr(tableName)));
@@ -1411,11 +1352,11 @@ vector<string> CKnowledgeBase::GetAllPossibleOutputs(std::string tableName, std:
 CKnowledgeBase::CKnowledgeBase(std::string knowledge_file)
 {
 	m_DEBUGGING_MSGS = false;
-	m_bGenerateMsg = false;
 	m_DEBUGGING_CON = L"localhost:11000";
 	m_IsOpen = false;
 	mapBaseIDtoTranslations.clear();
 	iRecursingDepth = 0;
-	m_DebugHandlerPtr = nullptr;
+	DebugHandlerPtr = nullptr;
+	InputValueGetterPtr = nullptr;
 	CKnowledgeBase(MBCStrToWStr(knowledge_file));
 }

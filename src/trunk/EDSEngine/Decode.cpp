@@ -27,21 +27,21 @@ CDecode::~CDecode(void)
 {
 }
 
-CDecode::CDecode(CRuleCell *outputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap)
+CDecode::CDecode(CRuleCell& outputCell, function<wstring(const wstring&)> inputAttrGetter, CBimapper* stringMap)
 {
-	m_tests = &outputCell->Values;
+	m_tests = &outputCell.Values;
 	m_stringsMap = stringMap;
-	m_operator = outputCell->Operation;
-	m_inputValues = inputValues;
+	m_operator = outputCell.Operation;
+	m_inputAttrGetter = inputAttrGetter;
 }
 
-CDecode::CDecode(size_t currentValue, CRuleCell *inputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap)
+CDecode::CDecode(CToken& inputValue, CRuleCell& inputCell, function<wstring(const wstring&)> inputAttrGetter, CBimapper* stringMap)
 {
-	m_value = currentValue;
-	m_tests = &inputCell->Values;
+	m_value = &inputValue;
+	m_tests = &inputCell.Values;
 	m_stringsMap = stringMap;
-	m_operator = inputCell->Operation;
-	m_inputValues = inputValues;
+	m_operator = inputCell.Operation;
+	m_inputAttrGetter = inputAttrGetter;
 
 	CheckForInputGets();
 }
@@ -74,7 +74,7 @@ bool CDecode::EvaluateInputCell()
 			{
 				size_t test = (*m_tests)[i];
 
-				if (test == m_value && test > 0)
+				if (test == m_value->ID && test > 0)
 				{
 					retval = true;
 					break;
@@ -83,7 +83,7 @@ bool CDecode::EvaluateInputCell()
 					retval = false;
 
 				//explict NULL check
-				if (retval == false && test == EXPLICIT_NULL_STRING && m_value == EMPTY_STRING)
+				if (retval == false && test == EXPLICIT_NULL_STRING && m_value->ID == EMPTY_STRING)
 					retval = true;
 			}
 		}
@@ -93,13 +93,13 @@ bool CDecode::EvaluateInputCell()
 			{
 				size_t test = (*m_tests)[i];
 
-				if (test == m_value)
+				if (test == m_value->ID)
 				{
 					retval = false;
 				}
 
 				//explict NULL check
-				if (retval == true && test == EXPLICIT_NULL_STRING && m_value == EMPTY_STRING)
+				if (retval == true && test == EXPLICIT_NULL_STRING && m_value->ID == EMPTY_STRING)
 					retval = false;
 			}
 		}
@@ -108,7 +108,7 @@ bool CDecode::EvaluateInputCell()
 		else if (m_operator & LESS_THAN || m_operator & LESS_THAN_EQUAL || m_operator & GREATER_THAN || m_operator & GREATER_THAN_EQUAL)
 		{
 			wstring currentTest = GetString((*m_tests)[0]);
-			wstring currentValue = GetString(m_value);
+			wstring currentValue = m_value->Value;
 			bool bIsNum = false;
 
 			if (StringIsNumeric(currentTest) == true && StringIsNumeric(currentValue) == true)
@@ -192,7 +192,7 @@ bool CDecode::EvaluateInputCell()
 			m_operator & RANGE_START_INCLUSIVE ||m_operator & RANGE_NOT_INCLUSIVE)
 		{
 			wstring testString = GetString((*m_tests)[0]);
-			wstring currentValue = GetString(m_value);
+			wstring currentValue = m_value->Value;
 			double min = 0, max = 0, dCurrentValue = 0;
 			vector<wstring> parts = EDSUTIL::Split(testString.c_str(), L",");
 
@@ -285,7 +285,7 @@ vector<wstring> CDecode::EvaluateOutputCell()
 	return retval;
 }
 
-wstring CDecode::ReplaceAGet(wstring s, bool bForceZero)
+wstring CDecode::ReplaceAGet(const wstring& s, bool bForceZero)
 {
 	wstring retval = L"";
 	//find the get(xxx) substring.  attrName xxx is between ().
@@ -297,19 +297,14 @@ wstring CDecode::ReplaceAGet(wstring s, bool bForceZero)
 		wstring getText = L"get(" + attrName + L")";
 		//get the value of the input attr
 		bool bFoundAttr = false;
-		if (m_inputValues != nullptr && m_inputValues->size() > 0)
+		if (m_inputAttrGetter != nullptr)
 		{
-			MAPWSTRUINT::iterator it = m_inputValues->find(attrName);
-
-			if (it != m_inputValues->end())
+			wstring value = m_inputAttrGetter(attrName);
+			if (value.size() > 0)
 			{
-				wstring value = GetString((*it).second);
-				if (value.size() > 0)
-				{
-					bFoundAttr = true;
-					retval = EDSUTIL::FindAndReplace(s, getText, value);
-				}
-			}
+				bFoundAttr = true;
+				retval = EDSUTIL::FindAndReplace(s, getText, value);
+			}			
 		}
 
 		if (!bFoundAttr)

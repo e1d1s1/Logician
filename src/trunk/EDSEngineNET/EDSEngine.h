@@ -25,38 +25,79 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #include "Marshal.h"
 using namespace std;
 
+typedef wstring(__stdcall *VALUECB)(const wstring&);
+typedef void(__stdcall *DEBUGCB)(const wstring&);
+
 #pragma managed
 #using <mscorlib.dll>
 #using <System.dll>
 #include <vcclr.h>
+#include <msclr\marshal_cppstd.h>
+
 using namespace System;
 using namespace System::Collections::Generic;
+using namespace System::Runtime::InteropServices;
 
 namespace EDSNET {
+	delegate void FireDebugMessageDelegate(const wstring&);
+	delegate wstring GetTheValueDelegate(const wstring&);
 	public delegate void DebugHandlerDelegate(String^ msg);
+	public delegate String^ InputValueGetterDelegate(String^ attrName);
 
 	public ref class EDSEngine
 	{
 	public:
-		EDSEngine() {DebugDelegate = nullptr;}
+		EDSEngine() { DebugDelegate = nullptr; InputGetterDelegate = nullptr; DebugDelegate = nullptr; }
 		EDSEngine(String^ knowledge_file) {CreateKnowledgeBase(knowledge_file);}
 		bool CreateKnowledgeBase(String^ knowledge_file);
-		~EDSEngine() {this->!EDSEngine();}		
+		~EDSEngine() 
+		{
+			if (m_gchInput.IsAllocated)			
+				m_gchInput.Free();
+			if (m_gchDebug.IsAllocated)
+				m_gchDebug.Free();
+			this->!EDSEngine();
+		}		
 		!EDSEngine() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = NULL;}
 
-		DebugHandlerDelegate^					DebugDelegate;
-		void									SetDebugging(bool set) {if (m_KnowledgeBase) m_KnowledgeBase->GenerateDebugMessages(set);}
-		void									PumpDebugMessages();
+		property DebugHandlerDelegate^			DebugDelegate
+		{
+			DebugHandlerDelegate^ get()
+			{
+				return m_debugger;
+			}
+			void set(DebugHandlerDelegate^ value)
+			{
+				m_debugger = value;
+				if (m_KnowledgeBase != nullptr)
+				{
+					if (m_debugger != nullptr)
+					{
+						FireDebugMessageDelegate^ fp = gcnew FireDebugMessageDelegate(this, &EDSEngine::_fireDebug);
+						m_gchDebug = GCHandle::Alloc(fp);
+						IntPtr ip = Marshal::GetFunctionPointerForDelegate(fp);
+						DEBUGCB cb = static_cast<DEBUGCB>(ip.ToPointer());
+						m_KnowledgeBase->DebugHandlerPtr = cb;
+					}
+					else
+					{
+						m_KnowledgeBase->DebugHandlerPtr = nullptr;
+					}
+				}
+			}
+		}
 
 		size_t									TableCount();
 		bool									IsOpen();		
 		bool									TableHasScript(String^ tableName);
 		bool									TableIsGetAll(String^ tableName);
 
-		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param, bool bGetAll);		
-		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
-		Dictionary<String^,	array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^ param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
-		Dictionary<String^,	array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^ param, bool bGetAll);
+		InputValueGetterDelegate^				InputGetterDelegate;
+
+		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^% param, bool bGetAll);		
+		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^% param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
+		Dictionary<String^,	array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^% param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
+		Dictionary<String^,	array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^% param, bool bGetAll);
 		array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr) {return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName));}
 		array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll);
 		Dictionary<String^,	array<String^>^>^	EvaluateTable(String^ tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
@@ -66,10 +107,6 @@ namespace EDSNET {
 		array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll);
 		Dictionary<String^,	array<String^>^>^	ReverseEvaluateTable(String^ tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
 		Dictionary<String^,	array<String^>^>^	ReverseEvaluateTable(String^ tableName, bool bGetAll);	
-		String^									GetEvalParameter();
-		void									SetInputValues(Dictionary<String^, size_t>^ values);
-		void									SetInputValue(String^ name, String^ value);
-		void									ResetTable(String^ tableName);
 
 		array<String^>^							GetInputAttrs(String^ tableName);
 		array<String^>^							GetInputDependencies(String^ tableName);
@@ -81,6 +118,10 @@ namespace EDSNET {
 		String^									Translate(String^ source, String^ sourceLocale, String^ destLocale);
 
 	private:		
-		EDS::CKnowledgeBase						*m_KnowledgeBase;							
+		DebugHandlerDelegate^					m_debugger;
+		EDS::CKnowledgeBase						*m_KnowledgeBase;
+		GCHandle								m_gchInput, m_gchDebug;
+		wstring									_getValue(const wstring& attrName);
+		void									_fireDebug(const wstring& msg);
 	};
 }

@@ -18,6 +18,7 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #pragma once
 #include "stdafx.h"
 #include <vector>
+#include <unordered_map>
 
 class CBimapper
 {
@@ -25,15 +26,12 @@ public:
 	CBimapper(void);
 	~CBimapper(void);
 
-	void AddString(size_t id, wstring s);
-	size_t AddUserString(wstring s);
+	void AddString(size_t id, const wstring& s);
 	wstring GetStringByID(size_t id);
-	size_t GetIDByString(wstring s);
-	void ClearUserStrings();
+	size_t GetIDByString(const wstring& s);
 
 private:
-	MAPUINTWSTR m_IndexToStringsMap;
-	MAPWSTRUINT m_StringsToIndexMap;
-	vector<size_t> userStrings;
+	unordered_map<size_t, wstring> m_IndexToStringsMap;
+	unordered_map<wstring, size_t> m_StringsToIndexMap;
 	size_t maxID;
 };
