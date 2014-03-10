@@ -17,6 +17,13 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 */
 #pragma once
 
+class CToken
+{
+public:
+	size_t ID;
+	wstring Value;
+};
+
 class CRuleCell
 {
 public:

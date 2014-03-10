@@ -9,6 +9,7 @@ namespace EDSEngineTestApp
     {
         static void Main(string[] args)
         {
+            Dictionary<string, string> state = new Dictionary<string, string>();
             string dir = System.IO.Directory.GetCurrentDirectory();
             string filename = "test_project.gz";
             string path = "..\\..\\..\\..\\..\\EDSEngine\\EDSEngineTestApp\\" + filename;
@@ -27,7 +28,16 @@ namespace EDSEngineTestApp
                 write_result("OK: File opened");                  
 
             knowledge.DebugDelegate = write_debug;
-            knowledge.SetDebugging(false);
+            //knowledge.SetDebugging(false);
+
+            InputValueGetterDelegate getValueDelegate = (string attrName) => 
+                {
+                    if (state.ContainsKey(attrName))
+                        return state[attrName];
+                    else
+                        return "";                    
+                };
+            knowledge.InputGetterDelegate = getValueDelegate;
 
             var cnt = knowledge.TableCount();
             if (cnt == 14)
@@ -125,7 +135,7 @@ namespace EDSEngineTestApp
 
             //testing table evaluation
             write_result("testing evaluation of testtable1 with inputAttr1 = 'C', get first only");
-            knowledge.SetInputValue("inputAttr1", "C");
+            state["inputAttr1"] = "C";
             var results2 = knowledge.EvaluateTable(tableName, false);
             if (results2.Keys.Count == 2 && results2["outputAttr1"].Length == 1 &&
                 results2["outputAttr1"][0] == "2")
@@ -138,7 +148,7 @@ namespace EDSEngineTestApp
             }
 
             write_result("testing evaluation of testtable1 with inputAttr1 = 'C', get all");
-            knowledge.SetInputValue("inputAttr1", "C");
+            state["inputAttr1"] = "C";
             var results = knowledge.EvaluateTable(tableName, true);
             if (results.Keys.Count == 2 && results["outputAttr1"].Length == 3 &&
                 results["outputAttr1"][0] == "2" &&
@@ -155,8 +165,8 @@ namespace EDSEngineTestApp
             }
 
             write_result("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 10, get all");
-            knowledge.SetInputValue("inputAttr1", "C");
-            knowledge.SetInputValue("inputAttr2", "10");
+            state["inputAttr1"] = "C";
+            state["inputAttr2"] = "10";
             var results3 = knowledge.EvaluateTable(tableName, true);
             if (results3.Keys.Count == 2 && results3["outputAttr1"].Length == 4 &&
                 results3["outputAttr1"][0] == "2" &&
@@ -175,9 +185,9 @@ namespace EDSEngineTestApp
             }
 
             write_result("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 58,  outsideAttr1 = 28, get all");
-            knowledge.SetInputValue("inputAttr1", "C");
-            knowledge.SetInputValue("inputAttr2", "58");
-            knowledge.SetInputValue("outsideAttr1", "28");
+            state["inputAttr1"] = "C";
+            state["inputAttr2"] = "58";
+            state["outsideAttr1"] = "28";
             var results4 = knowledge.EvaluateTable(tableName, true);
             if (results4.Keys.Count == 2 && results4["outputAttr1"].Length == 5 &&
                 results4["outputAttr1"][0] == "2" &&
@@ -228,7 +238,7 @@ namespace EDSEngineTestApp
 
             write_result("testing input get()");
             tableName = "testtable3";
-            knowledge.SetInputValue("someAttr", "3");
+            state["someAttr"] = "3";
             var result6 = knowledge.EvaluateTable(tableName, "outputAttr1", true);
             if (result6.Length == 1 && result6[0] == "inputAttr2: 58 is greater than someAttr: 3")
             {
@@ -240,8 +250,8 @@ namespace EDSEngineTestApp
             }
 
             write_result("testing NULL conditions");
-            knowledge.SetInputValue("inputAttr1", "");
-            knowledge.SetInputValue("inputAttr2", "");
+            state["inputAttr1"] = "";
+            state["inputAttr2"] = "";
             var result7 = knowledge.EvaluateTable("testtable4", "outputAttr1", true);
             if (result7.Length == 4 && result7[2] == "both attrs are NULL")
 	        {
@@ -255,8 +265,8 @@ namespace EDSEngineTestApp
                 write_result("FAILURE: Did not get proper eval result on NULL test #1");
 	        }
 
-            knowledge.SetInputValue("inputAttr1", "blah");
-	        knowledge.SetInputValue("c", "");
+            state["inputAttr1"] = "blah";
+	        state["c"] =  "";
             result7 = knowledge.EvaluateTable("testtable4", "outputAttr1", true);
             if (result7.Length == 2 && result7[0] == "inputAttr2 is NULL")
             {
@@ -269,7 +279,7 @@ namespace EDSEngineTestApp
             }
 
 	        write_result("testing exclusing evaluation");
-	        knowledge.SetInputValue("inputAttr1", "A");
+	        state["inputAttr1"] = "A";
 	        var result8 = knowledge.EvaluateTable("exclusion", "outputAttr1", true);
 	        if (result8.Length == 4 && result8[0] == "not X or Y" &&
 		        result8[1] == "not X" &&
@@ -287,7 +297,7 @@ namespace EDSEngineTestApp
 	        }
 
 	        write_result("allowing a match: Y");
-	        knowledge.SetInputValue("inputAttr1", "Y");
+	        state["inputAttr1"] = "Y";
 	        result8 = knowledge.EvaluateTable("exclusion", "outputAttr1", true);
 	        if (result8.Length == 4 && result8[0] == "is X or Y" &&
 		        result8[1] == "not X" &&
@@ -314,7 +324,7 @@ namespace EDSEngineTestApp
                 write_result("FAILURE: translation failed");
 
             write_result("testing reverse evaluation of ReverseTest table");
-            knowledge.SetInputValue("OutColor", "green");
+            state["OutColor"] = "green";
             var result9 = knowledge.ReverseEvaluateTable("ReverseTest", true);
             if (result9.Count == 2 && result9["Color1"][0] == "blue" &&
                 result9["Color2"][0] == "yellow")

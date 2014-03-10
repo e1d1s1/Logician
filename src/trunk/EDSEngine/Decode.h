@@ -18,23 +18,19 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #pragma once
 
 #include <string>
+#include <functional>
 #include "Bimapper.h"
 #include "RuleCell.h"
 
 using namespace std;
-#ifdef _MSC_VER
-using namespace stdext;
-#else
-using namespace __gnu_cxx;
-#endif
 
 //converts long key to appropriate string value
 //checks the string value for logical operators < > !=
 class CDecode
 {
 public:
-	CDecode(CRuleCell *outputCell, MAPWSTRUINT *inputValues, CBimapper *stringMap);
-	CDecode(size_t currentValue, CRuleCell *cell, MAPWSTRUINT *inputValues, CBimapper *stringMap);
+	CDecode(CRuleCell& outputCell, function<wstring(const wstring&)> inputAttrGetter, CBimapper* stringMap);
+	CDecode(CToken& inputValue, CRuleCell& cell, function<wstring(const wstring&)> inputAttrGetter, CBimapper* stringMap);
 	~CDecode(void);
 	bool EvaluateInputCell();
 	vector<wstring> EvaluateOutputCell();
@@ -42,14 +38,14 @@ public:
 private:
 	wstring GetString(size_t lKey);
 	wstring ParseStringForGets(size_t lKey, bool bForceZero);
-	wstring ReplaceAGet(wstring s, bool bForceZero);
+	wstring ReplaceAGet(const wstring& s, bool bForceZero);
 	void CheckForInputGets();
 
-	size_t m_value;
+	function<wstring(const wstring&)> m_inputAttrGetter;
+	CToken *m_value;
 	vector<size_t> *m_tests;
 	long m_operator;
 	CBimapper *m_stringsMap;
-	MAPWSTRUINT *m_inputValues;
 };
 
 /*

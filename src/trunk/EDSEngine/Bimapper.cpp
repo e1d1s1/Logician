@@ -27,8 +27,7 @@ CBimapper::~CBimapper(void)
 {
 }
 
-//strings added through this method remained cached through the application life
-void CBimapper::AddString(size_t id, wstring s)
+void CBimapper::AddString(size_t id, const wstring& s)
 {
 	//dont assume the ids are lined up
 	if (id > maxID)
@@ -37,21 +36,11 @@ void CBimapper::AddString(size_t id, wstring s)
 	m_StringsToIndexMap[s] = id;
 }
 
-size_t CBimapper::AddUserString(wstring s)
-{
-	size_t retval = maxID + 1;
-	m_IndexToStringsMap[retval] = s;
-	m_StringsToIndexMap[s] = retval;
-	userStrings.push_back(retval);
-	maxID = retval;
-	return retval;
-}
-
 wstring CBimapper::GetStringByID(size_t id)
 {
 	wstring retval;
 
-	MAPUINTWSTR::iterator it = m_IndexToStringsMap.find(id);
+	auto it = m_IndexToStringsMap.find(id);
 
 	if (it != m_IndexToStringsMap.end())
 	{
@@ -60,39 +49,20 @@ wstring CBimapper::GetStringByID(size_t id)
 	return retval;
 }
 
-size_t CBimapper::GetIDByString(std::wstring s)
+size_t CBimapper::GetIDByString(const wstring& s)
 {
 	size_t retval = INVALID_STRING;
 
-	MAPWSTRUINT::iterator it = m_StringsToIndexMap.find(s);
-
 	if (s.length() == 0)
 	{
-		retval = EMPTY_STRING;
+		return EMPTY_STRING;
 	}
-	else if (it != m_StringsToIndexMap.end())
+
+	auto it = m_StringsToIndexMap.find(s);
+	if (it != m_StringsToIndexMap.end())
 	{
 		retval = (*it).second;
 	} 
 
 	return retval;
-}
-
-void CBimapper::ClearUserStrings()
-{
-	for (vector<size_t>::iterator it = userStrings.begin(); it != userStrings.end(); it++)
-	{
-		size_t id = *it;
-		wstring s = GetStringByID(id);
-
-		MAPWSTRUINT::iterator itString = m_StringsToIndexMap.find(s);
-		if (itString != m_StringsToIndexMap.end())
-			m_StringsToIndexMap.erase(itString);
-
-		MAPUINTWSTR::iterator itID = m_IndexToStringsMap.find(id);
-		if (itID != m_IndexToStringsMap.end())
-			m_IndexToStringsMap.erase(itID);
-	}
-
-	userStrings.clear();
 }

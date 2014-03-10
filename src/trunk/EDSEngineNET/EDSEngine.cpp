@@ -23,8 +23,11 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #include <vector>
 #include <map>
 #include <hash_map>
+#include <functional>
 
 using namespace std;
+using namespace msclr::interop;
+using namespace System::Runtime::InteropServices;
 
 namespace EDSNET
 {
@@ -33,9 +36,18 @@ namespace EDSNET
 		wstring file;
 		MarshalString(knowledge_file, file);
 		DebugDelegate = nullptr;
-		m_KnowledgeBase = new EDS::CKnowledgeBase(file);		
+		m_KnowledgeBase = new EDS::CKnowledgeBase(file);	
+
+		GetTheValueDelegate^ fp = gcnew GetTheValueDelegate(this, &EDSEngine::_getValue);
+		m_gchInput = GCHandle::Alloc(fp);
+		IntPtr ip = Marshal::GetFunctionPointerForDelegate(fp);
+		VALUECB cb = static_cast<VALUECB>(ip.ToPointer());	
+
 		if (m_KnowledgeBase)
+		{			
+			m_KnowledgeBase->InputValueGetterPtr = cb;
 			return true;
+		}
 		else
 			return false;
 	}
@@ -82,7 +94,7 @@ namespace EDSNET
 			return false;
 	}
 
-	array<String^>^ EDSEngine::EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^ param, bool bGetAll)
+	array<String^>^ EDSEngine::EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^% param, bool bGetAll)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_KnowledgeBase)
@@ -93,13 +105,13 @@ namespace EDSNET
 			MarshalString(param, para);
 			vector<wstring> res = m_KnowledgeBase->EvaluateTableWithParam(table, output, para, bGetAll);
 			retval = GetArrayFromVectorStrings(res);
-			PumpDebugMessages();
+			param = gcnew String(para.c_str());
 		}
 
 		return retval;
 	}
 
-	Dictionary<String^,	array<String^>^>^ EDSEngine::EvaluateTableWithParam(String^ tableName, String^ param, bool bGetAll)
+	Dictionary<String^,	array<String^>^>^ EDSEngine::EvaluateTableWithParam(String^ tableName, String^% param, bool bGetAll)
 	{
 		Dictionary<String^,	array<String^>^>^ retval = nullptr;
 		if (m_KnowledgeBase)
@@ -109,7 +121,7 @@ namespace EDSNET
 			MarshalString(param, para);
 			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTableWithParam(table, para, bGetAll);
 			retval = GetDictionaryFromMapStrings(res);
-			PumpDebugMessages();
+			param = gcnew String(para.c_str());
 		}
 		return retval;
 	}
@@ -125,7 +137,6 @@ namespace EDSNET
 			MarshalString(outputAttr, output);
 			vector<wstring> res = m_KnowledgeBase->EvaluateTable(table, output, bGetAll);
 			retval = GetArrayFromVectorStrings(res);
-			PumpDebugMessages();
 		}
 
 		return retval;
@@ -141,7 +152,6 @@ namespace EDSNET
 			MarshalString(tableName, table);
 			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTable(table, bGetAll);
 			retval = GetDictionaryFromMapStrings(res);
-			PumpDebugMessages();
 		}
 
 		return retval;
@@ -172,7 +182,6 @@ namespace EDSNET
 			MarshalString(inputAttr, input);
 			vector<wstring> res = m_KnowledgeBase->ReverseEvaluateTable(table, input, bGetAll);
 			retval = GetArrayFromVectorStrings(res);
-			PumpDebugMessages();
 		}
 
 		return retval;
@@ -188,54 +197,9 @@ namespace EDSNET
 			MarshalString(tableName, table);
 			map<wstring, vector<wstring> > res = m_KnowledgeBase->ReverseEvaluateTable(table, bGetAll);
 			retval = GetDictionaryFromMapStrings(res);
-			PumpDebugMessages();
 		}
 
 		return retval;
-	}
-
-	String^	EDSEngine::GetEvalParameter()
-	{
-		String^ retval = nullptr;
-
-		if (m_KnowledgeBase)
-		{
-			wstring param = m_KnowledgeBase->GetEvalParameter();
-			retval = gcnew String(param.c_str());
-		}
-
-		return retval;
-	}
-
-	void EDSEngine::SetInputValues(Dictionary<String^, size_t>^ values)
-	{
-		if (m_KnowledgeBase)
-		{
-			MAPWSTRUINT hash_values;
-			MarshalDictionaryStringUInt(values, hash_values);
-			m_KnowledgeBase->SetInputValues(hash_values);
-		}
-	}
-
-	void EDSEngine::SetInputValue(String^ name, String^ value)
-	{
-		if (m_KnowledgeBase)
-		{
-			wstring _name, _value;
-			MarshalString(name, _name);
-			MarshalString(value, _value);
-			m_KnowledgeBase->SetInputValue(_name, _value);
-		}
-	}
-
-	void EDSEngine::ResetTable(String^ tableName)
-	{
-		if (m_KnowledgeBase)
-		{
-			wstring table;
-			MarshalString(tableName, table);
-			m_KnowledgeBase->ResetTable(table);
-		}
 	}
 
 	array<String^>^ EDSEngine::GetInputAttrs(String^ tableName)
@@ -331,13 +295,22 @@ namespace EDSNET
 		return retval;
 	}
 
-	void EDSEngine::PumpDebugMessages()
+	wstring	EDSEngine::_getValue(const wstring& attrName)
 	{
-		if (m_KnowledgeBase != NULL && DebugDelegate != nullptr)
+		wstring retval;
+		if (InputGetterDelegate != nullptr)
 		{
-			wstring msg = m_KnowledgeBase->GetDebugMessages();
-			if (msg.length() > 0)
-				DebugDelegate(gcnew String(msg.c_str()));
+			String^ attrValue = InputGetterDelegate(gcnew String(attrName.c_str()));
+			MarshalString(attrValue, retval);
+		}
+		return retval;
+	}
+
+	void EDSEngine::_fireDebug(const wstring& msg)
+	{
+		if (DebugDelegate != nullptr)
+		{
+			DebugDelegate(gcnew String(msg.c_str()));
 		}
 	}
 }

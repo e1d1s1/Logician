@@ -18,6 +18,7 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #pragma once
 #include "stdafx.h"
 #include <string>
+#include <functional>
 
 #include "RuleTable.h"
 #include "TableSet.h"
@@ -27,8 +28,6 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #endif
 
 using namespace std;
-
-typedef void (*DebugHandler) (wstring);
 
 namespace EDS
 {
@@ -42,16 +41,13 @@ namespace EDS
 		bool CreateKnowledgeBaseFromString(wstring xmlStr);
 		size_t TableCount() {return m_TableSet.Count();}
 		bool IsOpen() {return m_IsOpen;}
-		void SetDebugHandler(DebugHandler debugger);
-		void GenerateDebugMessages(bool bGenerate);
-		wstring GetDebugMessages();
 
 		bool TableHasScript(wstring tableName);
 		bool TableIsGetAll(wstring tableName);
-		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
-		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param, bool bGetAll);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param, bool bGetAll);
+		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring& param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
+		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring& param, bool bGetAll);
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring& param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring& param, bool bGetAll);
 		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr) {return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName));}
 		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll);
 		map<wstring, vector<wstring> > EvaluateTable(wstring tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
@@ -61,16 +57,6 @@ namespace EDS
 		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll);
 		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
 		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName, bool bGetAll);
-
-		wstring GetEvalParameter() {return m_StateParameter;}
-		void SetInputValues(MAPWSTRUINT values)
-		{
-			m_GlobalInputAttrsValues = values;
-			m_GlobalInputAttrsValues[L""] = EMPTY_STRING;
-			m_GlobalInputAttrsValues[L"NULL"] = EXPLICIT_NULL_STRING;
-		}
-		void SetInputValue(wstring name, wstring value);
-		void ResetTable(wstring tableName);
 
 		vector<wstring> GetInputAttrs(wstring tableName) {return m_TableSet.GetInputAttrs(tableName);}
 		vector<wstring> GetInputDependencies(wstring tableName) {return m_TableSet.GetInputDependencies(tableName);}
@@ -88,10 +74,10 @@ namespace EDS
 		bool CreateKnowledgeBaseFromString(string xmlStr);
 		bool TableHasScript(string tableName);
 		bool TableIsGetAll(string tableName);
-		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
-		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string param, bool bGetAll);
-		map<string, vector<string> > EvaluateTableWithParam(string tableName, string param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
-		map<string, vector<string> > EvaluateTableWithParam(string tableName, string param, bool bGetAll);
+		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string& param) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName));}
+		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string& param, bool bGetAll);
+		map<string, vector<string> > EvaluateTableWithParam(string tableName, string& param) {return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName));}
+		map<string, vector<string> > EvaluateTableWithParam(string tableName, string& param, bool bGetAll);
 		vector<string> EvaluateTable(string tableName, string outputAttr) {return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName));}
 		vector<string> EvaluateTable(string tableName, string outputAttr, bool bGetAll);
 		map<string, vector<string> > EvaluateTable(string tableName) {return EvaluateTable(tableName, TableIsGetAll(tableName));}
@@ -101,17 +87,14 @@ namespace EDS
 		vector<string> ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll);
 		map<string, vector<string> > ReverseEvaluateTable(string tableName) {return ReverseEvaluateTable(tableName, TableIsGetAll(tableName));}
 		map<string, vector<string> > ReverseEvaluateTable(string tableName, bool bGetAll);
-		string GetEvalParameterA();
 
-		void SetInputValues(MAPSTRUINT values);
-		void SetInputValue(string name, string value);
-		size_t GetInputValuesCount() {return m_GlobalInputAttrsValues.size();}
-		void ResetTable(string tableName);
 		vector<string> GetInputAttrs(string tableName);
 		vector<string> GetInputDependencies(string tableName);
 		vector<string> GetOutputAttrs(string tableName);
 		vector<string> GetAllPossibleOutputs(string tableName, string outputName);
 
+		std::function<void(const wstring&)> DebugHandlerPtr;
+		std::function<wstring(const wstring&)> InputValueGetterPtr;
 
 	private:
 		bool _parseXML(Document xmlDocument);
@@ -119,20 +102,16 @@ namespace EDS
 		void SendToDebugServer(wstring msg);
 		wstring XMLSafe(wstring str);
 		bool DebugThisTable(wstring tableName);
-		MAPWSTRUINT m_GlobalInputAttrsValues;
-		wstring m_StateParameter;
 		CBimapper m_stringsMap;
 		CTableSet m_TableSet;
-		int iRecursingDepth;
+		int iRecursingDepth;		
+		
 		bool m_DEBUGGING_MSGS;
-		bool m_bGenerateMsg;
-		wstring m_LastDebugMessage;
 		vector<wstring> m_DebugTables;
-		DebugHandler m_DebugHandlerPtr; //to do in-application table debugging
 		wstring m_DEBUGGING_CON;
 		bool m_IsOpen;
 		wstring m_jsCode, m_pyCode;
-		MAPUINTMAP mapBaseIDtoTranslations;
+		unordered_map<size_t, unordered_map<wstring, wstring>> mapBaseIDtoTranslations;
 
 	//helper functions
 	#ifdef WIN32

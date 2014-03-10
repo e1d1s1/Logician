@@ -32,9 +32,7 @@ using namespace std;
 
 CRuleTable::CRuleTable(void)
 {
-	m_DEBUGGING = false;
-	m_Threads = 1;
-	ResetTable();
+	_init();
 }
 
 CRuleTable::~CRuleTable(void)
@@ -42,21 +40,16 @@ CRuleTable::~CRuleTable(void)
 
 }
 
-void CRuleTable::ResetTable()
+void CRuleTable::_init()
 {
+	m_DEBUGGING = false;
+	m_Threads = 1;
 	m_Tests = 0;
 	bHasChain = false;
 	bHasPython = false;
 	bHasJavascript = false;
 	bGetAll = false;
-	bNullSet = false;
 	m_ThreadingEnabled = false;
-
-	m_InputAttrsTests.clear();
-	m_InputAttrsValues.clear();
-	m_OutputAttrsValues.clear();
-	m_FormulaInputs.clear();
-	DebugMessage.clear();
 }
 
 void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
@@ -64,7 +57,7 @@ void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inpu
 								vector<wstring> formulaInputs, CBimapper *stringMap,
 								wstring name, bool GetAll)
 {
-	ResetTable();
+	_init();
 
 	m_FormulaInputs = formulaInputs;
 	m_InputAttrsTests = inputAttrsTests;
@@ -116,7 +109,7 @@ map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bFor
 vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool bForward)
 {
 	vector<wstring> retval;
-	vector<size_t> values;
+	vector<CToken> values;
 	map<size_t, set<wstring> > solutions;
 	vector<pair<wstring, vector<CRuleCell> > > *inputCollection;
 	vector<pair<wstring, vector<CRuleCell> > > *outputCollection;
@@ -131,24 +124,21 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 		outputCollection = &m_InputAttrsTests;
 	}
 
-
-	SetInvalidAttrs();
 	vector<bool> colResults (m_Tests, true); //a table need not have any inputs
-	if (m_InputAttrsValues.size() > 0 && inputCollection->size() > 0)
+	if (inputCollection->size() > 0)
 	{
 		//get the current values of all input attrs
 		for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = inputCollection->begin(); it != inputCollection->end(); it++)
 		{
-			wstring attr = (*it).first;
-			MAPWSTRUINT::iterator itFind = m_InputAttrsValues.find(attr);
-			if (itFind != m_InputAttrsValues.end())
-			{
-				values.push_back((*itFind).second);
-			}
+			wstring attrName = it->first;
+			CToken token;
+			token.Value = InputValueGetter(attrName);
+			token.ID = m_stringsMap->GetIDByString(token.Value);
+			values.push_back(token);
 		}
 
 		//sweep down the table for all inputs and do test(s)
-		colResults = _runTests(bGetAll, inputCollection, &values);
+		colResults = _runTests(bGetAll, inputCollection, values);
 
 	} //done inputs
 	else if (inputCollection->size() == 0 && !bGetAll)
@@ -174,7 +164,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 		if (colResults[result] && result < results.size())
 		{
 			CRuleCell outputCell = results[result];
-			CDecode decoder(&outputCell, &m_InputAttrsValues, m_stringsMap);
+			CDecode decoder(outputCell, InputValueGetter, m_stringsMap);
 			if (outputCell.Operation & CHAIN)
 				bHasChain = true;
 			if (outputCell.Operation & PYTHON)
@@ -211,7 +201,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 	return retval;
 }
 
-vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<size_t>* values)
+vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values)
 {
     //sweep down the table for all inputs and do test(s)
     vector<bool> colResultsDefault (m_Tests, false);
@@ -227,7 +217,7 @@ vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRu
             size_t endIndex = i == m_Threads - 1 ? m_Tests : (i + 1) * testsPerThread;
             function<bool(void)> worker = [&]()
             {
-                return _runTestGroup(bGetAll, startIndex, endIndex, inputCollection, values, &colResults);
+                return _runTestGroup(bGetAll, startIndex, endIndex, inputCollection, values, colResults);
             };
             threads[i] = thread(worker);
         }
@@ -239,13 +229,13 @@ vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRu
     }
     else
     {
-        _runTestGroup(bGetAll, 0, m_Tests, inputCollection, values, &colResults);
+        _runTestGroup(bGetAll, 0, m_Tests, inputCollection, values, colResults);
     }
 
     return colResults;
 }
 
-bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<size_t>* values, vector<bool>* colResults)
+bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell>>>* inputCollection, vector<CToken>& values, vector<bool>& colResults)
 {
     bool bHaveSolution = true;
     for (size_t testIndex = startIndex; testIndex < endIndex; testIndex++)
@@ -256,21 +246,21 @@ bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex,
         {
             if ( testIndex < (*itTests).second.size())
             {
-                CDecode decoder((*values)[inputCnt], &(*itTests).second[testIndex], &m_InputAttrsValues, m_stringsMap);
+				CDecode decoder(values[inputCnt], (*itTests).second[testIndex], InputValueGetter, m_stringsMap);
                 bHaveSolution = decoder.EvaluateInputCell();
             }
             inputCnt++;
             if (!bHaveSolution)
                 break;
         }
-        (*colResults)[testIndex] = bHaveSolution;
+        colResults[testIndex] = bHaveSolution;
         if (bHaveSolution && !bGetAll)
             break;
     } //done column (rule)
     return bHaveSolution;
 }
 
-void CRuleTable::DebugEval(wstring outputAttr, vector<size_t> inputValues, map<size_t, set<wstring> > solutions)
+void CRuleTable::DebugEval(const wstring& outputAttr, const vector<CToken>& inputValues, const map<size_t, set<wstring>>& solutions)
 {
 	wstring xmlBlob;
 	xmlBlob += L"<TableEval name=\"";
@@ -286,18 +276,17 @@ void CRuleTable::DebugEval(wstring outputAttr, vector<size_t> inputValues, map<s
 		{
 			pair<wstring, vector<CRuleCell> > currentPair = m_InputAttrsTests[i];
 			wstring attr = currentPair.first;
-			wstring value = m_stringsMap->GetStringByID(inputValues[i]);
 			xmlBlob += L"<Input name = \"";
 			xmlBlob += attr;
 			xmlBlob += L"\" value=\"";
-			xmlBlob += value;
+			xmlBlob += inputValues[i].Value;
 			xmlBlob += L"\"/>";
 		}
 		xmlBlob += L"</Inputs>";
 	} //else something is wrong
 
 	xmlBlob+= L"<Outputs>";
-	for (map<size_t, set<wstring> >::iterator it = solutions.begin(); it != solutions.end(); it++)
+	for (auto it = solutions.begin(); it != solutions.end(); it++)
 	{
 		size_t index = (*it).first;
 		for (set<wstring>::iterator itOut = (*it).second.begin(); itOut != (*it).second.end(); itOut++)
@@ -313,64 +302,6 @@ void CRuleTable::DebugEval(wstring outputAttr, vector<size_t> inputValues, map<s
 	xmlBlob+= L"</TableEval>";
 
 	DebugMessage = xmlBlob;
-}
-
-void CRuleTable::SetInputValues(MAPWSTRUINT values)
-{
-	bNullSet = false;
-	m_InputAttrsValues = values;
-}
-
-void CRuleTable::SetInvalidAttrs()
-{
-	if (!bNullSet)
-	{
-		for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = m_InputAttrsTests.begin(); it != m_InputAttrsTests.end(); it++)
-		{
-			MAPWSTRUINT::iterator itFind = m_InputAttrsValues.find((*it).first);
-			if (itFind == m_InputAttrsValues.end())
-			{
-				m_InputAttrsValues[(*it).first] = INVALID_STRING;
-			}
-		}
-	}
-	bNullSet = true;
-}
-
-void CRuleTable::SetInputValue(wstring name, wstring value)
-{
-	bNullSet = false;
-
-	if (m_InputAttrsTests.size() > 0)
-	{
-		bool bFoundTableInput = false;
-		for (size_t i = 0; i < m_InputAttrsTests.size(); i++)
-		{
-			if (m_InputAttrsTests[i].first == name)
-			{
-				bFoundTableInput = true;
-				size_t id = m_stringsMap->GetIDByString(value);
-				if (id == INVALID_STRING) //wasnt in our existing list
-				{
-					//add a new tokenized string
-					id = m_stringsMap->AddUserString(value);
-				}
-				m_InputAttrsValues[name] = id;
-				break;
-			}
-		}
-
-		if (!bFoundTableInput) //this came from outside this table, a get() in a cell
-		{
-			size_t id = m_stringsMap->GetIDByString(value);
-			if (id == INVALID_STRING) //wasnt in our existing list
-			{
-				//add a new tokenized string
-				id = m_stringsMap->AddUserString(value);
-			}
-			m_InputAttrsValues[name] = id;
-		}
-	}
 }
 
 vector<wstring> CRuleTable::GetAllPossibleOutputs(wstring outputName)

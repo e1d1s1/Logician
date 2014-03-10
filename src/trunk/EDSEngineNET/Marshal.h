@@ -34,7 +34,7 @@ using namespace System::Collections::Generic;
 
 void MarshalString ( String ^ s, string& os );
 void MarshalString ( String ^ s, wstring& os );
-void MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict, MAPWSTRUINT &mp);
+void MarshalDictionaryStringUInt(Dictionary<String^, size_t>^ dict, unordered_map<wstring, size_t> &mp);
 
 array<String^>^ GetArrayFromVectorStrings(const vector<wstring> &vect);
 Dictionary<String^,	array<String^>^>^ GetDictionaryFromMapStrings(const map<wstring, vector<wstring> > &mp);
