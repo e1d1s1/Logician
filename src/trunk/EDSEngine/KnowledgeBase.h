@@ -44,10 +44,10 @@ namespace EDS
 
 		bool TableHasScript(wstring tableName);
 		bool TableIsGetAll(wstring tableName);
-		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName), context); }
-		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring& param, bool bGetAll, void* context = nullptr);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName), context); }
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring& param, bool bGetAll, void* context = nullptr);
+		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, context); }
+		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, bool bGetAll, wstring& param, void* context = nullptr);
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, TableIsGetAll(tableName), param, context); }
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, bool bGetAll, wstring& param, void* context = nullptr);
 		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, void* context = nullptr) { return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName), context); }
 		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll, void* context = nullptr);
 		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, void* context = nullptr) { return EvaluateTable(tableName, TableIsGetAll(tableName), context); }
@@ -74,10 +74,10 @@ namespace EDS
 		bool CreateKnowledgeBaseFromString(string xmlStr, size_t threads = 1);
 		bool TableHasScript(string tableName);
 		bool TableIsGetAll(string tableName);
-		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string& param, void* context = nullptr) {return EvaluateTableWithParam(tableName, outputAttr, param, TableIsGetAll(tableName), context);}
-		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string& param, bool bGetAll, void* context = nullptr);
-		map<string, vector<string> > EvaluateTableWithParam(string tableName, string& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, param, TableIsGetAll(tableName), context); }
-		map<string, vector<string> > EvaluateTableWithParam(string tableName, string& param, bool bGetAll, void* context = nullptr);
+		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string& param, void* context = nullptr) {return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param,  context);}
+		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, bool bGetAll, string& param, void* context = nullptr);
+		map<string, vector<string> > EvaluateTableWithParam(string tableName, string& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, TableIsGetAll(tableName), param, context); }
+		map<string, vector<string> > EvaluateTableWithParam(string tableName, bool bGetAll, string& param, void* context = nullptr);
 		vector<string> EvaluateTable(string tableName, string outputAttr, void* context = nullptr) { return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName), context); }
 		vector<string> EvaluateTable(string tableName, string outputAttr, bool bGetAll, void* context = nullptr);
 		map<string, vector<string> > EvaluateTable(string tableName, void* context = nullptr) { return EvaluateTable(tableName, TableIsGetAll(tableName), context); }
@@ -95,7 +95,7 @@ namespace EDS
 
 		std::function<void(const wstring&)> DebugHandlerPtr;
 		std::function<wstring(const wstring&, void*)> InputValueGetterPtr;
-		
+
 	private:
 		bool _parseXML(Document xmlDocument);
 		vector<pair<wstring, vector<CRuleCell> > > GetTableRowFromXML(NodeList nodes, Document xmlDocument);
@@ -105,7 +105,7 @@ namespace EDS
 
 		CBimapper m_stringsMap;
 		CTableSet m_TableSet;
-		int iRecursingDepth;				
+		int iRecursingDepth;
 		bool m_DEBUGGING_MSGS;
 		vector<wstring> m_DebugTables;
 		wstring m_DEBUGGING_CON;

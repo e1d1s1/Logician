@@ -177,7 +177,7 @@ vector<string> ROMUTIL::WStrToMBCStrVector(vector<wstring> vectWS)
 	return retval;
 }
 
-map<string, vector<string> > WStrToMBCStrMapVector(map<wstring, vector<wstring> > mapVectWS)
+map<string, vector<string> > ROMUTIL::WStrToMBCStrMapVector(map<wstring, vector<wstring> > mapVectWS)
 {
 	map<string, vector<string> > retval;
 	for (map<wstring, vector<wstring> >::iterator it = mapVectWS.begin(); it != mapVectWS.end(); it++)
@@ -219,12 +219,12 @@ string ROMUTIL::stringify(long x)
 string ROMUTIL::MakeGUID()
 {
 	//guid for each ObjectNode
-	string guid;	
+	string guid;
 	boost::uuids::random_generator gen;
 	boost::uuids::uuid u = gen();
 	std::stringstream ss;
 	ss << u;
-	guid = ss.str();	
+	guid = ss.str();
 	return guid;
 }
 
@@ -242,7 +242,7 @@ std::wstring ROMUTIL::encodeForXml(const std::wstring &sSrc)
              case L'"': sRet << L"&quot;"; break;
              case L'\'': sRet << L"&apos;"; break;
              default:
-				sRet << c;              
+				sRet << c;
          }
     }
     return sRet.str();
@@ -254,7 +254,7 @@ std::wstring ROMUTIL::encodeForXml(const std::wstring &sSrc)
 			if (str != NULL)
 			{
 				BSTR ms_str = ((_bstr_t*)str)->copy();
-				std::wstring ws(ms_str); 
+				std::wstring ws(ms_str);
 				SysFreeString(ms_str);
 				return ws;
 			}

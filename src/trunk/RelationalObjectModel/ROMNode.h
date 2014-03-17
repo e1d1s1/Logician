@@ -36,7 +36,7 @@ namespace ROM
 	friend class ROMDictionary;
 	friend class LinearEngine;
 	public:
-		~ROMNode(void);
+		virtual ~ROMNode(void);
 		ROMNode(){_init();}
 		ROMNode(wstring id) {CreateROMNode(id);}
 		ROMNode(string id) {CreateROMNode(id);}
@@ -47,7 +47,7 @@ namespace ROM
 		void				SetTableDebugHandler(std::function<void(const wstring&)> debugger);
 
 		//relational functions
-		ROMNode*			GetRoot();		
+		ROMNode*			GetRoot();
 		ROMNode*			GetParent() {return m_parent;}
 		vector<ROMNode*>	GetAllChildren(bool recurs);
 		vector<ROMNode*>	FindObjects(wstring xpath);
@@ -70,10 +70,10 @@ namespace ROM
 		virtual bool		SetAttribute(wstring id, wstring name, wstring value);
 		virtual bool		SetAttribute(wstring id, wstring value) {return SetAttribute(id, L"value", value);}
 		virtual bool		SetAttributeValue(wstring id, wstring value) {return SetAttribute(id, value);}
-		virtual bool		RemoveAttribute(wstring id, wstring name = L"value");	
+		virtual bool		RemoveAttribute(wstring id, wstring name = L"value");
 		virtual bool		SetROMObjectValue(wstring name, wstring value);
 		virtual wstring		GetROMObjectValue(wstring name);
-		virtual bool		RemoveROMObjectValue(wstring name);	
+		virtual bool		RemoveROMObjectValue(wstring name);
 		wstring				GetROMObjectID() {return m_id;}
 		void				SetROMObjectID(wstring id) {m_id = id;}
 		string				GetROMGUID() {return m_guid;}
@@ -86,9 +86,9 @@ namespace ROM
 		vector<wstring>		EvaluateTable(wstring evalTable, wstring output);
 		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable, bool bGetAll);
 		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable);
-		vector<wstring>		EvaluateTableWithParam(wstring evalTable, wstring output, wstring& param, bool bGetAll);
+		vector<wstring>		EvaluateTableWithParam(wstring evalTable, wstring output, bool bGetAll, wstring& param);
 		vector<wstring>		EvaluateTableWithParam(wstring evalTable, wstring output, wstring& param);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring evalTable, wstring& param, bool bGetAll);
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring evalTable, bool bGetAll, wstring& param);
 		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring evalTable, wstring& param);
 		wstring				GetFirstTableResult(wstring tableName, wstring output);
 		vector<wstring>		ReverseEvaluateTable(wstring evalTable, wstring inputAttr, bool bGetAll);
@@ -100,7 +100,7 @@ namespace ROM
 
 		//IO
 		wstring				SaveXML(bool indented);
-		bool				LoadXML(wstring xmlStr);			
+		bool				LoadXML(wstring xmlStr);
 
 		//XPATH
 		wstring				EvaluateXPATH(wstring xpath, string guid);
@@ -127,10 +127,10 @@ namespace ROM
 		vector<string>		EvaluateTable(string evalTable, string output) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output)));}
 		map<string, vector<string> > EvaluateTable(string evalTable, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable), bGetAll));}
 		map<string, vector<string> > EvaluateTable(string evalTable) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable)));}
-		vector<string>		EvaluateTableWithParam(string evalTable, string output, string& param, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), MBCStrToWStr(param), bGetAll));}
-		vector<string>		EvaluateTableWithParam(string evalTable, string output, string& param) {return ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), MBCStrToWStr(param)));}
-		map<string, vector<string> > EvaluateTableWithParam(string evalTable, string& param, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(param), bGetAll));}
-		map<string, vector<string> > EvaluateTableWithParam(string evalTable, string& param) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(param)));}
+		vector<string>		EvaluateTableWithParam(string evalTable, string output, bool bGetAll, string& param);
+		vector<string>		EvaluateTableWithParam(string evalTable, string output, string& param);
+		map<string, vector<string> > EvaluateTableWithParam(string evalTable, bool bGetAll, string& param);
+		map<string, vector<string> > EvaluateTableWithParam(string evalTable, string& param) ;
 		string				GetFirstTableResult(string tableName, string output) {return WStrToMBCStr(GetFirstTableResult(ROMUTIL::MBCStrToWStr(tableName), ROMUTIL::MBCStrToWStr(output)));}
 		vector<string>		ReverseEvaluateTable(string evalTable, string inputAttr, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr), bGetAll));}
 		vector<string>		ReverseEvaluateTable(string evalTable, string inputAttr) {return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr)));}
@@ -163,7 +163,7 @@ namespace ROM
 		bool m_bChanged;
 		Document m_xmlDoc;
 		wstring m_lastContents;
-		wstring m_lastAttrContents;		
+		wstring m_lastAttrContents;
 		vector<ROMNode*> m_children;
 		vector<ROMNode*> m_friends;
 		ROMNode* m_parent;
