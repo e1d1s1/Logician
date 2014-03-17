@@ -583,15 +583,13 @@ map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable)
 	return retval;
 }
 
-
-
-vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring output, wstring& param, bool bGetAll)
+vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring output, bool bGetAll, wstring& param)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->EvaluateTableWithParam(evalTable, output, param, bGetAll, this);
+		retval = knowledge->EvaluateTableWithParam(evalTable, output, bGetAll, param, this);
 	}
 	return retval;
 }
@@ -607,13 +605,29 @@ vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring outpu
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable, wstring& param, bool bGetAll)
+vector<string> ROMNode::EvaluateTableWithParam(string evalTable, string output, bool bGetAll, string& param)
+{
+    wstring wsParam = MBCStrToWStr(param);
+    vector<string> retval = ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll, wsParam));
+    param =ROMUTIL::WStrToMBCStr(wsParam);
+    return retval;
+}
+
+vector<string> ROMNode::EvaluateTableWithParam(string evalTable, string output, string& param)
+{
+    wstring wsParam = MBCStrToWStr(param);
+    vector<string> retval = ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), wsParam));
+    param =ROMUTIL::WStrToMBCStr(wsParam);
+    return retval;
+}
+
+map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable, bool bGetAll, wstring& param)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->EvaluateTableWithParam(evalTable, param, bGetAll, this);
+		retval = knowledge->EvaluateTableWithParam(evalTable, bGetAll, param, this);
 	}
 	return retval;
 }
@@ -627,6 +641,22 @@ map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable
 		retval = knowledge->EvaluateTableWithParam(evalTable, param, this);
 	}
 	return retval;
+}
+
+map<string, vector<string> > ROMNode::EvaluateTableWithParam(string evalTable, bool bGetAll, string& param)
+{
+    wstring wsParam = ROMUTIL::MBCStrToWStr(param);
+    map<string, vector<string> > retval = ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(ROMUTIL::MBCStrToWStr(evalTable), bGetAll, wsParam));
+    param =ROMUTIL::WStrToMBCStr(wsParam);
+    return retval;
+}
+
+map<string, vector<string> > ROMNode::EvaluateTableWithParam(string evalTable, string& param)
+{
+    wstring wsParam = ROMUTIL::MBCStrToWStr(param);
+    map<string, vector<string> > retval = ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(ROMUTIL::MBCStrToWStr(evalTable), wsParam));
+    param =ROMUTIL::WStrToMBCStr(wsParam);
+    return retval;
 }
 
 wstring ROMNode::GetFirstTableResult(wstring tableName, wstring output)

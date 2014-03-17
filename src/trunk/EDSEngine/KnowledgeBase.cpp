@@ -189,16 +189,16 @@ bool CKnowledgeBase::TableIsGetAll(wstring tableName)
 vector<wstring> CKnowledgeBase::EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll, void* context)
 {
 	wstring param = L"";
-	return EvaluateTableWithParam(tableName, outputAttr, param, bGetAll, context);
+	return EvaluateTableWithParam(tableName, outputAttr, bGetAll, param, context);
 }
 
 map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTable(wstring tableName, bool bGetAll, void* context)
 {
 	wstring param = L"";
-	return EvaluateTableWithParam(tableName, param, bGetAll, context);
+	return EvaluateTableWithParam(tableName, bGetAll, param, context);
 }
 
-vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring outputAttr, std::wstring& param, bool bGetAll, void* context)
+vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring outputAttr, bool bGetAll, std::wstring& param, void* context)
 {
 	vector<wstring> retval;
 	try
@@ -236,7 +236,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 						wstring chainTableName = TrimString(args[0]);
 						wstring chainAttrName = TrimString(args[1]);
 
-						chainedResults = EvaluateTableWithParam(chainTableName, chainAttrName, param, TableIsGetAll(chainTableName), context);
+						chainedResults = EvaluateTableWithParam(chainTableName, chainAttrName, TableIsGetAll(chainTableName), param, context);
 						for (vector<wstring>::iterator itRes = chainedResults.begin(); itRes != chainedResults.end(); itRes++)
 						{
 							newResults.push_back((*itRes));
@@ -317,7 +317,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 									pScriptControl->AddCode(JSCode.c_str());
 
 									val = VariantToWStr(pScriptControl->Run("myfunc", &psa));
-									m_StateParameter = VariantToWStr(pScriptControl->Run("getparam", &psa));
+									param = VariantToWStr(pScriptControl->Run("getparam", &psa));
 
 									SafeArrayDestroy(psa);
 								}
@@ -394,7 +394,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 							{
 								JSString* jstr = JS_ValueToString(cx, stateval);
 								const char* s = (const char*)JS_EncodeString(cx, jstr);
-								m_StateParameter = MBCStrToWStr(s);
+								param = MBCStrToWStr(s);
 							}
 
 							// Cleanup.
@@ -482,11 +482,11 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 						boost::python::object module(boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("__main__"))));
 						boost::python::object function = module.attr("myfunc");
 						boost::python::object dictionary = module.attr("__dict__");
-						dictionary["param"] = WStrToMBCStr(m_StateParameter);
+						dictionary["param"] = WStrToMBCStr(param);
 
 						boost::python::object result = function();
 						val = boost::python::extract<wstring>(result);
-						m_StateParameter = boost::python::extract<wstring>(dictionary["param"]);
+						param = boost::python::extract<wstring>(dictionary["param"]);
 
 						Py_Finalize();
 					}
@@ -557,7 +557,7 @@ vector<wstring> CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wstring 
 		{
 			table->EnbleDebugging(DebugThisTable(tableName));
 			table->InputValueGetter = InputValueGetterPtr;
-			retval = table->EvaluateTable(inputAttr, bGetAll, false, context);		
+			retval = table->EvaluateTable(inputAttr, bGetAll, false, context);
 		}
 	}
 	catch (...)
@@ -608,7 +608,7 @@ wstring CKnowledgeBase::XMLSafe(wstring str)
 void CKnowledgeBase::SendToDebugServer(wstring msg)
 {
 	try
-	{		
+	{
 		if (DebugHandlerPtr)
 		{
 			DebugHandlerPtr(msg);
@@ -622,7 +622,7 @@ void CKnowledgeBase::SendToDebugServer(wstring msg)
 		tcp::socket sock(io_service);
 		sock.connect(*iterator);
 		boost::asio::write(sock, boost::asio::buffer(msg.c_str(), msg.length()*sizeof(wchar_t)));
-#endif		
+#endif
 	}
 	catch (std::exception& e)
 	{
@@ -650,7 +650,7 @@ bool CKnowledgeBase::DebugThisTable(wstring tableName)
 	return false;
 }
 
-map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring& param, bool bGetAll, void* context)
+map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, bool bGetAll, std::wstring& param, void* context)
 {
 	map<wstring, vector<wstring> > retval;
 
@@ -661,7 +661,7 @@ map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(std::wstri
 		//for all the outputs get the results
 		for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = outputAttrsValues.begin(); itOut != outputAttrsValues.end(); itOut++)
 		{
-			vector<wstring> result = EvaluateTableWithParam(tableName, (*itOut).first, param, bGetAll, context);
+			vector<wstring> result = EvaluateTableWithParam(tableName, (*itOut).first, bGetAll, param, context);
 			retval[(*itOut).first] = result;
 		}
 	}
@@ -1267,24 +1267,27 @@ bool CKnowledgeBase::TableIsGetAll(std::string tableName)
 vector<string> CKnowledgeBase::EvaluateTable(string tableName, string outputAttr, bool bGetAll, void* context)
 {
 	string param = "";
-	return EvaluateTableWithParam(tableName, outputAttr, param, bGetAll, context);
+	return EvaluateTableWithParam(tableName, outputAttr, bGetAll, param, context);
 }
 
 map<string, vector<string> > CKnowledgeBase::EvaluateTable(string tableName, bool bGetAll, void* context)
 {
 	string param = "";
-	return EvaluateTableWithParam(tableName, param, bGetAll, context);
+	return EvaluateTableWithParam(tableName, bGetAll, param, context);
 }
 
-vector<string> CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string outputAttr, std::string& param, bool bGetAll, void* context)
+vector<string> CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string outputAttr, bool bGetAll, std::string& param, void* context)
 {
-	return ToMBCStringVector(EvaluateTableWithParam(MBCStrToWStr(tableName), MBCStrToWStr(outputAttr), MBCStrToWStr(param), bGetAll, context));
+    wstring wsParam = MBCStrToWStr(param);
+	vector<string> retval = ToMBCStringVector(EvaluateTableWithParam(MBCStrToWStr(tableName), MBCStrToWStr(outputAttr), bGetAll, wsParam, context));
+    param = EDSUTIL::WStrToMBCStr(wsParam);
+    return retval;
 }
 
-std::map<string, vector<string> > CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string& param, bool bGetAll, void* context)
+std::map<string, vector<string> > CKnowledgeBase::EvaluateTableWithParam(std::string tableName, bool bGetAll, std::string& param, void* context)
 {
 	wstring wsParam = MBCStrToWStr(param);
-	std::map<wstring, vector<wstring> > res = EvaluateTableWithParam(MBCStrToWStr(tableName), wsParam, bGetAll, context);
+	std::map<wstring, vector<wstring> > res = EvaluateTableWithParam(MBCStrToWStr(tableName), bGetAll, wsParam, context);
 	std::map<string, vector<string> > retval;
 	for (std::map<wstring, vector<wstring> >::iterator it = res.begin(); it != res.end(); it++)
 	{
