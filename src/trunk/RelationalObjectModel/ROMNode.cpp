@@ -369,24 +369,10 @@ void ROMNode::_findAllChildObjects(vector<ROMNode*>* res)
 	}
 }
 
-void ROMNode::SetTableDebugHandler(DebugHandler debugger)
+void ROMNode::SetTableDebugHandler(std::function<void(const wstring&)> debugger)
 {
 	if (m_KnowledgeBase)
-		m_KnowledgeBase->SetDebugHandler(debugger);
-}
-
-void ROMNode::GenerateTableDebugMessages(bool bGenerate)
-{
-	if (m_KnowledgeBase)
-		m_KnowledgeBase->GenerateDebugMessages(bGenerate);
-}
-
-wstring ROMNode::GetTableDebugMessages()
-{
-	if (m_KnowledgeBase)
-		return m_KnowledgeBase->GetDebugMessages();
-	else
-		return L"";
+		m_KnowledgeBase->DebugHandlerPtr = debugger;
 }
 
 wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
@@ -394,10 +380,10 @@ wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
 	wstring retval = L"";
 	bool bFound = false;
 
-	MAPWSTRMAP::iterator it = m_attrs.find(id);
+	auto it = m_attrs.find(id);
 	if (it != m_attrs.end())
 	{
-		MAPWSTRS::iterator itValue = it->second.find(name);
+		auto itValue = it->second.find(name);
 		if (itValue != it->second.end())
 		{
 			retval = itValue->second;
@@ -420,10 +406,10 @@ wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
 bool ROMNode::GetAttributeExists(wstring id, wstring name)
 {
 	bool bFound = false;
-	MAPWSTRMAP::iterator it = m_attrs.find(id);
+	auto it = m_attrs.find(id);
 	if (it != m_attrs.end())
 	{
-		MAPWSTRS::iterator itValue = it->second.find(name);
+		auto itValue = it->second.find(name);
 		if (itValue != it->second.end())
 		{
 			bFound = true;
@@ -446,7 +432,7 @@ bool ROMNode::RemoveAttribute(wstring id, wstring name)
 {
 	bool retval = false;
 
-	MAPWSTRMAP::iterator it = m_attrs.find(id);
+	auto it = m_attrs.find(id);
 	if (it != m_attrs.end())
 	{
 		if (name.length() == 0 || name == L"value")
@@ -456,7 +442,7 @@ bool ROMNode::RemoveAttribute(wstring id, wstring name)
 		}
 		else
 		{
-			MAPWSTRS::iterator itValue = it->second.find(name);
+			auto itValue = it->second.find(name);
 			if (itValue != it->second.end())
 			{
 				it->second.erase(itValue);
@@ -484,7 +470,7 @@ wstring ROMNode::GetROMObjectValue(wstring name)
 {
 	wstring retval = L"";
 
-	MAPWSTRS::iterator it = m_nodeValues.find(name);
+	auto it = m_nodeValues.find(name);
 	if (it != m_nodeValues.end())
 	{
 		retval = it->second;
@@ -497,7 +483,7 @@ bool ROMNode::RemoveROMObjectValue(wstring name)
 {
 	bool retval = false;
 
-	MAPWSTRS::iterator it = m_nodeValues.find(name);
+	auto it = m_nodeValues.find(name);
 	if (it != m_nodeValues.end())
 	{
 		m_nodeValues.erase(it);
@@ -509,7 +495,7 @@ bool ROMNode::RemoveROMObjectValue(wstring name)
 }
 
 //rules
-bool ROMNode::LoadRules(wstring knowledge_file)
+bool ROMNode::LoadRules(wstring knowledge_file, size_t threads)
 {
 	if (m_KnowledgeBase)
 	{
@@ -520,13 +506,18 @@ bool ROMNode::LoadRules(wstring knowledge_file)
 	if (m_parent == nullptr) //only the root will have the reference to the rules
 	{
 		m_KnowledgeBase = new EDS::CKnowledgeBase();
-		return m_KnowledgeBase->CreateKnowledgeBase(knowledge_file);
+		bool retval = m_KnowledgeBase->CreateKnowledgeBase(knowledge_file, threads);
+		m_KnowledgeBase->InputValueGetterPtr = [=](const wstring& attrName, void* obj)
+		{
+			return ((ROMNode*)obj)->GetATableInputValue(attrName);
+		};
+		return retval;
 	}
 	else
 		return false;
 }
 
-bool ROMNode::LoadRulesFromString(wstring xmlStr)
+bool ROMNode::LoadRulesFromString(wstring xmlStr, size_t threads)
 {
 	if (m_KnowledgeBase)
 	{
@@ -537,7 +528,12 @@ bool ROMNode::LoadRulesFromString(wstring xmlStr)
 	if (m_parent == nullptr) //only the root will have the reference to the rules
 	{
 		m_KnowledgeBase = new EDS::CKnowledgeBase();
-		return m_KnowledgeBase->CreateKnowledgeBaseFromString(xmlStr);
+		bool retval = m_KnowledgeBase->CreateKnowledgeBaseFromString(xmlStr, threads);
+		m_KnowledgeBase->InputValueGetterPtr = [&](const wstring& attrName, void* obj)
+		{
+			return ((ROMNode*)obj)->GetATableInputValue(attrName);
+		};
+		return retval;
 	}
 	else
 		return false;
@@ -549,8 +545,7 @@ vector<wstring> ROMNode::EvaluateTable(wstring evalTable, wstring output, bool b
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadInputs(evalTable);
-		retval = knowledge->EvaluateTable(evalTable, output, bGetAll);
+		retval = knowledge->EvaluateTable(evalTable, output, bGetAll, this);
 	}
 	return retval;
 }
@@ -561,8 +556,7 @@ vector<wstring> ROMNode::EvaluateTable(wstring evalTable, wstring output)
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadInputs(evalTable);
-		retval = knowledge->EvaluateTable(evalTable, output);
+		retval = knowledge->EvaluateTable(evalTable, output, this);
 	}
 	return retval;
 }
@@ -573,8 +567,7 @@ map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable, bool bG
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadInputs(evalTable);
-		retval = knowledge->EvaluateTable(evalTable, bGetAll);
+		retval = knowledge->EvaluateTable(evalTable, bGetAll, this);
 	}
 	return retval;
 }
@@ -585,69 +578,53 @@ map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable)
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadInputs(evalTable);
-		retval = knowledge->EvaluateTable(evalTable);
+		retval = knowledge->EvaluateTable(evalTable, this);
 	}
 	return retval;
 }
 
 
 
-vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring output, wstring param, bool bGetAll)
+vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring output, wstring& param, bool bGetAll)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadInputs(evalTable);
-		retval = knowledge->EvaluateTableWithParam(evalTable, output, param, bGetAll);
+		retval = knowledge->EvaluateTableWithParam(evalTable, output, param, bGetAll, this);
 	}
 	return retval;
 }
 
-vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring output, wstring param)
+vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring output, wstring& param)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadInputs(evalTable);
-		retval = knowledge->EvaluateTableWithParam(evalTable, output, param);
+		retval = knowledge->EvaluateTableWithParam(evalTable, output, param, this);
 	}
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable, wstring param, bool bGetAll)
+map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable, wstring& param, bool bGetAll)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadInputs(evalTable);
-		retval = knowledge->EvaluateTableWithParam(evalTable, param, bGetAll);
+		retval = knowledge->EvaluateTableWithParam(evalTable, param, bGetAll, this);
 	}
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable, wstring param)
+map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable, wstring& param)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadInputs(evalTable);
-		retval = knowledge->EvaluateTableWithParam(evalTable, param);
-	}
-	return retval;
-}
-
-wstring ROMNode::GetEvalParameter()
-{
-	wstring retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
-	if (knowledge)
-	{
-		retval = knowledge->GetEvalParameter();
+		retval = knowledge->EvaluateTableWithParam(evalTable, param, this);
 	}
 	return retval;
 }
@@ -655,7 +632,7 @@ wstring ROMNode::GetEvalParameter()
 wstring ROMNode::GetFirstTableResult(wstring tableName, wstring output)
 {
 	wstring retval = L"";
-	vector<wstring> res = EvaluateTable(tableName, output);
+	vector<wstring> res = EvaluateTable(tableName, output, this);
 	if (res.size() > 0)
 		retval = res[0];
 	return retval;
@@ -667,8 +644,7 @@ vector<wstring> ROMNode::ReverseEvaluateTable(wstring evalTable, wstring inputAt
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadOutputs(evalTable);
-		retval = knowledge->ReverseEvaluateTable(evalTable, inputAttr, bGetAll);
+		retval = knowledge->ReverseEvaluateTable(evalTable, inputAttr, bGetAll, this);
 	}
 	return retval;
 }
@@ -679,8 +655,7 @@ vector<wstring> ROMNode::ReverseEvaluateTable(wstring evalTable, wstring inputAt
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadOutputs(evalTable);
-		retval = knowledge->ReverseEvaluateTable(evalTable, inputAttr);
+		retval = knowledge->ReverseEvaluateTable(evalTable, inputAttr, this);
 	}
 	return retval;
 }
@@ -691,8 +666,7 @@ map<wstring, vector<wstring> > ROMNode::ReverseEvaluateTable(wstring evalTable, 
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadOutputs(evalTable);
-		retval = knowledge->ReverseEvaluateTable(evalTable, bGetAll);
+		retval = knowledge->ReverseEvaluateTable(evalTable, bGetAll, this);
 	}
 	return retval;
 }
@@ -703,42 +677,9 @@ map<wstring, vector<wstring> > ROMNode::ReverseEvaluateTable(wstring evalTable)
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		LoadOutputs(evalTable);
-		retval = knowledge->ReverseEvaluateTable(evalTable);
+		retval = knowledge->ReverseEvaluateTable(evalTable, this);
 	}
 	return retval;
-}
-
-vector<wstring> ROMNode::LoadInputs(wstring evalTable)
-{
-	vector<wstring> inputs;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
-	if (knowledge)
-	{
-		inputs = knowledge->GetInputDependencies(evalTable);
-		for (vector<wstring>::iterator it = inputs.begin(); it != inputs.end(); it++)
-		{
-			wstring value = GetATableInputValue(*it);
-			knowledge->SetInputValue(*it, value);
-		}
-	}
-	return inputs;
-}
-
-vector<wstring> ROMNode::LoadOutputs(wstring evalTable)
-{
-	vector<wstring> outputs;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
-	if (knowledge)
-	{
-		outputs = knowledge->GetOutputAttrs(evalTable);
-		for (vector<wstring>::iterator it = outputs.begin(); it != outputs.end(); it++)
-		{
-			wstring value = GetATableInputValue(*it);
-			knowledge->SetInputValue(*it, value);
-		}
-	}
-	return outputs;
 }
 
 vector<wstring> ROMNode::GetPossibleValues(wstring evalTable, wstring outputName)
@@ -888,7 +829,7 @@ wstring ROMNode::_generateXML(bool bRegen)
 
 		//object values
 		wstring objAttrs = L" ";
-		for (MAPWSTRS::iterator itObjValue = m_nodeValues.begin(); itObjValue != m_nodeValues.end(); itObjValue++)
+		for (auto itObjValue = m_nodeValues.begin(); itObjValue != m_nodeValues.end(); itObjValue++)
 		{
 			objAttrs+= itObjValue->first;
 			objAttrs+=L"=\"";
@@ -903,12 +844,12 @@ wstring ROMNode::_generateXML(bool bRegen)
 		{
 			wstring allAttrs = L"";
 			//attributes of this object
-			for (MAPWSTRMAP::iterator it = m_attrs.begin(); it != m_attrs.end(); it++)
+			for (auto it = m_attrs.begin(); it != m_attrs.end(); it++)
 			{
 				wstring attrObject = L"<Attribute id=\"";
 				attrObject+=it->first;
 				attrObject+=L"\" ";
-				for (MAPWSTRS::iterator itValue = it->second.begin(); itValue != it->second.end(); itValue++)
+				for (auto itValue = it->second.begin(); itValue != it->second.end(); itValue++)
 				{
 					attrObject+=itValue->first;
 					attrObject+=L"=\"";

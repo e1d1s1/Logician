@@ -2,10 +2,23 @@
 <Tables>
   <Table name="ClassDictionary" getall="false">
     <Inputs>
+      <Attr>inputAttr1</Attr>
+      <Value/>
+      <Value/>
+      <Value operation="1">A</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Inputs>
       <Attr>CLASSID</Attr>
       <Value operation="1">TestApplication</Value>
-      <Value/>
-      <Value/>
+      <Value operation="1">SubClass1</Value>
+      <Value operation="2">TestApplication</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -17,8 +30,8 @@
     <Outputs>
       <Attr>Name</Attr>
       <Value operation="4096">eval(Dictionary, Name)</Value>
-      <Value/>
-      <Value/>
+      <Value operation="1">cDictAttr1</Value>
+      <Value operation="1">aDictAttr3</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -30,8 +43,8 @@
     <Outputs>
       <Attr>Description</Attr>
       <Value operation="4096">eval(Dictionary, Description)</Value>
-      <Value/>
-      <Value/>
+      <Value operation="1">Will be 2 Attrs</Value>
+      <Value operation="1">SubClass2 single Boolean Attribute</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -43,8 +56,8 @@
     <Outputs>
       <Attr>DefaultValue</Attr>
       <Value operation="4096">eval(Dictionary, DefaultValue)</Value>
-      <Value/>
-      <Value/>
+      <Value operation="1">~</Value>
+      <Value operation="1">~</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -56,8 +69,8 @@
     <Outputs>
       <Attr>AttributeType</Attr>
       <Value operation="4096">eval(Dictionary, AttributeType)</Value>
-      <Value/>
-      <Value/>
+      <Value operation="1">SINGLESELECT</Value>
+      <Value operation="1">BOOLEAN</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -69,8 +82,8 @@
     <Outputs>
       <Attr>RuleTable</Attr>
       <Value operation="4096">eval(Dictionary, RuleTable)</Value>
-      <Value/>
-      <Value/>
+      <Value operation="1">cDictAttr1</Value>
+      <Value operation="1">DictAttr3</Value>
       <Value/>
       <Value/>
       <Value/>

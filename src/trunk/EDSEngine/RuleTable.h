@@ -36,8 +36,8 @@ public:
 	CRuleTable(void);
 	~CRuleTable(void);
 
-	vector<wstring> EvaluateTable(wstring outputAttr, bool bGetAll = true, bool bForward = true); //results come back as the full strings
-	map<wstring, vector<wstring> > EvaluateTable(bool bGetAll = true, bool bForward = true);
+	vector<wstring> EvaluateTable(wstring outputAttr, bool bGetAll, bool bForward, void* context = nullptr); //results come back as the full strings
+	map<wstring, vector<wstring> > EvaluateTable(bool bGetAll, bool bForward, void* context = nullptr);
 	bool HasChain() {return bHasChain;}
 	bool HasJS() {return bHasJavascript;}
 	bool HasPython() {return bHasPython;}
@@ -61,15 +61,15 @@ public:
 		vector<wstring> formulaInputs, CBimapper *stringMap,
 		wstring name = L"defualt", bool GetAll = false);
 	void EnbleDebugging(bool enable) { m_DEBUGGING = enable; }
-	void SetThreadCount(unsigned short threads) { m_Threads = threads; }
+	void SetThreadCount(size_t threads) { m_Threads = threads; }
 
 	wstring DebugMessage;
-	function<wstring(const wstring&)> InputValueGetter;
+	function<wstring(const wstring&, void*)> InputValueGetter;
 
 private:
 	void DebugEval(const wstring& outputAttr, const vector<CToken>& inputValues, const map<size_t, set<wstring>>& solutions);
-    vector<bool> _runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values);
-    bool _runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, vector<bool>& colResults);
+    vector<bool> _runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, void* context);
+    bool _runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, vector<bool>& colResults, void* context);
 	void _init();
 
 	vector<pair<wstring, vector<CRuleCell> > > m_InputAttrsTests; //the test table, input rows
@@ -83,7 +83,7 @@ private:
 	bool bHasJavascript;
 	bool bGetAll;
 	bool m_DEBUGGING;
-	unsigned short m_Threads;
+	size_t m_Threads;
 	bool m_ThreadingEnabled;
 };
 

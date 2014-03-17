@@ -31,10 +31,8 @@ namespace ROM
 		ROMDictionary(ROMNode* context) {CreateROMDictionary(context);}
 		ROMDictionary() {}
 		void CreateROMDictionary(ROMNode* context);
-		virtual ~ROMDictionary(void){}
-		wstring	GetTableDebugMessages() {if (m_ROMContext != NULL) return m_ROMContext->GetTableDebugMessages(); else return L"";}
-		void GenerateTableDebugMessages(bool bGenerate) {if (m_ROMContext != NULL) m_ROMContext->GenerateTableDebugMessages(bGenerate);}
-
+		virtual ~ROMDictionary(void){}		
+		
 		void LoadDictionary(wstring dictionaryTable);
 		ROMDictionaryAttribute* GetDictionaryAttr(wstring dictAttrName);
 		map<wstring, ROMDictionaryAttribute>* GetAllDictionaryAttrs() {return &m_dict;}

@@ -29,8 +29,8 @@ using namespace std;
 class CDecode
 {
 public:
-	CDecode(CRuleCell& outputCell, function<wstring(const wstring&)> inputAttrGetter, CBimapper* stringMap);
-	CDecode(CToken& inputValue, CRuleCell& cell, function<wstring(const wstring&)> inputAttrGetter, CBimapper* stringMap);
+	CDecode(CRuleCell& outputCell, function<wstring(const wstring&, void*)> inputAttrGetter, CBimapper* stringMap, void* context = nullptr);
+	CDecode(CToken& inputValue, CRuleCell& cell, function<wstring(const wstring&, void*)> inputAttrGetter, CBimapper* stringMap, void* context = nullptr);
 	~CDecode(void);
 	bool EvaluateInputCell();
 	vector<wstring> EvaluateOutputCell();
@@ -41,11 +41,12 @@ private:
 	wstring ReplaceAGet(const wstring& s, bool bForceZero);
 	void CheckForInputGets();
 
-	function<wstring(const wstring&)> m_inputAttrGetter;
+	function<wstring(const wstring&, void*)> m_inputAttrGetter;
 	CToken *m_value;
 	vector<size_t> *m_tests;
 	long m_operator;
 	CBimapper *m_stringsMap;
+	void* m_context;
 };
 
 /*
