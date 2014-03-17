@@ -87,7 +87,7 @@ CRuleTable::CRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTest
 	CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll);
 }
 
-map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bForward)
+map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bForward, void* context)
 {
 	map<wstring, vector<wstring> > retval;
 	vector<pair<wstring, vector<CRuleCell> > > *resultCollection;
@@ -99,14 +99,14 @@ map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bFor
 	//for all the outputs get the results
 	for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = resultCollection->begin(); itOut != resultCollection->end(); itOut++)
 	{
-		vector<wstring> result = EvaluateTable((*itOut).first, bGetAll, bForward);
+		vector<wstring> result = EvaluateTable((*itOut).first, bGetAll, bForward, context);
 		retval[(*itOut).first] = result;
 	}
 
 	return retval;
 }
 
-vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool bForward)
+vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool bForward, void* context)
 {
 	vector<wstring> retval;
 	vector<CToken> values;
@@ -132,13 +132,13 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 		{
 			wstring attrName = it->first;
 			CToken token;
-			token.Value = InputValueGetter(attrName);
+			token.Value = InputValueGetter(attrName, context);
 			token.ID = m_stringsMap->GetIDByString(token.Value);
 			values.push_back(token);
 		}
 
 		//sweep down the table for all inputs and do test(s)
-		colResults = _runTests(bGetAll, inputCollection, values);
+		colResults = _runTests(bGetAll, inputCollection, values, context);
 
 	} //done inputs
 	else if (inputCollection->size() == 0 && !bGetAll)
@@ -164,7 +164,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 		if (colResults[result] && result < results.size())
 		{
 			CRuleCell outputCell = results[result];
-			CDecode decoder(outputCell, InputValueGetter, m_stringsMap);
+			CDecode decoder(outputCell, InputValueGetter, m_stringsMap, context);
 			if (outputCell.Operation & CHAIN)
 				bHasChain = true;
 			if (outputCell.Operation & PYTHON)
@@ -201,7 +201,7 @@ vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool
 	return retval;
 }
 
-vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values)
+vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, void* context)
 {
     //sweep down the table for all inputs and do test(s)
     vector<bool> colResultsDefault (m_Tests, false);
@@ -217,7 +217,7 @@ vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRu
             size_t endIndex = i == m_Threads - 1 ? m_Tests : (i + 1) * testsPerThread;
             function<bool(void)> worker = [&]()
             {
-                return _runTestGroup(bGetAll, startIndex, endIndex, inputCollection, values, colResults);
+                return _runTestGroup(bGetAll, startIndex, endIndex, inputCollection, values, colResults, context);
             };
             threads[i] = thread(worker);
         }
@@ -229,13 +229,13 @@ vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRu
     }
     else
     {
-        _runTestGroup(bGetAll, 0, m_Tests, inputCollection, values, colResults);
+        _runTestGroup(bGetAll, 0, m_Tests, inputCollection, values, colResults, context);
     }
 
     return colResults;
 }
 
-bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell>>>* inputCollection, vector<CToken>& values, vector<bool>& colResults)
+bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell>>>* inputCollection, vector<CToken>& values, vector<bool>& colResults, void* context)
 {
     bool bHaveSolution = true;
     for (size_t testIndex = startIndex; testIndex < endIndex; testIndex++)
@@ -246,7 +246,7 @@ bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex,
         {
             if ( testIndex < (*itTests).second.size())
             {
-				CDecode decoder(values[inputCnt], (*itTests).second[testIndex], InputValueGetter, m_stringsMap);
+				CDecode decoder(values[inputCnt], (*itTests).second[testIndex], InputValueGetter, m_stringsMap, context);
                 bHaveSolution = decoder.EvaluateInputCell();
             }
             inputCnt++;

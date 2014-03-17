@@ -20,6 +20,8 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <functional>
+#include <unordered_map>
 #include "KnowledgeBase.h"
 #include "utilities.h"
 
@@ -42,10 +44,7 @@ namespace ROM
 		ROMNode& operator=(const ROMNode&) = delete;  // Prevent assignment
 		void CreateROMNode(wstring id);
 		void CreateROMNode(string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
-		void				SetTableDebugHandler(DebugHandler debugger);
-		void				GenerateTableDebugMessages(bool bGenerate);
-		wstring				GetTableDebugMessages();
-		
+		void				SetTableDebugHandler(std::function<void(const wstring&)> debugger);
 
 		//relational functions
 		ROMNode*			GetRoot();		
@@ -78,20 +77,19 @@ namespace ROM
 		wstring				GetROMObjectID() {return m_id;}
 		void				SetROMObjectID(wstring id) {m_id = id;}
 		string				GetROMGUID() {return m_guid;}
-		MAPWSTRMAP			GetAllAttributes() {return m_attrs;}
+		unordered_map<wstring, std::unordered_map<wstring, wstring>> GetAllAttributes() { return m_attrs; }
 
 		//rules
-		bool				LoadRules(wstring knowledge_file);
-		bool				LoadRulesFromString(wstring xmlStr);
+		bool				LoadRules(wstring knowledge_file, size_t threads = 1);
+		bool				LoadRulesFromString(wstring xmlStr, size_t threads = 1);
 		vector<wstring>		EvaluateTable(wstring evalTable, wstring output, bool bGetAll);
 		vector<wstring>		EvaluateTable(wstring evalTable, wstring output);
 		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable, bool bGetAll);
 		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable);
-		vector<wstring>		EvaluateTableWithParam(wstring evalTable, wstring output, wstring param, bool bGetAll);
-		vector<wstring>		EvaluateTableWithParam(wstring evalTable, wstring output, wstring param);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring evalTable, wstring param, bool bGetAll);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring evalTable, wstring param);
-		wstring				GetEvalParameter();
+		vector<wstring>		EvaluateTableWithParam(wstring evalTable, wstring output, wstring& param, bool bGetAll);
+		vector<wstring>		EvaluateTableWithParam(wstring evalTable, wstring output, wstring& param);
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring evalTable, wstring& param, bool bGetAll);
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring evalTable, wstring& param);
 		wstring				GetFirstTableResult(wstring tableName, wstring output);
 		vector<wstring>		ReverseEvaluateTable(wstring evalTable, wstring inputAttr, bool bGetAll);
 		vector<wstring>		ReverseEvaluateTable(wstring evalTable, wstring inputAttr);
@@ -129,11 +127,10 @@ namespace ROM
 		vector<string>		EvaluateTable(string evalTable, string output) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output)));}
 		map<string, vector<string> > EvaluateTable(string evalTable, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable), bGetAll));}
 		map<string, vector<string> > EvaluateTable(string evalTable) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable)));}
-		vector<string>		EvaluateTableWithParam(string evalTable, string output, string param, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), MBCStrToWStr(param), bGetAll));}
-		vector<string>		EvaluateTableWithParam(string evalTable, string output, string param) {return ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), MBCStrToWStr(param)));}
-		map<string, vector<string> > EvaluateTableWithParam(string evalTable, string param, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(param), bGetAll));}
-		map<string, vector<string> > EvaluateTableWithParam(string evalTable, string param) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(param)));}
-		string				GetEvalParameterA() {return ROMUTIL::WStrToMBCStr(GetEvalParameter());}
+		vector<string>		EvaluateTableWithParam(string evalTable, string output, string& param, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), MBCStrToWStr(param), bGetAll));}
+		vector<string>		EvaluateTableWithParam(string evalTable, string output, string& param) {return ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), MBCStrToWStr(param)));}
+		map<string, vector<string> > EvaluateTableWithParam(string evalTable, string& param, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(param), bGetAll));}
+		map<string, vector<string> > EvaluateTableWithParam(string evalTable, string& param) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(param)));}
 		string				GetFirstTableResult(string tableName, string output) {return WStrToMBCStr(GetFirstTableResult(ROMUTIL::MBCStrToWStr(tableName), ROMUTIL::MBCStrToWStr(output)));}
 		vector<string>		ReverseEvaluateTable(string evalTable, string inputAttr, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr), bGetAll));}
 		vector<string>		ReverseEvaluateTable(string evalTable, string inputAttr) {return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr)));}
@@ -143,8 +140,6 @@ namespace ROM
 		string				EvaluateXPATH(string xpath) {return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath), m_guid));}
 
 	private:
-		vector<wstring>			LoadInputs(wstring evalTable);
-		vector<wstring>			LoadOutputs(wstring evalTable);
 		vector<wstring>			GetPossibleValues(wstring evalTable, wstring outputName);
 		wstring					GetATableInputValue(wstring input);
 		ROMNode*				_findObjectGUID(string guid);
@@ -157,6 +152,7 @@ namespace ROM
 		void					_createXMLDoc(bool bForceLoad = false);
 		wstring					_convertXMLDocToString(bool indented);
 		EDS::CKnowledgeBase*	_getKnowledge();
+		ROMNode*				_getActiveContext();
 		void					_init();
 #ifdef USE_MSXML
 		Document				_createMSXMLDoc();
@@ -171,9 +167,9 @@ namespace ROM
 		vector<ROMNode*> m_children;
 		vector<ROMNode*> m_friends;
 		ROMNode* m_parent;
-		MAPWSTRMAP m_attrs;
-		MAPWSTRS m_nodeValues;
+		unordered_map<wstring, std::unordered_map<wstring, wstring> > m_attrs;
+		unordered_map<wstring, wstring> m_nodeValues;
 
-		EDS::CKnowledgeBase		*m_KnowledgeBase;
+		EDS::CKnowledgeBase*	m_KnowledgeBase;
 	};
 }

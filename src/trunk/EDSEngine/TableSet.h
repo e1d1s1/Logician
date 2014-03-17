@@ -34,7 +34,7 @@ public:
 	void AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
 		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
 		vector<wstring> formulaInputs, CBimapper *stringMap, wstring name = L"defualt", bool GetAll = false);
-	void Initialize();
+	void Initialize(size_t threads = 1);
 	CRuleTable* GetTable(wstring tableName);
 	vector<wstring> GetInputAttrs(wstring tableName);
 	vector<wstring> GetInputDependencies(wstring tableName);
@@ -48,4 +48,5 @@ private:
 	map<wstring, vector<wstring> > m_inputDependenciesByTable;
 	map<wstring, vector<wstring> > m_outputAttrsByTable;
 	bool bInitialized;
+	size_t m_threads;
 };

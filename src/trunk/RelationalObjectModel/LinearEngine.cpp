@@ -75,8 +75,8 @@ namespace ROM
 
 	void LinearEngine::LoadTrackingAttrs()
 	{
-		MAPWSTRMAP allAttrs = m_ROMContext->GetAllAttributes();
-		for (MAPWSTRMAP::iterator it = allAttrs.begin(); it != allAttrs.end(); it++)
+		auto allAttrs = m_ROMContext->GetAllAttributes();
+		for (auto it = allAttrs.begin(); it != allAttrs.end(); it++)
 		{
 			if (ROMUTIL::StringContains(it->first, TBUATTR))
 			{

@@ -114,7 +114,7 @@ int runTest(int thread_id)
 	//debugging
 	knowledge.DebugHandlerPtr = DebugMessage;
 
-	knowledge.InputValueGetterPtr = [&](const wstring& attrName)
+	knowledge.InputValueGetterPtr = [&](const wstring& attrName, void* ctx)
 	{
 		wstring retval;
 		auto it = state.find(attrName);

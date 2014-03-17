@@ -135,13 +135,13 @@ int runTest(int thread_id)
     Log(s2);
 
     Log("Getting attribute list on the base object");
-    MAPWSTRMAP allAttrs2 = rootNode.GetAllAttributes();
-    for (MAPWSTRMAP::iterator it = allAttrs2.begin(); it != allAttrs2.end(); it++)
+    auto allAttrs2 = rootNode.GetAllAttributes();
+    for (auto it = allAttrs2.begin(); it != allAttrs2.end(); it++)
     {
         wstring attrName = it->first;
-        MAPWSTRS kvp = it->second;
+        auto kvp = it->second;
         Log(L"Name: " + attrName);
-        for (MAPWSTRS::iterator it_kvp = kvp.begin(); it_kvp != kvp.end(); it_kvp++)
+        for (auto it_kvp = kvp.begin(); it_kvp != kvp.end(); it_kvp++)
         {
             Log(L"Key: " + it_kvp->first + L" Value: " + it_kvp->second);
         }
@@ -153,6 +153,7 @@ int runTest(int thread_id)
     if (rootNode.GetKnowledgeBase() != NULL && rootNode.GetKnowledgeBase()->IsOpen())
     {
         rootNode.SetTableDebugHandler(DebugMessage);
+
         Log("...loaded");
         Log("Evaluating table testtable1");
         vector<wstring> res = rootNode.EvaluateTable(L"testtable1", L"outputAttr1", true);
@@ -191,6 +192,25 @@ int runTest(int thread_id)
             Log("Order OK");
         else
             Log("FAILURE to assess the evaluation order");
+
+		Log("Checking a subclass dictionary");
+		ROMNode* childNode = new ROMNode(L"SubClass1");
+		rootNode.AddChildROMObject(childNode);
+		LinearEngine engineSubclass1(childNode, L"ClassDictionary");
+		map<wstring, ROMDictionaryAttribute>* attrs2 = engineSubclass1.GetAllDictionaryAttrs();
+		if (attrs2->size() == 2)
+			Log("subclass dictionary ok");
+		else
+			Log("FAILURE loading subClass1 dictionary");
+
+		ROMNode* childNode2 = new ROMNode(L"SubClass2");
+		rootNode.AddChildROMObject(childNode2);
+		LinearEngine engineSubclass2(childNode2, L"ClassDictionary");
+		map<wstring, ROMDictionaryAttribute>* attrs3 = engineSubclass2.GetAllDictionaryAttrs();
+		if (attrs3->size() == 1)
+			Log("subclass dictionary ok");
+		else
+			Log("FAILURE loading subClass2 dictionary");
 
         map<wstring, vector<wstring> > triggers = engine2.GetTriggers();
         if (triggers.size() == 3 &&

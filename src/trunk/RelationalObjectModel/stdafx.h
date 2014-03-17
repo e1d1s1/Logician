@@ -57,7 +57,7 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #include <stdexcept>
 
 using namespace std;
-
+/*
 #ifdef _MSC_VER
 	#if (_MSC_VER <= 1600)
 		#include <hash_map>
@@ -85,13 +85,11 @@ using namespace std;
 	typedef std::unordered_map<size_t, std::unordered_map<wstring, wstring> > MAPUINTMAP;
 	typedef std::unordered_map<wstring, std::unordered_map<wstring, wstring> > MAPWSTRMAP;
 #endif
-
+	*/
 #define ATTRIBUTE_NODE L"Attribute"
 #define OBJECT_NODE L"Object"
 #define XSLT_TOP L"<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><xsl:output method=\"text\" omit-xml-declaration=\"yes\" encoding=\"UTF-8\"/>"
 #define XSLT_BOTTOM L"\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
-//#define XSLT_MSXML_INDENT L"<?xml version=\"1.0\" encoding=\"utf-8\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><xsl:output method=\"xml\" indent=\"yes\" version=\"1.0\" encoding=\"UTF-8\"/><xsl:template match=\"@* | node()\"><xsl:copy><xsl:apply-templates select=\"@* | node()\"/></xsl:copy></xsl:template></xsl:stylesheet>"
-
 inline void ReportROMError(std::string errorMsg)
 {	
 	std::cerr<<errorMsg.c_str();

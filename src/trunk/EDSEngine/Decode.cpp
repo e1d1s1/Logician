@@ -27,21 +27,23 @@ CDecode::~CDecode(void)
 {
 }
 
-CDecode::CDecode(CRuleCell& outputCell, function<wstring(const wstring&)> inputAttrGetter, CBimapper* stringMap)
+CDecode::CDecode(CRuleCell& outputCell, function<wstring(const wstring&, void*)> inputAttrGetter, CBimapper* stringMap, void* context)
 {
 	m_tests = &outputCell.Values;
 	m_stringsMap = stringMap;
 	m_operator = outputCell.Operation;
 	m_inputAttrGetter = inputAttrGetter;
+	m_context = context;
 }
 
-CDecode::CDecode(CToken& inputValue, CRuleCell& inputCell, function<wstring(const wstring&)> inputAttrGetter, CBimapper* stringMap)
+CDecode::CDecode(CToken& inputValue, CRuleCell& inputCell, function<wstring(const wstring&, void*)> inputAttrGetter, CBimapper* stringMap, void* context)
 {
 	m_value = &inputValue;
 	m_tests = &inputCell.Values;
 	m_stringsMap = stringMap;
 	m_operator = inputCell.Operation;
 	m_inputAttrGetter = inputAttrGetter;
+	m_context = context;
 
 	CheckForInputGets();
 }
@@ -299,7 +301,7 @@ wstring CDecode::ReplaceAGet(const wstring& s, bool bForceZero)
 		bool bFoundAttr = false;
 		if (m_inputAttrGetter != nullptr)
 		{
-			wstring value = m_inputAttrGetter(attrName);
+			wstring value = m_inputAttrGetter(attrName, m_context);
 			if (value.size() > 0)
 			{
 				bFoundAttr = true;
