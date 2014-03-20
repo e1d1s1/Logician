@@ -39,7 +39,7 @@ long getTickCount()
     #endif
 }
 
-void cvtInt(long num, char *str)
+void cvtInt(int num, char *str)
 {
     sprintf( str, "%d", num );
 }
@@ -63,7 +63,7 @@ void CreateChildNodes(ROMNode *rootNode)
 
 int runTest(int thread_id)
 {
-	long start = 0, elapsed = 0, testROMTreeStart = 0, testROMTreeEnd = 0, testROMNodeStart = 0, testROMNodeEnd = 0;
+	long start = 0, elapsed = 0, testROMNodeStart = 0, testROMNodeEnd = 0;
 	string msg;
 	const int iMax = 1000;
 	char time[32] = "";
