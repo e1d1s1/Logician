@@ -43,6 +43,7 @@ using boost::asio::ip::tcp;
 #ifdef WIN32
 #include <direct.h>
 #endif
+
 #ifdef USE_JAVASCRIPT
 	#ifdef _MSC_VER
 		#ifdef USE_WINDOWS_SCRIPTING
@@ -1010,8 +1011,13 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file, size_t threads)
             char * pcPath = nullptr;
 #ifdef POSIX
             pcPath = getenv("TMPDIR");
+#ifdef P_tmpdir
             if (pcPath == nullptr)
                 pcPath = P_tmpdir;
+#else
+            if (pcPath == nullptr)
+                pcPath = _PATH_TMP;
+#endif
 #else
 			pcPath = getenv("TEMP");
 #endif

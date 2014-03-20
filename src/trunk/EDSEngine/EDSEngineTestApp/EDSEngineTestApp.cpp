@@ -73,8 +73,8 @@ public:
 
 void pause()
 {
+    std::puts("Press any key to continue...");
 #ifndef __GNUC__
-	std::puts("Press any key to continue...");
  	std::getchar();
 #else
     std::cin.get();
