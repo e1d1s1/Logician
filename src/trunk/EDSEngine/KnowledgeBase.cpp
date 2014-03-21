@@ -89,6 +89,7 @@ CKnowledgeBase::~CKnowledgeBase(void)
 CKnowledgeBase::CKnowledgeBase()
 {
 	m_DEBUGGING_MSGS = false;
+	m_remoteDebugging = false;
 	m_DEBUGGING_CON = L"localhost:11000";
 	m_IsOpen = false;
 	mapBaseIDtoTranslations.clear();
@@ -101,7 +102,7 @@ CKnowledgeBase::CKnowledgeBase()
 #endif
 }
 
-wstring CKnowledgeBase::DeLocalize(wstring localeValue)
+wstring CKnowledgeBase::DeLocalize(const wstring& localeValue)
 {
 	wstring retval = localeValue;
 	for (unordered_map<size_t, std::unordered_map<wstring, wstring> >::iterator itAllIndexes = mapBaseIDtoTranslations.begin(); itAllIndexes != mapBaseIDtoTranslations.end(); itAllIndexes++)
@@ -118,7 +119,7 @@ wstring CKnowledgeBase::DeLocalize(wstring localeValue)
 	return retval;
 }
 
-wstring CKnowledgeBase::Translate(wstring source, wstring sourceLocale, wstring destLocale)
+wstring CKnowledgeBase::Translate(const wstring& source, const wstring& sourceLocale, const wstring& destLocale)
 {
 	wstring retval = source;
 	size_t id = INVALID_STRING;
@@ -159,7 +160,7 @@ wstring CKnowledgeBase::Translate(wstring source, wstring sourceLocale, wstring 
 	return retval;
 }
 
-vector<wstring> CKnowledgeBase::GetAllPossibleOutputs(wstring tableName, wstring outputName)
+vector<wstring> CKnowledgeBase::GetAllPossibleOutputs(const wstring& tableName, const wstring& outputName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
 	if (table != nullptr)
@@ -168,7 +169,7 @@ vector<wstring> CKnowledgeBase::GetAllPossibleOutputs(wstring tableName, wstring
 		return vector<wstring>();
 }
 
-bool CKnowledgeBase::TableHasScript(wstring tableName)
+bool CKnowledgeBase::TableHasScript(const wstring& tableName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
 	if (table != nullptr)
@@ -177,7 +178,7 @@ bool CKnowledgeBase::TableHasScript(wstring tableName)
 		return false;
 }
 
-bool CKnowledgeBase::TableIsGetAll(wstring tableName)
+bool CKnowledgeBase::TableIsGetAll(const wstring& tableName)
 {
 	CRuleTable *table = m_TableSet.GetTable(tableName);
 	if (table != nullptr)
@@ -187,19 +188,19 @@ bool CKnowledgeBase::TableIsGetAll(wstring tableName)
 }
 
 //public functions
-vector<wstring> CKnowledgeBase::EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll, void* context)
+vector<wstring> CKnowledgeBase::EvaluateTable(const wstring& tableName, const wstring& outputAttr, bool bGetAll, void* context)
 {
 	wstring param = L"";
 	return EvaluateTableWithParam(tableName, outputAttr, bGetAll, param, context);
 }
 
-map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTable(wstring tableName, bool bGetAll, void* context)
+map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTable(const wstring& tableName, bool bGetAll, void* context)
 {
 	wstring param = L"";
 	return EvaluateTableWithParam(tableName, bGetAll, param, context);
 }
 
-vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, std::wstring outputAttr, bool bGetAll, std::wstring& param, void* context)
+vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName, const wstring& outputAttr, bool bGetAll, std::wstring& param, void* context)
 {
 	vector<wstring> retval;
 	try
@@ -537,7 +538,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, s
 	return retval;
 }
 
-wstring CKnowledgeBase::GetFirstTableResult(wstring tableName, wstring outputAttr, void* context)
+wstring CKnowledgeBase::GetFirstTableResult(const wstring& tableName, const wstring& outputAttr, void* context)
 {
 	wstring retval = L"";
 	vector<wstring> retAll = EvaluateTable(tableName, outputAttr, context);
@@ -547,7 +548,7 @@ wstring CKnowledgeBase::GetFirstTableResult(wstring tableName, wstring outputAtt
 	return retval;
 }
 
-vector<wstring> CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll, void* context)
+vector<wstring> CKnowledgeBase::ReverseEvaluateTable(const wstring& tableName, const wstring& inputAttr, bool bGetAll, void* context)
 {
 	vector<wstring> retval;
 	//no chaining or scripting in reverse
@@ -568,7 +569,7 @@ vector<wstring> CKnowledgeBase::ReverseEvaluateTable(wstring tableName, wstring 
 	return retval;
 }
 
-map<wstring, vector<wstring> > CKnowledgeBase::ReverseEvaluateTable(wstring tableName, bool bGetAll, void* context)
+map<wstring, vector<wstring> > CKnowledgeBase::ReverseEvaluateTable(const wstring& tableName, bool bGetAll, void* context)
 {
 	map<wstring, vector<wstring> > retval;
 
@@ -595,7 +596,7 @@ map<wstring, vector<wstring> > CKnowledgeBase::ReverseEvaluateTable(wstring tabl
 	return retval;
 }
 
-wstring CKnowledgeBase::XMLSafe(wstring str)
+wstring CKnowledgeBase::XMLSafe(const wstring& str)
 {
 	//replace any illegal characters with escapes
 	wstring retval = EDSUTIL::FindAndReplace(str, L"\"", L"&quot;");
@@ -606,7 +607,7 @@ wstring CKnowledgeBase::XMLSafe(wstring str)
 	return retval;
 }
 
-void CKnowledgeBase::SendToDebugServer(wstring msg)
+void CKnowledgeBase::SendToDebugServer(const wstring& msg)
 {
 	try
 	{
@@ -614,16 +615,20 @@ void CKnowledgeBase::SendToDebugServer(wstring msg)
 		{
 			DebugHandlerPtr(msg);
 		}
+
+		if (m_remoteDebugging)
+		{
 #ifndef DISABLE_DECISIONLOGIC_INTEGRATION
-		boost::asio::io_service io_service;
-		tcp::resolver resolver(io_service);
-		vector<string> con = EDSUTIL::Split(EDSUTIL::ToASCIIString(m_DEBUGGING_CON), ":");
-		tcp::resolver::query query(tcp::v4(), con[0], con[1]);
-		tcp::resolver::iterator iterator = resolver.resolve(query);
-		tcp::socket sock(io_service);
-		sock.connect(*iterator);
-		boost::asio::write(sock, boost::asio::buffer(msg.c_str(), msg.length()*sizeof(wchar_t)));
+			boost::asio::io_service io_service;
+			tcp::resolver resolver(io_service);
+			vector<string> con = EDSUTIL::Split(EDSUTIL::ToASCIIString(m_DEBUGGING_CON), ":");
+			tcp::resolver::query query(tcp::v4(), con[0], con[1]);
+			tcp::resolver::iterator iterator = resolver.resolve(query);
+			tcp::socket sock(io_service);
+			sock.connect(*iterator);
+			boost::asio::write(sock, boost::asio::buffer(msg.c_str(), msg.length()*sizeof(wchar_t)));
 #endif
+		}
 	}
 	catch (std::exception& e)
 	{
@@ -633,9 +638,9 @@ void CKnowledgeBase::SendToDebugServer(wstring msg)
 	}
 }
 
-bool CKnowledgeBase::DebugThisTable(wstring tableName)
+bool CKnowledgeBase::DebugThisTable(const wstring& tableName)
 {
-	if (m_DEBUGGING_MSGS)
+	if (m_DEBUGGING_MSGS && (m_remoteDebugging || DebugHandlerPtr != nullptr))
 	{
 		if (m_DebugTables.size() > 0)
 		{
@@ -651,7 +656,7 @@ bool CKnowledgeBase::DebugThisTable(wstring tableName)
 	return false;
 }
 
-map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(std::wstring tableName, bool bGetAll, std::wstring& param, void* context)
+map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName, bool bGetAll, std::wstring& param, void* context)
 {
 	map<wstring, vector<wstring> > retval;
 
@@ -983,6 +988,7 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file, size_t threads)
 	DebugHandlerPtr = nullptr;
 	InputValueGetterPtr = nullptr;
 	m_DEBUGGING_MSGS = false;
+	m_remoteDebugging = false;
 	mapBaseIDtoTranslations.clear();
 	m_threads = threads;
 #ifdef WIN32
@@ -1260,29 +1266,29 @@ vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::GetTableRowFromXML(No
 }
 
 //ASCII Overloads
-bool CKnowledgeBase::TableHasScript(std::string tableName)
+bool CKnowledgeBase::TableHasScript(const string& tableName)
 {
 	return TableHasScript(MBCStrToWStr(tableName));
 }
 
-bool CKnowledgeBase::TableIsGetAll(std::string tableName)
+bool CKnowledgeBase::TableIsGetAll(const string& tableName)
 {
 	return TableIsGetAll(MBCStrToWStr(tableName));
 }
 
-vector<string> CKnowledgeBase::EvaluateTable(string tableName, string outputAttr, bool bGetAll, void* context)
+vector<string> CKnowledgeBase::EvaluateTable(const string& tableName, const string& outputAttr, bool bGetAll, void* context)
 {
 	string param = "";
 	return EvaluateTableWithParam(tableName, outputAttr, bGetAll, param, context);
 }
 
-map<string, vector<string> > CKnowledgeBase::EvaluateTable(string tableName, bool bGetAll, void* context)
+map<string, vector<string> > CKnowledgeBase::EvaluateTable(const string& tableName, bool bGetAll, void* context)
 {
 	string param = "";
 	return EvaluateTableWithParam(tableName, bGetAll, param, context);
 }
 
-vector<string> CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std::string outputAttr, bool bGetAll, std::string& param, void* context)
+vector<string> CKnowledgeBase::EvaluateTableWithParam(const string& tableName, const string& outputAttr, bool bGetAll, string& param, void* context)
 {
     wstring wsParam = MBCStrToWStr(param);
 	vector<string> retval = ToMBCStringVector(EvaluateTableWithParam(MBCStrToWStr(tableName), MBCStrToWStr(outputAttr), bGetAll, wsParam, context));
@@ -1290,7 +1296,7 @@ vector<string> CKnowledgeBase::EvaluateTableWithParam(std::string tableName, std
     return retval;
 }
 
-std::map<string, vector<string> > CKnowledgeBase::EvaluateTableWithParam(std::string tableName, bool bGetAll, std::string& param, void* context)
+std::map<string, vector<string> > CKnowledgeBase::EvaluateTableWithParam(const string& tableName, bool bGetAll, string& param, void* context)
 {
 	wstring wsParam = MBCStrToWStr(param);
 	std::map<wstring, vector<wstring> > res = EvaluateTableWithParam(MBCStrToWStr(tableName), bGetAll, wsParam, context);
@@ -1303,12 +1309,12 @@ std::map<string, vector<string> > CKnowledgeBase::EvaluateTableWithParam(std::st
 	return retval;
 }
 
-string CKnowledgeBase::GetFirstTableResult(string tableName, string ouputAttr, void* context)
+string CKnowledgeBase::GetFirstTableResult(const string& tableName, const string& ouputAttr, void* context)
 {
 	return WStrToMBCStr(GetFirstTableResult(MBCStrToWStr(tableName), MBCStrToWStr(ouputAttr), context));
 }
 
-vector<string> CKnowledgeBase::ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll, void* context)
+vector<string> CKnowledgeBase::ReverseEvaluateTable(const string& tableName, const string& inputAttr, bool bGetAll, void* context)
 {
 	//no chaining or scripting in reverse
 	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
@@ -1322,7 +1328,7 @@ vector<string> CKnowledgeBase::ReverseEvaluateTable(string tableName, string inp
 		return vector<string>();
 }
 
-map<string, vector<string> > CKnowledgeBase::ReverseEvaluateTable(string tableName, bool bGetAll, void* context)
+map<string, vector<string> > CKnowledgeBase::ReverseEvaluateTable(const string& tableName, bool bGetAll, void* context)
 {
 	map<string, vector<string> > retval;
 
@@ -1341,22 +1347,22 @@ map<string, vector<string> > CKnowledgeBase::ReverseEvaluateTable(string tableNa
 	return retval;
 }
 
-vector<string> CKnowledgeBase::GetInputAttrs(std::string tableName)
+vector<string> CKnowledgeBase::GetInputAttrs(const string& tableName)
 {
 	return ToMBCStringVector(GetInputAttrs(MBCStrToWStr(tableName)));
 }
 
-vector<string> CKnowledgeBase::GetInputDependencies(std::string tableName)
+vector<string> CKnowledgeBase::GetInputDependencies(const string&tableName)
 {
 	return ToMBCStringVector(GetInputDependencies(MBCStrToWStr(tableName)));
 }
 
-vector<string> CKnowledgeBase::GetOutputAttrs(std::string tableName)
+vector<string> CKnowledgeBase::GetOutputAttrs(const string& tableName)
 {
 	return ToMBCStringVector(GetOutputAttrs(MBCStrToWStr(tableName)));
 }
 
-vector<string> CKnowledgeBase::GetAllPossibleOutputs(std::string tableName, std::string outputName)
+vector<string> CKnowledgeBase::GetAllPossibleOutputs(const string& tableName, const string& outputName)
 {
 	return ToMBCStringVector(GetAllPossibleOutputs(MBCStrToWStr(tableName), MBCStrToWStr(outputName)));
 }
@@ -1364,6 +1370,7 @@ vector<string> CKnowledgeBase::GetAllPossibleOutputs(std::string tableName, std:
 CKnowledgeBase::CKnowledgeBase(std::string knowledge_file, size_t threads)
 {
 	m_DEBUGGING_MSGS = false;
+	m_remoteDebugging = false;
 	m_DEBUGGING_CON = L"localhost:11000";
 	m_IsOpen = false;
 	mapBaseIDtoTranslations.clear();

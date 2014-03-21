@@ -35,26 +35,26 @@ namespace ROMUTIL
 {
 	string FindAndReplace (const string& source, const string target, const string replacement);
 	wstring FindAndReplace (const wstring& source, const wstring target, const wstring replacement);
-	bool StringContains(wstring source, wstring target);
-	bool StringBeginsWith(wstring source, wstring target);
-	vector<string> Split(string text, string separators);
-	vector<wstring> Split(wstring text, wstring separators);
-	bool StringIsNumeric(wstring s);
+	bool StringContains(const wstring& source, const wstring& target);
+	bool StringBeginsWith(const wstring& source, const wstring& target);
+	vector<string> Split(const string& text, const string& separators);
+	vector<wstring> Split(const wstring& text, const wstring& separators);
+	bool StringIsNumeric(const wstring& s);
 	wstring TrimString(wstring s);
-	string ToASCIIString(wstring s);
-	vector<string> WStrToMBCStrVector(vector<wstring> vectWS);
-	map<string, vector<string> > WStrToMBCStrMapVector(map<wstring, vector<wstring> >);
-	vector<string> ToASCIIStringVector(vector<wstring> vectWS);
-	vector<wstring> ToWStringVector(vector<string> vStr);
+	string ToASCIIString(const wstring& s);
+	vector<string> WStrToMBCStrVector(vector<wstring>& vectWS);
+	map<string, vector<string> > WStrToMBCStrMapVector(map<wstring, vector<wstring> >&);
+	vector<string> ToASCIIStringVector(const vector<wstring>& vectWS);
+	vector<wstring> ToWStringVector(const vector<string>& vStr);
 	string stringify(double x);
 	string stringify(long x);
 	string MakeGUID();
-	wstring encodeForXml(const std::wstring &sSrc);
+	wstring encodeForXml(const wstring& sSrc);
 #if USE_MSXML
 	wstring BSTR_T_ToWString(void* bstr); //void* to avoid reference issues when headers included in WinRT project
 #endif
-	wstring MBCStrToWStr(string mbStr);
-	string WStrToMBCStr(wstring wstr);
+	wstring MBCStrToWStr(const string& mbStr);
+	string WStrToMBCStr(const wstring& wstr);
 #if USE_LIBXML
 	wstring XMLStrToWStr(const unsigned char* mbStr);
 	wstring XMLStrToWStr(unsigned char* mbStr);

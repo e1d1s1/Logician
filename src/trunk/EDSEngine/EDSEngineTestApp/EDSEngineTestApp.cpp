@@ -113,6 +113,8 @@ int runTest(int thread_id)
 
 	//debugging
 	knowledge.DebugHandlerPtr = DebugMessage;
+	//decisionlogic connection
+	knowledge.EnableRemoteDebugger(false);
 
 	knowledge.InputValueGetterPtr = [&](const wstring& attrName, void* ctx)
 	{

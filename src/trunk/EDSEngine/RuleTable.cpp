@@ -52,10 +52,10 @@ void CRuleTable::_init()
 	m_ThreadingEnabled = false;
 }
 
-void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
-								vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
-								vector<wstring> formulaInputs, CBimapper *stringMap,
-								wstring name, bool GetAll)
+void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inputAttrsTests,
+								vector<pair<wstring, vector<CRuleCell> > >& outputAttrsValues,
+								vector<wstring>& formulaInputs, CBimapper *stringMap,
+								const wstring& name, bool GetAll)
 {
 	_init();
 
@@ -79,14 +79,6 @@ void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inpu
 	bGetAll = GetAll;
 }
 
-CRuleTable::CRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
-					   vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
-					   vector<wstring> formulaInputs, CBimapper *stringMap,
-					   wstring name, bool GetAll)
-{
-	CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll);
-}
-
 map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bForward, void* context)
 {
 	map<wstring, vector<wstring> > retval;
@@ -106,7 +98,7 @@ map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bFor
 	return retval;
 }
 
-vector<wstring> CRuleTable::EvaluateTable(wstring outputAttr, bool bGetAll, bool bForward, void* context)
+vector<wstring> CRuleTable::EvaluateTable(const wstring& outputAttr, bool bGetAll, bool bForward, void* context)
 {
 	vector<wstring> retval;
 	vector<CToken> values;
@@ -304,7 +296,7 @@ void CRuleTable::DebugEval(const wstring& outputAttr, const vector<CToken>& inpu
 	DebugMessage = xmlBlob;
 }
 
-vector<wstring> CRuleTable::GetAllPossibleOutputs(wstring outputName)
+vector<wstring> CRuleTable::GetAllPossibleOutputs(const wstring& outputName)
 {
 	vector<wstring> retval;
 	std::list<size_t> allValues;

@@ -36,7 +36,7 @@ public:
 	CRuleTable(void);
 	~CRuleTable(void);
 
-	vector<wstring> EvaluateTable(wstring outputAttr, bool bGetAll, bool bForward, void* context = nullptr); //results come back as the full strings
+	vector<wstring> EvaluateTable(const wstring& outputAttr, bool bGetAll, bool bForward, void* context = nullptr); //results come back as the full strings
 	map<wstring, vector<wstring> > EvaluateTable(bool bGetAll, bool bForward, void* context = nullptr);
 	bool HasChain() {return bHasChain;}
 	bool HasJS() {return bHasJavascript;}
@@ -47,19 +47,19 @@ public:
 	vector<wstring> GetAllOutputAttrNames();
 	vector<wstring> GetAllInputAttrNames();
 	vector<wstring> GetAllInputDependencies(); //input columns + formulas/gets
-	vector<wstring> GetAllPossibleOutputs(wstring outputName);
+	vector<wstring> GetAllPossibleOutputs(const wstring& outputName);
 	vector<pair<wstring, vector<CRuleCell> > > GetOutputAttrsValues() {return m_OutputAttrsValues;}
 	vector<pair<wstring, vector<CRuleCell> > > GetInputAttrsTests() {return m_InputAttrsTests;}
 
 	//ordered vector of (string)inputAttrName, (vector)inputAttrTest pairs, vector of outputAttrs
-	void CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
-		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
-		vector<wstring> formulaInputs, CBimapper *stringMap,
-		wstring name = L"defualt", bool GetAll = false);
-	CRuleTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
-		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
-		vector<wstring> formulaInputs, CBimapper *stringMap,
-		wstring name = L"defualt", bool GetAll = false);
+	void CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inputAttrsTests,
+		vector<pair<wstring, vector<CRuleCell> > >& outputAttrsValues,
+		vector<wstring>& formulaInputs, CBimapper *stringMap,
+		const wstring& name = L"defualt", bool GetAll = false);
+	CRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inputAttrsTests,
+		vector<pair<wstring, vector<CRuleCell> > >& outputAttrsValues,
+		vector<wstring>& formulaInputs, CBimapper *stringMap,
+		const wstring& name = L"defualt", bool GetAll = false) { CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll); }
 	void EnbleDebugging(bool enable) { m_DEBUGGING = enable; }
 	void SetThreadCount(size_t threads) { m_Threads = threads; }
 

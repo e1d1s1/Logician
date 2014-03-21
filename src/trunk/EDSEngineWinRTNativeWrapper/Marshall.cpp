@@ -28,12 +28,3 @@ IMap<String^, IVector<String^>^>^ GetIMapFromMapStrings(const map<wstring, vecto
 	}
 	return retval;
 }
-
-void MarshalIMapStringUInt (IMap<String^, size_t>^ dict, MAPWSTRUINT &mp)
-{
-	for (IKeyValuePair<String^, size_t>^ item : dict)
-	{
-		wstring key(item->Key->Data());
-		mp[key] = item->Value;
-	}
-}

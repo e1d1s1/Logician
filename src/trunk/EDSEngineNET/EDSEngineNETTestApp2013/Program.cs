@@ -28,9 +28,9 @@ namespace EDSEngineTestApp
                 write_result("OK: File opened");                  
 
             knowledge.DebugDelegate = write_debug;
-            //knowledge.SetDebugging(false);
+            knowledge.EnableRemoteDebugger(false);
 
-            InputValueGetterDelegate getValueDelegate = (string attrName) => 
+            InputValueGetterDelegate getValueDelegate = (string attrName, object context) => 
                 {
                     if (state.ContainsKey(attrName))
                         return state[attrName];

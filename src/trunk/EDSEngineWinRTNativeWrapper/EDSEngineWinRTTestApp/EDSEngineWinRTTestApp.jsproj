@@ -56,14 +56,12 @@
       <HintPath>..\Release\EDSEngineWinRT\EDSEngineWinRT.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
-    <Reference Include="EDSEngineNET" Condition="'$(Platform)'=='x64'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\x64\Release\EDSEngineWinRT\EDSEngineWinRT.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="Microsoft.WinJS.2.0, Version=1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EDSEngineWinRT.vcxproj" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
   <!-- To modify your build process, add your task inside one of the targets below then uncomment

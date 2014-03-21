@@ -21,14 +21,14 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 
 namespace ROM
 {
-	void LinearEngine::CreateLinearEngine(ROMNode* context, wstring dictionaryTable)
+	void LinearEngine::CreateLinearEngine(ROMNode* context, const wstring& dictionaryTable)
 	{
 		InvalidateMode = NORMALINVALIDATE;
 		TBUATTR = L"TBU_";
 		InitializeEngine(dictionaryTable);		
 	}
 
-	void LinearEngine::InitializeEngine(wstring dictionaryTable)
+	void LinearEngine::InitializeEngine(const wstring& dictionaryTable)
 	{
 		EDS::CKnowledgeBase *knowledge = m_ROMContext->_getKnowledge();
 		if (knowledge)
@@ -167,14 +167,14 @@ namespace ROM
 		}
 	}
 
-	void LinearEngine::EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents)
+	void LinearEngine::EvaluateForAttribute(const wstring& dictAttrName, const wstring& newValue, bool bEvalDependents)
 	{
 		vector<wstring> newValues;
 		newValues.push_back(newValue);
 		EvaluateForAttribute(dictAttrName, newValues, bEvalDependents);
 	}
 
-	void LinearEngine::EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents)
+	void LinearEngine::EvaluateForAttribute(const wstring& dictAttrName, vector<wstring>& newValues, bool bEvalDependents)
 	{
 		ResetValueChanged();
 		
@@ -251,18 +251,18 @@ namespace ROM
 		}
 	}
 
-	bool LinearEngine::IsTouchedByUser(wstring dictAttrName)
+	bool LinearEngine::IsTouchedByUser(const wstring& dictAttrName)
 	{
 		return m_ROMContext->GetAttributeExists(TBUATTR + dictAttrName);
 	}
 
-	void LinearEngine::SetTouchedByUser(wstring dictAttrName)
+	void LinearEngine::SetTouchedByUser(const wstring& dictAttrName)
 	{
 		m_dict[dictAttrName].ChangedByUser = true;
 		m_ROMContext->SetAttribute(TBUATTR + dictAttrName, L"Y");
 	}
 	
-	void LinearEngine::RemoveTouchedByUser(wstring dictAttrName)
+	void LinearEngine::RemoveTouchedByUser(const wstring& dictAttrName)
 	{
 		m_dict[dictAttrName].ChangedByUser = false;
 		m_ROMContext->RemoveAttribute(TBUATTR + dictAttrName);
@@ -294,14 +294,15 @@ namespace ROM
 		return retval;
 	}
 
-	void LinearEngine::FlagAttrInvalid(std::wstring dictAttrName)
+	void LinearEngine::FlagAttrInvalid(const wstring& dictAttrName)
 	{
 		m_dict[dictAttrName].ChangedByUser = false;
 		m_dict[dictAttrName].Valid = false;
 	}
 
-	void LinearEngine::EvalBoolean(std::wstring dictAttrName, std::wstring newValue)
+	void LinearEngine::EvalBoolean(const wstring& dictAttrName, const wstring& value)
 	{
+		wstring newValue = value;
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName, false);
 		vector<wstring> availableValues;
 
@@ -393,8 +394,9 @@ namespace ROM
 		}
 	}
 
-	void LinearEngine::EvalEdit(std::wstring dictAttrName, std::wstring newValue)
+	void LinearEngine::EvalEdit(const wstring& dictAttrName, const wstring& value)
 	{
+		wstring newValue = value;
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
 
@@ -544,8 +546,9 @@ namespace ROM
 			m_dict[dictAttrName].Visible = true;
 	}
 
-	void LinearEngine::EvalMultiSelect(std::wstring dictAttrName, vector<wstring> newValues)
+	void LinearEngine::EvalMultiSelect(const wstring& dictAttrName, const vector<wstring>& values)
 	{
+		vector<wstring> newValues = values;
 		//multi-select lists, checkbox lists
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
@@ -647,8 +650,9 @@ namespace ROM
 	}
 
 	//drop down list, radio button groups, etc
-	void LinearEngine::EvalSingleSelect(wstring dictAttrName, wstring newValue)
+	void LinearEngine::EvalSingleSelect(const wstring& dictAttrName, const wstring& value)
 	{
+		wstring newValue = value;
 		vector<wstring> res = m_ROMContext->EvaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName);
 		vector<wstring> availableValues;
 		m_dict[dictAttrName].Enabled = true;
@@ -737,13 +741,12 @@ namespace ROM
 		}
 	}
 
-	vector<wstring> LinearEngine::ParseOutPrefixes(int AttributeType, vector<wstring> values, vector<wstring> &valuesWithoutPrefixes)
+	vector<wstring> LinearEngine::ParseOutPrefixes(int AttributeType, const vector<wstring>& origValues, vector<wstring> &valuesWithoutPrefixes)
 	{
-		vector<wstring> origValues = values;
 		vector<wstring> prefixes;
 		valuesWithoutPrefixes.clear();
 
-		for (vector<wstring>::iterator it = origValues.begin(); it != origValues.end(); it++)
+		for (auto it = origValues.begin(); it != origValues.end(); it++)
 		{
 			wstring val = *it;
 			wstring fullPrefix;
@@ -776,7 +779,7 @@ namespace ROM
 		return prefixes;
 	}
 
-	void LinearEngine::EvaluateDependencies(wstring dictAttrName)
+	void LinearEngine::EvaluateDependencies(const wstring& dictAttrName)
 	{
 		m_EvalInternal = true;
 		if (m_mapTriggers.find(dictAttrName) != m_mapTriggers.end())
@@ -847,20 +850,18 @@ namespace ROM
 	}
 
 	//ASCII overloads
-	LinearEngine::LinearEngine(ROMNode* context, string dictionaryTable):ROMDictionary(context)
+	LinearEngine::LinearEngine(ROMNode* context, const string& dictionaryTable):ROMDictionary(context)
 	{
 		InitializeEngine(ROMUTIL::MBCStrToWStr(dictionaryTable));
 	}
 
-	void LinearEngine::EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents)
+	void LinearEngine::EvaluateForAttribute(const string& dictAttrName, const vector<string>& newValues, bool bEvalDependents)
 	{
-		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), ROMUTIL::ToWStringVector(newValues), bEvalDependents);
+		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), ToWStringVector(newValues), bEvalDependents);
 	}
 
-	void LinearEngine::EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents)
+	void LinearEngine::EvaluateForAttribute(const string& dictAttrName, const string& newValue, bool bEvalDependents)
 	{
-		vector<wstring> newValues;
-		newValues.push_back(ROMUTIL::MBCStrToWStr(newValue));
-		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), newValues, bEvalDependents);
+		EvaluateForAttribute(ROMUTIL::MBCStrToWStr(dictAttrName), MBCStrToWStr(newValue), bEvalDependents);
 	}
 }

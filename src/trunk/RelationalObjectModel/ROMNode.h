@@ -42,17 +42,18 @@ namespace ROM
 		ROMNode(string id) {CreateROMNode(id);}
 		ROMNode(const ROMNode&) = delete;             // Prevent copy-construction
 		ROMNode& operator=(const ROMNode&) = delete;  // Prevent assignment
-		void CreateROMNode(wstring id);
-		void CreateROMNode(string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
-		void				SetTableDebugHandler(std::function<void(const wstring&)> debugger);
+		void				CreateROMNode(wstring id);
+		void				CreateROMNode(string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
+		void				SetTableDebugHandler(function<void(const wstring&)> debugger);
+		void				EnableRemoteDebugger(bool enable) { if (m_KnowledgeBase) m_KnowledgeBase->EnableRemoteDebugger(enable); }
 
 		//relational functions
 		ROMNode*			GetRoot();
 		ROMNode*			GetParent() {return m_parent;}
 		vector<ROMNode*>	GetAllChildren(bool recurs);
-		vector<ROMNode*>	FindObjects(wstring xpath);
-		vector<ROMNode*>	FindAllObjectsByID(wstring id, bool recurs);
-		ROMNode*			FindObjectByGUID(wstring guid){return FindObjectByGUID(ToASCIIString(guid));}
+		vector<ROMNode*>	FindObjects(const wstring& xpath);
+		vector<ROMNode*>	FindAllObjectsByID(const wstring& id, bool recurs);
+		ROMNode*			FindObjectByGUID(const wstring& guid){ return FindObjectByGUID(ToASCIIString(guid)); }
 		bool				AddChildROMObject(ROMNode *child);
 		bool				RemoveChildROMObject(ROMNode *child);
 		bool				RemoveFromParent();
@@ -64,87 +65,87 @@ namespace ROM
 		ROMNode*			Clone();
 
 		//attribute functions
-		virtual wstring		GetAttribute(wstring id, wstring name, bool immediate = false);
-		virtual wstring		GetAttribute(wstring id, bool immediate = false) {return GetAttribute(id, L"value", immediate);}
-		virtual bool		GetAttributeExists(wstring id, wstring name = L"value");
-		virtual bool		SetAttribute(wstring id, wstring name, wstring value);
-		virtual bool		SetAttribute(wstring id, wstring value) {return SetAttribute(id, L"value", value);}
-		virtual bool		SetAttributeValue(wstring id, wstring value) {return SetAttribute(id, value);}
-		virtual bool		RemoveAttribute(wstring id, wstring name = L"value");
-		virtual bool		SetROMObjectValue(wstring name, wstring value);
-		virtual wstring		GetROMObjectValue(wstring name);
-		virtual bool		RemoveROMObjectValue(wstring name);
+		virtual wstring		GetAttribute(const wstring& id, const wstring& name, bool immediate = false);
+		virtual wstring		GetAttribute(const wstring& id, bool immediate = false) { return GetAttribute(id, L"value", immediate); }
+		virtual bool		GetAttributeExists(const wstring& id, const wstring& name = L"value");
+		virtual bool		SetAttribute(const wstring& id, const wstring& name, const wstring& value);
+		virtual bool		SetAttribute(const wstring& id, const wstring& value) { return SetAttribute(id, L"value", value); }
+		virtual bool		SetAttributeValue(const wstring& id, const wstring& value) { return SetAttribute(id, value); }
+		virtual bool		RemoveAttribute(const wstring& id, const wstring& name = L"value");
+		virtual bool		SetROMObjectValue(const wstring& name, const wstring& value);
+		virtual wstring		GetROMObjectValue(const wstring& name);
+		virtual bool		RemoveROMObjectValue(const wstring& name);
 		wstring				GetROMObjectID() {return m_id;}
-		void				SetROMObjectID(wstring id) {m_id = id;}
+		void				SetROMObjectID(const wstring& id) { m_id = id; }
 		string				GetROMGUID() {return m_guid;}
 		unordered_map<wstring, std::unordered_map<wstring, wstring>> GetAllAttributes() { return m_attrs; }
 
 		//rules
-		bool				LoadRules(wstring knowledge_file, size_t threads = 1);
-		bool				LoadRulesFromString(wstring xmlStr, size_t threads = 1);
-		vector<wstring>		EvaluateTable(wstring evalTable, wstring output, bool bGetAll);
-		vector<wstring>		EvaluateTable(wstring evalTable, wstring output);
-		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable, bool bGetAll);
-		map<wstring, vector<wstring> > EvaluateTable(wstring evalTable);
-		vector<wstring>		EvaluateTableWithParam(wstring evalTable, wstring output, bool bGetAll, wstring& param);
-		vector<wstring>		EvaluateTableWithParam(wstring evalTable, wstring output, wstring& param);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring evalTable, bool bGetAll, wstring& param);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring evalTable, wstring& param);
-		wstring				GetFirstTableResult(wstring tableName, wstring output);
-		vector<wstring>		ReverseEvaluateTable(wstring evalTable, wstring inputAttr, bool bGetAll);
-		vector<wstring>		ReverseEvaluateTable(wstring evalTable, wstring inputAttr);
-		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring evalTable, bool bGetAll);
-		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring evalTable);
+		bool				LoadRules(const wstring& knowledge_file, size_t threads = 1);
+		bool				LoadRulesFromString(const wstring& xmlStr, size_t threads = 1);
+		vector<wstring>		EvaluateTable(const wstring& evalTable, const wstring& output, bool bGetAll);
+		vector<wstring>		EvaluateTable(const wstring& evalTable, const wstring& output);
+		map<wstring, vector<wstring> > EvaluateTable(const wstring& evalTable, bool bGetAll);
+		map<wstring, vector<wstring> > EvaluateTable(const wstring& evalTable);
+		vector<wstring>		EvaluateTableWithParam(const wstring& evalTable, const wstring& output, bool bGetAll, wstring& param);
+		vector<wstring>		EvaluateTableWithParam(const wstring& evalTable, const wstring& output, wstring& param);
+		map<wstring, vector<wstring> > EvaluateTableWithParam(const wstring& evalTable, bool bGetAll, wstring& param);
+		map<wstring, vector<wstring> > EvaluateTableWithParam(const wstring& evalTable, wstring& param);
+		wstring				GetFirstTableResult(const wstring& tableName, const wstring& output);
+		vector<wstring>		ReverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, bool bGetAll);
+		vector<wstring>		ReverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr);
+		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring& evalTable, bool bGetAll);
+		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring& evalTable);
 		EDS::CKnowledgeBase* GetKnowledgeBase() {return _getKnowledge();}
 
 
 		//IO
 		wstring				SaveXML(bool indented);
-		bool				LoadXML(wstring xmlStr);
+		bool				LoadXML(const wstring& xmlStr);
 
 		//XPATH
-		wstring				EvaluateXPATH(wstring xpath, string guid);
-		wstring				EvaluateXPATH(wstring xpath) {return EvaluateXPATH(xpath, m_guid);}
+		wstring				EvaluateXPATH(const wstring& xpath, const string& guid);
+		wstring				EvaluateXPATH(const wstring& xpath) { return EvaluateXPATH(xpath, m_guid); }
 
 		//ascii overloads
-		vector<ROMNode*>	FindObjects(string xpath){return FindObjects(MBCStrToWStr(xpath));}
-		vector<ROMNode*>	FindAllObjectsByID(string id, bool recurs){return FindAllObjectsByID(MBCStrToWStr(id), recurs);}
-		ROMNode*			FindObjectByGUID(string guid);
-		string				GetAttribute(string id, string name, bool immediate = false) {return ROMUTIL::WStrToMBCStr(GetAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), immediate));}
-		string				GetAttribute(string id, bool immediate = false) {return GetAttribute(id, "value", immediate);}
-		bool				GetAttributeExists(string id, string name = "value") {return GetAttributeExists(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name));}
-		bool				SetAttribute(string id, string name, string value) {return SetAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), ROMUTIL::MBCStrToWStr(value));}
-		bool				SetAttribute(string id, string value) {return SetAttribute(id, "value", value);}
-		bool				RemoveAttribute(string id, string name = "value") {return RemoveAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name));}
-		bool				SetROMObjectValue(string name, string value) {return SetROMObjectValue(ROMUTIL::MBCStrToWStr(name), ROMUTIL::MBCStrToWStr(value));}
-		string				GetROMObjectValue(string name) {return ROMUTIL::WStrToMBCStr(GetROMObjectValue(ROMUTIL::MBCStrToWStr(name)));}
-		bool				RemoveROMObjectValue(string id) {return RemoveROMObjectValue(ROMUTIL::MBCStrToWStr(id));}
+		vector<ROMNode*>	FindObjects(const string& xpath){return FindObjects(MBCStrToWStr(xpath));}
+		vector<ROMNode*>	FindAllObjectsByID(const string& id, bool recurs){ return FindAllObjectsByID(MBCStrToWStr(id), recurs); }
+		ROMNode*			FindObjectByGUID(const string& guid);
+		string				GetAttribute(const string& id, const string& name, bool immediate = false) { return ROMUTIL::WStrToMBCStr(GetAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), immediate)); }
+		string				GetAttribute(const string& id, bool immediate = false) { return GetAttribute(id, "value", immediate); }
+		bool				GetAttributeExists(const string& id, const string& name = "value") { return GetAttributeExists(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name)); }
+		bool				SetAttribute(const string& id, const string& name, const string& value) { return SetAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), ROMUTIL::MBCStrToWStr(value)); }
+		bool				SetAttribute(const string& id, const string& value) { return SetAttribute(id, "value", value); }
+		bool				RemoveAttribute(const string& id, const string& name = "value") { return RemoveAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name)); }
+		bool				SetROMObjectValue(const string& name, const string& value) { return SetROMObjectValue(ROMUTIL::MBCStrToWStr(name), ROMUTIL::MBCStrToWStr(value)); }
+		string				GetROMObjectValue(const string& name) { return ROMUTIL::WStrToMBCStr(GetROMObjectValue(ROMUTIL::MBCStrToWStr(name))); }
+		bool				RemoveROMObjectValue(const string& id) { return RemoveROMObjectValue(ROMUTIL::MBCStrToWStr(id)); }
 		string				GetROMObjectIDA() {return ROMUTIL::ToASCIIString(m_id);}
-		void				SetROMObjectID(string name) {m_id = ROMUTIL::MBCStrToWStr(name);}
-		bool				LoadRules(string knowledge_file) {return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file));}
-		bool				LoadRulesFromString(string xmlStr) {return LoadRulesFromString(ROMUTIL::MBCStrToWStr(xmlStr));}
-		vector<string>		EvaluateTable(string evalTable, string output, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll));}
-		vector<string>		EvaluateTable(string evalTable, string output) {return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output)));}
-		map<string, vector<string> > EvaluateTable(string evalTable, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable), bGetAll));}
-		map<string, vector<string> > EvaluateTable(string evalTable) {return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable)));}
-		vector<string>		EvaluateTableWithParam(string evalTable, string output, bool bGetAll, string& param);
-		vector<string>		EvaluateTableWithParam(string evalTable, string output, string& param);
-		map<string, vector<string> > EvaluateTableWithParam(string evalTable, bool bGetAll, string& param);
-		map<string, vector<string> > EvaluateTableWithParam(string evalTable, string& param) ;
-		string				GetFirstTableResult(string tableName, string output) {return WStrToMBCStr(GetFirstTableResult(ROMUTIL::MBCStrToWStr(tableName), ROMUTIL::MBCStrToWStr(output)));}
-		vector<string>		ReverseEvaluateTable(string evalTable, string inputAttr, bool bGetAll) {return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr), bGetAll));}
-		vector<string>		ReverseEvaluateTable(string evalTable, string inputAttr) {return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr)));}
-		map<string, vector<string> > ReverseEvaluateTable(string evalTable, bool bGetAll) {return ROMUTIL::WStrToMBCStrMapVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), bGetAll));}
-		map<string, vector<string> > ReverseEvaluateTable(string evalTable) {return ROMUTIL::WStrToMBCStrMapVector(ReverseEvaluateTable(MBCStrToWStr(evalTable)));}
-		string				EvaluateXPATH(string xpath, string guid) {return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath), guid));}
-		string				EvaluateXPATH(string xpath) {return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath), m_guid));}
+		void				SetROMObjectID(const string& name) { m_id = ROMUTIL::MBCStrToWStr(name); }
+		bool				LoadRules(const string& knowledge_file) { return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file)); }
+		bool				LoadRulesFromString(const string& xmlStr) { return LoadRulesFromString(ROMUTIL::MBCStrToWStr(xmlStr)); }
+		vector<string>		EvaluateTable(const string& evalTable, const string& output, bool bGetAll) { return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll)); }
+		vector<string>		EvaluateTable(const string& evalTable, const string& output) { return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output))); }
+		map<string, vector<string> > EvaluateTable(const string& evalTable, bool bGetAll) { return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable), bGetAll)); }
+		map<string, vector<string> > EvaluateTable(const string& evalTable) { return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable))); }
+		vector<string>		EvaluateTableWithParam(const string& evalTable, const string& output, bool bGetAll, string& param);
+		vector<string>		EvaluateTableWithParam(const string& evalTable, const string& output, string& param);
+		map<string, vector<string> > EvaluateTableWithParam(const string& evalTable, bool bGetAll, string& param);
+		map<string, vector<string> > EvaluateTableWithParam(const string& evalTable, string& param);
+		string				GetFirstTableResult(const string& tableName, const string& output) { return WStrToMBCStr(GetFirstTableResult(ROMUTIL::MBCStrToWStr(tableName), ROMUTIL::MBCStrToWStr(output))); }
+		vector<string>		ReverseEvaluateTable(const string& evalTable, const string& inputAttr, bool bGetAll) { return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr), bGetAll)); }
+		vector<string>		ReverseEvaluateTable(const string& evalTable, const string& inputAttr) { return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr))); }
+		map<string, vector<string> > ReverseEvaluateTable(const string& evalTable, bool bGetAll) { return ROMUTIL::WStrToMBCStrMapVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), bGetAll)); }
+		map<string, vector<string> > ReverseEvaluateTable(const string& evalTable) { return ROMUTIL::WStrToMBCStrMapVector(ReverseEvaluateTable(MBCStrToWStr(evalTable))); }
+		string				EvaluateXPATH(const string& xpath, const string& guid) { return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath), guid)); }
+		string				EvaluateXPATH(const string& xpath) { return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath), m_guid)); }
 
 	private:
-		vector<wstring>			GetPossibleValues(wstring evalTable, wstring outputName);
-		wstring					GetATableInputValue(wstring input);
-		ROMNode*				_findObjectGUID(string guid);
+		vector<wstring>			GetPossibleValues(const wstring& evalTable, const wstring& outputName);
+		wstring					GetATableInputValue(const wstring& input);
+		ROMNode*				_findObjectGUID(const string& guid);
 		void					_findAllChildObjects(vector<ROMNode*>* res);
-		void					_findObjects(wstring id, bool recurs, vector<ROMNode*>* res);
+		void					_findObjects(const wstring& id, bool recurs, vector<ROMNode*>* res);
 		bool					_anyHasChanged();
 		void					_setAllUnchanged();
 		wstring					_generateXML(bool bRegen);

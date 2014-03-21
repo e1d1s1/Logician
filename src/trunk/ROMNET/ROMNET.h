@@ -27,15 +27,23 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #include "Marshal.h"
 using namespace std;
 
+typedef wstring(__stdcall *VALUECB)(const wstring&, void*);
+typedef void(__stdcall *DEBUGCB)(const wstring&);
+
 #pragma managed
 #using <mscorlib.dll>
 #using <System.dll>
 #include <vcclr.h>
 using namespace System;
 using namespace System::Collections::Generic;
+using namespace System::Runtime::InteropServices;
 
 namespace ROMNET {
+	delegate void FireDebugMessageDelegate(const wstring&);
+	delegate wstring GetTheValueDelegate(const wstring&, void* context);
+
 	public delegate void DebugHandlerDelegate(String^ msg);
+	public delegate String^ InputValueGetterDelegate(String^ attrName, Object^ context);
 
 	public ref class ROMNode
 	{
@@ -80,9 +88,33 @@ namespace ROMNET {
 		}
 
 		//debugger
-		DebugHandlerDelegate^	DebugDelegate;
-		void					SetDebugging(bool set) {if (m_ROMNode) m_ROMNode->GenerateTableDebugMessages(set);}
-		void					PumpDebugMessages();
+		property DebugHandlerDelegate^			DebugDelegate
+		{
+			DebugHandlerDelegate^ get()
+			{
+				return m_debugger;
+			}
+			void set(DebugHandlerDelegate^ value)
+			{
+				m_debugger = value;
+				if (m_KnowledgeBase != nullptr)
+				{
+					if (m_debugger != nullptr)
+					{
+						FireDebugMessageDelegate^ fp = gcnew FireDebugMessageDelegate(this, &ROMNode::_fireDebug);
+						m_gchDebug = GCHandle::Alloc(fp);
+						IntPtr ip = Marshal::GetFunctionPointerForDelegate(fp);
+						DEBUGCB cb = static_cast<DEBUGCB>(ip.ToPointer());
+						m_KnowledgeBase->DebugHandlerPtr = cb;
+					}
+					else
+					{
+						m_KnowledgeBase->DebugHandlerPtr = nullptr;
+					}
+				}
+			}
+		}
+		void				EnableRemoteDebugger(bool enable) { if (m_ROMNode) m_ROMNode->EnableRemoteDebugger(enable); }
 
 		//relational functions
 		ROMNode^			GetRoot();
@@ -126,11 +158,10 @@ namespace ROMNET {
 		array<String^>^		EvaluateTable(String^ evalTable, String^ output);
 		Dictionary<String^, array<String^>^>^ EvaluateTable(String^ evalTable, bool bGetAll);
 		Dictionary<String^, array<String^>^>^ EvaluateTable(String^ evalTable);
-		array<String^>^		EvaluateTableWithParam(String^ evalTable, String^ output, String^ param, bool bGetAll);
+		array<String^>^		EvaluateTableWithParam(String^ evalTable, String^ output, bool bGetAll, String^ param);
 		array<String^>^		EvaluateTableWithParam(String^ evalTable, String^ output, String^ param);
-		Dictionary<String^, array<String^>^>^ EvaluateTableWithParam(String^ evalTable, String^ param, bool bGetAll);
+		Dictionary<String^, array<String^>^>^ EvaluateTableWithParam(String^ evalTable, bool bGetAll, String^ param);
 		Dictionary<String^, array<String^>^>^ EvaluateTableWithParam(String^ evalTable, String^ param);
-		String^				GetEvalParameter();
 		String^				GetFirstTableResult(String^ tableName, String^ output);
 		array<String^>^		ReverseEvaluateTable(String^ evalTable, String^ output, bool bGetAll);
 		array<String^>^		ReverseEvaluateTable(String^ evalTable, String^ output);
@@ -151,11 +182,14 @@ namespace ROMNET {
 
 	private:		
 		ROMNode(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer(); m_KnowledgeBase = m_ROMNode->GetKnowledgeBase(); m_canDelete = false;}
-		array<ROMNode^>^	GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
+		array<ROMNode^>^			GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
+		void						_fireDebug(const wstring& msg);
 
-		ROM::ROMNode		*m_ROMNode;
-		EDS::CKnowledgeBase *m_KnowledgeBase;
-		bool				m_canDelete;
+		DebugHandlerDelegate^		m_debugger;
+		GCHandle					m_gchDebug;
+		ROM::ROMNode				*m_ROMNode;
+		EDS::CKnowledgeBase			*m_KnowledgeBase;
+		bool						m_canDelete;
 	};
 
 	public enum class ATTRTYPE
@@ -396,16 +430,44 @@ namespace ROMNET {
 		!ROMDictionary() {if (m_ROMDictionary) delete m_ROMDictionary; m_ROMDictionary = NULL;}
 
 		//debugger
-		DebugHandlerDelegate^	DebugDelegate;
-		void					SetDebugging(bool set) {if (m_ROMDictionary) m_ROMDictionary->GenerateTableDebugMessages(set);}
-		void					PumpDebugMessages();
+		property DebugHandlerDelegate^			DebugDelegate
+		{
+			DebugHandlerDelegate^ get()
+			{
+				return m_debugger;
+			}
+			void set(DebugHandlerDelegate^ value)
+			{
+				m_debugger = value;
+				if (m_ROMDictionary != nullptr)
+				{
+					if (m_debugger != nullptr)
+					{
+						FireDebugMessageDelegate^ fp = gcnew FireDebugMessageDelegate(this, &ROMDictionary::_fireDebug);
+						m_gchDebug = GCHandle::Alloc(fp);
+						IntPtr ip = Marshal::GetFunctionPointerForDelegate(fp);
+						DEBUGCB cb = static_cast<DEBUGCB>(ip.ToPointer());
+						m_ROMDictionary->SetTableDebugHandler(cb);
+					}
+					else
+					{
+						m_ROMDictionary->SetTableDebugHandler(nullptr);
+					}
+				}
+			}
+		}
+		void					EnableRemoteDebugger(bool enable) { if (m_ROMDictionary) m_ROMDictionary->EnableRemoteDebugger(enable); }
 
 		void					LoadDictionary(String^ dictionaryTable);
 		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
 		Dictionary<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
 	private:
-		ROM::ROMDictionary *m_ROMDictionary;
+		void					_fireDebug(const wstring& msg);
+
+		DebugHandlerDelegate^	m_debugger;
+		GCHandle				m_gchDebug;
+		ROM::ROMDictionary		*m_ROMDictionary;
 	};		
 
 	public enum class INVALIDATEMODE
@@ -428,9 +490,33 @@ namespace ROMNET {
 		!LinearEngine() {if (m_LinearEngine) delete m_LinearEngine; m_LinearEngine = NULL;}
 
 		//debugger
-		DebugHandlerDelegate^	DebugDelegate;
-		void					SetDebugging(bool set) {if (m_LinearEngine) m_LinearEngine->GenerateTableDebugMessages(set);}
-		void					PumpDebugMessages();
+		property DebugHandlerDelegate^			DebugDelegate
+		{
+			DebugHandlerDelegate^ get()
+			{
+				return m_debugger;
+			}
+			void set(DebugHandlerDelegate^ value)
+			{
+				m_debugger = value;
+				if (m_LinearEngine != nullptr)
+				{
+					if (m_debugger != nullptr)
+					{
+						FireDebugMessageDelegate^ fp = gcnew FireDebugMessageDelegate(this, &LinearEngine::_fireDebug);
+						m_gchDebug = GCHandle::Alloc(fp);
+						IntPtr ip = Marshal::GetFunctionPointerForDelegate(fp);
+						DEBUGCB cb = static_cast<DEBUGCB>(ip.ToPointer());
+						m_LinearEngine->SetTableDebugHandler(cb);
+					}
+					else
+					{
+						m_LinearEngine->SetTableDebugHandler(nullptr);
+					}
+				}
+			}
+		}
+		void				EnableRemoteDebugger(bool enable) { if (m_LinearEngine) m_LinearEngine->EnableRemoteDebugger(enable); }
 
 		void					LoadDictionary(String^ dictionaryTable);
 		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
@@ -470,7 +556,11 @@ namespace ROMNET {
 		}
 
 	private:
-		ROM::LinearEngine *m_LinearEngine;
+		void					_fireDebug(const wstring& msg);
+
+		DebugHandlerDelegate^	m_debugger;
+		GCHandle				m_gchDebug;
+		ROM::LinearEngine		*m_LinearEngine;
 	};
 
 	

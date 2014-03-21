@@ -78,9 +78,21 @@
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EDSEngineNET.dll" Condition="'$(Platform)'=='x64'">
+    <Reference Include="EDSEngineNET.dll" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\x64\Release\EDSEngineNET.dll</HintPath>
+    </Reference>
+	<Reference Include="EDSEngineNET.dll" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\x64\Debug\EDSEngineNET.dll</HintPath>
+    </Reference>
+	<Reference Include="EDSEngineNET.dll" Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Release\EDSEngineNET.dll</HintPath>
+    </Reference>
+	<Reference Include="EDSEngineNET.dll" Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Debug\EDSEngineNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

@@ -94,7 +94,7 @@ namespace EDSNET
 			return false;
 	}
 
-	array<String^>^ EDSEngine::EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^% param, bool bGetAll)
+	array<String^>^ EDSEngine::EvaluateTableWithParam(String^ tableName, String^ outputAttr, bool bGetAll, String^% param, Object^ context)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_KnowledgeBase)
@@ -103,7 +103,10 @@ namespace EDSNET
 			MarshalString(tableName, table);
 			MarshalString(outputAttr, output);
 			MarshalString(param, para);
-			vector<wstring> res = m_KnowledgeBase->EvaluateTableWithParam(table, output, para, bGetAll);
+			void* voidPtr = nullptr;
+			if (context)
+				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+			vector<wstring> res = m_KnowledgeBase->EvaluateTableWithParam(table, output, bGetAll, para, voidPtr);
 			retval = GetArrayFromVectorStrings(res);
 			param = gcnew String(para.c_str());
 		}
@@ -111,7 +114,7 @@ namespace EDSNET
 		return retval;
 	}
 
-	Dictionary<String^,	array<String^>^>^ EDSEngine::EvaluateTableWithParam(String^ tableName, String^% param, bool bGetAll)
+	Dictionary<String^, array<String^>^>^ EDSEngine::EvaluateTableWithParam(String^ tableName, bool bGetAll, String^% param, Object^ context)
 	{
 		Dictionary<String^,	array<String^>^>^ retval = nullptr;
 		if (m_KnowledgeBase)
@@ -119,14 +122,17 @@ namespace EDSNET
 			wstring table, para;
 			MarshalString(tableName, table);
 			MarshalString(param, para);
-			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTableWithParam(table, para, bGetAll);
+			void* voidPtr = nullptr;
+			if (context)
+				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTableWithParam(table, bGetAll, para, voidPtr);
 			retval = GetDictionaryFromMapStrings(res);
 			param = gcnew String(para.c_str());
 		}
 		return retval;
 	}
 
-	array<String^>^ EDSEngine::EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll)
+	array<String^>^ EDSEngine::EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll, Object^ context)
 	{
 		array<String^>^ retval = nullptr;
 
@@ -135,14 +141,17 @@ namespace EDSNET
 			wstring table, output;
 			MarshalString(tableName, table);
 			MarshalString(outputAttr, output);
-			vector<wstring> res = m_KnowledgeBase->EvaluateTable(table, output, bGetAll);
+			void* voidPtr = nullptr;
+			if (context)
+				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+			vector<wstring> res = m_KnowledgeBase->EvaluateTable(table, output, bGetAll, voidPtr);
 			retval = GetArrayFromVectorStrings(res);
 		}
 
 		return retval;
 	}
 
-	Dictionary<String^,	array<String^>^>^ EDSEngine::EvaluateTable(String^ tableName, bool bGetAll)
+	Dictionary<String^, array<String^>^>^ EDSEngine::EvaluateTable(String^ tableName, bool bGetAll, Object^ context)
 	{
 		Dictionary<String^,	array<String^>^>^ retval = nullptr;
 
@@ -150,14 +159,17 @@ namespace EDSNET
 		{
 			wstring table;
 			MarshalString(tableName, table);
-			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTable(table, bGetAll);
+			void* voidPtr = nullptr;
+			if (context)
+				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+			map<wstring, vector<wstring> > res = m_KnowledgeBase->EvaluateTable(table, bGetAll, voidPtr);
 			retval = GetDictionaryFromMapStrings(res);
 		}
 
 		return retval;
 	}
 
-	String^ EDSEngine::GetFirstTableResult(String^ tableName, String^ outputAttr)
+	String^ EDSEngine::GetFirstTableResult(String^ tableName, String^ outputAttr, Object^ context)
 	{
 		String^ retval = gcnew String("");
 		if (m_KnowledgeBase)
@@ -165,13 +177,16 @@ namespace EDSNET
 			wstring table, output;
 			MarshalString(tableName, table);
 			MarshalString(outputAttr, output);
-			wstring res = m_KnowledgeBase->GetFirstTableResult(table, output);
+			void* voidPtr = nullptr;
+			if (context)
+				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+			wstring res = m_KnowledgeBase->GetFirstTableResult(table, output, voidPtr);
 			retval = gcnew String(res.c_str());
 		}
 		return retval;
 	}
 
-	array<String^>^	EDSEngine::ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll)
+	array<String^>^	EDSEngine::ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll, Object^ context)
 	{
 		array<String^>^ retval = nullptr;
 
@@ -180,14 +195,17 @@ namespace EDSNET
 			wstring table, input;
 			MarshalString(tableName, table);
 			MarshalString(inputAttr, input);
-			vector<wstring> res = m_KnowledgeBase->ReverseEvaluateTable(table, input, bGetAll);
+			void* voidPtr = nullptr;
+			if (context)
+				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+			vector<wstring> res = m_KnowledgeBase->ReverseEvaluateTable(table, input, bGetAll, voidPtr);
 			retval = GetArrayFromVectorStrings(res);
 		}
 
 		return retval;
 	}
 
-	Dictionary<String^,	array<String^>^>^ EDSEngine::ReverseEvaluateTable(String^ tableName, bool bGetAll)
+	Dictionary<String^, array<String^>^>^ EDSEngine::ReverseEvaluateTable(String^ tableName, bool bGetAll, Object^ context)
 	{
 		Dictionary<String^,	array<String^>^>^ retval = nullptr;
 
@@ -195,7 +213,10 @@ namespace EDSNET
 		{
 			wstring table;
 			MarshalString(tableName, table);
-			map<wstring, vector<wstring> > res = m_KnowledgeBase->ReverseEvaluateTable(table, bGetAll);
+			void* voidPtr = nullptr;
+			if (context)
+				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+			map<wstring, vector<wstring> > res = m_KnowledgeBase->ReverseEvaluateTable(table, bGetAll, voidPtr);
 			retval = GetDictionaryFromMapStrings(res);
 		}
 
@@ -295,12 +316,17 @@ namespace EDSNET
 		return retval;
 	}
 
-	wstring	EDSEngine::_getValue(const wstring& attrName)
+	wstring	EDSEngine::_getValue(const wstring& attrName, void* context)
 	{
 		wstring retval;
 		if (InputGetterDelegate != nullptr)
 		{
-			String^ attrValue = InputGetterDelegate(gcnew String(attrName.c_str()));
+			Object^ ctxt = nullptr;
+			if (context != nullptr)
+			{
+				ctxt = Marshal::PtrToStructure(IntPtr(context), Object::typeid);
+			}
+			String^ attrValue = InputGetterDelegate(gcnew String(attrName.c_str()), ctxt);
 			MarshalString(attrValue, retval);
 		}
 		return retval;
