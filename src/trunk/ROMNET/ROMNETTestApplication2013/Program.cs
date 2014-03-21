@@ -57,7 +57,7 @@ namespace ROM2NETTestApplication
             if (bLoaded)
             {
                 rootNode.DebugDelegate = DebugMessage;
-                rootNode.SetDebugging(true);
+                rootNode.EnableRemoteDebugger(false);
                 Log("...loaded");
                 Log("Evaluating table testtable1");
                 string[] res = rootNode.EvaluateTable("testtable1", "outputAttr1", true);

@@ -22,7 +22,7 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 
 using namespace std;
 
-string EDSUTIL::FindAndReplace (const string& source, const string target, const string replacement)
+string EDSUTIL::FindAndReplace (const string& source, const string& target, const string& replacement)
 {
 	string str = source;
 	string::size_type pos = 0,   // where we are now
@@ -39,7 +39,7 @@ string EDSUTIL::FindAndReplace (const string& source, const string target, const
 	return str;
 }
 
-wstring EDSUTIL::FindAndReplace (const wstring& source, const wstring target, const wstring replacement)
+wstring EDSUTIL::FindAndReplace (const wstring& source, const wstring& target, const wstring& replacement)
 {
 	wstring str = source;
 	wstring::size_type pos = 0,   // where we are now
@@ -56,7 +56,7 @@ wstring EDSUTIL::FindAndReplace (const wstring& source, const wstring target, co
 	return str;
 }
 
-bool EDSUTIL::StringContains(wstring source, wstring target)
+bool EDSUTIL::StringContains(const wstring& source, const wstring& target)
 {
 	bool retval = false;
 
@@ -66,7 +66,7 @@ bool EDSUTIL::StringContains(wstring source, wstring target)
 	return retval;
 }
 
-vector<string> EDSUTIL::Split(string text, string separators)
+vector<string> EDSUTIL::Split(const string& text, const string& separators)
 {
 	vector<string> retval;
 	int n = text.length();
@@ -86,7 +86,7 @@ vector<string> EDSUTIL::Split(string text, string separators)
 	return retval;
 }
 
-vector<wstring> EDSUTIL::Split(wstring text, wstring separators)
+vector<wstring> EDSUTIL::Split(const wstring& text, const wstring& separators)
 {
 	vector<wstring> retval;
 	int n = text.length();
@@ -106,7 +106,7 @@ vector<wstring> EDSUTIL::Split(wstring text, wstring separators)
 	return retval;
 }
 
-bool EDSUTIL::StringIsNumeric(wstring s)
+bool EDSUTIL::StringIsNumeric(const wstring& s)
 {
 	bool retval = false;
 	std::string strBuff(s.begin(), s.end());
@@ -133,13 +133,13 @@ wstring EDSUTIL::TrimString(wstring s)
   return s;
 }
 
-string EDSUTIL::ToASCIIString(wstring s)
+string EDSUTIL::ToASCIIString(const wstring& s)
 {
 	string retval(s.begin(), s.end());
 	return retval;
 }
 
-string EDSUTIL::WStrToMBCStr(wstring wstr)
+string EDSUTIL::WStrToMBCStr(const wstring& wstr)
 {
 	string retval ="";
 	for (size_t i = 0; i < wstr.length(); ++i)
@@ -167,7 +167,7 @@ string EDSUTIL::WStrToMBCStr(wstring wstr)
 	return retval;
 }
 
-wstring EDSUTIL::MBCStrToWStr(const string mbStr)
+wstring EDSUTIL::MBCStrToWStr(const string& mbStr)
 {
 	if (mbStr.size() == 0)
 		return L"";
@@ -180,7 +180,7 @@ wstring EDSUTIL::MBCStrToWStr(const string mbStr)
 	return retval;
 }
 
-vector<string> EDSUTIL::ToMBCStringVector(vector<wstring> vectWS)
+vector<string> EDSUTIL::ToMBCStringVector(vector<wstring>& vectWS)
 {
 	vector<string> retval;
 	for (vector<wstring>::iterator it = vectWS.begin(); it != vectWS.end(); it++)
@@ -215,7 +215,7 @@ string EDSUTIL::stringify(long x)
 }
 
 //this is only for integer and ascii conversion
-wstring EDSUTIL::ToWString(string s)
+wstring EDSUTIL::ToWString(const string& s)
 {
 	wstring retval;
 	retval.assign(s.begin(), s.end());

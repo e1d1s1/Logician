@@ -37,9 +37,10 @@
 
 function btnTest_onclick() {
     clear_results();
+    var state = new Array();
     var filename = "test_project.xml";
     var knowledge = new EDSEngineWinRT.EDSEngine(filename);
-    //var knowledge = CreateKnowledgeBaseFromString(rules);
+
     if (knowledge.isOpen() == false) {
         write_result("FAILURE: Could not open rules xml file: " + filename);
         return false;
@@ -47,6 +48,16 @@ function btnTest_onclick() {
     else {
         write_result("OK: File opened");
     }
+
+    knowledge.debugDelegate = debugHandler;
+    knowledge.enableRemoteDebugger(false);
+
+    knowledge.inputGetterDelegate = function (attrName, context) {
+        if (attrName in state)
+            return state[attrName];
+        else
+            return "";
+    };
     
     var cnt = knowledge.tableCount();
     if (cnt == 14) {
@@ -133,7 +144,7 @@ function btnTest_onclick() {
 
     //testing table evaluation
     write_result("testing evaluation of testtable1 with inputAttr1 = 'C', get first only");
-    knowledge.setInputValue("inputAttr1", "C");
+    state["inputAttr1"] = "C";
     var results2 = knowledge.evaluateTable(tableName, false);
     if (ArraySize(results2) == 2 && results2["outputAttr1"][0] == "2") {
         write_result("OK: " + results2["outputAttr1"][0]);
@@ -147,7 +158,7 @@ function btnTest_onclick() {
     }
 
     write_result("testing evaluation of testtable1 with inputAttr1 = 'C', get all");
-    knowledge.setInputValue("inputAttr1", "C");
+    state["inputAttr1"] = "C";
     var results = knowledge.evaluateTable(tableName, true);
     if (ArraySize(results) == 2 && results["outputAttr1"].length == 3 &&
         results["outputAttr1"][0] == "2" &&
@@ -163,8 +174,8 @@ function btnTest_onclick() {
     }
 
     write_result("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 10, get all");
-    knowledge.setInputValue("inputAttr1", "C");
-    knowledge.setInputValue("inputAttr2", "10");
+    state["inputAttr1"] = "C";
+    state["inputAttr2"] = "10";
     var results3 = knowledge.evaluateTable(tableName, true);
     if (ArraySize(results3) == 2 && results3["outputAttr1"].length == 4 &&
         results3["outputAttr1"][0] == "2" &&
@@ -182,9 +193,9 @@ function btnTest_onclick() {
     }
 
     write_result("testing evaluation (Javascript) of testtable1 with inputAttr1 = 'C', inputAttr2 = 78,  outsideAttr1 = 28, get all");
-    knowledge.setInputValue("inputAttr1", "C");
-    knowledge.setInputValue("inputAttr2", "78");
-    knowledge.setInputValue("outsideAttr1", "28");
+    state["inputAttr1"] = "C";
+    state["inputAttr2"] = "78";
+    state["outsideAttr1"] = "28";
     var results4 = knowledge.evaluateTable(tableName, true);
     if (ArraySize(results4) == 2 && results4["outputAttr1"].length == 5 &&
         results4["outputAttr1"][0] == "2" &&
@@ -204,25 +215,26 @@ function btnTest_onclick() {
     }
 
     write_result("testing evaluation (Javascript) with state parameter on testtable1 with inputAttr1 = 'TestParameterJS' and inputAttr2 = 'TestParameterJS'");
-    knowledge.setInputValue("inputAttr1", "TestParameterJS");
-    knowledge.setInputValue("inputAttr2", "TestParameterJS");
-    var result9 = knowledge.evaluateTableWithParam(tableName, "outputAttr1", "PassedValue", knowledge.tableIsGetAll(tableName)); //JS is weakly typed watch the overloads
-    var retParam = knowledge.getEvalParameter();
-    write_result(ArraySize(result9));
-    if (ArraySize(result9) == 4 && result9[3] == "eval ok" &&
+    state["inputAttr1"] = "TestParameterJS";
+    state["inputAttr2"] = "TestParameterJS";
+    var retParam = "PassedValue";
+    var result9 = knowledge.evaluateTableWithParam(tableName, "outputAttr1", knowledge.tableIsGetAll(tableName), retParam, retParam); //JS is weakly typed watch the overloads, output paramaters not allowed
+    retParam = result9.paramOut; //javascript weirdness to support out parameters
+    write_result(ArraySize(result9.__returnValue));
+    if (ArraySize(result9.__returnValue) == 4 && result9.__returnValue[3] == "eval ok" &&
         retParam == "PassedValue modified") {
         write_result("Javascript state parameter working");
     }
     else {
-        write_result("FAILURE: Problem with Javascript state parameter: " + result9[3] + ":" + retParam);
+        write_result("FAILURE: Problem with Javascript state parameter: " + result9.__returnValue[3] + ":" + retParam);
         return false;
     }
 
 
     write_result("testing table chaining");
-    knowledge.setInputValue("inputAttr1", "C");
-    knowledge.setInputValue("inputAttr2", "78");
-    knowledge.setInputValue("outsideAttr1", "28");
+    state["inputAttr1"] = "C";
+    state["inputAttr2"] = "78";
+    state["outsideAttr1"] = "28";
     tableName = "testtable2";
     var result5 = knowledge.evaluateTable(tableName, "out1", true);
     if (result5.length == results4["outputAttr1"].length &&
@@ -242,11 +254,9 @@ function btnTest_onclick() {
         return false;
     }
 
-    knowledge.setDebugging(true);
-    knowledge.setDebugHandler(debugHandler);
     write_result("testing input get(), and debug");
     tableName = "testtable3";
-    knowledge.setInputValue("someAttr", "3");
+    state["someAttr"] = "3";
     var result6 = knowledge.evaluateTable(tableName, "outputAttr1", true);
     if (result6.length == 1 && result6[0] == "inputAttr2: 78 is greater than someAttr: 3") {
         write_result("OK: " + result6[0]);
@@ -255,11 +265,10 @@ function btnTest_onclick() {
         write_result("FAILURE: Did not get proper eval result on get() test");
         return false;
     }
-    knowledge.setDebugging(false);
 
     write_result("testing NULL conditions");
-    knowledge.setInputValue("inputAttr1", "");
-    knowledge.setInputValue("inputAttr2", "");
+    state["inputAttr1"] = "";
+    state["inputAttr2"] = "";
     var result7 = knowledge.evaluateTable("testtable4", "outputAttr1", true);
     if (result7.length == 4 && result7[2] == "both attrs are NULL") {
         write_result("OK: " + result7[0] + "\n" +
@@ -271,10 +280,10 @@ function btnTest_onclick() {
         write_result("FAILURE: Did not get proper eval result on NULL test #1");
     }
 
-    knowledge.setInputValue("inputAttr1", "blah");
-    knowledge.setInputValue("c", "");
+    state["inputAttr1"] = "";
+    state["inputAttr2"] = "";
     result7 = knowledge.evaluateTable("testtable4", "outputAttr1", true);
-    if (result7.length == 2 && result7[0] == "inputAttr2 is NULL") {
+    if (result7.length == 4 && result7[2] == "both attrs are NULL") {
         write_result("OK: " + result7[0] + "\n" +
         result7[1]);
     }
@@ -282,8 +291,8 @@ function btnTest_onclick() {
         write_result("FAILURE: Did not get proper eval result on NULL test #2");
     }
 
-    knowledge.setInputValue("inputAttr1", "blah");
-    knowledge.setInputValue("c", "");
+    state["inputAttr1"] = "blah";
+    state["c"] = "";
     result7 = knowledge.evaluateTable("testtable4", "outputAttr1", true);
     if (result7.length == 2 && result7[0] == "inputAttr2 is NULL") {
         write_result("OK: " + result7[0] + "\n" +
@@ -294,7 +303,7 @@ function btnTest_onclick() {
     }
 
     write_result("testing exclusing evaluation");
-    knowledge.setInputValue("inputAttr1", "A");
+    state["inputAttr1"] = "A";
     var result8 = knowledge.evaluateTable("exclusion", "outputAttr1", true);
     if (ArraySize(result8) == 4 && result8[0] == "not X or Y" &&
         result8[1] == "not X" &&
@@ -310,7 +319,7 @@ function btnTest_onclick() {
     }
 
     write_result("allowing a match: Y");
-    knowledge.setInputValue("inputAttr1", "Y");
+    state["inputAttr1"] = "Y";
     result8 = knowledge.evaluateTable("exclusion", "outputAttr1", true);
     if (ArraySize(result8) == 4 && result8[0] == "is X or Y" &&
         result8[1] == "not X" &&
@@ -335,7 +344,7 @@ function btnTest_onclick() {
         write_result("FAILURE: translation failed");
 
     write_result("testing reverse evaluation of ReverseTest table");
-    knowledge.setInputValue("OutColor", "green");
+    state["OutColor"] = "green";
     var result9 = knowledge.reverseEvaluateTable("ReverseTest", true);
     if (ArraySize(result9) == 2 && result9["Color1"][0] == "blue" &&
         result9["Color2"][0] == "yellow") {
@@ -344,6 +353,8 @@ function btnTest_onclick() {
     else {
         write_result("FAILURE: reverse evaluation failed");
     }
+
+    write_result("Tests Complete");
 
     return false;
 }

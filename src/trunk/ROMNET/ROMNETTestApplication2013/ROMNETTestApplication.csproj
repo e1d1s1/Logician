@@ -74,13 +74,21 @@
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="ROMNET.dll" Condition="'$(Platform)'=='x86'">
+	<Reference Include="ROMNET.dll" Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\Release\ROMNET.dll</HintPath>
 	</Reference>
-	<Reference Include="ROMNET.dll" Condition="'$(Platform)'=='x64'">
+	<Reference Include="ROMNET.dll" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\x64\Release\ROMNET.dll</HintPath>
+	</Reference>
+	<Reference Include="ROMNET.dll" Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\Debug\ROMNET.dll</HintPath>
+	</Reference>
+	<Reference Include="ROMNET.dll" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\x64\Debug\ROMNET.dll</HintPath>
 	</Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

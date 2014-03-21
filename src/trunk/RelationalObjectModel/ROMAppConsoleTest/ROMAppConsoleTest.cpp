@@ -242,7 +242,7 @@ int runTest(int thread_id)
         engine2.EvaluateForAttribute(L"cDictAttr1", attr1->AvailableValues[2]);
         string val_bool3 = rootNode.GetAttribute("aDictAttr3");
         string val_multi3 = rootNode.GetAttribute("bDictAttr4");
-        engine2.EvaluateForAttribute("eDictAttr5", "999");
+        engine2.EvaluateForAttribute(L"eDictAttr5", L"999");
         string edit4 = rootNode.GetAttribute("eDictAttr5");
         if (val_pick1 == "ResultByOption1" && val_pick2 == "Result2" &&
             val_bool1 == "Y" && val_bool2 == "Y" && val_bool3 == "N" &&

@@ -15,6 +15,8 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
     You should have received a copy of the GNU General Public License
     along with Relational Object Model.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <functional>
+
 #include "ROMNode.h"
 #include "ROMDictionaryAttribute.h"
 
@@ -33,13 +35,17 @@ namespace ROM
 		void CreateROMDictionary(ROMNode* context);
 		virtual ~ROMDictionary(void){}		
 		
-		void LoadDictionary(wstring dictionaryTable);
-		ROMDictionaryAttribute* GetDictionaryAttr(wstring dictAttrName);
+		void LoadDictionary(const wstring& dictionaryTable);
+		ROMDictionaryAttribute* GetDictionaryAttr(const wstring& dictAttrName);
 		map<wstring, ROMDictionaryAttribute>* GetAllDictionaryAttrs() {return &m_dict;}
 
+		//debugging
+		void SetTableDebugHandler(std::function<void(const wstring&)> debugger) { if (m_ROMContext) m_ROMContext->SetTableDebugHandler(debugger); }
+		void EnableRemoteDebugger(bool enable) { if (m_ROMContext) m_ROMContext->EnableRemoteDebugger(enable); }
+
 		//ASCII overloadas
-		void LoadDictionary(string dictionaryTable);
-		ROMDictionaryAttribute* GetDictionaryAttr(string dictAttrName);
+		void LoadDictionary(const string& dictionaryTable);
+		ROMDictionaryAttribute* GetDictionaryAttr(const string& dictAttrName);
 
 	private:
 		ROMNode *m_ROMContext;

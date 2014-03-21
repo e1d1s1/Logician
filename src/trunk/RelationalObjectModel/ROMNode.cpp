@@ -183,7 +183,7 @@ bool ROMNode::RemoveAllFriends()
 	return retval;
 }
 
-vector<ROMNode*> ROMNode::FindAllObjectsByID(wstring id, bool recurs)
+vector<ROMNode*> ROMNode::FindAllObjectsByID(const wstring& id, bool recurs)
 {
 	vector<ROMNode*> retval;
 
@@ -194,7 +194,7 @@ vector<ROMNode*> ROMNode::FindAllObjectsByID(wstring id, bool recurs)
 	return retval;
 }
 
-ROMNode* ROMNode::FindObjectByGUID(string guid)
+ROMNode* ROMNode::FindObjectByGUID(const string& guid)
 {
 	ROMNode* retval = nullptr;
 
@@ -265,7 +265,7 @@ ROMNode* ROMNode::Clone()
 	return newNode;
 }
 
-vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
+vector<ROMNode*> ROMNode::FindObjects(const wstring& xpath)
 {
 	_createXMLDoc();
 	vector<ROMNode*> retval;
@@ -323,7 +323,7 @@ vector<ROMNode*> ROMNode::FindObjects(wstring xpath)
 	return retval;
 }
 
-ROMNode* ROMNode::_findObjectGUID(string guid)
+ROMNode* ROMNode::_findObjectGUID(const string& guid)
 {
 	ROMNode* retval = nullptr;
 	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
@@ -343,7 +343,7 @@ ROMNode* ROMNode::_findObjectGUID(string guid)
 	return retval;
 }
 
-void ROMNode::_findObjects(wstring id, bool recurs, vector<ROMNode*>* res)
+void ROMNode::_findObjects(const wstring& id, bool recurs, vector<ROMNode*>* res)
 {
 	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
 	{
@@ -375,7 +375,7 @@ void ROMNode::SetTableDebugHandler(std::function<void(const wstring&)> debugger)
 		m_KnowledgeBase->DebugHandlerPtr = debugger;
 }
 
-wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
+wstring ROMNode::GetAttribute(const wstring& id, const wstring& name, bool immediate)
 {
 	wstring retval = L"";
 	bool bFound = false;
@@ -403,7 +403,7 @@ wstring ROMNode::GetAttribute(wstring id, wstring name, bool immediate)
 	return retval;
 }
 
-bool ROMNode::GetAttributeExists(wstring id, wstring name)
+bool ROMNode::GetAttributeExists(const wstring& id, const wstring& name)
 {
 	bool bFound = false;
 	auto it = m_attrs.find(id);
@@ -418,7 +418,7 @@ bool ROMNode::GetAttributeExists(wstring id, wstring name)
 	return bFound;
 }
 
-bool ROMNode::SetAttribute(wstring id, wstring name, wstring value)
+bool ROMNode::SetAttribute(const wstring& id, const wstring& name, const wstring& value)
 {
 	bool retval = true;
 
@@ -428,7 +428,7 @@ bool ROMNode::SetAttribute(wstring id, wstring name, wstring value)
 	return retval;
 }
 
-bool ROMNode::RemoveAttribute(wstring id, wstring name)
+bool ROMNode::RemoveAttribute(const wstring& id, const wstring& name)
 {
 	bool retval = false;
 
@@ -455,18 +455,18 @@ bool ROMNode::RemoveAttribute(wstring id, wstring name)
 	return retval;
 }
 
-bool ROMNode::SetROMObjectValue(wstring name, wstring value)
+bool ROMNode::SetROMObjectValue(const wstring& name, const wstring& value)
 {
 	bool retval = true;
 
-	name = FindAndReplace(name, L" ", L"_");
-	m_nodeValues[name] = value;
+	wstring newName = FindAndReplace(name, L" ", L"_");
+	m_nodeValues[newName] = value;
 	m_bChanged = retval;
 
 	return retval;
 }
 
-wstring ROMNode::GetROMObjectValue(wstring name)
+wstring ROMNode::GetROMObjectValue(const wstring& name)
 {
 	wstring retval = L"";
 
@@ -479,7 +479,7 @@ wstring ROMNode::GetROMObjectValue(wstring name)
 	return retval;
 }
 
-bool ROMNode::RemoveROMObjectValue(wstring name)
+bool ROMNode::RemoveROMObjectValue(const wstring& name)
 {
 	bool retval = false;
 
@@ -495,7 +495,7 @@ bool ROMNode::RemoveROMObjectValue(wstring name)
 }
 
 //rules
-bool ROMNode::LoadRules(wstring knowledge_file, size_t threads)
+bool ROMNode::LoadRules(const wstring& knowledge_file, size_t threads)
 {
 	if (m_KnowledgeBase)
 	{
@@ -517,7 +517,7 @@ bool ROMNode::LoadRules(wstring knowledge_file, size_t threads)
 		return false;
 }
 
-bool ROMNode::LoadRulesFromString(wstring xmlStr, size_t threads)
+bool ROMNode::LoadRulesFromString(const wstring& xmlStr, size_t threads)
 {
 	if (m_KnowledgeBase)
 	{
@@ -539,7 +539,7 @@ bool ROMNode::LoadRulesFromString(wstring xmlStr, size_t threads)
 		return false;
 }
 
-vector<wstring> ROMNode::EvaluateTable(wstring evalTable, wstring output, bool bGetAll)
+vector<wstring> ROMNode::EvaluateTable(const wstring& evalTable, const wstring& output, bool bGetAll)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -550,7 +550,7 @@ vector<wstring> ROMNode::EvaluateTable(wstring evalTable, wstring output, bool b
 	return retval;
 }
 
-vector<wstring> ROMNode::EvaluateTable(wstring evalTable, wstring output)
+vector<wstring> ROMNode::EvaluateTable(const wstring& evalTable, const wstring& output)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -561,7 +561,7 @@ vector<wstring> ROMNode::EvaluateTable(wstring evalTable, wstring output)
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable, bool bGetAll)
+map<wstring, vector<wstring> > ROMNode::EvaluateTable(const wstring& evalTable, bool bGetAll)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -572,7 +572,7 @@ map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable, bool bG
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable)
+map<wstring, vector<wstring> > ROMNode::EvaluateTable(const wstring& evalTable)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -583,7 +583,7 @@ map<wstring, vector<wstring> > ROMNode::EvaluateTable(wstring evalTable)
 	return retval;
 }
 
-vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring output, bool bGetAll, wstring& param)
+vector<wstring> ROMNode::EvaluateTableWithParam(const wstring& evalTable, const wstring& output, bool bGetAll, wstring& param)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -594,7 +594,7 @@ vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring outpu
 	return retval;
 }
 
-vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring output, wstring& param)
+vector<wstring> ROMNode::EvaluateTableWithParam(const wstring& evalTable, const wstring& output, wstring& param)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -605,7 +605,7 @@ vector<wstring> ROMNode::EvaluateTableWithParam(wstring evalTable, wstring outpu
 	return retval;
 }
 
-vector<string> ROMNode::EvaluateTableWithParam(string evalTable, string output, bool bGetAll, string& param)
+vector<string> ROMNode::EvaluateTableWithParam(const string& evalTable, const string& output, bool bGetAll, string& param)
 {
     wstring wsParam = MBCStrToWStr(param);
     vector<string> retval = ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll, wsParam));
@@ -613,7 +613,7 @@ vector<string> ROMNode::EvaluateTableWithParam(string evalTable, string output, 
     return retval;
 }
 
-vector<string> ROMNode::EvaluateTableWithParam(string evalTable, string output, string& param)
+vector<string> ROMNode::EvaluateTableWithParam(const string& evalTable, const string& output, string& param)
 {
     wstring wsParam = MBCStrToWStr(param);
     vector<string> retval = ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), wsParam));
@@ -621,7 +621,7 @@ vector<string> ROMNode::EvaluateTableWithParam(string evalTable, string output, 
     return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable, bool bGetAll, wstring& param)
+map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(const wstring& evalTable, bool bGetAll, wstring& param)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -632,7 +632,7 @@ map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable, wstring& param)
+map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(const wstring& evalTable, wstring& param)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -643,7 +643,7 @@ map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(wstring evalTable
 	return retval;
 }
 
-map<string, vector<string> > ROMNode::EvaluateTableWithParam(string evalTable, bool bGetAll, string& param)
+map<string, vector<string> > ROMNode::EvaluateTableWithParam(const string& evalTable, bool bGetAll, string& param)
 {
     wstring wsParam = ROMUTIL::MBCStrToWStr(param);
     map<string, vector<string> > retval = ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(ROMUTIL::MBCStrToWStr(evalTable), bGetAll, wsParam));
@@ -651,7 +651,7 @@ map<string, vector<string> > ROMNode::EvaluateTableWithParam(string evalTable, b
     return retval;
 }
 
-map<string, vector<string> > ROMNode::EvaluateTableWithParam(string evalTable, string& param)
+map<string, vector<string> > ROMNode::EvaluateTableWithParam(const string& evalTable, string& param)
 {
     wstring wsParam = ROMUTIL::MBCStrToWStr(param);
     map<string, vector<string> > retval = ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(ROMUTIL::MBCStrToWStr(evalTable), wsParam));
@@ -659,7 +659,7 @@ map<string, vector<string> > ROMNode::EvaluateTableWithParam(string evalTable, s
     return retval;
 }
 
-wstring ROMNode::GetFirstTableResult(wstring tableName, wstring output)
+wstring ROMNode::GetFirstTableResult(const wstring& tableName, const wstring& output)
 {
 	wstring retval = L"";
 	vector<wstring> res = EvaluateTable(tableName, output, this);
@@ -668,7 +668,7 @@ wstring ROMNode::GetFirstTableResult(wstring tableName, wstring output)
 	return retval;
 }
 
-vector<wstring> ROMNode::ReverseEvaluateTable(wstring evalTable, wstring inputAttr, bool bGetAll)
+vector<wstring> ROMNode::ReverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, bool bGetAll)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -679,7 +679,7 @@ vector<wstring> ROMNode::ReverseEvaluateTable(wstring evalTable, wstring inputAt
 	return retval;
 }
 
-vector<wstring> ROMNode::ReverseEvaluateTable(wstring evalTable, wstring inputAttr)
+vector<wstring> ROMNode::ReverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -690,7 +690,7 @@ vector<wstring> ROMNode::ReverseEvaluateTable(wstring evalTable, wstring inputAt
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::ReverseEvaluateTable(wstring evalTable, bool bGetAll)
+map<wstring, vector<wstring> > ROMNode::ReverseEvaluateTable(const wstring& evalTable, bool bGetAll)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -701,7 +701,7 @@ map<wstring, vector<wstring> > ROMNode::ReverseEvaluateTable(wstring evalTable, 
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::ReverseEvaluateTable(wstring evalTable)
+map<wstring, vector<wstring> > ROMNode::ReverseEvaluateTable(const wstring& evalTable)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -712,7 +712,7 @@ map<wstring, vector<wstring> > ROMNode::ReverseEvaluateTable(wstring evalTable)
 	return retval;
 }
 
-vector<wstring> ROMNode::GetPossibleValues(wstring evalTable, wstring outputName)
+vector<wstring> ROMNode::GetPossibleValues(const wstring& evalTable, const wstring& outputName)
 {
 	vector<wstring> outputs;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -723,7 +723,7 @@ vector<wstring> ROMNode::GetPossibleValues(wstring evalTable, wstring outputName
 	return outputs;
 }
 
-wstring ROMNode::GetATableInputValue(wstring input)
+wstring ROMNode::GetATableInputValue(const wstring& input)
 {
 	wstring retval;
 	//parse out any XPATH Queries here and return values
@@ -921,7 +921,7 @@ wstring ROMNode::SaveXML(bool indented)
 	return _convertXMLDocToString(indented);
 }
 
-bool ROMNode::LoadXML(wstring xmlStr)
+bool ROMNode::LoadXML(const wstring& xmlStr)
 {
 	bool retval = false;
 
@@ -1141,7 +1141,7 @@ void ROMNode::_setAllUnchanged()
 	}
 }
 
-wstring	ROMNode::EvaluateXPATH(wstring xpath, string guid)
+wstring	ROMNode::EvaluateXPATH(const wstring& xpath, const string& guid)
 {
 	wstring retval;
 	wstring match = L"<xsl:template match=\"/\"><xsl:for-each select=\"//Object[@guid=\'";

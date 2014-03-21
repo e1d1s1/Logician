@@ -65,7 +65,7 @@ wstring ROMUTIL::FindAndReplace (const wstring& source, const wstring target, co
 	return str;
 }
 
-bool ROMUTIL::StringContains(wstring source, wstring target)
+bool ROMUTIL::StringContains(const wstring& source, const wstring& target)
 {
 	bool retval = false;
 
@@ -75,7 +75,7 @@ bool ROMUTIL::StringContains(wstring source, wstring target)
 	return retval;
 }
 
-bool ROMUTIL::StringBeginsWith(wstring source, wstring target)
+bool ROMUTIL::StringBeginsWith(const wstring& source, const wstring& target)
 {
 	bool retval = false;
 
@@ -85,7 +85,7 @@ bool ROMUTIL::StringBeginsWith(wstring source, wstring target)
 	return retval;
 }
 
-vector<string> ROMUTIL::Split(string text, string separators)
+vector<string> ROMUTIL::Split(const string& text, const string& separators)
 {
 	vector<string> retval;
 	size_t n = text.length();
@@ -105,7 +105,7 @@ vector<string> ROMUTIL::Split(string text, string separators)
 	return retval;
 }
 
-vector<wstring> ROMUTIL::Split(wstring text, wstring separators)
+vector<wstring> ROMUTIL::Split(const wstring& text, const wstring& separators)
 {
 	vector<wstring> retval;
 	size_t n = text.length();
@@ -125,7 +125,7 @@ vector<wstring> ROMUTIL::Split(wstring text, wstring separators)
 	return retval;
 }
 
-bool ROMUTIL::StringIsNumeric(wstring s)
+bool ROMUTIL::StringIsNumeric(const wstring& s)
 {
 	bool retval = false;
 	std::wistringstream inpStream(s);
@@ -151,23 +151,23 @@ wstring ROMUTIL::TrimString(wstring s)
   return s;
 }
 
-string ROMUTIL::ToASCIIString(wstring s)
+string ROMUTIL::ToASCIIString(const wstring& s)
 {
 	string retval(s.begin(), s.end());
 	return retval;
 }
 
-vector<string> ROMUTIL::ToASCIIStringVector(vector<wstring> vectWS)
+vector<string> ROMUTIL::ToASCIIStringVector(const vector<wstring>& vectWS)
 {
 	vector<string> retval;
-	for (vector<wstring>::iterator it = vectWS.begin(); it != vectWS.end(); it++)
+	for (auto it = vectWS.begin(); it != vectWS.end(); it++)
 	{
 		retval.push_back(ROMUTIL::ToASCIIString(*it));
 	}
 	return retval;
 }
 
-vector<string> ROMUTIL::WStrToMBCStrVector(vector<wstring> vectWS)
+vector<string> ROMUTIL::WStrToMBCStrVector(vector<wstring>& vectWS)
 {
 	vector<string> retval;
 	for (vector<wstring>::iterator it = vectWS.begin(); it != vectWS.end(); it++)
@@ -177,7 +177,7 @@ vector<string> ROMUTIL::WStrToMBCStrVector(vector<wstring> vectWS)
 	return retval;
 }
 
-map<string, vector<string> > ROMUTIL::WStrToMBCStrMapVector(map<wstring, vector<wstring> > mapVectWS)
+map<string, vector<string> > ROMUTIL::WStrToMBCStrMapVector(map<wstring, vector<wstring> >& mapVectWS)
 {
 	map<string, vector<string> > retval;
 	for (map<wstring, vector<wstring> >::iterator it = mapVectWS.begin(); it != mapVectWS.end(); it++)
@@ -189,10 +189,10 @@ map<string, vector<string> > ROMUTIL::WStrToMBCStrMapVector(map<wstring, vector<
 	return retval;
 }
 
-vector<wstring> ROMUTIL::ToWStringVector(vector<string> vStr)
+vector<wstring> ROMUTIL::ToWStringVector(const vector<string>& vStr)
 {
 	vector<wstring> retval;
-	for (vector<string>::iterator it = vStr.begin(); it != vStr.end(); it++)
+	for (auto it = vStr.begin(); it != vStr.end(); it++)
 	{
 		wstring wStr = ROMUTIL::MBCStrToWStr(*it);
 		retval.push_back(wStr);
@@ -228,7 +228,7 @@ string ROMUTIL::MakeGUID()
 	return guid;
 }
 
-std::wstring ROMUTIL::encodeForXml(const std::wstring &sSrc)
+std::wstring ROMUTIL::encodeForXml(const wstring& sSrc)
 {
     wostringstream sRet;
     for( wstring::const_iterator iter = sSrc.begin(); iter!=sSrc.end(); iter++ )
@@ -261,7 +261,7 @@ std::wstring ROMUTIL::encodeForXml(const std::wstring &sSrc)
 			return L"";
 		}
 #endif
-		wstring ROMUTIL::MBCStrToWStr(string mbStr)
+		wstring ROMUTIL::MBCStrToWStr(const string& mbStr)
 		{
 			if (mbStr.size() == 0)
 				return L"";
@@ -288,7 +288,7 @@ std::wstring ROMUTIL::encodeForXml(const std::wstring &sSrc)
 			0x00000000UL, 0x00003080UL, 0x000E2080UL,
 			0x03C82080UL, 0xFA082080UL, 0x82082080UL };
 
-		string ROMUTIL::WStrToMBCStr(wstring wstr)
+		string ROMUTIL::WStrToMBCStr(const wstring& wstr)
 		{
 			string retval ="";
 			for (size_t i = 0; i < wstr.length(); ++i)

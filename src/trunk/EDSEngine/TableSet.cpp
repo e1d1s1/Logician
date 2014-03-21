@@ -92,7 +92,7 @@ void CTableSet::LoadTableInfo(CRuleTable *table)
 
 }
 
-vector<wstring> CTableSet::ParseTablesAndChainsForInputs(wstring tableName)
+vector<wstring> CTableSet::ParseTablesAndChainsForInputs(const wstring& tableName)
 {
 	vector<wstring> retval;
 
@@ -128,7 +128,7 @@ vector<wstring> CTableSet::ParseTablesAndChainsForInputs(wstring tableName)
 	return retval;
 }
 
-CRuleTable* CTableSet::GetTable(std::wstring tableName)
+CRuleTable* CTableSet::GetTable(const wstring& tableName)
 {
 	if (m_tables.find(tableName) != m_tables.end())
 		return &m_tables[tableName];
@@ -136,7 +136,7 @@ CRuleTable* CTableSet::GetTable(std::wstring tableName)
 		return nullptr;
 }
 
-vector<wstring> CTableSet::GetInputAttrs(std::wstring tableName)
+vector<wstring> CTableSet::GetInputAttrs(const wstring& tableName)
 {
 	if (m_inputAttrsByTable.find(tableName) != m_inputAttrsByTable.end())
 		return m_inputAttrsByTable[tableName];
@@ -144,7 +144,7 @@ vector<wstring> CTableSet::GetInputAttrs(std::wstring tableName)
 		return vector<wstring>();
 }
 
-vector<wstring> CTableSet::GetOutputAttrs(std::wstring tableName)
+vector<wstring> CTableSet::GetOutputAttrs(const wstring&tableName)
 {
 	if (m_outputAttrsByTable.find(tableName) != m_outputAttrsByTable.end())
 		return m_outputAttrsByTable[tableName];
@@ -152,7 +152,7 @@ vector<wstring> CTableSet::GetOutputAttrs(std::wstring tableName)
 		return vector<wstring>();
 }
 
-vector<wstring> CTableSet::GetInputDependencies(std::wstring tableName)
+vector<wstring> CTableSet::GetInputDependencies(const wstring&tableName)
 {
 	if (m_outputAttrsByTable.find(tableName) != m_outputAttrsByTable.end())
 		return m_inputDependenciesByTable[tableName];
