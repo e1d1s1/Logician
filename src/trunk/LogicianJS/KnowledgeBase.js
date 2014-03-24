@@ -53,6 +53,7 @@ var JAVASCRIPT = 0x2000;
 var INVALID_STRING = 0;
 var EMPTY_STRING = 1;
 var EXPLICIT_NULL_STRING = 2;
+var THREAD_THRESHOLD = 20;
 
 //xpath constants
 var STRING_TYPE = 2;
@@ -267,7 +268,6 @@ function Bimapper()
     {
         this.m_IndexToStringsMap = new Array();
         this.m_StringsToIndexMap = new Array();
-        this.userStrings = new Array();
         this.maxID = 0;    
 
         Bimapper.prototype.AddString = function(id, s)
@@ -278,23 +278,6 @@ function Bimapper()
                     this.maxID = id;
                 this.m_IndexToStringsMap[id] = s;
                 this.m_StringsToIndexMap[s] = id;
-            }
-            catch (err)
-            {
-                ReportError(err);
-            }
-        }
-
-        Bimapper.prototype.AddUserString = function(s)
-        {
-            try
-            {
-                var retval = this.maxID + 1;
-	            this.m_IndexToStringsMap[retval] = s;
-	            this.m_StringsToIndexMap[s] = retval;
-	            this.userStrings.push(retval);
-	            this.maxID = retval;
-	            return retval;
             }
             catch (err)
             {
@@ -337,31 +320,6 @@ function Bimapper()
             }
             return retval;
         }
-
-        Bimapper.prototype.ClearUserStrings = function()
-        {
-            try
-            {
-                for (var i = 0; i < ArraySize(userStrings); i++)
-                {
-                    var id = this.userStrings[i];
-                    var s = this.GetStringByID(id);
-            
-                    if (m_StringsToIndexMap[s] != null)
-                        delete m_StringsToIndexMap[s];
-                
-                    if (m_IndexToStringsMap[id] != null)
-                        delete m_IndexToStringsMap[id];
-                }
-        
-                this.userStrings = new Array();
-            }
-            catch (err)
-            {
-                ReportError(err);
-            }
-        }
-
     }
     catch (err) {
         ReportError(err);
@@ -377,16 +335,18 @@ function Decode()
         this.m_tests = new Array();
         this.m_operator = EQUALS;
         this.m_stringsMap = new Bimapper();
-        this.m_inputValues = new Array();    
+        this.m_context = null;
+        this.m_inputAttrGetter = null;
 
-        this.CreateOutputDecoder = function(outputCell, inputValues, stringMap)
+        this.CreateOutputDecoder = function (outputCell, inputAttrGetter, stringMap, context)
         {
             try
             {
                 this.m_tests = outputCell.Values;
 	            this.m_stringsMap = stringMap;
 	            this.m_operator = outputCell.Operation;
-	            this.m_inputValues = inputValues;
+	            this.m_inputAttrGetter = inputAttrGetter;
+	            this.m_context = context;
             }
             catch (err)
             {
@@ -394,7 +354,7 @@ function Decode()
             }
         }
 
-        this.CreateInputDecoder = function(currentValue, inputCell, inputValues, stringMap)
+        this.CreateInputDecoder = function (currentValue, inputCell, inputAttrGetter, stringMap, context)
         {
             try
             {
@@ -402,7 +362,8 @@ function Decode()
 	            this.m_tests = inputCell.Values;
 	            this.m_stringsMap = stringMap;
 	            this.m_operator = inputCell.Operation;
-	            this.m_inputValues = inputValues;
+	            this.m_inputAttrGetter = inputAttrGetter;
+	            this.m_context = context;
 
 	            this.CheckForInputGets();
             }
@@ -425,7 +386,7 @@ function Decode()
 			        {
 				        var test = this.m_tests[i];
 
-				        if (test == this.m_value && test > 0)
+				        if (test == this.m_value.ID && test > 0)
 				        {
 					        retval = true;
 					        break;
@@ -434,7 +395,7 @@ function Decode()
 					        retval = false;
 
 				        //explict NULL check
-				        if (retval == false && test == EXPLICIT_NULL_STRING && this.m_value == EMPTY_STRING)
+				        if (retval == false && test == EXPLICIT_NULL_STRING && this.m_value.ID == EMPTY_STRING)
 					        retval = true;
 			        }
 		        }
@@ -444,13 +405,13 @@ function Decode()
 			        {
 				        var test = this.m_tests[i];
 
-				        if (test == this.m_value)
+				        if (test == this.m_value.ID)
 				        {
 					        retval = false;
 				        }
 
 				        //explict NULL check
-				        if (retval == true && test == EXPLICIT_NULL_STRING && this.m_value == EMPTY_STRING)
+				        if (retval == true && test == EXPLICIT_NULL_STRING && this.m_value.ID == EMPTY_STRING)
 					        retval = false;
 			        }
 		        }
@@ -459,7 +420,7 @@ function Decode()
 		        else if (this.m_operator & LESS_THAN || this.m_operator & LESS_THAN_EQUAL || this.m_operator & GREATER_THAN || this.m_operator & GREATER_THAN_EQUAL)
 		        {
 			        var currentTest = this.GetString(this.m_tests[0]);
-			        var currentValue = this.GetString(this.m_value);
+			        var currentValue = this.m_value.Value;
 			        var bIsNum = false;
 
 			        if (isNumber(currentTest) == true && isNumber(currentValue) == true)
@@ -468,14 +429,15 @@ function Decode()
 			        }
 			        var dCurrentValue = 0.0;
 			        var dTestValue = 0.0;
-
             
 			        if (bIsNum)
 			        {
 				        try
 				        {
-					        dCurrentValue = parseFloat(currentValue);
-					        dTestValue = parseFloat(currentTest);
+				            if (currentValue.length > 0)
+				                dCurrentValue = parseFloat(currentValue);
+				            if (currentTest.length > 0)
+					            dTestValue = parseFloat(currentTest);
 				        }
 				        catch(err)
 				        {
@@ -535,7 +497,7 @@ function Decode()
 			        this.m_operator & RANGE_START_INCLUSIVE || this.m_operator & RANGE_NOT_INCLUSIVE)
 		        {
 			        var testString = this.GetString(this.m_tests[0]);
-			        var currentValue = this.GetString(this.m_value);
+			        var currentValue = this.m_value.Value;
 			        var min = 0, max = 0, dCurrentValue = 0;
 			        var parts = testString.split(",");
 
@@ -675,18 +637,14 @@ function Decode()
 		            var getText = "get(" + attrName + ")";
 		            //get the value of the input attr
 		            var bFoundAttr = false;
-		            if (this.m_inputValues != null && ArraySize(this.m_inputValues) > 0)
+		            if (this.m_inputAttrGetter != null)
 		            {
-		                var valueIndex = this.m_inputValues[attrName];
-			            if (valueIndex != null)
-			            {
-				            var value = this.GetString(valueIndex);
-				            if (value.length > 0)
-				            {
-					            bFoundAttr = true;
-					            retval = s.replace(getText, value);
-				            }
-			            }
+		                var value = this.m_inputAttrGetter(attrName, this.m_context);
+				        if (value.length > 0)
+				        {
+					        bFoundAttr = true;
+					        retval = s.replace(getText, value);
+				        }			            
 		            }
 
 		            if (!bFoundAttr)
@@ -729,9 +687,12 @@ function Decode()
     }
 }
 
-
-
-
+//Token
+function Token()
+{
+    this.ID = 0;
+    this.Value = "";
+};
 
 
 //RuleTable////////////////////////////////////////////////////////////
@@ -740,7 +701,6 @@ function RuleTable()
     try
     {
         this.DebugMessage = "";
-        this.m_InputAttrsValues = new Array();
         this.m_InputAttrsTests = new Array();
         this.m_FormulaInputs = new Array();
         this.m_OutputAttrsValues = new Array();
@@ -752,7 +712,11 @@ function RuleTable()
         this.m_bGetAll = false;
         this.bHasChain = false;
         this.bHasJS = false; //eval(.....
-        this.bNullSet = false;
+
+        this.m_Threads = 1;
+        this.m_ThreadingEnabled = false;
+
+        this.InputValueGetter = null;
     
 
         this.CreateRuleTable = function(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll)
@@ -765,8 +729,9 @@ function RuleTable()
                 this.m_OutputAttrsValues = outputAttrsValues;
                 this.m_FormulaInputs = formulaInputs;
         
-                if (this.m_OutputAttrsValues.length > 0)
-                    this.m_Tests = this.m_OutputAttrsValues[0].second.length;
+                if (this.m_OutputAttrsValues.length > 0) {
+                    this.m_Tests = this.m_OutputAttrsValues[0].second.length;                    
+                }
         
                 this.bHasJS = false;
                 this.bHasChain = false;
@@ -778,7 +743,14 @@ function RuleTable()
             }
         }
 
-        this.EvaluateTable = function(bGetAll, bForward)
+        this.SetThreadCount = function(threads)
+        {
+            this.m_Threads = threads;
+            if (this.m_Threads > 1)
+                this.m_ThreadingEnabled = this.m_Tests >= THREAD_THRESHOLD;
+        }
+
+        this.EvaluateTable = function(bGetAll, bForward, context)
         {
             var retval = new Array();
             try
@@ -793,7 +765,7 @@ function RuleTable()
                 for (var i = 0; i < ArraySize(resultCollection); i++)
                 {
                     var outputAttrValuePair = resultCollection[i];
-                    var result = this.EvaluateTableForAttr(outputAttrValuePair.first, bGetAll, bForward);
+                    var result = this.EvaluateTableForAttr(outputAttrValuePair.first, bGetAll, bForward, context);
                     retval[outputAttrValuePair.first] = result;
                 }        
             }
@@ -804,7 +776,56 @@ function RuleTable()
             return retval;
         }
 
-        this.EvaluateTableForAttr = function(outputAttr, bGetAll, bForward)
+        this._runTestGroup = function(bGetAll, startIndex, endIndex, inputCollection, values, colResults, context)
+        {
+            var bHaveSolution = true;
+            for (var testCnt = 0; testCnt < this.m_Tests; testCnt++) {
+                //sweep through the inputs			    
+                var inputCnt = 0;
+                for (var i = 0; i < ArraySize(inputCollection) ; i++) {
+                    var inputAttrPair = inputCollection[i];
+                    if (testCnt < ArraySize(inputAttrPair.second)) {
+                        var decoder = new Decode();
+                        decoder.CreateInputDecoder(values[inputCnt], inputAttrPair.second[testCnt], this.InputValueGetter, this.m_stringsMap, context);
+                        bHaveSolution = decoder.EvaluateInputCell();
+                    }
+                    inputCnt++;
+                    if (!bHaveSolution)
+                        break;
+                }
+                colResults[testCnt] = bHaveSolution;
+                if (bHaveSolution && !bGetAll)
+                    break;
+            } //done column
+
+            var objRetval = new Object();
+            objRetval.HasSolution = bHaveSolution;
+            objRetval.Results = colResults;
+            return objRetval;
+        }
+
+        this._runTests = function(bGetAll, inputCollection, values, context)
+        {
+            //sweep down the table for all inputs and do test(s)
+            var colResultsDefault = new Array(this.m_Tests);
+            for (var j = 0; j < colResultsDefault.length; j++)
+                colResultsDefault[j] = false;
+            var colResults = colResultsDefault;
+
+            if (this.m_ThreadingEnabled)
+            {
+                //use background workers
+            }
+            else
+            {
+                var objRetval = this._runTestGroup(bGetAll, 0, this.m_Tests, inputCollection, values, colResults, context);
+                colResults = objRetval.Results;
+            }
+
+            return colResults;
+        }
+
+        this.EvaluateTableForAttr = function(outputAttr, bGetAll, bForward, context)
         {
             var retval = new Array();
             try
@@ -828,49 +849,22 @@ function RuleTable()
 		            outputCollection = this.m_InputAttrsTests;
 	            }
 	    
-	            this.SetInvalidAttrs();
-	    
-	            if (ArraySize(this.m_InputAttrsValues) > 0 && ArraySize(inputCollection) > 0)
+	            if (ArraySize(inputCollection) > 0)
 	            {
 		            //get the current values of all input attrs
 		            for (var i = 0; i < ArraySize(inputCollection); i++)
 		            {
 		                var inputAttrPair = inputCollection[i];
-			            var attr = inputAttrPair.first;
-			            var currentInputAttrValuesIndex = this.m_InputAttrsValues[attr];
-			            if (currentInputAttrValuesIndex != null)
-			            {
-				            values.push(currentInputAttrValuesIndex);
-			            }
+		                var attrName = inputAttrPair.first;
+		                var token = new Token();
+		                token.Value = this.InputValueGetter(attrName, context);
+		                token.ID = this.m_stringsMap.GetIDByString(token.Value);
+		                values.push(token);
 		            }
 
 		            //sweep down the table for all inputs and do test(s)
-		            var bHaveSolution = true;
-		            var colResultsDefault = new Array(this.m_Tests);
-		            for (var j = 0; j < colResultsDefault.length; j++)
-		                colResultsDefault[j] = false;
-		            colResults = colResultsDefault;
-		            for (var testCnt = 0; testCnt < this.m_Tests; testCnt++)
-		            {
-			            //sweep through the inputs			    
-			            var inputCnt = 0;
-			            for (var i = 0; i < ArraySize(inputCollection); i++)
-			            {
-			                var inputAttrPair = inputCollection[i];
-				            if (testCnt < ArraySize(inputAttrPair.second))
-				            {
-				                var decoder = new Decode();
-				                decoder.CreateInputDecoder(values[inputCnt], inputAttrPair.second[testCnt], this.m_InputAttrsValues, this.m_stringsMap);
-					            bHaveSolution = decoder.EvaluateInputCell();
-				            }
-				            inputCnt++;
-				            if (!bHaveSolution)
-					            break;
-			            }
-			            colResults[testCnt] = bHaveSolution;
-			            if (bHaveSolution && !bGetAll)
-				            break;
-		            } //done column
+		            colResults = this._runTests(bGetAll, inputCollection, values, context);
+
 		        } //done inputs
 				else if (ArraySize(inputCollection) == 0 && !bGetAll)
 				{
@@ -896,7 +890,7 @@ function RuleTable()
 		            {
 		                var outputCell = results[result];
 			            var decoder = new Decode();
-			            decoder.CreateOutputDecoder(outputCell, this.m_InputAttrsValues, this.m_stringsMap);
+			            decoder.CreateOutputDecoder(outputCell, this.InputValueGetter, this.m_stringsMap, context);
 			            if (outputCell.Operation & CHAIN)
 				            this.bHasChain = true;
 			            if (outputCell.Operation & JAVASCRIPT)
@@ -931,107 +925,6 @@ function RuleTable()
                 ReportError(err);
             }
             return retval;
-        }
-
-        this.SetInputValues = function(values)
-        {
-            try
-            {
-                this.bNullSet = false;
-                this.m_InputAttrsValues = values;
-            }
-            catch (err)
-            {
-                ReportError(err);
-            }
-        }
-
-        this.SetInputValue = function(name, value)
-        {
-            try
-            {
-                this.bNullSet = false;
-
-                if (ArraySize(this.m_InputAttrsTests) > 0)
-                {
-                    var bFoundTableInput = false;
-                    for (var i = 0; i < ArraySize(this.m_InputAttrsTests); i++)
-                    {
-                        if (this.m_InputAttrsTests[i].first == name)
-                        {
-                            bFoundTableInput = true;
-                            var id = this.m_stringsMap.GetIDByString(value);
-                            if (id == INVALID_STRING) //wasnt in out existing list
-                            {
-                                id = this.m_stringsMap.AddUserString(value);
-                            }
-                            this.m_InputAttrsValues[name] = id;
-                            break;
-                        }
-                    }
-            
-                    if (!bFoundTableInput) //this came from outside this table, a get() in a cell
-		            {
-			            var id = this.m_stringsMap.GetIDByString(value);
-			            if (id == INVALID_STRING) //wasnt in our existing list
-			            {
-				            //add a new tokenized string
-				            id = this.m_stringsMap.AddUserString(value);
-			            }
-			            this.m_InputAttrsValues[name] = id;
-		            }
-                }
-            }
-            catch (err)
-            {
-                ReportError(err);
-            }
-        }
-
-        this.SetInvalidAttrs = function()
-        {
-            try
-            {
-                if (!this.bNullSet)
-                {
-                    for (var i = 0; i < ArraySize(this.m_InputAttrsTests); i++)
-                    {
-                        var ruleInput = this.m_InputAttrsTests[i];
-                        var ruleName = ruleInput.first;
-                        if (this.m_InputAttrsValues[ruleName] == null)
-                        {
-                            this.m_InputAttrsValues[ruleName] = INVALID_STRING;
-                        }                
-                    }
-                }
-                this.bNullSet = true;
-            }
-            catch (err)
-            {
-                ReportError(err);
-            }
-        }
-
-        this.ResetTable = function()
-        {
-            try
-            {
-                this.m_Tests = 0;
-                this.bHasChain = false;
-                this.bHasJS = false;
-                this.bNullSet = false;
-        
-                this.DebugMessage = "";
-                this.m_InputAttrsValues = new Array();
-                this.m_InputAttrsTests = new Array();
-                this.m_FormulaInputs = new Array();
-                this.m_OutputAttrsValues = new Array();
-          
-            }
-            catch (err)
-            {
-                ReportError(err);
-            }
         }
 
         this.HasChain = function()
@@ -1204,12 +1097,11 @@ function RuleTable()
 		            for (var i = 0; i < this.m_InputAttrsTests.length; i++)
 		            {
 		                var currentPair = this.m_InputAttrsTests[i];
-			            var attr = currentPair.first;
-			            var value = this.m_stringsMap.GetStringByID(inputValues[i]);			
+			            var attr = currentPair.first;			            
 			            xmlBlob += "<Input name = \"";
 			            xmlBlob += attr;
 			            xmlBlob += "\" value=\"";
-			            xmlBlob += value;
+			            xmlBlob += inputValues[i].Value;
 			            xmlBlob += "\"/>"; 
 		            }
 		            xmlBlob += "</Inputs>";
@@ -1268,6 +1160,7 @@ function TableSet()
         this.m_inputDependenciesByTable = new Array();
         this.m_outputAttrsByTable = new Array();
         this.bInitialized = false;
+        this.m_threads = 1;
 
         this.AddTable = function (inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, tableName, GetAll) {
             try {
@@ -1280,12 +1173,13 @@ function TableSet()
             }
         }
 
-        this.Initialize = function () {
+        this.Initialize = function (threads) {
             try {
                 for (var tableName in this.m_tables) {
                     this.LoadTableInfo(this.m_tables[tableName]);
                 }
                 this.bInitialized = true;
+                this.m_threads = threads;
             }
             catch (err) {
                 ReportError(err);
@@ -1347,6 +1241,7 @@ function TableSet()
 
         this.LoadTableInfo = function (table) {
             try {
+                table.SetThreadCount(this.m_threads);
                 //get the input info for this table
                 var inputs = table.GetAllInputAttrNames();
                 if (ArraySize(inputs) > 0)
@@ -1509,19 +1404,17 @@ function KnowledgeBase(xmlPath) {
     var xmlDoc = null;
     
     try {
-        this.m_StateParameter = "";
         this.m_TableSet = new TableSet();
         this.m_stringsMap = new Bimapper();
         this.mapBaseIDtoTranslations = new Array();
-        this.m_GlobalInputAttrsValues = new Array();
         this.m_jsCode = "";
         this.iRecursingDepth = 0;
         this.m_IsOpen = false;
         this.m_DEBUGGING_MSGS = false;
         this.m_DebugTables = new Array();
-        this.m_DebugHandlerFunct = null;
+        this.DebugHandler = null;
+        this.InputValueGetter = null;
         this.m_bGenerateMsg = false;
-        this.m_LastDebugMessage = "";
         this.m_guid = MakeGUID();
 
         this._parseXML = function(xmlDoc)
@@ -1764,38 +1657,13 @@ function KnowledgeBase(xmlPath) {
     
             this.m_TableSet.Initialize();
             return true;
-        }             
-
-        this.SetDebugHandler = function(func)
-        {
-            this.m_DebugHandlerFunct = func;
-        }
-
-        this.GenerateDebugMessages = function(bGenerate)
-        {
-            this.m_DEBUGGING_MSGS = bGenerate;
-            this.m_bGenerateMsg = bGenerate;
-            if (!this.m_bGenerateMsg)
-                this.m_LastDebugMessage = "";
-        }
-
-        this.GetDebugMessages = function()
-        {
-            var msg = this.m_LastDebugMessage;
-            this.m_LastDebugMessage = "";
-            return msg;
         }
 
         this.SendDebug = function(msg)
         {
-            if (this.m_bGenerateMsg == true)
+            if (this.DebugHandler != null)
             {
-                this.m_LastDebugMessage += msg;
-            }
-
-            if (this.m_DebugHandlerFunct != null)
-            {
-                this.m_DebugHandlerFunct(msg);
+                this.DebugHandler(msg);
             }            
         }
 
@@ -2037,13 +1905,13 @@ function KnowledgeBase(xmlPath) {
 			return false;
         }
 
-        this.EvaluateTableForAttr = function (tableName, outputAttr, bGetAll) 
+        this.EvaluateTableForAttr = function (tableName, outputAttr, bGetAll, context) 
         {
             try 
             {
                 if (bGetAll == undefined)
                     bGetAll = this.TableIsGetAll(tableName);
-                return this.EvaluateTableForAttrWithParam(tableName, outputAttr, "", bGetAll);
+                return this.EvaluateTableForAttrWithParam(tableName, outputAttr, bGetAll, "", context).Results;
             }
             catch (err) {
                 ReportError(err);
@@ -2051,13 +1919,13 @@ function KnowledgeBase(xmlPath) {
 			return null;
         }
 
-        this.EvaluateTable = function(tableName, bGetAll)
+        this.EvaluateTable = function(tableName, bGetAll, context)
         {    
             try
             {
                 if (bGetAll == undefined)
                     bGetAll = this.TableIsGetAll(tableName);
-                return this.EvaluateTableWithParam(tableName, "", bGetAll);
+                return this.EvaluateTableWithParam(tableName, bGetAll, "", context).Results;
             }
             catch (err)
             {
@@ -2066,9 +1934,11 @@ function KnowledgeBase(xmlPath) {
 			return null;
         }
 
-        this.EvaluateTableForAttrWithParam = function(tableName, outputAttr, param, bGetAll) 
+        this.EvaluateTableForAttrWithParam = function (tableName, outputAttr, bGetAll, param, context)
         {
-            var retval = new Array();
+            var retval = new Object();
+            retval.Results = new Array();
+            retval.Parameter = param;
             try
             {
                 if (bGetAll == undefined)
@@ -2079,14 +1949,12 @@ function KnowledgeBase(xmlPath) {
                 if (table == null)
                     return retval;
 				
-                if (this.iRecursingDepth == 0)
-                    this.m_StateParameter = param;
                 this.iRecursingDepth++;        
                 
                 table.EnableDebugging(this.DebugThisTable(tableName));
-                table.SetInputValues(this.m_GlobalInputAttrsValues);
+                table.InputValueGetter = this.InputValueGetter;
         
-                var results = table.EvaluateTableForAttr(outputAttr, bGetAll, true);
+                var results = table.EvaluateTableForAttr(outputAttr, bGetAll, true, context);
                 //check for existance of table chain
 	            if (table.HasChain() == true)
 	            {
@@ -2107,7 +1975,7 @@ function KnowledgeBase(xmlPath) {
 					            var chainAttrName = args[1].trim();
 					            var debugVals = "";
 
-					            chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, param, this.TableIsGetAll(chainTableName));
+					            chainedResults = this.EvaluateTableForAttrWithParam(chainTableName, chainAttrName, this.TableIsGetAll(chainTableName), param, context).Results;
 					            for (var j = 0; j < chainedResults.length; j++)
 					            {
 					                var result = chainedResults[j];
@@ -2173,13 +2041,14 @@ function KnowledgeBase(xmlPath) {
                                 codeBody += lines[j] + "\n";
                             codeBody += "}";
                     
-                            var jsCode = this.m_jsCode + "\n" + "var param = \"" + this.m_StateParameter + "\";\n";
+                            var jsCode = this.m_jsCode + "\n" + "var param = \"" + param + "\";\n";
                             jsCode += "function myfunc()\n" + codeBody + "\n";
                             jsCode += "function getparam(){return param;}\n";
                             scriptTag = InstallScript(jsCode);
                             var res = myfunc();
                             val = res.toString();
-                            this.m_StateParameter = getparam();
+                            param = getparam();
+                            retval.Parameter = param;
                             RemoveScriptTag(scriptTag);
                             newResults.push(val);                                    
                             if (this.DebugThisTable(tableName))
@@ -2210,7 +2079,7 @@ function KnowledgeBase(xmlPath) {
 		            this.SendDebug(table.DebugMessage);
 	            }
 	
-	            retval = results;	    
+	            retval.Results = results;
             }
             catch (err)
             {
@@ -2219,9 +2088,11 @@ function KnowledgeBase(xmlPath) {
             return retval;
         }
 
-        this.EvaluateTableWithParam = function(tableName, param, bGetAll) 
+        this.EvaluateTableWithParam = function (tableName, bGetAll, param, context)
         {
-            var retval = new Array();
+            var retval = new Object();
+            retval.Results = new Array();
+            retval.Parameter = param;
             try
             {
                 if (bGetAll == undefined)
@@ -2235,8 +2106,9 @@ function KnowledgeBase(xmlPath) {
                 {
                     var resPair = outputAttrsValues[i];
                     var outputName = resPair.first;
-                    var result = this.EvaluateTableForAttrWithParam(tableName, outputName, param, bGetAll);
-                    retval[outputName] = result;
+                    var result = this.EvaluateTableForAttrWithParam(tableName, outputName, bGetAll, param, context);
+                    retval.Results[outputName] = result.Results;
+                    retval.Parameter = result.Parameter;
                 }        
             }
             catch (err)
@@ -2250,14 +2122,14 @@ function KnowledgeBase(xmlPath) {
 		{
 			var retval = "";
 			
-			var retAll = this.EvaluateTableForAttr(tableName, outputAttr);
+			var retAll = this.EvaluateTableForAttr(tableName, outputAttr, context);
 			if (retAll != null && retAll.length > 0)
 				retval = retAll[0];
 			
 			return retval;
 		}
 
-        this.ReverseEvaluateTable = function(tableName, bGetAll)
+        this.ReverseEvaluateTable = function(tableName, bGetAll, context)
         {
             var retval = new Array();
             try
@@ -2267,15 +2139,17 @@ function KnowledgeBase(xmlPath) {
                 var table = this.m_TableSet.GetTable(tableName);
                 if (table == null)
                     return retval;
+
                 table.EnableDebugging(this.DebugThisTable(tableName));
-                table.SetInputValues(this.m_GlobalInputAttrsValues);
+                table.InputValueGetter = this.InputValueGetter;
+
                 var outputCollection = table.GetInputAttrsTests();
                 //for all the outputs get the results
                 for (var i = 0; i < ArraySize(outputCollection); i++)
                 {
                     var resPair = outputCollection[i];
                     var outputName = resPair.first;
-                    var result = table.EvaluateTableForAttr(outputName, bGetAll, false);
+                    var result = table.EvaluateTableForAttr(outputName, bGetAll, false, context);
                     retval[outputName] = result;
                 }
             }
@@ -2286,7 +2160,7 @@ function KnowledgeBase(xmlPath) {
             return retval;
         }        
 
-        this.ReverseEvaluateTableForAttr = function(tableName, outputAttr, bGetAll)
+        this.ReverseEvaluateTableForAttr = function(tableName, outputAttr, bGetAll, context)
         {
             var retval = new Array();
             try
@@ -2297,70 +2171,17 @@ function KnowledgeBase(xmlPath) {
                 var table = this.m_TableSet.GetTable(tableName);
                 if (table == null)
                     return retval;
+
                 table.EnableDebugging(this.DebugThisTable(tableName));
-                table.SetInputValues(this.m_GlobalInputAttrsValues);
-                retval = table.EvaluateTableForAttr(outputAttr, bGetAll, false);
+                table.InputValueGetter = this.InputValueGetter;
+
+                retval = table.EvaluateTableForAttr(outputAttr, bGetAll, false, context);
             }
             catch (err)
             {
                 ReportError(err);
             }
             return retval;
-        }
-
-        this.GetEvalParameter = function () {
-            return this.m_StateParameter;
-        }
-
-        this.GetInputValueCount = function() {
-            return ArraySize(this.m_GlobalInputAttrsValues);
-        }
-
-        this.SetInputValue = function(valName, value)
-        {
-            try
-            {
-                var id = this.m_stringsMap.GetIDByString(value);
-                if (id == INVALID_STRING) //wasnt in our existing list
-                {
-                    //add a new tokenized string
-                    id = this.m_stringsMap.AddUserString(value);
-                }
-                this.m_GlobalInputAttrsValues[valName] = id;
-            }
-            catch (err)
-            {
-                ReportError(err);
-            }
-        }
-
-        this.SetInputValues = function(values)
-        {
-            try
-            {
-                this.m_GlobalInputAttrsValues = values;
-            }
-            catch(err)
-            {
-                ReportError(err);
-            }
-        }
-
-        this.ResetTable = function(tableName)
-        {
-            try
-            {
-                this.m_stringsMap.ClearUserStrings();
-                this.iRecursingDepth = 0;
-
-                var table = this.m_TableSet.GetTable(tableName);
-                if (table != null)                    
-                    table.ResetTable();
-            }
-            catch (err)
-            {
-                ReportError(err);
-            }
         }
 
         this.GetInputAttrs = function(tableName)

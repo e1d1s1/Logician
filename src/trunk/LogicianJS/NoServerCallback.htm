@@ -14,7 +14,8 @@
         //var rules = "\x3C?xml version=\"1.0\" encoding=\"UTF-8\"?\x3E\n\x3CTables debugtables=\"testtable2\" debug=\"true\" connection=\"localhost:3000\"\x3E\n  \x3CTable name=\"ClassDictionary\" getall=\"false\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3ECLASSID\x3C\x2FAttr\x3E\n      \x3CValue id=\"5\" operation=\"1\"\x3ETestApplication\x3C\x2FValue\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EName\x3C\x2FAttr\x3E\n      \x3CValue id=\"6\" operation=\"4096\"\x3Eeval(Dictionary, Name)\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EDescription\x3C\x2FAttr\x3E\n      \x3CValue id=\"7\" operation=\"4096\"\x3Eeval(Dictionary, Description)\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EDefaultValue\x3C\x2FAttr\x3E\n      \x3CValue id=\"8\" operation=\"4096\"\x3Eeval(Dictionary, DefaultValue)\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EAttributeType\x3C\x2FAttr\x3E\n      \x3CValue id=\"9\" operation=\"4096\"\x3Eeval(Dictionary, AttributeType)\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3ERuleTable\x3C\x2FAttr\x3E\n      \x3CValue id=\"10\" operation=\"4096\"\x3Eeval(Dictionary, RuleTable)\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"DictAttr1\" getall=\"false\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x2F\x3E\n      \x3CValue\x2F\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EcDictAttr1\x3C\x2FAttr\x3E\n      \x3CValue id=\"11,12,13,14\" operation=\"1\"\x3EOption1|Option2|Option3|Option4\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"DictAttr2\" getall=\"false\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EcDictAttr1\x3C\x2FAttr\x3E\n      \x3CValue id=\"11\" operation=\"1\"\x3EOption1\x3C\x2FValue\x3E\n      \x3CValue id=\"12\" operation=\"1\"\x3EOption2\x3C\x2FValue\x3E\n      \x3CValue id=\"13\" operation=\"1\"\x3EOption3\x3C\x2FValue\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EdDictAttr2\x3C\x2FAttr\x3E\n      \x3CValue id=\"15,16,17\" operation=\"1\"\x3E@ResultByOption1|Result2|Result3\x3C\x2FValue\x3E\n      \x3CValue id=\"16\" operation=\"1\"\x3EResult2\x3C\x2FValue\x3E\n      \x3CValue id=\"17\" operation=\"1\"\x3EResult3\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"DictAttr3\" getall=\"false\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EdDictAttr2\x3C\x2FAttr\x3E\n      \x3CValue id=\"18\" operation=\"1\"\x3EResultByOption1\x3C\x2FValue\x3E\n      \x3CValue id=\"16\" operation=\"1\"\x3EResult2\x3C\x2FValue\x3E\n      \x3CValue\x2F\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EaDictAttr3\x3C\x2FAttr\x3E\n      \x3CValue id=\"19\" operation=\"1\"\x3EYY\x3C\x2FValue\x3E\n      \x3CValue id=\"20\" operation=\"1\"\x3EYN\x3C\x2FValue\x3E\n      \x3CValue id=\"21\" operation=\"1\"\x3EN\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"DictAttr4\" getall=\"false\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EaDictAttr3\x3C\x2FAttr\x3E\n      \x3CValue id=\"22\" operation=\"1\"\x3EY\x3C\x2FValue\x3E\n      \x3CValue id=\"21\" operation=\"1\"\x3EN\x3C\x2FValue\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EbDictAttr4\x3C\x2FAttr\x3E\n      \x3CValue id=\"23,24,25\" operation=\"1\"\x3ESelection1|@Selection2|@Selection3\x3C\x2FValue\x3E\n      \x3CValue id=\"23,26\" operation=\"1\"\x3ESelection1|Selection2\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"DictAttr5\" getall=\"false\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EaDictAttr3\x3C\x2FAttr\x3E\n      \x3CValue id=\"22\" operation=\"1\"\x3EY\x3C\x2FValue\x3E\n      \x3CValue id=\"21\" operation=\"1\"\x3EN\x3C\x2FValue\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EeDictAttr5\x3C\x2FAttr\x3E\n      \x3CValue id=\"27\" operation=\"1\"\x3E[0,35]\x3C\x2FValue\x3E\n      \x3CValue id=\"28\" operation=\"1\"\x3E[10,50]\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"Dictionary\" getall=\"true\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EName\x3C\x2FAttr\x3E\n      \x3CValue id=\"29\" operation=\"1\"\x3EaDictAttr3\x3C\x2FValue\x3E\n      \x3CValue id=\"30\" operation=\"1\"\x3EbDictAttr4\x3C\x2FValue\x3E\n      \x3CValue id=\"31\" operation=\"1\"\x3EcDictAttr1\x3C\x2FValue\x3E\n      \x3CValue id=\"32\" operation=\"1\"\x3EdDictAttr2\x3C\x2FValue\x3E\n      \x3CValue id=\"33\" operation=\"1\"\x3EeDictAttr5\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EDescription\x3C\x2FAttr\x3E\n      \x3CValue id=\"34\" operation=\"1\"\x3EA Boolean Attribute\x3C\x2FValue\x3E\n      \x3CValue id=\"35\" operation=\"1\"\x3EA Multi-Select Attribute\x3C\x2FValue\x3E\n      \x3CValue id=\"36\" operation=\"1\"\x3EA Single Selection Attribute\x3C\x2FValue\x3E\n      \x3CValue id=\"37\" operation=\"1\"\x3EAnother Single Selection\x3C\x2FValue\x3E\n      \x3CValue id=\"38\" operation=\"1\"\x3EAn Edit Attribute\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EDefaultValue\x3C\x2FAttr\x3E\n      \x3CValue id=\"39\" operation=\"1\"\x3E~\x3C\x2FValue\x3E\n      \x3CValue id=\"39\" operation=\"1\"\x3E~\x3C\x2FValue\x3E\n      \x3CValue id=\"39\" operation=\"1\"\x3E~\x3C\x2FValue\x3E\n      \x3CValue id=\"39\" operation=\"1\"\x3E~\x3C\x2FValue\x3E\n      \x3CValue id=\"40\" operation=\"1\"\x3E0\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EAttributeType\x3C\x2FAttr\x3E\n      \x3CValue id=\"41\" operation=\"1\"\x3EBOOLEAN\x3C\x2FValue\x3E\n      \x3CValue id=\"42\" operation=\"1\"\x3EMULTISELECT\x3C\x2FValue\x3E\n      \x3CValue id=\"43\" operation=\"1\"\x3ESINGLESELECT\x3C\x2FValue\x3E\n      \x3CValue id=\"43\" operation=\"1\"\x3ESINGLESELECT\x3C\x2FValue\x3E\n      \x3CValue id=\"44\" operation=\"1\"\x3EEDIT\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3ERuleTable\x3C\x2FAttr\x3E\n      \x3CValue id=\"45\" operation=\"1\"\x3EDictAttr3\x3C\x2FValue\x3E\n      \x3CValue id=\"46\" operation=\"1\"\x3EDictAttr4\x3C\x2FValue\x3E\n      \x3CValue id=\"47\" operation=\"1\"\x3EDictAttr1\x3C\x2FValue\x3E\n      \x3CValue id=\"48\" operation=\"1\"\x3EDictAttr2\x3C\x2FValue\x3E\n      \x3CValue id=\"49\" operation=\"1\"\x3EDictAttr5\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"ReverseTest\" getall=\"false\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EColor1\x3C\x2FAttr\x3E\n      \x3CValue id=\"50\" operation=\"1\"\x3Ered\x3C\x2FValue\x3E\n      \x3CValue id=\"51\" operation=\"1\"\x3Eblue\x3C\x2FValue\x3E\n      \x3CValue id=\"50\" operation=\"1\"\x3Ered\x3C\x2FValue\x3E\n    \x3C\x2FInputs\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EColor2\x3C\x2FAttr\x3E\n      \x3CValue id=\"52\" operation=\"1\"\x3Eyellow\x3C\x2FValue\x3E\n      \x3CValue id=\"52\" operation=\"1\"\x3Eyellow\x3C\x2FValue\x3E\n      \x3CValue id=\"51\" operation=\"1\"\x3Eblue\x3C\x2FValue\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EOutColor\x3C\x2FAttr\x3E\n      \x3CValue id=\"53\" operation=\"1\"\x3Eorange\x3C\x2FValue\x3E\n      \x3CValue id=\"54\" operation=\"1\"\x3Egreen\x3C\x2FValue\x3E\n      \x3CValue id=\"55\" operation=\"1\"\x3Epurple\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"testtable1\" getall=\"true\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EinputAttr1\x3C\x2FAttr\x3E\n      \x3CValue id=\"56,57\" operation=\"1\"\x3EA|Z\x3C\x2FValue\x3E\n      \x3CValue id=\"58\" operation=\"1\"\x3EC\x3C\x2FValue\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue id=\"59\" operation=\"1\"\x3ETestParameterJS\x3C\x2FValue\x3E\n      \x3CValue id=\"60\" operation=\"1\"\x3ETestParameterPY\x3C\x2FValue\x3E\n    \x3C\x2FInputs\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EinputAttr2\x3C\x2FAttr\x3E\n      \x3CValue id=\"61\" operation=\"1\"\x3E1\x3C\x2FValue\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue id=\"62\" operation=\"16\"\x3E9\x3C\x2FValue\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue id=\"63\" operation=\"64\"\x3E50,60\x3C\x2FValue\x3E\n      \x3CValue id=\"64\" operation=\"64\"\x3E70,80\x3C\x2FValue\x3E\n      \x3CValue id=\"59\" operation=\"1\"\x3ETestParameterJS\x3C\x2FValue\x3E\n      \x3CValue id=\"60\" operation=\"1\"\x3ETestParameterPY\x3C\x2FValue\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EanotherOutput\x3C\x2FAttr\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n    \x3C\x2FOutputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EoutputAttr1\x3C\x2FAttr\x3E\n      \x3CValue id=\"61,65\" operation=\"1\"\x3E1|2\x3C\x2FValue\x3E\n      \x3CValue id=\"65\" operation=\"1\"\x3E2\x3C\x2FValue\x3E\n      \x3CValue id=\"66\" operation=\"2049\"\x3Eget(outsideAttr1) with concat\x3C\x2FValue\x3E\n      \x3CValue id=\"67\" operation=\"1\"\x3E4\x3C\x2FValue\x3E\n      \x3CValue id=\"68\" operation=\"1\"\x3E5\x3C\x2FValue\x3E\n      \x3CValue id=\"69\" operation=\"3073\"\x3Epy(get(outsideAttr1) + 2)\x3C\x2FValue\x3E\n      \x3CValue id=\"70\" operation=\"10241\"\x3Ejs(get(outsideAttr1) + 2)\x3C\x2FValue\x3E\n      \x3CValue id=\"71\" operation=\"8193\"\x3Ejs(alterparameter())\x3C\x2FValue\x3E\n      \x3CValue id=\"72\" operation=\"1025\"\x3Epy(alterparameter())\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n    \x3CFormulaInput\x3EoutsideAttr1\x3C\x2FFormulaInput\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"testtable2\" getall=\"true\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3Ein1\x3C\x2FAttr\x3E\n      \x3CValue id=\"73\" operation=\"1\"\x3Ethis is a comment\x3C\x2FValue\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n    \x3C\x2FInputs\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3Expath(\x2F\x2FObject[@id=\'ChildObject\']\x2FAttribute[@id=\'childAttr\']\x2F@value)\x3C\x2FAttr\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue id=\"74\" operation=\"1\"\x3Esome value of value\x3C\x2FValue\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3Eout1\x3C\x2FAttr\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue id=\"75\" operation=\"4096\"\x3Eeval(testtable1, outputAttr1)\x3C\x2FValue\x3E\n      \x3CValue id=\"76\" operation=\"1\"\x3EXPATH Worked and UNICODE check:\u4e9b\u4e9b\u4e9b 3 simplifed chinese U+4E9B\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"testtable3\" getall=\"true\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EinputAttr2\x3C\x2FAttr\x3E\n      \x3CValue id=\"77\" operation=\"2064\"\x3Eget(someAttr)\x3C\x2FValue\x3E\n      \x3CValue id=\"77\" operation=\"2056\"\x3Eget(someAttr)\x3C\x2FValue\x3E\n    \x3C\x2FInputs\x3E\n    \x3CFormulaInput\x3EsomeAttr\x3C\x2FFormulaInput\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EoutputAttr1\x3C\x2FAttr\x3E\n      \x3CValue id=\"78\" operation=\"2049\"\x3EinputAttr2: get(inputAttr2) is greater than someAttr: get(someAttr)\x3C\x2FValue\x3E\n      \x3CValue id=\"79\" operation=\"2049\"\x3EinputAttr2: get(inputAttr2) is less than or equal to someAttr: get(someAttr)\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n    \x3CFormulaInput\x3EinputAttr2\x3C\x2FFormulaInput\x3E\n    \x3CFormulaInput\x3EsomeAttr\x3C\x2FFormulaInput\x3E\n  \x3C\x2FTable\x3E\n  \x3CTable name=\"testtable4\" getall=\"true\"\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EinputAttr2\x3C\x2FAttr\x3E\n      \x3CValue id=\"2\" operation=\"1\"\x3ENULL\x3C\x2FValue\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue id=\"2\" operation=\"1\"\x3ENULL\x3C\x2FValue\x3E\n      \x3CValue\x2F\x3E\n    \x3C\x2FInputs\x3E\n    \x3CInputs\x3E\n      \x3CAttr\x3EinputAttr1\x3C\x2FAttr\x3E\n      \x3CValue\x2F\x3E\n      \x3CValue id=\"2\" operation=\"1\"\x3ENULL\x3C\x2FValue\x3E\n      \x3CValue id=\"2\" operation=\"1\"\x3ENULL\x3C\x2FValue\x3E\n      \x3CValue\x2F\x3E\n    \x3C\x2FInputs\x3E\n    \x3COutputs\x3E\n      \x3CAttr\x3EoutputAttr1\x3C\x2FAttr\x3E\n      \x3CValue id=\"80\" operation=\"1\"\x3EinputAttr2 is NULL\x3C\x2FValue\x3E\n      \x3CValue id=\"81\" operation=\"1\"\x3EinputAttr1 is NULL\x3C\x2FValue\x3E\n      \x3CValue id=\"82\" operation=\"1\"\x3Eboth attrs are NULL\x3C\x2FValue\x3E\n      \x3CValue id=\"83\" operation=\"1\"\x3Efallout rule\x3C\x2FValue\x3E\n    \x3C\x2FOutputs\x3E\n  \x3C\x2FTable\x3E\n  \x3CTranslations\x3E\n    \x3CString id=\"56\" en-US=\"A trans\"\x2F\x3E\n    \x3CString id=\"57\" en-US=\"Z trans\"\x2F\x3E\n  \x3C\x2FTranslations\x3E\n  \x3CScripting\x3E\n    \x3CPython\x3Edef alterparameter():\&#13;\n    global param\&#13;\n    param = param + \" modified\"\&#13;\n    return \"eval ok\"\x3C\x2FPython\x3E\n    \x3CJavascript\x3Efunction alterparameter()\&#13;\n{    \&#13;\n    param = param + \" modified\";\&#13;\n    return \"eval ok\";\&#13;\n}\x3C\x2FJavascript\x3E\n  \x3C\x2FScripting\x3E\n\x3C\x2FTables\x3E\n"
         function btnTest_onclick()
         {
-            clear_results();        
+            clear_results();
+            var state = new Array();
             var filename = "test_project.xml";
             var knowledge = new KnowledgeBase(filename);
             //var knowledge = CreateKnowledgeBaseFromString(rules);
@@ -28,7 +29,13 @@
                 write_result("OK: File opened");
             }
 
-            knowledge.SetDebugHandler(debugHandler);
+            knowledge.DebugHandler = debugHandler;
+            knowledge.InputValueGetter = function (attrName, ctx) {
+                if (attrName in state)
+                    return state[attrName];
+                else
+                    return "";
+            };
                         
             var cnt = knowledge.TableCount();
             if (cnt == 14)
@@ -130,7 +137,7 @@
 	        
 	        //testing table evaluation
 	        write_result("testing evaluation of testtable1 with inputAttr1 = 'C', get first only");
-	        knowledge.SetInputValue("inputAttr1", "C");
+	        state["inputAttr1"] = "C";
 	        var results2 = knowledge.EvaluateTable(tableName, false);
 	        if (ArraySize(results2) == 2 && results2["outputAttr1"][0] == "2")
 	        {
@@ -146,7 +153,7 @@
 	        }
 	        
 	        write_result("testing evaluation of testtable1 with inputAttr1 = 'C', get all");
-	        knowledge.SetInputValue("inputAttr1", "C");
+	        state["inputAttr1"] = "C";
 	        var results = knowledge.EvaluateTable(tableName, true);
 	        if (ArraySize(results) == 2 && results["outputAttr1"].length == 3 &&
 	            results["outputAttr1"][0] == "2" &&
@@ -164,8 +171,8 @@
 	        }
 	        
 	        write_result("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 10, get all");
-	        knowledge.SetInputValue("inputAttr1", "C");
-	        knowledge.SetInputValue("inputAttr2", "10");
+	        state["inputAttr1"] = "C";
+	        state["inputAttr2"] = "10";
 	        var results3 = knowledge.EvaluateTable(tableName, true);
 	        if (ArraySize(results3) == 2 && results3["outputAttr1"].length == 4 &&
 	            results3["outputAttr1"][0] == "2" &&
@@ -185,9 +192,9 @@
 	        }
 	        
 	        write_result("testing evaluation (Javascript) of testtable1 with inputAttr1 = 'C', inputAttr2 = 78,  outsideAttr1 = 28, get all");
-	        knowledge.SetInputValue("inputAttr1", "C");
-	        knowledge.SetInputValue("inputAttr2", "78");
-	        knowledge.SetInputValue("outsideAttr1", "28");
+	        state["inputAttr1"] = "C";
+	        state["inputAttr2"] = "78";
+	        state["outsideAttr1"] = "28";
 	        var results4 = knowledge.EvaluateTable(tableName, true);
 	        if (ArraySize(results4) == 2 && results4["outputAttr1"].length == 5 &&
 	            results4["outputAttr1"][0] == "2" &&
@@ -209,12 +216,12 @@
 	        }
 	        
 	        write_result("testing evaluation (Javascript) with state parameter on testtable1 with inputAttr1 = 'TestParameterJS' and inputAttr2 = 'TestParameterJS'");
-	        knowledge.SetInputValue("inputAttr1", "TestParameterJS");
-	        knowledge.SetInputValue("inputAttr2", "TestParameterJS");
-	        var result9 = knowledge.EvaluateTableForAttrWithParam(tableName, "outputAttr1", "PassedValue");
-	        var retParam = knowledge.GetEvalParameter();
-	        write_result(ArraySize(result9));
-	        if (ArraySize(result9) == 4 && result9[3] == "eval ok" &&
+	        state["inputAttr1"] = "TestParameterJS";
+	        state["inputAttr2"] = "TestParameterJS";
+	        var result9 = knowledge.EvaluateTableForAttrWithParam(tableName, "outputAttr1", true, "PassedValue");
+	        var retParam = result9.Parameter;
+	        write_result(ArraySize(result9.Results));
+	        if (ArraySize(result9.Results) == 4 && result9.Results[3] == "eval ok" &&
 	            retParam == "PassedValue modified")
 	        {
 	            write_result("Javascript state parameter working");
@@ -227,9 +234,9 @@
 	        
 	        
 	        write_result("testing table chaining");
-	        knowledge.SetInputValue("inputAttr1", "C");
-	        knowledge.SetInputValue("inputAttr2", "78");
-	        knowledge.SetInputValue("outsideAttr1", "28");
+	        state["inputAttr1"] = "C";
+	        state["inputAttr2"] = "78";
+	        state["outsideAttr1"] = "28";
 	        tableName = "testtable2";
 	        var result5 = knowledge.EvaluateTableForAttr(tableName, "out1", true);
 	        if (result5.length == results4["outputAttr1"].length &&
@@ -251,10 +258,9 @@
 		        return false;
 	        }
 	        
-	        write_result("testing input get(), and debug");
+	        write_result("testing input get()");
 	        tableName = "testtable3";
-	        knowledge.SetInputValue("someAttr", "3");
-	        knowledge.SetDebugHandler(debugHandler);
+	        state["someAttr"] = "3";
 	        var result6 = knowledge.EvaluateTableForAttr(tableName, "outputAttr1", true);
 	        if (result6.length == 1 && result6[0] == "inputAttr2: 78 is greater than someAttr: 3")           
 	        {
@@ -267,8 +273,8 @@
 		    }
 	        
 	        write_result("testing NULL conditions");
-	        knowledge.SetInputValue("inputAttr1", "");
-	        knowledge.SetInputValue("inputAttr2", "");
+	        state["inputAttr1"] = "";
+	        state["inputAttr2"] = "";
 	        var result7 = knowledge.EvaluateTableForAttr("testtable4", "outputAttr1", true);
 	        if (result7.length == 4 && result7[2]== "both attrs are NULL")
 	        {
@@ -282,8 +288,8 @@
 	            write_result("FAILURE: Did not get proper eval result on NULL test #1");
 	        }
 	        
-	        knowledge.SetInputValue("inputAttr1", "blah");
-	        knowledge.SetInputValue("c", "");
+	        state["inputAttr1"] = "blah";
+	        state["c"] = "";
             result7 = knowledge.EvaluateTableForAttr("testtable4", "outputAttr1", true);
             if (result7.length == 2 && result7[0] == "inputAttr2 is NULL")
             {
@@ -295,8 +301,8 @@
                 write_result("FAILURE: Did not get proper eval result on NULL test #2");
             }
 
-	        knowledge.SetInputValue("inputAttr1", "blah");
-	        knowledge.SetInputValue("c", "");
+            state["inputAttr1"] = "blah";
+            state["c"] = "";
 	        result7 = knowledge.EvaluateTableForAttr("testtable4", "outputAttr1", true);
 	        if (result7.length == 2 && result7[0] == "inputAttr2 is NULL")
 	        {
@@ -309,7 +315,7 @@
 	        }
 
             write_result("testing exclusing evaluation");
-	        knowledge.SetInputValue("inputAttr1", "A");
+            state["inputAttr1"] =  "A";
 	        var result8 = knowledge.EvaluateTableForAttr("exclusion", "outputAttr1", true);
 	        if (ArraySize(result8) == 4 && result8[0] == "not X or Y" &&
 		        result8[1] == "not X" &&
@@ -327,7 +333,7 @@
 	        }
 
 	        write_result("allowing a match: Y");
-	        knowledge.SetInputValue("inputAttr1", "Y");
+	        state["inputAttr1"] = "Y";
 	        result8 = knowledge.EvaluateTableForAttr("exclusion", "outputAttr1", true);
 	        if (ArraySize(result8) == 4 && result8[0] == "is X or Y" &&
 		        result8[1] == "not X" &&
@@ -354,7 +360,7 @@
 	            write_result("FAILURE: translation failed");  
 	            
 	        write_result("testing reverse evaluation of ReverseTest table");
-	        knowledge.SetInputValue("OutColor","green");
+	        state["OutColor"] = "green";
 	        var result9 = knowledge.ReverseEvaluateTable("ReverseTest", true);
 	        if (ArraySize(result9) == 2 && result9["Color1"][0] == "blue" &&
 	            result9["Color2"][0] == "yellow")

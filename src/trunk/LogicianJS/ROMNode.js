@@ -1014,27 +1014,6 @@ function ROMNode(id) {
             this.m_KnowledgeBase.SetDebugHandler(func);
     }
 
-    this.GenerateTableDebugMessages = function (bGenerate) {
-        try {
-            if (this.m_KnowledgeBase != null)
-                this.m_KnowledgeBase.GenerateDebugMessages(bGenerate);
-        }
-        catch (err) {
-            ReportError(err);
-        }
-    }
-
-    this.GetTableDebugMessages = function () {
-        try {
-            if (this.m_KnowledgeBase != null)
-                return this.m_KnowledgeBase.GetDebugMessages();
-        }
-        catch (err) {
-            ReportError(err);
-        }
-        return "";
-    }
-
     this._getKnowledge = function () {
         var knowledge = null;
         try {
@@ -1732,17 +1711,6 @@ function ROMDictionary(node) {
         }
     }
 
-    this.GetTableDebugMessages = function () {
-        try {
-            if (this.m_context != null)
-                return this.m_context.GetDebugMessages();
-        }
-        catch (err) {
-            ReportError(err);
-        }
-        return "";
-    }
-
     this.LoadDictionary = function (dictionaryTable) {
         try {
             this.m_dict = new Array();
@@ -1872,17 +1840,6 @@ function LinearEngine(context, dictionaryTable) {
             catch (err) {
                 ReportError(err);
             }
-        }
-
-        this.GetTableDebugMessages = function () {
-            try {
-                if (this.base.m_context != null)
-                    return this.base.m_context.GetDebugMessages();
-            }
-            catch (err) {
-                ReportError(err);
-            }
-            return "";
         }
         
         this.GetAllDictionaryAttrs = function () { return this.base.GetAllDictionaryAttrs(); }
