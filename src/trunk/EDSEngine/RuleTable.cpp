@@ -65,9 +65,7 @@ void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inp
 
 	if (m_OutputAttrsValues.size() > 0)
     {
-        m_Tests = m_OutputAttrsValues[0].second.size();
-        if (m_Threads > 1)
-            m_ThreadingEnabled = m_Tests >= THREAD_THRESHOLD;
+        m_Tests = m_OutputAttrsValues[0].second.size();       
     }
 
 	m_Name = name;
@@ -77,6 +75,13 @@ void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inp
 	bHasJavascript = false;
 
 	bGetAll = GetAll;
+}
+
+void CRuleTable::SetThreadCount(size_t threads)
+{
+	m_Threads = threads;
+	if (m_Threads > 1)
+		m_ThreadingEnabled = m_Tests >= THREAD_THRESHOLD;
 }
 
 map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bForward, void* context)

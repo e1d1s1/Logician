@@ -216,7 +216,6 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 			return retval;
 
 		table->EnbleDebugging(DebugThisTable(tableName));
-
 		table->InputValueGetter = InputValueGetterPtr;
 
 		vector<wstring> results = table->EvaluateTable(outputAttr, bGetAll, true, context);

@@ -55,13 +55,13 @@ public:
 	void CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inputAttrsTests,
 		vector<pair<wstring, vector<CRuleCell> > >& outputAttrsValues,
 		vector<wstring>& formulaInputs, CBimapper *stringMap,
-		const wstring& name = L"defualt", bool GetAll = false);
+		const wstring& name = L"default", bool GetAll = false);
 	CRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inputAttrsTests,
 		vector<pair<wstring, vector<CRuleCell> > >& outputAttrsValues,
 		vector<wstring>& formulaInputs, CBimapper *stringMap,
-		const wstring& name = L"defualt", bool GetAll = false) { CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll); }
+		const wstring& name = L"default", bool GetAll = false) { CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll); }
 	void EnbleDebugging(bool enable) { m_DEBUGGING = enable; }
-	void SetThreadCount(size_t threads) { m_Threads = threads; }
+	void SetThreadCount(size_t threads);
 
 	wstring DebugMessage;
 	function<wstring(const wstring&, void*)> InputValueGetter;
