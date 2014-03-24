@@ -40,7 +40,7 @@ namespace EDSEngineWinRT
 				{
 					if (m_debugger != nullptr)
 					{
-						function<void(const wstring&)> debugDelegate = [&value](const wstring& msg)
+						function<void(const wstring&)> debugDelegate = [value](const wstring& msg)
 						{
 							value(ref new String(msg.c_str()));
 						};

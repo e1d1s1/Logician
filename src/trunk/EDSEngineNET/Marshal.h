@@ -32,8 +32,8 @@ using namespace std;
 using namespace System; 
 using namespace System::Collections::Generic;
 
-void MarshalString ( String ^ s, string& os );
-void MarshalString ( String ^ s, wstring& os );
+string MarshalStringA(String ^ s);
+wstring MarshalString(String ^ s);
 void MarshalDictionaryStringUInt(Dictionary<String^, size_t>^ dict, unordered_map<wstring, size_t> &mp);
 
 array<String^>^ GetArrayFromVectorStrings(const vector<wstring> &vect);

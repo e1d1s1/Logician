@@ -18,28 +18,29 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #include "stdafx.h"
 #include "Marshal.h"
 
-void MarshalString ( String ^ s, string& os ) {
-   using namespace Runtime::InteropServices;
-   const char* chars = 
-      (const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
-   os = chars;
-   Marshal::FreeHGlobal(IntPtr((void*)chars));
+string MarshalStringA(String ^ s) {
+	using namespace Runtime::InteropServices;
+	const char* chars =
+		(const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
+	string retval = chars;
+	Marshal::FreeHGlobal(IntPtr((void*)chars));
+	return retval;
 }
 
-void MarshalString ( String ^ s, wstring& os ) {
-   using namespace Runtime::InteropServices;
-   const wchar_t* chars = 
-      (const wchar_t*)(Marshal::StringToHGlobalUni(s)).ToPointer();
-   os = chars;
-   Marshal::FreeHGlobal(IntPtr((void*)chars));
+wstring MarshalString(String ^ s) {
+	using namespace Runtime::InteropServices;
+	const wchar_t* chars =
+		(const wchar_t*)(Marshal::StringToHGlobalUni(s)).ToPointer();
+	wstring retval = chars;
+	Marshal::FreeHGlobal(IntPtr((void*)chars));
+	return retval;
 }
 
 void MarshalDictionaryStringUInt(Dictionary<String^, size_t>^ dict, unordered_map<wstring, size_t> &mp)
 {
 	for each(KeyValuePair<String^, size_t> kvp in dict)
 	{
-		wstring key;
-		MarshalString(kvp.Key, key);
+		wstring key = MarshalString(kvp.Key);
 		mp[key] = kvp.Value;
 	}
 }

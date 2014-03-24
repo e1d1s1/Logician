@@ -34,10 +34,10 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 using namespace std;
 using namespace ROM;
 
-void ROMNode::CreateROMNode(wstring id)
+void ROMNode::CreateROMNode(const wstring id)
 {
-	id = FindAndReplace(id, L" ", L"_");
-	m_id = id;
+	wstring newid = FindAndReplace(id, L" ", L"_");
+	m_id = newid;
 	_init();
 }
 

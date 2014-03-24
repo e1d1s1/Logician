@@ -97,7 +97,7 @@ namespace ROMNET {
 			void set(DebugHandlerDelegate^ value)
 			{
 				m_debugger = value;
-				if (m_KnowledgeBase != nullptr)
+				if (m_ROMNode != nullptr)
 				{
 					if (m_debugger != nullptr)
 					{
@@ -105,11 +105,11 @@ namespace ROMNET {
 						m_gchDebug = GCHandle::Alloc(fp);
 						IntPtr ip = Marshal::GetFunctionPointerForDelegate(fp);
 						DEBUGCB cb = static_cast<DEBUGCB>(ip.ToPointer());
-						m_KnowledgeBase->DebugHandlerPtr = cb;
+						m_ROMNode->SetTableDebugHandler(cb);
 					}
 					else
 					{
-						m_KnowledgeBase->DebugHandlerPtr = nullptr;
+						m_ROMNode->SetTableDebugHandler(nullptr);
 					}
 				}
 			}
