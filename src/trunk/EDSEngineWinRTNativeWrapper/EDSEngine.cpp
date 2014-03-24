@@ -31,7 +31,7 @@ namespace EDSEngineWinRT
 	bool EDSEngine::CreateKnowledgeBase(String ^knowledge_file, int threads)
 	{
 		m_debugger = nullptr;
-		m_KnowledgeBase = new EDS::CKnowledgeBase(knowledge_file->Data());
+		m_KnowledgeBase = new EDS::CKnowledgeBase(knowledge_file->Data(), threads);
 
 		if (m_KnowledgeBase)
 		{

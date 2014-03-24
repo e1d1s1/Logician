@@ -315,12 +315,12 @@ IMap<String^, IMap<String^, String^>^>^	ROMWinRT::ROMNode::GetAllAttributes()
 	IMap<String^, IMap<String^, String^>^>^ retval = ref new Map<String^, IMap<String^, String^>^>();
 	if (m_ROMNode)
 	{
-		MAPWSTRMAP attrs = m_ROMNode->GetAllAttributes();
-		for (MAPWSTRMAP::iterator it = attrs.begin(); it != attrs.end(); it++)
+		auto attrs = m_ROMNode->GetAllAttributes();
+		for (auto it = attrs.begin(); it != attrs.end(); it++)
 		{
 			IMap<String^, String^>^ dictAttrs = ref new Map<String^, String^>();
 			String^ key = ref new String(it->first.c_str());
-			for (MAPWSTRS::iterator itValues = it->second.begin(); itValues != it->second.end(); itValues++)
+			for (auto itValues = it->second.begin(); itValues != it->second.end(); itValues++)
 			{
 				dictAttrs->Insert(ref new String(itValues->first.c_str()), ref new String(itValues->second.c_str()));
 			}
@@ -331,23 +331,23 @@ IMap<String^, IMap<String^, String^>^>^	ROMWinRT::ROMNode::GetAllAttributes()
 }
 
 //rules
-bool ROMWinRT::ROMNode::LoadRules(String^ knowledge_file)
+bool ROMWinRT::ROMNode::LoadRules(String^ knowledge_file, int threads)
 {
 	bool retval = false;
 	if (m_ROMNode)
 	{
-		retval = m_ROMNode->LoadRules(knowledge_file->Data());
+		retval = m_ROMNode->LoadRules(knowledge_file->Data(), threads);
 		m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
 	}
 	return retval;
 }
 
-bool ROMWinRT::ROMNode::LoadRulesFromString(String^ xmlStr)
+bool ROMWinRT::ROMNode::LoadRulesFromString(String^ xmlStr, int threads)
 {
 	bool retval = false;
 	if (m_ROMNode)
 	{
-		retval = m_ROMNode->LoadRulesFromString(xmlStr->Data());
+		retval = m_ROMNode->LoadRulesFromString(xmlStr->Data(), threads);
 		m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
 	}
 	return retval;
@@ -360,7 +360,6 @@ IVector<String^>^ ROMWinRT::ROMNode::EvaluateTable(String^ evalTable, String^ ou
 	{
 		vector<wstring> res = m_ROMNode->EvaluateTable(evalTable->Data(), output->Data(), bGetAll);
 		retval = GetIVectorFromVectorStrings(res);
-		PumpDebugMessages();
 	}
 	return retval;
 }
@@ -372,7 +371,6 @@ IVector<String^>^ ROMWinRT::ROMNode::EvaluateTable(String^ evalTable, String^ ou
 	{
 		vector<wstring> res = m_ROMNode->EvaluateTable((wstring)evalTable->Data(), (wstring)output->Data());
 		retval = GetIVectorFromVectorStrings(res);
-		PumpDebugMessages();
 	}
 	return retval;
 }
@@ -384,7 +382,6 @@ IMap<String^, IVector<String^>^>^ ROMWinRT::ROMNode::EvaluateTable(String^ evalT
 	{
 		map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTable(evalTable->Data(), bGetAll);
 		retval = GetIMapFromMapStrings(res);
-		PumpDebugMessages();
 	}		
 	return retval;
 }	
@@ -396,67 +393,59 @@ IMap<String^, IVector<String^>^>^ ROMWinRT::ROMNode::EvaluateTable(String^ evalT
 	{
 		map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTable(evalTable->Data());
 		retval = GetIMapFromMapStrings(res);
-		PumpDebugMessages();
 	}		
 	return retval;
 }
 
-IVector<String^>^ ROMWinRT::ROMNode::EvaluateTableWithParam(String^ evalTable, String^ output, String^ param, bool bGetAll)
+IVector<String^>^ ROMWinRT::ROMNode::EvaluateTableWithParam(String^ evalTable, String^ output, bool bGetAll, String^ paramIn, String^* paramOut)
 {
 	IVector<String^>^ retval = nullptr;
 	if (m_ROMNode)
 	{
-		vector<wstring> res = m_ROMNode->EvaluateTableWithParam(evalTable->Data(), output->Data(), param->Data(), bGetAll);
+		wstring para = paramIn->Data();
+		vector<wstring> res = m_ROMNode->EvaluateTableWithParam(evalTable->Data(), output->Data(), bGetAll, para);
+		*paramOut = ref new String(para.c_str());
 		retval = GetIVectorFromVectorStrings(res);
-		PumpDebugMessages();
 	}
 	return retval;
 }
 
-IVector<String^>^ ROMWinRT::ROMNode::EvaluateTableWithParam(String^ evalTable, String^ output, String^ param)
+IVector<String^>^ ROMWinRT::ROMNode::EvaluateTableWithParam(String^ evalTable, String^ output, String^ paramIn, String^* paramOut)
 {
 	IVector<String^>^ retval = nullptr;
 	if (m_ROMNode)
 	{
-		vector<wstring> res = m_ROMNode->EvaluateTableWithParam((wstring)evalTable->Data(), (wstring)output->Data(), (wstring)param->Data());
+		wstring para = paramIn->Data();
+		vector<wstring> res = m_ROMNode->EvaluateTableWithParam((wstring)evalTable->Data(), (wstring)output->Data(), para);
+		*paramOut = ref new String(para.c_str());
 		retval = GetIVectorFromVectorStrings(res);
-		PumpDebugMessages();
 	}
 	return retval;
 }
 
-IMap<String^, IVector<String^>^>^ ROMWinRT::ROMNode::EvaluateTableWithParam(String^ evalTable, String^ param, bool bGetAll)
+IMap<String^, IVector<String^>^>^ ROMWinRT::ROMNode::EvaluateTableWithParam(String^ evalTable, bool bGetAll, String^ paramIn, String^* paramOut)
 {
 	IMap<String^, IVector<String^>^>^ retval = nullptr;
 	if (m_ROMNode)
 	{
-		map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTableWithParam(evalTable->Data(), param->Data(), bGetAll);
+		wstring para = paramIn->Data();
+		map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTableWithParam(evalTable->Data(), bGetAll, para);
+		*paramOut = ref new String(para.c_str());
 		retval = GetIMapFromMapStrings(res);
-		PumpDebugMessages();
 	}		
 	return retval;
 }	
 
-IMap<String^, IVector<String^>^>^ ROMWinRT::ROMNode::EvaluateTableWithParam(String^ evalTable, String^ param)
+IMap<String^, IVector<String^>^>^ ROMWinRT::ROMNode::EvaluateTableWithParam(String^ evalTable, String^ paramIn, String^* paramOut)
 {
 	IMap<String^, IVector<String^>^>^ retval = nullptr;
 	if (m_ROMNode)
 	{
-		map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTableWithParam(evalTable->Data(), param->Data());
+		wstring para = paramIn->Data();
+		map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTableWithParam(evalTable->Data(), para);
+		*paramOut = ref new String(para.c_str());
 		retval = GetIMapFromMapStrings(res);
-		PumpDebugMessages();
 	}		
-	return retval;
-}
-
-String^ ROMWinRT::ROMNode::GetEvalParameter()
-{
-	String^ retval = ref new String(L"");
-	if (m_ROMNode)
-	{
-		wstring res = m_ROMNode->GetEvalParameter();
-		retval = ref new String(res.c_str());
-	}
 	return retval;
 }
 
@@ -476,7 +465,6 @@ IVector<String^>^ ROMWinRT::ROMNode::ReverseEvaluateTable(String^ evalTable, Str
 	{
 		vector<wstring> res = m_ROMNode->ReverseEvaluateTable(evalTable->Data(), output->Data(), bGetAll);
 		retval = GetIVectorFromVectorStrings(res);
-		PumpDebugMessages();
 	}
 	return retval;
 }
@@ -488,7 +476,6 @@ IVector<String^>^ ROMWinRT::ROMNode::ReverseEvaluateTable(String^ evalTable, Str
 	{
 		vector<wstring> res = m_ROMNode->ReverseEvaluateTable((wstring)evalTable->Data(), (wstring)output->Data());
 		retval = GetIVectorFromVectorStrings(res);
-		PumpDebugMessages();
 	}
 	return retval;
 }
@@ -500,7 +487,6 @@ IMap<String^, IVector<String^>^>^ ROMWinRT::ROMNode::ReverseEvaluateTable(String
 	{
 		map<wstring, vector<wstring> > res = m_ROMNode->ReverseEvaluateTable(evalTable->Data(), bGetAll);
 		retval = GetIMapFromMapStrings(res);
-		PumpDebugMessages();
 	}
 	return retval;
 }
@@ -512,7 +498,6 @@ IMap<String^, IVector<String^>^>^ ROMWinRT::ROMNode::ReverseEvaluateTable(String
 	{
 		map<wstring, vector<wstring> > res = m_ROMNode->ReverseEvaluateTable(evalTable->Data());
 		retval = GetIMapFromMapStrings(res);
-		PumpDebugMessages();
 	}
 	return retval;
 }
@@ -562,16 +547,6 @@ IVector<ROMWinRT::ROMNode^>^ ROMWinRT::ROMNode::GetArrayFromVectorROM(vector<ROM
 	return arr;
 }
 
-void ROMWinRT::ROMNode::PumpDebugMessages()
-{
-	if (m_ROMNode != NULL && m_DebugDelegate != nullptr)
-	{
-		wstring msg = m_ROMNode->GetTableDebugMessages();
-		if (msg.length() > 0)
-			m_DebugDelegate(ref new String(msg.c_str()));
-	}
-}
-
 
 
 //dictionary
@@ -580,7 +555,6 @@ void ROMWinRT::ROMDictionary::LoadDictionary(String^ dictionaryTable)
 	if (m_ROMDictionary)
 	{
 		m_ROMDictionary->LoadDictionary(dictionaryTable->Data());
-		PumpDebugMessages();
 	}
 }
 
@@ -612,16 +586,6 @@ IMap<String^, ROMWinRT::ROMDictionaryAttribute^>^ ROMWinRT::ROMDictionary::GetAl
 		}
 	}
 	return retval;
-}
-
-void ROMWinRT::ROMDictionary::PumpDebugMessages()
-{
-	if (m_ROMDictionary != NULL && m_DebugDelegate != nullptr)
-	{
-		wstring msg = m_ROMDictionary->GetTableDebugMessages();
-		if (msg.length() > 0)
-			m_DebugDelegate(ref new String(msg.c_str()));
-	}
 }
 
 //LinearEngine
@@ -669,7 +633,6 @@ void ROMWinRT::LinearEngine::EvaluateForAttribute(String^ dictAttrName, IVector<
 	{
 		vector<wstring> vals = GetVectorFromIVectorStrings(newValues);
 		m_LinearEngine->EvaluateForAttribute(dictAttrName->Data(), vals, bEvalDependents);
-		PumpDebugMessages();
 	}
 }
 
@@ -678,7 +641,6 @@ void ROMWinRT::LinearEngine::EvaluateForAttribute(String^ dictAttrName, String^ 
 	if (m_LinearEngine)
 	{
 		m_LinearEngine->EvaluateForAttribute(dictAttrName->Data(), newValue->Data(), bEvalDependents);
-		PumpDebugMessages();
 	}
 }
 
@@ -719,14 +681,4 @@ IMap<String^, IVector<String^>^>^ ROMWinRT::LinearEngine::GetTriggers()
 		}			
 	}
 	return retval;
-}
-
-void ROMWinRT::LinearEngine::PumpDebugMessages()
-{
-	if (m_LinearEngine != NULL && m_DebugDelegate != nullptr)
-	{
-		wstring msg = m_LinearEngine->GetTableDebugMessages();
-		if (msg.length() > 0)
-			m_DebugDelegate(ref new String(msg.c_str()));
-	}
 }

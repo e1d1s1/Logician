@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include <collection.h>
 #include <algorithm>
+#include <functional>
+
 #include "Marshall.h"
 #include "ROMNode.h"
 #include "ROMDictionaryAttribute.h"
@@ -13,7 +15,11 @@ using namespace Windows::Foundation::Collections;
 
 namespace ROMWinRT
 {
+	delegate void FireDebugMessageDelegate(const wstring&);
+	delegate wstring GetTheValueDelegate(const wstring&, void* context);
+
 	public delegate void DebugHandlerDelegate(String^ msg);
+	public delegate String^ InputValueGetterDelegate(String^ attrName, Object^ context);
 
 	public ref class ROMNode sealed
 	{
@@ -24,10 +30,34 @@ namespace ROMWinRT
 		virtual ~ROMNode() {DestroyROMObject();}
 
 		//debugger
-		
-		void					SetDebugging(bool set) {if (m_ROMNode) m_ROMNode->GenerateTableDebugMessages(set);}
-		void					PumpDebugMessages();
-		void					SetDebugHandler(DebugHandlerDelegate^ funct) {m_DebugDelegate = funct;}
+		property DebugHandlerDelegate^	DebugDelegate
+		{
+			DebugHandlerDelegate^ get()
+			{
+				return m_debugger;
+			}
+			void set(DebugHandlerDelegate^ value)
+			{
+				m_debugger = value;
+				if (m_ROMNode != nullptr)
+				{
+					if (m_debugger != nullptr)
+					{
+						function<void(const wstring&)> debugDelegate = [value](const wstring& msg)
+						{
+							value(ref new String(msg.c_str()));
+						};
+						m_ROMNode->SetTableDebugHandler(debugDelegate);
+					}
+					else
+					{
+						m_ROMNode->SetTableDebugHandler(nullptr);
+					}
+				}
+			}
+		}
+		void				EnableRemoteDebugger(bool enable) { if (m_ROMNode) m_ROMNode->EnableRemoteDebugger(enable); }
+
 
 		//relational functions
 		ROMNode^			GetRoot();
@@ -65,17 +95,18 @@ namespace ROMWinRT
 		IMap<String^, IMap<String^, String^>^>^	GetAllAttributes();
 
 		//rules
-		bool				LoadRules(String^ knowledge_file);
-		bool				LoadRulesFromString(String^ xmlStr);
+		bool				LoadRules(String^ knowledge_file, int threads);
+		bool				LoadRulesFromString(String^ xmlStr, int threads);
+		bool				LoadRules(String^ knowledge_file) { return LoadRules(knowledge_file, 1); }
+		bool				LoadRulesFromString(String^ xmlStr) { return LoadRulesFromString(xmlStr, 1); }
 		IVector<String^>^	EvaluateTable(String^ evalTable, String^ output, bool bGetAll);
 		IVector<String^>^	EvaluateTable(String^ evalTable, String^ output);
 		IMap<String^, IVector<String^>^>^ EvaluateTable(String^ evalTable, bool bGetAll);
 		IMap<String^, IVector<String^>^>^ EvaluateTable(String^ evalTable);
-		IVector<String^>^	EvaluateTableWithParam(String^ evalTable, String^ output, String^ param, bool bGetAll);
-		IVector<String^>^	EvaluateTableWithParam(String^ evalTable, String^ output, String^ param);
-		IMap<String^, IVector<String^>^>^ EvaluateTableWithParam(String^ evalTable, String^ param, bool bGetAll);
-		IMap<String^, IVector<String^>^>^ EvaluateTableWithParam(String^ evalTable, String^ param);
-		String^				GetEvalParameter();
+		IVector<String^>^	EvaluateTableWithParam(String^ evalTable, String^ output, bool bGetAll, String^ paramIn, String^* paramOut);
+		IVector<String^>^	EvaluateTableWithParam(String^ evalTable, String^ output, String^ paramIn, String^* paramOut);
+		IMap<String^, IVector<String^>^>^ EvaluateTableWithParam(String^ evalTable, bool bGetAll, String^ paramIn, String^* paramOut);
+		IMap<String^, IVector<String^>^>^ EvaluateTableWithParam(String^ evalTable, String^ paramIn, String^* paramOut);
 		String^				GetFirstTableResult(String^ tableName, String^ output);
 		IVector<String^>^	ReverseEvaluateTable(String^ evalTable, String^ output, bool bGetAll);
 		IVector<String^>^	ReverseEvaluateTable(String^ evalTable, String^ output);
@@ -99,7 +130,7 @@ namespace ROMWinRT
 
 		IVector<ROMNode^>^	GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);		
 
-		DebugHandlerDelegate^	m_DebugDelegate;
+		DebugHandlerDelegate^	m_debugger;
 		ROM::ROMNode			*m_ROMNode;
 		EDS::CKnowledgeBase		*m_KnowledgeBase;
 		bool					m_canDelete;
@@ -340,18 +371,41 @@ namespace ROMWinRT
 		virtual ~ROMDictionary() {if (m_ROMDictionary) delete m_ROMDictionary; m_ROMDictionary = NULL;}
 
 		//debugger
+		property DebugHandlerDelegate^	DebugDelegate
+		{
+			DebugHandlerDelegate^ get()
+			{
+				return m_debugger;
+			}
+			void set(DebugHandlerDelegate^ value)
+			{
+				m_debugger = value;
+				if (m_ROMDictionary != nullptr)
+				{
+					if (m_debugger != nullptr)
+					{
+						function<void(const wstring&)> debugDelegate = [value](const wstring& msg)
+						{
+							value(ref new String(msg.c_str()));
+						};
+						m_ROMDictionary->SetTableDebugHandler(debugDelegate);
+					}
+					else
+					{
+						m_ROMDictionary->SetTableDebugHandler(nullptr);
+					}
+				}
+			}
+		}
+		void					EnableRemoteDebugger(bool enable) { if (m_ROMDictionary) m_ROMDictionary->EnableRemoteDebugger(enable); }
 		
-		void					SetDebugging(bool set) {if (m_ROMDictionary) m_ROMDictionary->GenerateTableDebugMessages(set);}
-		void					PumpDebugMessages();
-		void					SetDebugHandler(DebugHandlerDelegate^ funct) {m_DebugDelegate = funct;}
-
 		void					LoadDictionary(String^ dictionaryTable);
 		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
 		IMap<String^, ROMDictionaryAttribute^>^ GetAllDictionaryAttrs();
 
 	private:		
 		ROM::ROMDictionary		*m_ROMDictionary;
-		DebugHandlerDelegate^	m_DebugDelegate;
+		DebugHandlerDelegate^	m_debugger;
 	};		
 
 	public enum class INVALIDATEMODE
@@ -372,9 +426,33 @@ namespace ROMWinRT
 		virtual ~LinearEngine() {if (m_LinearEngine) delete m_LinearEngine;}
 
 		//debugger		
-		void					SetDebugging(bool set) {if (m_LinearEngine) m_LinearEngine->GenerateTableDebugMessages(set);}
-		void					PumpDebugMessages();
-		void					SetDebugHandler(DebugHandlerDelegate^ funct) {m_DebugDelegate = funct;}
+		property DebugHandlerDelegate^	DebugDelegate
+		{
+			DebugHandlerDelegate^ get()
+			{
+				return m_debugger;
+			}
+			void set(DebugHandlerDelegate^ value)
+			{
+				m_debugger = value;
+				if (m_LinearEngine != nullptr)
+				{
+					if (m_debugger != nullptr)
+					{
+						function<void(const wstring&)> debugDelegate = [value](const wstring& msg)
+						{
+							value(ref new String(msg.c_str()));
+						};
+						m_LinearEngine->SetTableDebugHandler(debugDelegate);
+					}
+					else
+					{
+						m_LinearEngine->SetTableDebugHandler(nullptr);
+					}
+				}
+			}
+		}
+		void					EnableRemoteDebugger(bool enable) { if (m_LinearEngine) m_LinearEngine->EnableRemoteDebugger(enable); }
 
 		void					LoadDictionary(String^ dictionaryTable);
 		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
@@ -414,7 +492,7 @@ namespace ROMWinRT
 		}
 
 	private:
-		ROM::LinearEngine *m_LinearEngine;
-		DebugHandlerDelegate^	m_DebugDelegate;
+		ROM::LinearEngine			*m_LinearEngine;
+		DebugHandlerDelegate^		m_debugger;
 	};
 }

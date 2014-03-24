@@ -114,7 +114,7 @@ function btnTest2_onclick() {
         if (rootNode.loadRules("test_project.xml")) {
             write_result("...loaded");
             //deubg
-            rootNode.setDebugHandler(debugHandler);
+            rootNode.debugDelegate = debugHandler;
             write_result("Evaluating table testtable1");
             var res = rootNode.evaluateTable("testtable1", "outputAttr1", true);
             for (var i = 0; i < res.length; i++) {

@@ -42,8 +42,8 @@ namespace ROM
 		ROMNode(string id) {CreateROMNode(id);}
 		ROMNode(const ROMNode&) = delete;             // Prevent copy-construction
 		ROMNode& operator=(const ROMNode&) = delete;  // Prevent assignment
-		void				CreateROMNode(wstring id);
-		void				CreateROMNode(string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
+		void				CreateROMNode(const wstring id);
+		void				CreateROMNode(const string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
 		void				SetTableDebugHandler(function<void(const wstring&)> debugger);
 		void				EnableRemoteDebugger(bool enable) { if (m_KnowledgeBase) m_KnowledgeBase->EnableRemoteDebugger(enable); }
 

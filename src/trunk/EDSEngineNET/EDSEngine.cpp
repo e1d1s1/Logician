@@ -33,8 +33,7 @@ namespace EDSNET
 {
 	bool EDSEngine::CreateKnowledgeBase(System::String ^knowledge_file)
 	{
-		wstring file;
-		MarshalString(knowledge_file, file);
+		wstring file = MarshalString(knowledge_file);
 		DebugDelegate = nullptr;
 		m_KnowledgeBase = new EDS::CKnowledgeBase(file);	
 
@@ -74,8 +73,7 @@ namespace EDSNET
 	{
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
+			wstring table = MarshalString(tableName);
 			return m_KnowledgeBase->TableHasScript(table);
 		}
 		else
@@ -86,8 +84,7 @@ namespace EDSNET
 	{
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
+			wstring table = MarshalString(tableName);
 			return m_KnowledgeBase->TableIsGetAll(table);
 		}
 		else
@@ -99,10 +96,9 @@ namespace EDSNET
 		array<String^>^ retval = nullptr;
 		if (m_KnowledgeBase)
 		{
-			wstring table, output, para;
-			MarshalString(tableName, table);
-			MarshalString(outputAttr, output);
-			MarshalString(param, para);
+			wstring table = MarshalString(tableName);
+			wstring output = MarshalString(outputAttr);
+			wstring para = MarshalString(param);
 			void* voidPtr = nullptr;
 			if (context)
 				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
@@ -119,9 +115,8 @@ namespace EDSNET
 		Dictionary<String^,	array<String^>^>^ retval = nullptr;
 		if (m_KnowledgeBase)
 		{
-			wstring table, para;
-			MarshalString(tableName, table);
-			MarshalString(param, para);
+			wstring table = MarshalString(tableName);
+			wstring para = MarshalString(param);
 			void* voidPtr = nullptr;
 			if (context)
 				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
@@ -138,9 +133,8 @@ namespace EDSNET
 
 		if (m_KnowledgeBase)
 		{
-			wstring table, output;
-			MarshalString(tableName, table);
-			MarshalString(outputAttr, output);
+			wstring table = MarshalString(tableName);
+			wstring output = MarshalString(outputAttr);
 			void* voidPtr = nullptr;
 			if (context)
 				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
@@ -157,8 +151,7 @@ namespace EDSNET
 
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
+			wstring table = MarshalString(tableName);
 			void* voidPtr = nullptr;
 			if (context)
 				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
@@ -174,9 +167,8 @@ namespace EDSNET
 		String^ retval = gcnew String("");
 		if (m_KnowledgeBase)
 		{
-			wstring table, output;
-			MarshalString(tableName, table);
-			MarshalString(outputAttr, output);
+			wstring table = MarshalString(tableName);
+			wstring output = MarshalString(outputAttr);
 			void* voidPtr = nullptr;
 			if (context)
 				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
@@ -192,9 +184,8 @@ namespace EDSNET
 
 		if (m_KnowledgeBase)
 		{
-			wstring table, input;
-			MarshalString(tableName, table);
-			MarshalString(inputAttr, input);
+			wstring table = MarshalString(tableName);
+			wstring input = MarshalString(inputAttr);
 			void* voidPtr = nullptr;
 			if (context)
 				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
@@ -211,8 +202,7 @@ namespace EDSNET
 
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
+			wstring table = MarshalString(tableName);
 			void* voidPtr = nullptr;
 			if (context)
 				voidPtr = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
@@ -229,8 +219,7 @@ namespace EDSNET
 
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
+			wstring table = MarshalString(tableName);
 			vector<wstring> res = m_KnowledgeBase->GetInputAttrs(table);
 			retval = GetArrayFromVectorStrings(res);
 		}
@@ -244,8 +233,7 @@ namespace EDSNET
 
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
+			wstring table = MarshalString(tableName);
 			vector<wstring> res = m_KnowledgeBase->GetInputDependencies(table);
 			retval = GetArrayFromVectorStrings(res);
 		}
@@ -259,8 +247,7 @@ namespace EDSNET
 
 		if (m_KnowledgeBase)
 		{
-			wstring table;
-			MarshalString(tableName, table);
+			wstring table = MarshalString(tableName);
 			vector<wstring> res = m_KnowledgeBase->GetOutputAttrs(table);
 			retval = GetArrayFromVectorStrings(res);
 		}
@@ -274,9 +261,8 @@ namespace EDSNET
 
 		if (m_KnowledgeBase)
 		{
-			wstring table, output;
-			MarshalString(tableName, table);
-			MarshalString(outputName, output);
+			wstring table = MarshalString(tableName);
+			wstring output = MarshalString(outputName);
 			vector<wstring> res = m_KnowledgeBase->GetAllPossibleOutputs(table, output);
 			retval = GetArrayFromVectorStrings(res);
 		}
@@ -290,8 +276,7 @@ namespace EDSNET
 
 		if (m_KnowledgeBase)
 		{
-			wstring val;
-			MarshalString(localeValue, val);
+			wstring val = MarshalString(localeValue);
 			wstring res = m_KnowledgeBase->DeLocalize(val);
 			retval = gcnew String(res.c_str());
 		}
@@ -305,10 +290,9 @@ namespace EDSNET
 
 		if (m_KnowledgeBase)
 		{
-			wstring src, srcLocale, dest;
-			MarshalString(source, src);
-			MarshalString(sourceLocale, srcLocale);
-			MarshalString(destLocale, dest);
+			wstring src = MarshalString(source);
+			wstring srcLocale = MarshalString(sourceLocale);
+			wstring dest = MarshalString(destLocale);
 			wstring res = m_KnowledgeBase->Translate(src, srcLocale, dest);
 			retval = gcnew String(res.c_str());
 		}
@@ -327,7 +311,7 @@ namespace EDSNET
 				ctxt = Marshal::PtrToStructure(IntPtr(context), Object::typeid);
 			}
 			String^ attrValue = InputGetterDelegate(gcnew String(attrName.c_str()), ctxt);
-			MarshalString(attrValue, retval);
+			retval = MarshalString(attrValue);
 		}
 		return retval;
 	}
