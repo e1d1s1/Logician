@@ -470,7 +470,7 @@
 	            {
 		            write_result("...loaded");
 		            //deubg
-                    rootNode.SetRulesDebugHandler(debugHandler);
+                    rootNode.SetTableDebugHandler(debugHandler);
 		            write_result("Evaluating table testtable1");
 		            var res = rootNode.EvaluateTableForAttr("testtable1", "outputAttr1", true);
 		            for (var i = 0; i < res.length; i++)
@@ -668,6 +668,8 @@
                 msg += elapsed.toString();
                 msg+="ms";
                 write_result(msg);
+
+                write_result("Done");
             }
             catch(err)
             {
@@ -760,7 +762,7 @@
 //	            {
 //		            write_result("...loaded");
 //		            //deubg
-//                    myBaseObject.SetRulesDebugHandler(debugHandler);
+//                    myBaseObject.SetTableDebugHandler(debugHandler);
 //		            write_result("Evaluating table testtable1");
 //		            var res = myBaseObject.EvaluateTableForAttr(myRootNode, "testtable1", "outputAttr1", true);
 //		            for (var i = 0; i < res.length; i++)
