@@ -53,7 +53,7 @@ var JAVASCRIPT = 0x2000;
 var INVALID_STRING = 0;
 var EMPTY_STRING = 1;
 var EXPLICIT_NULL_STRING = 2;
-var THREAD_THRESHOLD = 20;
+//var THREAD_THRESHOLD = 20;
 
 //xpath constants
 var STRING_TYPE = 2;
@@ -713,8 +713,8 @@ function RuleTable()
         this.bHasChain = false;
         this.bHasJS = false; //eval(.....
 
-        this.m_Threads = 1;
-        this.m_ThreadingEnabled = false;
+        //this.m_Threads = 1;
+        //this.m_ThreadingEnabled = false;
 
         this.InputValueGetter = null;
     
@@ -743,12 +743,13 @@ function RuleTable()
             }
         }
 
-        this.SetThreadCount = function(threads)
-        {
-            this.m_Threads = threads;
-            if (this.m_Threads > 1)
-                this.m_ThreadingEnabled = this.m_Tests >= THREAD_THRESHOLD;
-        }
+        //maybe use background workers someday
+        //this.SetThreadCount = function(threads)
+        //{
+        //    this.m_Threads = threads;
+        //    if (this.m_Threads > 1)
+        //        this.m_ThreadingEnabled = this.m_Tests >= THREAD_THRESHOLD;
+        //}
 
         this.EvaluateTable = function(bGetAll, bForward, context)
         {
@@ -812,11 +813,11 @@ function RuleTable()
                 colResultsDefault[j] = false;
             var colResults = colResultsDefault;
 
-            if (this.m_ThreadingEnabled)
-            {
-                //use background workers
-            }
-            else
+            //if (this.m_ThreadingEnabled)
+            //{
+            //    //use background workers
+            //}
+            //else
             {
                 var objRetval = this._runTestGroup(bGetAll, 0, this.m_Tests, inputCollection, values, colResults, context);
                 colResults = objRetval.Results;
@@ -1160,7 +1161,7 @@ function TableSet()
         this.m_inputDependenciesByTable = new Array();
         this.m_outputAttrsByTable = new Array();
         this.bInitialized = false;
-        this.m_threads = 1;
+        //this.m_threads = 1;
 
         this.AddTable = function (inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, tableName, GetAll) {
             try {
@@ -1173,13 +1174,13 @@ function TableSet()
             }
         }
 
-        this.Initialize = function (threads) {
+        this.Initialize = function () {
             try {
                 for (var tableName in this.m_tables) {
                     this.LoadTableInfo(this.m_tables[tableName]);
                 }
                 this.bInitialized = true;
-                this.m_threads = threads;
+                //this.m_threads = threads;
             }
             catch (err) {
                 ReportError(err);
@@ -1241,7 +1242,7 @@ function TableSet()
 
         this.LoadTableInfo = function (table) {
             try {
-                table.SetThreadCount(this.m_threads);
+                //table.SetThreadCount(this.m_threads);
                 //get the input info for this table
                 var inputs = table.GetAllInputAttrNames();
                 if (ArraySize(inputs) > 0)
