@@ -122,8 +122,8 @@ namespace ROM
 		bool				RemoveROMObjectValue(const string& id) { return RemoveROMObjectValue(ROMUTIL::MBCStrToWStr(id)); }
 		string				GetROMObjectIDA() {return ROMUTIL::ToASCIIString(m_id);}
 		void				SetROMObjectID(const string& name) { m_id = ROMUTIL::MBCStrToWStr(name); }
-		bool				LoadRules(const string& knowledge_file) { return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file)); }
-		bool				LoadRulesFromString(const string& xmlStr) { return LoadRulesFromString(ROMUTIL::MBCStrToWStr(xmlStr)); }
+		bool				LoadRules(const string& knowledge_file, size_t threads = 1) { return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file), threads); }
+		bool				LoadRulesFromString(const string& xmlStr, size_t threads = 1) { return LoadRulesFromString(ROMUTIL::MBCStrToWStr(xmlStr), threads); }
 		vector<string>		EvaluateTable(const string& evalTable, const string& output, bool bGetAll) { return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll)); }
 		vector<string>		EvaluateTable(const string& evalTable, const string& output) { return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output))); }
 		map<string, vector<string> > EvaluateTable(const string& evalTable, bool bGetAll) { return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable), bGetAll)); }

@@ -40,7 +40,7 @@ void CTableSet::AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTe
 
 void CTableSet::Initialize(size_t threads)
 {
-	m_threads = 1;
+	m_threads = threads;
 	for (map<wstring, CRuleTable>::iterator it = m_tables.begin(); it != m_tables.end(); it++)
 	{
 		LoadTableInfo(&(*it).second);
