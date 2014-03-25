@@ -95,10 +95,8 @@ namespace ROMWinRT
 		IMap<String^, IMap<String^, String^>^>^	GetAllAttributes();
 
 		//rules
-		bool				LoadRules(String^ knowledge_file, int threads);
-		bool				LoadRulesFromString(String^ xmlStr, int threads);
-		bool				LoadRules(String^ knowledge_file) { return LoadRules(knowledge_file, 1); }
-		bool				LoadRulesFromString(String^ xmlStr) { return LoadRulesFromString(xmlStr, 1); }
+		bool				LoadRules(String^ knowledge_file);
+		bool				LoadRulesFromString(String^ xmlStr);		
 		IVector<String^>^	EvaluateTable(String^ evalTable, String^ output, bool bGetAll);
 		IVector<String^>^	EvaluateTable(String^ evalTable, String^ output);
 		IMap<String^, IVector<String^>^>^ EvaluateTable(String^ evalTable, bool bGetAll);
