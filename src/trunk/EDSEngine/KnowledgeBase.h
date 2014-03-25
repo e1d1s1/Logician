@@ -36,9 +36,9 @@ namespace EDS
 	public:
 		~CKnowledgeBase(void);
 		CKnowledgeBase();
-		CKnowledgeBase(wstring knowledge_file, size_t threads = 1);
-		bool CreateKnowledgeBase(wstring knowledge_file, size_t threads = 1);
-		bool CreateKnowledgeBaseFromString(wstring xmlStr, size_t threads = 1);
+		CKnowledgeBase(wstring knowledge_fil);
+		bool CreateKnowledgeBase(wstring knowledge_fil);
+		bool CreateKnowledgeBaseFromString(wstring xmlStr);
 		size_t TableCount() {return m_TableSet.Count();}
 		bool IsOpen() {return m_IsOpen;}
 		void EnableRemoteDebugger(bool enable) { m_remoteDebugging = enable; }
@@ -58,7 +58,7 @@ namespace EDS
 		vector<wstring> ReverseEvaluateTable(const wstring& tableName, const wstring& inputAttr, void* context = nullptr) { return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName), context); }
 		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring& tableName, bool bGetAll, void* context = nullptr);
 		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring& tableName, void* context = nullptr) { return ReverseEvaluateTable(tableName, TableIsGetAll(tableName), context); }
-		
+
 
 		vector<wstring> GetInputAttrs(const wstring& tableName) { return m_TableSet.GetInputAttrs(tableName); }
 		vector<wstring> GetInputDependencies(const wstring& tableName) { return m_TableSet.GetInputDependencies(tableName); }
@@ -71,9 +71,9 @@ namespace EDS
 		wstring Translate(const wstring& source, const wstring& sourceLocale, const wstring& destLocale);
 
 		//ASCII overloads
-		CKnowledgeBase(string knowledge_file, size_t threads = 1);
-		bool CreateKnowledgeBase(string knowledge_file, size_t threads = 1);
-		bool CreateKnowledgeBaseFromString(string xmlStr, size_t threads = 1);
+		CKnowledgeBase(string knowledge_file);
+		bool CreateKnowledgeBase(string knowledge_fil);
+		bool CreateKnowledgeBaseFromString(string xmlStr);
 		bool TableHasScript(const string& tableName);
 		bool TableIsGetAll(const string& tableName);
 		vector<string> EvaluateTableWithParam(const string& tableName, const string& outputAttr, string& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, context); }
@@ -115,7 +115,6 @@ namespace EDS
 		bool m_IsOpen;
 		wstring m_jsCode, m_pyCode;
 		unordered_map<size_t, unordered_map<wstring, wstring>> mapBaseIDtoTranslations;
-		size_t m_threads;
 
 	//helper functions
 	#ifdef WIN32

@@ -50,8 +50,8 @@ namespace EDSUTIL
 	vector<wstring> Split(const wstring& text, const wstring& separators);
 	bool StringIsNumeric(const wstring& s);
 	wstring TrimString(wstring s);
-	string WStrToMBCStr(const wstring& wstr);	
-	vector<string> ToMBCStringVector(vector<wstring>& vectWS);
+	string WStrToMBCStr(const wstring& wstr);
+	vector<string> ToMBCStringVector(vector<wstring> vectWS);
 	string stringify(double x);
 	string stringify(long x);
 	string stringify(size_t x);

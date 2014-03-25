@@ -495,7 +495,7 @@ bool ROMNode::RemoveROMObjectValue(const wstring& name)
 }
 
 //rules
-bool ROMNode::LoadRules(const wstring& knowledge_file, size_t threads)
+bool ROMNode::LoadRules(const wstring& knowledge_file)
 {
 	if (m_KnowledgeBase)
 	{
@@ -506,7 +506,7 @@ bool ROMNode::LoadRules(const wstring& knowledge_file, size_t threads)
 	if (m_parent == nullptr) //only the root will have the reference to the rules
 	{
 		m_KnowledgeBase = new EDS::CKnowledgeBase();
-		bool retval = m_KnowledgeBase->CreateKnowledgeBase(knowledge_file, threads);
+		bool retval = m_KnowledgeBase->CreateKnowledgeBase(knowledge_file);
 		m_KnowledgeBase->InputValueGetterPtr = [=](const wstring& attrName, void* obj)
 		{
 			return ((ROMNode*)obj)->GetATableInputValue(attrName);
@@ -517,7 +517,7 @@ bool ROMNode::LoadRules(const wstring& knowledge_file, size_t threads)
 		return false;
 }
 
-bool ROMNode::LoadRulesFromString(const wstring& xmlStr, size_t threads)
+bool ROMNode::LoadRulesFromString(const wstring& xmlStr)
 {
 	if (m_KnowledgeBase)
 	{
@@ -528,7 +528,7 @@ bool ROMNode::LoadRulesFromString(const wstring& xmlStr, size_t threads)
 	if (m_parent == nullptr) //only the root will have the reference to the rules
 	{
 		m_KnowledgeBase = new EDS::CKnowledgeBase();
-		bool retval = m_KnowledgeBase->CreateKnowledgeBaseFromString(xmlStr, threads);
+		bool retval = m_KnowledgeBase->CreateKnowledgeBaseFromString(xmlStr);
 		m_KnowledgeBase->InputValueGetterPtr = [&](const wstring& attrName, void* obj)
 		{
 			return ((ROMNode*)obj)->GetATableInputValue(attrName);

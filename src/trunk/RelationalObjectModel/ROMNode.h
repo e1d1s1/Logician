@@ -81,8 +81,8 @@ namespace ROM
 		unordered_map<wstring, std::unordered_map<wstring, wstring>> GetAllAttributes() { return m_attrs; }
 
 		//rules
-		bool				LoadRules(const wstring& knowledge_file, size_t threads = 1);
-		bool				LoadRulesFromString(const wstring& xmlStr, size_t threads = 1);
+		bool				LoadRules(const wstring& knowledge_file);
+		bool				LoadRulesFromString(const wstring& xmlStr);
 		vector<wstring>		EvaluateTable(const wstring& evalTable, const wstring& output, bool bGetAll);
 		vector<wstring>		EvaluateTable(const wstring& evalTable, const wstring& output);
 		map<wstring, vector<wstring> > EvaluateTable(const wstring& evalTable, bool bGetAll);
@@ -122,8 +122,8 @@ namespace ROM
 		bool				RemoveROMObjectValue(const string& id) { return RemoveROMObjectValue(ROMUTIL::MBCStrToWStr(id)); }
 		string				GetROMObjectIDA() {return ROMUTIL::ToASCIIString(m_id);}
 		void				SetROMObjectID(const string& name) { m_id = ROMUTIL::MBCStrToWStr(name); }
-		bool				LoadRules(const string& knowledge_file, size_t threads = 1) { return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file), threads); }
-		bool				LoadRulesFromString(const string& xmlStr, size_t threads = 1) { return LoadRulesFromString(ROMUTIL::MBCStrToWStr(xmlStr), threads); }
+		bool				LoadRules(const string& knowledge_file) { return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file)); }
+		bool				LoadRulesFromString(const string& xmlStr) { return LoadRulesFromString(ROMUTIL::MBCStrToWStr(xmlStr)); }
 		vector<string>		EvaluateTable(const string& evalTable, const string& output, bool bGetAll) { return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll)); }
 		vector<string>		EvaluateTable(const string& evalTable, const string& output) { return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output))); }
 		map<string, vector<string> > EvaluateTable(const string& evalTable, bool bGetAll) { return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable), bGetAll)); }

@@ -42,8 +42,8 @@ namespace ROMUTIL
 	bool StringIsNumeric(const wstring& s);
 	wstring TrimString(wstring s);
 	string ToASCIIString(const wstring& s);
-	vector<string> WStrToMBCStrVector(vector<wstring>& vectWS);
-	map<string, vector<string> > WStrToMBCStrMapVector(map<wstring, vector<wstring> >&);
+	vector<string> WStrToMBCStrVector(vector<wstring> vectWS);
+	map<string, vector<string> > WStrToMBCStrMapVector(map<wstring, vector<wstring> >);
 	vector<string> ToASCIIStringVector(const vector<wstring>& vectWS);
 	vector<wstring> ToWStringVector(const vector<string>& vStr);
 	string stringify(double x);
@@ -59,6 +59,6 @@ namespace ROMUTIL
 	wstring XMLStrToWStr(const unsigned char* mbStr);
 	wstring XMLStrToWStr(unsigned char* mbStr);
 #endif
-	
+
 }
 #endif

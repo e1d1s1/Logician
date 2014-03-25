@@ -180,10 +180,10 @@ wstring EDSUTIL::MBCStrToWStr(const string& mbStr)
 	return retval;
 }
 
-vector<string> EDSUTIL::ToMBCStringVector(vector<wstring>& vectWS)
+vector<string> EDSUTIL::ToMBCStringVector(vector<wstring> vectWS)
 {
 	vector<string> retval;
-	for (vector<wstring>::iterator it = vectWS.begin(); it != vectWS.end(); it++)
+	for (auto it = vectWS.begin(); it != vectWS.end(); it++)
 	{
 		retval.push_back(EDSUTIL::WStrToMBCStr(*it));
 	}
