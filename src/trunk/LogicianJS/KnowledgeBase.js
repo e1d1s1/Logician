@@ -53,7 +53,6 @@ var JAVASCRIPT = 0x2000;
 var INVALID_STRING = 0;
 var EMPTY_STRING = 1;
 var EXPLICIT_NULL_STRING = 2;
-//var THREAD_THRESHOLD = 20;
 
 //xpath constants
 var STRING_TYPE = 2;

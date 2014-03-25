@@ -331,23 +331,23 @@ IMap<String^, IMap<String^, String^>^>^	ROMWinRT::ROMNode::GetAllAttributes()
 }
 
 //rules
-bool ROMWinRT::ROMNode::LoadRules(String^ knowledge_file, int threads)
+bool ROMWinRT::ROMNode::LoadRules(String^ knowledge_file)
 {
 	bool retval = false;
 	if (m_ROMNode)
 	{
-		retval = m_ROMNode->LoadRules(knowledge_file->Data(), threads);
+		retval = m_ROMNode->LoadRules(knowledge_file->Data());
 		m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
 	}
 	return retval;
 }
 
-bool ROMWinRT::ROMNode::LoadRulesFromString(String^ xmlStr, int threads)
+bool ROMWinRT::ROMNode::LoadRulesFromString(String^ xmlStr)
 {
 	bool retval = false;
 	if (m_ROMNode)
 	{
-		retval = m_ROMNode->LoadRulesFromString(xmlStr->Data(), threads);
+		retval = m_ROMNode->LoadRulesFromString(xmlStr->Data());
 		m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
 	}
 	return retval;

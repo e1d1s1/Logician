@@ -20,10 +20,8 @@ namespace EDSEngineWinRT
     {
     public:
 		EDSEngine() { m_debugger = nullptr; InputGetterDelegate = nullptr; }
-		EDSEngine(String^ knowledge_file, int threads) { CreateKnowledgeBase(knowledge_file, threads); }
-		EDSEngine(String^ knowledge_file) {CreateKnowledgeBase(knowledge_file, 1);}
-		bool CreateKnowledgeBase(String^ knowledge_file, int threads);
-		bool CreateKnowledgeBase(String^ knowledge_file) { return CreateKnowledgeBase(knowledge_file, 1); }
+		EDSEngine(String^ knowledge_file) { CreateKnowledgeBase(knowledge_file); }
+		bool CreateKnowledgeBase(String^ knowledge_file);
 		virtual ~EDSEngine() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = nullptr;}
 
 		

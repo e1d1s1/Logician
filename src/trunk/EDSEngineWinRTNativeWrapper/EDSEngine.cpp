@@ -28,10 +28,10 @@ using namespace Platform::Collections;
 
 namespace EDSEngineWinRT
 {
-	bool EDSEngine::CreateKnowledgeBase(String ^knowledge_file, int threads)
+	bool EDSEngine::CreateKnowledgeBase(String ^knowledge_file)
 	{
 		m_debugger = nullptr;
-		m_KnowledgeBase = new EDS::CKnowledgeBase(knowledge_file->Data(), threads);
+		m_KnowledgeBase = new EDS::CKnowledgeBase(knowledge_file->Data());
 
 		if (m_KnowledgeBase)
 		{
