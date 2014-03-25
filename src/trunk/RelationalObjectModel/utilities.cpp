@@ -167,20 +167,20 @@ vector<string> ROMUTIL::ToASCIIStringVector(const vector<wstring>& vectWS)
 	return retval;
 }
 
-vector<string> ROMUTIL::WStrToMBCStrVector(vector<wstring>& vectWS)
+vector<string> ROMUTIL::WStrToMBCStrVector(vector<wstring> vectWS)
 {
 	vector<string> retval;
-	for (vector<wstring>::iterator it = vectWS.begin(); it != vectWS.end(); it++)
+	for (auto it = vectWS.begin(); it != vectWS.end(); it++)
 	{
 		retval.push_back(ROMUTIL::WStrToMBCStr(*it));
 	}
 	return retval;
 }
 
-map<string, vector<string> > ROMUTIL::WStrToMBCStrMapVector(map<wstring, vector<wstring> >& mapVectWS)
+map<string, vector<string> > ROMUTIL::WStrToMBCStrMapVector(map<wstring, vector<wstring> > mapVectWS)
 {
 	map<string, vector<string> > retval;
-	for (map<wstring, vector<wstring> >::iterator it = mapVectWS.begin(); it != mapVectWS.end(); it++)
+	for (auto it = mapVectWS.begin(); it != mapVectWS.end(); it++)
 	{
 		string key = ROMUTIL::WStrToMBCStr(it->first);
 		vector<string> vals = ROMUTIL::WStrToMBCStrVector(it->second);

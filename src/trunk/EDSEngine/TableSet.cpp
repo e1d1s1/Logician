@@ -25,7 +25,6 @@ using namespace EDSUTIL;
 CTableSet::CTableSet(void)
 {
 	bInitialized = false;
-	m_threads = 1;
 }
 
 CTableSet::~CTableSet(void)
@@ -38,9 +37,8 @@ void CTableSet::AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTe
 	m_tables[table.m_Name] = table;
 }
 
-void CTableSet::Initialize(size_t threads)
+void CTableSet::Initialize()
 {
-	m_threads = threads;
 	for (map<wstring, CRuleTable>::iterator it = m_tables.begin(); it != m_tables.end(); it++)
 	{
 		LoadTableInfo(&(*it).second);
@@ -50,8 +48,6 @@ void CTableSet::Initialize(size_t threads)
 
 void CTableSet::LoadTableInfo(CRuleTable *table)
 {
-	table->SetThreadCount(m_threads);
-
 	//get the input info for this table
 	vector<wstring> inputs = table->GetAllInputAttrNames();
 	if (inputs.size() > 0)

@@ -22,11 +22,8 @@ Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
 #include <algorithm>
 #include <list>
 #include <string>
-#include <thread>
 #include <memory>
 #include "utilities.h"
-
-#define THREAD_THRESHOLD 20 //at least this many rules to trigger threading
 
 using namespace std;
 
@@ -43,13 +40,11 @@ CRuleTable::~CRuleTable(void)
 void CRuleTable::_init()
 {
 	m_DEBUGGING = false;
-	m_Threads = 1;
 	m_Tests = 0;
 	bHasChain = false;
 	bHasPython = false;
 	bHasJavascript = false;
 	bGetAll = false;
-	m_ThreadingEnabled = false;
 }
 
 void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inputAttrsTests,
@@ -65,7 +60,7 @@ void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inp
 
 	if (m_OutputAttrsValues.size() > 0)
     {
-        m_Tests = m_OutputAttrsValues[0].second.size();       
+        m_Tests = m_OutputAttrsValues[0].second.size();
     }
 
 	m_Name = name;
@@ -75,13 +70,6 @@ void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inp
 	bHasJavascript = false;
 
 	bGetAll = GetAll;
-}
-
-void CRuleTable::SetThreadCount(size_t threads)
-{
-	m_Threads = threads;
-	if (m_Threads > 1)
-		m_ThreadingEnabled = m_Tests >= THREAD_THRESHOLD;
 }
 
 map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bForward, void* context)
@@ -204,30 +192,30 @@ vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRu
     vector<bool> colResultsDefault (m_Tests, false);
     vector<bool> colResults = colResultsDefault;
 
-    if (m_ThreadingEnabled)
-    {
-        size_t testsPerThread = m_Tests/m_Threads;
-        unique_ptr<thread[]> threads = unique_ptr<thread[]>(new thread[m_Threads]);
-        for (size_t i = 0; i < m_Threads; i++)
-        {
-            size_t startIndex = i * testsPerThread;
-            size_t endIndex = i == m_Threads - 1 ? m_Tests : (i + 1) * testsPerThread;
-            function<bool(void)> worker = [&]()
-            {
-                return _runTestGroup(bGetAll, startIndex, endIndex, inputCollection, values, colResults, context);
-            };
-            threads[i] = thread(worker);
-        }
-
-        for (size_t i = 0; i < m_Threads; i++)
-        {
-            threads[i].join();
-        }
-    }
-    else
-    {
+//    if (m_ThreadingEnabled)
+//    {
+//        size_t testsPerThread = m_Tests/m_Threads;
+//        unique_ptr<thread[]> threads = unique_ptr<thread[]>(new thread[m_Threads]);
+//        for (size_t i = 0; i < m_Threads; i++)
+//        {
+//            size_t startIndex = i * testsPerThread;
+//            size_t endIndex = i == m_Threads - 1 ? m_Tests : (i + 1) * testsPerThread;
+//            function<void(void)> worker = [&]()
+//            {
+//                _runTestGroup(bGetAll, startIndex, endIndex, inputCollection, values, colResults, context);
+//            };
+//            threads[i] = thread(worker);
+//        }
+//
+//        for (size_t i = 0; i < m_Threads; i++)
+//        {
+//            threads[i].join();
+//        }
+//    }
+//    else
+//    {
         _runTestGroup(bGetAll, 0, m_Tests, inputCollection, values, colResults, context);
-    }
+//    }
 
     return colResults;
 }
@@ -239,6 +227,7 @@ bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex,
     {
         //sweep through the inputs
         size_t inputCnt = 0;
+        size_t test = inputCollection->size();
         for (auto itTests = inputCollection->begin(); itTests != inputCollection->end(); itTests++)
         {
             if ( testIndex < (*itTests).second.size())

@@ -96,7 +96,6 @@ CKnowledgeBase::CKnowledgeBase()
 	iRecursingDepth = 0;
 	DebugHandlerPtr = nullptr;
 	InputValueGetterPtr = nullptr;
-	m_threads = 1;
 #ifdef WIN32
 	HRESULT hr = CoInitialize(nullptr);
 #endif
@@ -675,22 +674,22 @@ map<wstring, vector<wstring> > CKnowledgeBase::EvaluateTableWithParam(const wstr
 }
 
 //loading
-CKnowledgeBase::CKnowledgeBase(wstring knowledge_file, size_t threads)
+CKnowledgeBase::CKnowledgeBase(wstring knowledge_file)
 {
-	CreateKnowledgeBase(knowledge_file, threads);
+	CreateKnowledgeBase(knowledge_file);
 }
 
-bool CKnowledgeBase::CreateKnowledgeBase(string knowledge_file, size_t threads)
+bool CKnowledgeBase::CreateKnowledgeBase(string knowledge_file)
 {
-	return CreateKnowledgeBase(MBCStrToWStr(knowledge_file.c_str()), threads);
+	return CreateKnowledgeBase(MBCStrToWStr(knowledge_file.c_str()));
 }
 
-bool CKnowledgeBase::CreateKnowledgeBaseFromString(string xmlStr, size_t threads)
+bool CKnowledgeBase::CreateKnowledgeBaseFromString(string xmlStr)
 {
-	return CreateKnowledgeBaseFromString(MBCStrToWStr(xmlStr), threads);
+	return CreateKnowledgeBaseFromString(MBCStrToWStr(xmlStr));
 }
 
-bool CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr, size_t threads)
+bool CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 {
 	bool retval = false;
 
@@ -739,8 +738,7 @@ bool CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr, size_t thread
 	}
 	xmlCleanupParser();
 #endif
-	m_threads = threads;
-	m_TableSet.Initialize(m_threads);
+	m_TableSet.Initialize();
 	return retval;
 }
 
@@ -979,7 +977,7 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 	return retval;
 }
 
-bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file, size_t threads)
+bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 {
 	bool retval = false;
 	m_IsOpen = false;
@@ -989,7 +987,6 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file, size_t threads)
 	m_DEBUGGING_MSGS = false;
 	m_remoteDebugging = false;
 	mapBaseIDtoTranslations.clear();
-	m_threads = threads;
 #ifdef WIN32
 	HRESULT hr = CoInitialize(nullptr);
 #endif
@@ -1107,7 +1104,7 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file, size_t threads)
 		if (wsExtension == L"gz")
 			remove(WStrToMBCStr(unzippedFileName).c_str());
 #endif
-		m_TableSet.Initialize(m_threads);
+		m_TableSet.Initialize();
 	}
 	catch (std::exception &ex)
 	{
@@ -1289,15 +1286,15 @@ map<string, vector<string> > CKnowledgeBase::EvaluateTable(const string& tableNa
 
 vector<string> CKnowledgeBase::EvaluateTableWithParam(const string& tableName, const string& outputAttr, bool bGetAll, string& param, void* context)
 {
-    wstring wsParam = MBCStrToWStr(param);
-	vector<string> retval = ToMBCStringVector(EvaluateTableWithParam(MBCStrToWStr(tableName), MBCStrToWStr(outputAttr), bGetAll, wsParam, context));
+    wstring wsParam = EDSUTIL::MBCStrToWStr(param);
+	vector<string> retval = EDSUTIL::ToMBCStringVector(EvaluateTableWithParam(EDSUTIL::MBCStrToWStr(tableName), EDSUTIL::MBCStrToWStr(outputAttr), bGetAll, wsParam, context));
     param = EDSUTIL::WStrToMBCStr(wsParam);
     return retval;
 }
 
 std::map<string, vector<string> > CKnowledgeBase::EvaluateTableWithParam(const string& tableName, bool bGetAll, string& param, void* context)
 {
-	wstring wsParam = MBCStrToWStr(param);
+	wstring wsParam = EDSUTIL::MBCStrToWStr(param);
 	std::map<wstring, vector<wstring> > res = EvaluateTableWithParam(MBCStrToWStr(tableName), bGetAll, wsParam, context);
 	std::map<string, vector<string> > retval;
 	for (std::map<wstring, vector<wstring> >::iterator it = res.begin(); it != res.end(); it++)
@@ -1310,7 +1307,7 @@ std::map<string, vector<string> > CKnowledgeBase::EvaluateTableWithParam(const s
 
 string CKnowledgeBase::GetFirstTableResult(const string& tableName, const string& ouputAttr, void* context)
 {
-	return WStrToMBCStr(GetFirstTableResult(MBCStrToWStr(tableName), MBCStrToWStr(ouputAttr), context));
+	return EDSUTIL::WStrToMBCStr(GetFirstTableResult(MBCStrToWStr(tableName), MBCStrToWStr(ouputAttr), context));
 }
 
 vector<string> CKnowledgeBase::ReverseEvaluateTable(const string& tableName, const string& inputAttr, bool bGetAll, void* context)
@@ -1321,7 +1318,7 @@ vector<string> CKnowledgeBase::ReverseEvaluateTable(const string& tableName, con
 	{
 		table->EnbleDebugging(DebugThisTable(MBCStrToWStr(tableName)));
 		table->InputValueGetter = InputValueGetterPtr;
-		return ToMBCStringVector(table->EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false, context));
+		return EDSUTIL::ToMBCStringVector(table->EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false, context));
 	}
 	else
 		return vector<string>();
@@ -1366,15 +1363,7 @@ vector<string> CKnowledgeBase::GetAllPossibleOutputs(const string& tableName, co
 	return ToMBCStringVector(GetAllPossibleOutputs(MBCStrToWStr(tableName), MBCStrToWStr(outputName)));
 }
 
-CKnowledgeBase::CKnowledgeBase(std::string knowledge_file, size_t threads)
+CKnowledgeBase::CKnowledgeBase(std::string knowledge_file)
 {
-	m_DEBUGGING_MSGS = false;
-	m_remoteDebugging = false;
-	m_DEBUGGING_CON = L"localhost:11000";
-	m_IsOpen = false;
-	mapBaseIDtoTranslations.clear();
-	iRecursingDepth = 0;
-	DebugHandlerPtr = nullptr;
-	InputValueGetterPtr = nullptr;
-	CKnowledgeBase(MBCStrToWStr(knowledge_file), threads);
+	CreateKnowledgeBase(knowledge_file);
 }
