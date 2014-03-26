@@ -195,7 +195,6 @@ namespace HydraulicCylinder
             if (debugger == null)
             {
                 debugger = new DebugForm();
-                m_rootNode.SetDebugging(true);
                 debugger.Initialize(m_rootNode);
                 debugger.Show();
             }

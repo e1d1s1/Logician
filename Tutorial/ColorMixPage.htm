@@ -23,15 +23,17 @@
         }
     </style>
     <script>
+		var mAppData = new Array();
         var m_TableEvaluator = new KnowledgeBase("ColorRules.xml");
-        var mAppData = new Array();
+		m_TableEvaluator.InputValueGetter = function(attrName, context)
+		{
+			if (attrName in mAppData)
+				return mAppData[attrName];
+			else
+				return "";
+		};        
 
         function GetSingleSolution(tableToEvaluate, nameOfOutput) { //could reuse this function for all similar aplication events
-            var inputsNeeded = m_TableEvaluator.GetInputDependencies(tableToEvaluate);
-            //from our application data, obtain the values
-            for (var i = 0; i < inputsNeeded.length; i++)
-                m_TableEvaluator.SetInputValue(inputsNeeded[i], mAppData[inputsNeeded[i]]);
-
             var results = m_TableEvaluator.EvaluateTableForAttr(tableToEvaluate, nameOfOutput);
             //supports returning multiple true results on a sigle line, but in this case we just want a single result (the first one it finds)
 

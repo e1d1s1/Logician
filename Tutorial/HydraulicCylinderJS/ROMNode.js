@@ -984,24 +984,43 @@ function ROMNode(id) {
     //rules
     this.LoadRules = function (knowledge_file) {
         try {
-            this.m_KnowledgeBase = new KnowledgeBase(knowledge_file);
-            if (this.m_KnowledgeBase != null)
-                return true;
-            else
-                return false;
+            this.m_KnowledgeBase = null;
+
+            if (this.m_parent == null) //only the root will have the reference to the rules
+            {
+                this.m_KnowledgeBase = new KnowledgeBase(knowledge_file);
+                if (this.m_KnowledgeBase != null) {
+                    this.m_KnowledgeBase.InputValueGetter = function (attrName, obj) {
+                        return obj.GetATableInputValue(attrName);
+                    };
+                    return true;
+                }
+                else
+                    return false;
+            }
         }
         catch (err) {
             ReportError(err);
         }
+        return false;
     }
 
     this.LoadRulesFromString = function (xml) {
         try {
-            this.m_KnowledgeBase = CreateKnowledgeBaseFromString(xml);
-            if (this.m_KnowledgeBase != null)
-                return true;
-            else
-                return false;
+            this.m_KnowledgeBase = null;
+
+            if (this.m_parent == null) //only the root will have the reference to the rules
+            {
+                this.m_KnowledgeBase = CreateKnowledgeBaseFromString(xml);
+                if (this.m_KnowledgeBase != null) {
+                    this.m_KnowledgeBase.InputValueGetter = function (attrName, obj) {
+                        return obj.GetATableInputValue(attrName);
+                    };
+                    return true;
+                }
+                else
+                    return false;
+            }
         }
         catch (err) {
             ReportError(err);
@@ -1009,30 +1028,9 @@ function ROMNode(id) {
 		return false;
     }
 
-    this.SetRulesDebugHandler = function (func) {
+    this.SetTableDebugHandler = function (func) {
         if (this.m_KnowledgeBase != null)
-            this.m_KnowledgeBase.SetDebugHandler(func);
-    }
-
-    this.GenerateTableDebugMessages = function (bGenerate) {
-        try {
-            if (this.m_KnowledgeBase != null)
-                this.m_KnowledgeBase.GenerateDebugMessages(bGenerate);
-        }
-        catch (err) {
-            ReportError(err);
-        }
-    }
-
-    this.GetTableDebugMessages = function () {
-        try {
-            if (this.m_KnowledgeBase != null)
-                return this.m_KnowledgeBase.GetDebugMessages();
-        }
-        catch (err) {
-            ReportError(err);
-        }
-        return "";
+            this.m_KnowledgeBase.DebugHandler = func;
     }
 
     this._getKnowledge = function () {
@@ -1074,8 +1072,7 @@ function ROMNode(id) {
             if (knowledge != null) {
                 if (bGetAll === undefined)
                     bGetAll = knowledge.TableIsGetAll(evalTable);
-                this.LoadInputs(evalTable);
-                var retval = knowledge.EvaluateTableForAttr(evalTable, output, bGetAll);
+                var retval = knowledge.EvaluateTableForAttr(evalTable, output, bGetAll, this);
                 return retval;
             }
         }
@@ -1091,8 +1088,7 @@ function ROMNode(id) {
             if (knowledge != null) {
                 if (bGetAll === undefined)
                     bGetAll = knowledge.TableIsGetAll(evalTable);
-                this.LoadInputs(evalTable);
-                var retval = knowledge.EvaluateTable(evalTable, bGetAll);
+                var retval = knowledge.EvaluateTable(evalTable, bGetAll, this);
                 return retval;
             }
         }
@@ -1102,14 +1098,13 @@ function ROMNode(id) {
         }
     }	
 	
-	this.EvaluateTableForAttrWithParam = function (evalTable, output, param, bGetAll) {
+    this.EvaluateTableForAttrWithParam = function (evalTable, output, bGetAll, param) {
         try {
             var knowledge = this._getKnowledge();
             if (knowledge != null) {
                 if (bGetAll === undefined)
                     bGetAll = knowledge.TableIsGetAll(evalTable);
-                this.LoadInputs(evalTable);
-                var retval = knowledge.EvaluateTableForAttrWithParam(evalTable, output, param, bGetAll);
+                var retval = knowledge.EvaluateTableForAttrWithParam(evalTable, output, bGetAll, param, this);
                 return retval;
             }
         }
@@ -1119,14 +1114,13 @@ function ROMNode(id) {
         }
     }
 
-    this.EvaluateTableWithParam = function (evalTable, param, bGetAll) {
+    this.EvaluateTableWithParam = function (evalTable, bGetAll, param) {
         try {
             var knowledge = this._getKnowledge();
             if (knowledge != null) {
                 if (bGetAll === undefined)
                     bGetAll = knowledge.TableIsGetAll(evalTable);
-                this.LoadInputs(evalTable);
-                var retval = knowledge.EvaluateTableWithParam(evalTable, param, bGetAll);
+                var retval = knowledge.EvaluateTableWithParam(evalTable, bGetAll, param, this);
                 return retval;
             }
         }
@@ -1136,27 +1130,11 @@ function ROMNode(id) {
         }
     }
 	
-	this.GetEvalParameter = function()
-	{
-		try
-		{
-			var knowledge = this._getKnowledge();
-            if (knowledge != null) {
-				var retval = knowledge.GetEvalParameter();
-				return retval;
-			}
-		}
-		catch(err) {
-			ReportError(err);
-            return null;
-		}
-	}
-	
 	this.GetFirstTableResult = function(tableName, outputAttr)
 	{
 		var retval = "";
 		
-		var retAll = this.EvaluateTableForAttr(tableName, outputAttr);
+		var retAll = this.EvaluateTableForAttr(tableName, outputAttr, this);
 		if (retAll != null && retAll.length > 0)
 			retval = retAll[0];
 		
@@ -1169,8 +1147,7 @@ function ROMNode(id) {
             if (knowledge != null) {
                 if (bGetAll === undefined)
                     bGetAll = knowledge.TableIsGetAll(evalTable);
-                this.LoadOutputs(evalTable);
-                var retval = knowledge.ReverseEvaluateTable(evalTable, bGetAll);
+                var retval = knowledge.ReverseEvaluateTable(evalTable, bGetAll, this);
                 return retval;
             }
         }
@@ -1186,46 +1163,13 @@ function ROMNode(id) {
             if (knowledge != null) {
                 if (bGetAll === undefined)
                     bGetAll = knowledge.TableIsGetAll(evalTable);
-                this.LoadOutputs(evalTable);
-                var retval = knowledge.ReverseEvaluateTableForAttr(evalTable, output, bGetAll);
+                var retval = knowledge.ReverseEvaluateTableForAttr(evalTable, output, bGetAll, this);
                 return retval;
             }
         }
         catch (err) {
             ReportError(err);
             return null;
-        }
-    }   
-
-    this.LoadInputs = function (evalTable) {
-        try {
-            var knowledge = this._getKnowledge();
-            if (knowledge != null) {
-                var inputs = knowledge.GetInputDependencies(evalTable);
-                if (inputs != null) for (var i = 0; i < inputs.length; i++) {
-                    var value = this.GetATableInputValue(inputs[i]);
-                    knowledge.SetInputValue(inputs[i], value);
-                }
-            }
-        }
-        catch (err) {
-            ReportError(err);
-        }
-    }
-
-    this.LoadOutputs = function (evalTable) {
-        try {
-            var knowledge = this._getKnowledge();
-            if (knowledge != null) {
-                var outputs = knowledge.GetOutputAttrs(evalTable);
-                if (outputs != null) for (var i = 0; i < outputs.length; i++) {
-                    var value = this.GetATableInputValue(inputs[i]);
-                    knowledge.SetInputValue(inputs[i], value);
-                }
-            }
-        }
-        catch (err) {
-            ReportError(err);
         }
     }
 
@@ -1732,17 +1676,6 @@ function ROMDictionary(node) {
         }
     }
 
-    this.GetTableDebugMessages = function () {
-        try {
-            if (this.m_context != null)
-                return this.m_context.GetDebugMessages();
-        }
-        catch (err) {
-            ReportError(err);
-        }
-        return "";
-    }
-
     this.LoadDictionary = function (dictionaryTable) {
         try {
             this.m_dict = new Array();
@@ -1821,9 +1754,9 @@ function ROMDictionary(node) {
         return null;
     }
 
-    this.SetRulesDebugHandler = function (func) {
+    this.SetTableDebugHandler = function (func) {
         if (this.m_context != null && this.m_context.m_KnowledgeBase != null)
-            this.m_context.m_KnowledgeBase.SetDebugHandler(func);
+            this.m_context.m_KnowledgeBase.DebugHandler = func;
     }
 }
 
@@ -1872,17 +1805,6 @@ function LinearEngine(context, dictionaryTable) {
             catch (err) {
                 ReportError(err);
             }
-        }
-
-        this.GetTableDebugMessages = function () {
-            try {
-                if (this.base.m_context != null)
-                    return this.base.m_context.GetDebugMessages();
-            }
-            catch (err) {
-                ReportError(err);
-            }
-            return "";
         }
         
         this.GetAllDictionaryAttrs = function () { return this.base.GetAllDictionaryAttrs(); }
@@ -2627,9 +2549,9 @@ function LinearEngine(context, dictionaryTable) {
             return retval;
         }
 
-        this.SetRulesDebugHandler = function (func) {
+        this.SetTableDebugHandler = function (func) {
             if (this.base.m_context != null && this.base.m_context.m_KnowledgeBase != null)
-                this.base.m_context.m_KnowledgeBase.SetDebugHandler(func);
+                this.base.m_context.m_KnowledgeBase.DebugHandler = func;
         }
 
         this.LoadDictionary = function (dictionaryTable) {

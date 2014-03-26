@@ -61,8 +61,8 @@ echo "Building ROMAppConsoleTest..."
 %MSBUILD_PATH% "RelationalObjectModel\ROMAppConsoleTest\ROMAppConsoleTest2013.vcxproj" /t:clean,rebuild /p:Configuration="Release MSXML" /p:VisualStudioVersion=12.0 /p:Platform=Win32
 %MSBUILD_PATH% "RelationalObjectModel\ROMAppConsoleTest\ROMAppConsoleTest2013.vcxproj" /t:clean,rebuild /p:Configuration="Debug MSXML" /p:VisualStudioVersion=12.0 /p:Platform=x64
 %MSBUILD_PATH% "RelationalObjectModel\ROMAppConsoleTest\ROMAppConsoleTest2013.vcxproj" /t:clean,rebuild /p:Configuration="Release MSXML" /p:VisualStudioVersion=12.0 /p:Platform=x64
-copy "RelationalObjectModel\ROMAppConsoleTest\Release MSXML\ROMAppConsoleTest2012.exe" VC12 /y
-copy "RelationalObjectModel\ROMAppConsoleTest\x64\Release MSXML\ROMAppConsoleTest2012.exe" VC12\x64 /y
+copy "RelationalObjectModel\ROMAppConsoleTest\Release MSXML\ROMAppConsoleTest2013.exe" VC12 /y
+copy "RelationalObjectModel\ROMAppConsoleTest\x64\Release MSXML\ROMAppConsoleTest2013.exe" VC12\x64 /y
 echo "ROMAppConsoleTest build complete"
 
 echo "Building ROMNET..."
@@ -111,12 +111,6 @@ copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2013\config.xml" VC12
 copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2013\bin\x64\Release\LogicianDebuggerTestApp2013.exe" VC12\x64 /y
 copy "Utilities\LogicianDebuggerWPF\LogicianDebuggerTestApp2013\config.xml" VC12\x64 /y
 echo "Building LogicianDebuggerTestApp2012 complete"
-
-echo "Building LogicianSilverlight..."
-%MSBUILD_PATH% "LogicianJS\LogicianSilverlight\LogicianSilverlight.sln" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=12.0
-%MSBUILD_PATH% "LogicianJS\LogicianSilverlight\LogicianSilverlight.sln" /t:clean,rebuild /p:Configuration="Release" /p:VisualStudioVersion=12.0
-copy "LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll" VC12 /y
-echo "Building LogicianSilverlight complete"
 
 echo "Building EDSEngineWinRTNativeWrapper..."
 %MSBUILD_PATH% "EDSEngineWinRTNativeWrapper\EDSEngineWinRT.vcxproj" /t:clean,rebuild /p:Configuration="Debug" /p:VisualStudioVersion=12.0 /p:Platform=x86

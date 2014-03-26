@@ -38,14 +38,6 @@ UninstPage instfiles
 
 
 ; The stuff to install
-Section "Visual C++ 2008 Runtime"
-	; VS2008 Redist
-	SetOutPath $TEMP
-	File "vcredist_x86.exe"
-	ExecWait '"vcredist_x86.exe" /q:a /c:"VCREDI~1.EXE /q:a /c:""msiexec /i vcredist.msi /qb!"" "'
-	Delete /REBOOTOK "vcredist_x86.exe"
-SectionEnd
-
 Section "Visual C++ 2013 Runtime"
 	; VS2013 Redist
 	SetOutPath $TEMP
@@ -56,14 +48,13 @@ SectionEnd
 
 Section "Logician Suite"
 	; Set output path to the installation directory.
-	SetOutPath $INSTDIR\VC11
+	SetOutPath $INSTDIR\VC12
 	File "..\trunk\VC12\EDSEngine.lib"
 	File "..\trunk\VC12\EDSEngineNET.dll"
 	File "..\trunk\VC12\RelationalObjectModel.lib"
 	File "..\trunk\VC12\ROMNET.dll"
 	File "..\trunk\VC12\LogicianDebuggerWPF.dll"
 	File "..\trunk\VC12\WPFToolkit.dll"
-	File "..\trunk\LogicianJS\LogicianSilverlight\LogicianSilverlight\Bin\Release\LogicianSilverlight.dll"
 	SetOutPath $INSTDIR\VC12\EDSEngineWinRT
 	File "..\trunk\VC12\EDSEngineWinRT\EDSEngineWinRT.winmd"
 	File "..\trunk\VC12\EDSEngineWinRT\EDSEngineWinRT.pri"
@@ -99,7 +90,7 @@ Section "Logician Suite"
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic
 	; Put file there
-	File "..\trunk\VC9\DecisionLogic.exe"
+	File "..\trunk\VC12\DecisionLogic.exe"
 	File "..\trunk\DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
 	File "..\trunk\DecisionLogic\vc_mswu\Figure1.png"
 	File "..\trunk\DecisionLogic\vc_mswu\Figure2.png"

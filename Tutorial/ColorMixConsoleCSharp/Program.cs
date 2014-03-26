@@ -15,6 +15,13 @@ namespace ColorMixConsoleCSharp
         {
             Console.WriteLine("Loading the rules file ColorRules.xml...");
             m_TableEvaluator = new EDSEngine("ColorRules.xml");
+            m_TableEvaluator.InputGetterDelegate = delegate(string attrName, object context)
+            {
+                if (mAppData.ContainsKey(attrName))
+                    return mAppData[attrName];
+                else
+                    return "";
+            };
             Console.WriteLine("done\n");
 
             Console.WriteLine("Enter red or blue for first paint color:");
@@ -34,12 +41,7 @@ namespace ColorMixConsoleCSharp
         }
 
         static string GetSingleSolution(string tableToEvaluate, string nameOfOutput) //could reuse this function for all similar aplication events
-        {
-            string[] inputsNeeded = m_TableEvaluator.GetInputDependencies(tableToEvaluate);
-            //from our application data, obtain the values
-            for (int i = 0; i < inputsNeeded.Length; i++)
-                m_TableEvaluator.SetInputValue(inputsNeeded[i], mAppData[inputsNeeded[i]]);
-
+        {            
             string[] results = m_TableEvaluator.EvaluateTable(tableToEvaluate, nameOfOutput);
             //EDSEngine supports returning multiple true results on a sigle line, but in this case we just want a single result (the first one it finds)
 

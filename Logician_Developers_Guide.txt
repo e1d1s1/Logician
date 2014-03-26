@@ -1,5 +1,5 @@
 EDSEngine
-EDSEngine is the decision table evaluator of the Logician suite.  It can be used independently of the other libraries.  ROMNET::EDSEngine is the managed .NET wrapper for the C++ engine, and there is a javascript implementation as well in the Knowledgebase.js file.  A silverlight and Flash Actionscript wrapper for the javascript library are also available and generally follow the same interface as the .NET library.
+EDSEngine is the decision table evaluator of the Logician suite.  It can be used independently of the other libraries.  ROMNET::EDSEngine is the managed .NET wrapper for the C++ engine, and there is a javascript implementation as well in the Knowledgebase.js file.
 
 All of the language ports of the EDSEngine library have a similar interface.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
 
@@ -92,151 +92,118 @@ GetAllPossibleOutputs: For a given output column in a given table, returns all d
 	Javascript:
 		array GetOutputAttrs(tableName, outputName)
 
-
-Table State
-SetInputValue: Sets an attribute input name/value pair.
+Table Inputs
+InputValueGetterPtr: Function pointer or delegate to call in order for rules engine to obtain input column values.
 	C++:
-		void SetInputValue(wstring name, wstring value)
-	C#:
-		void SetInputValue(string name, string value)
+		std::function<wstring(const wstring& attrName, void* context)>
+	C#
+		delegate String^ InputValueGetterDelegate(String^ attrName, Object^ context)
 	Javascript:
-		SetInputValue(name, value)
-
-SetInputValues: Sets a collection of input name/value pairs, where the values must already be tokenized.  This methods sets the private member variable directly and probably will not be typically used.
-	C++:
-		void SetInputValues(hash_map<wstring, size_t> values)
-	C#:
-		void SetInputValues(Dictionary<string, int> values)
-	Javascript:
-		SetInputValues(values)
-		
-GetInputValuesCount: Returns the total number of input values currently set.
-	C++:
-		size_t GetInputValuesCount()
-	C#:
-		int GetInputValuesCount()
-	Javascript:
-		var GetInputValuesCount()
+		string function(attrName, context)
 		
 Table Evaluation
-EvaluateTable: A number of overrides exist in C++/C# for your convienience.  The javascript library has a seperate function name for each "override" to maintain a similar type of useage.  
+EvaluateTable: A number of overrides exist in C++/C# for your convienience.  The javascript library has a seperate function name for each "override" to maintain a similar type of useage.  In all cases, the "context" is the same object that will be passed back to you by the "InputValueGetter" function pointer/delegate when the engine retrieves input column values.
 
-	Returns an associative collection (map) of table results with output name as the key and a collection of solutions as the value.
+	Return an associative collection (map) of table results with output name as the key and a collection of solutions as the value.
 	C++:
-		map<wstring, vector<wstring> > EvaluateTable(wstring tableName)
+		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, void* context = nullptr)
 	C#:
-		Dictionary<string, string[]> EvaluateTable(string tableName)
+		Dictionary<string, string[]> EvaluateTable(string tableName, object context)
 	Javascript:
-		array EvaluateTable(tableName)
+		array EvaluateTable(tableName, context)
 		
-	Returns an associative collection (map) of table results with output name as the key and a collection of solutions as the value, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
+	Return an associative collection (map) of table results with output name as the key and a collection of solutions as the value, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	C++:
-		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, bool bGetAll)
+		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, bool bGetAll, void* context = nullptr)
 	C#:
-		Dictionary<string, string[]> EvaluateTable(string tableName, bool bGetAll)
+		Dictionary<string, string[]> EvaluateTable(string tableName, bool bGetAll, object context)
 	Javascript:
-		array EvaluateTable(tableName, bGetAll)
+		array EvaluateTable(tableName, bGetAll, context)
 
 	Return a collection of solutions for a given output column in a table.
 	C++:
-		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr)
+		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, void* context = nullptr)
 	C#:
-		string[] EvaluateTable(string tableName, string outputAttr)
+		string[] EvaluateTable(string tableName, string outputAttr, object context)
 	Javascript:
-		array EvaluateTableForAttr(tableName, outputAttr)
+		array EvaluateTableForAttr(tableName, outputAttr, context)
 		
 	Return a collection of solutions for a given output column in a table, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	C++:
-		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll)
+		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll, void* context = nullptr)
 	C#:
-		string[] EvaluateTable(string tableName, string outputAttr, bool bGetAll)
+		string[] EvaluateTable(string tableName, string outputAttr, bool bGetAll, object context)
 	Javascript:
-		array EvaluateTableForAttr(tableName, outputAttr, bGetAll)
+		array EvaluateTableForAttr(tableName, outputAttr, bGetAll, context)
 
-EvaluateTableWithParam:	Similar to EvaluateTable, but an additional string parameter is available for use to pass any extra data to the table solver, and if Javascript or Python code is encountered during evaluations, the parameter will be set as a global value named "param" that you can reference in the script code.  Use the GetEvalParameter function to obtain the value back after a table solve if the script code modifies the value.
+EvaluateTableWithParam:	Similar to EvaluateTable, but an additional string parameter is available for use to pass any extra data to the table solver, and if Javascript or Python code is encountered during evaluations, the parameter will be set as a global value named "param" that you can reference in the script code.  An object aggregates the parameter and return value for Javascript callers, and dedicated "input" and "output" paramenters are used for WinRT callers.
 
-	Returns an associative collection (map) of table results with output name as the key and a collection of solutions as the value.
+	Return an associative collection (map) of table results with output name as the key and a collection of solutions as the value.
 	C++:
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param)
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param, void* context = nullptr)
 	C#:
-		Dictionary<string, string[]> EvaluateTableWithParam(string tableName, string param)
+		Dictionary<string, string[]> EvaluateTableWithParam(string tableName, string param, object context)
 	Javascript:
-		array EvaluateTableWithParam(tableName, param)
+		array EvaluateTableWithParam(tableName, param, context)
+		
+	Return a collection of solutions for a given output column in a table, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.  The parameter is returned by reference to C++ and .NET callers.  An object aggregates the paramanter and return value for Javascript callers.
+	C++:
+		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param, void* context = nullptr)
+	C#:
+		string[] EvaluateTableWithParam(string tableName, string outputAttr, string param, object context)
+	Javascript:
+		array EvaluateTableForAttrWithParam(tableName, outputAttr, param, context)
+		
+	Return an associative collection (map) of table results with output name as the key and a collection of solutions as the value, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.  Internally, this is the call all the other overrides are wrapped to.  The parameter is returned by reference to C++ and .NET callers.  An object aggregates the paramanter and return value for Javascript callers.
+	C++:
+		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, bool bGetAll, wstring param, void* context = nullptr)
+	C#:
+		Dictionary<string, string[]> EvaluateTableWithParam(string tableName, bool bGetAll, string param, object context)
+	Javascript:
+		array EvaluateTableWithParam(tableName, param, bGetAll, context)	
 		
 	Return a collection of solutions for a given output column in a table, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	C++:
-		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param)
+		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, bool bGetAll, wstring param, void* context = nullptr)
 	C#:
-		string[] EvaluateTableWithParam(string tableName, string outputAttr, string param)
+		string[] EvaluateTableWithParam(string tableName, string outputAttr, bool bGetAll, string param, object context)
 	Javascript:
-		array EvaluateTableForAttrWithParam(tableName, outputAttr, param)
-		
-	Returns an associative collection (map) of table results with output name as the key and a collection of solutions as the value, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.  Internally, this is the call all the other overrides are wrapped to.
-	C++:
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param, bool bGetAll)
-	C#:
-		Dictionary<string, string[]> EvaluateTableWithParam(string tableName, string param, bool bGetAll)
-	Javascript:
-		array EvaluateTableWithParam(tableName, param, bGetAll)	
-		
-	Return a collection of solutions for a given output column in a table, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
-	C++:
-		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param, bool bGetAll)
-	C#:
-		string[] EvaluateTableWithParam(string tableName, string outputAttr, string param, bool bGetAll)
-	Javascript:
-		array EvaluateTableForAttrWithParam(tableName, outputAttr, param, bGetAll)
+		array EvaluateTableForAttrWithParam(tableName, outputAttr, param, bGetAll, context)
 		
 ReverseEvaluateTable: Performs a table solve but switches all output columns to inputs and all input columns become outputs, effectively reversing the table.  No Javascript or Python scripting will take place.  No table chaining.
 
-	Returns an associative collection (map) of table results with output (reversed input) name as the key and a collection of solutions as the value.
+	Return an associative collection (map) of table results with output (reversed input) name as the key and a collection of solutions as the value.
 	C++:
-		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName)
+		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName, void* context = nullptr)
 	C#:
-		Dictionary<string, string[]> ReverseEvaluateTable(string tableName)
+		Dictionary<string, string[]> ReverseEvaluateTable(string tableName, object context)
 	Javascript:
-		array ReverseEvaluateTable(tableName)
+		array ReverseEvaluateTable(tableName, context)
 
-	Returns an associative collection (map) of table results with output (reversed input) name as the key and a collection of solutions as the value, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
+	Return an associative collection (map) of table results with output (reversed input) name as the key and a collection of solutions as the value, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	C++:
-		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName, bool bGetAll)
+		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName, bool bGetAll, void* context = nullptr)
 	C#:
-		Dictionary<string, string[]> ReverseEvaluateTable(string tableName, bool bGetAll)
+		Dictionary<string, string[]> ReverseEvaluateTable(string tableName, bool bGetAll, object context)
 	Javascript:
-		array ReverseEvaluateTableGet(tableName, bGetAll)
+		array ReverseEvaluateTableGet(tableName, bGetAll, context)
 
 	Return a collection of solutions for a given output (reversed input) column in a table.
 	C++:
-		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr)
+		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr, void* context = nullptr)
 	C#:
-		string[] ReverseEvaluateTable(string tableName, string inputAttr)
+		string[] ReverseEvaluateTable(string tableName, string inputAttr, object context)
 	Javascript:
-		array ReverseEvaluateTableForAttr(tableName, inputAttr)
+		array ReverseEvaluateTableForAttr(tableName, inputAttr, context)
 
 	Return a collection of solutions for a given output column in a table, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	Return a collection of solutions for a given output (reversed input) column in a table.
 	C++:
-		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll)
+		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll, void* context = nullptr)
 	C#:
-		string[] ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll)
+		string[] ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll, object context)
 	Javascript:
-		array ReverseEvaluateTableForAttr(tableName, inputAttr, bool bGetAll)
-		
-GetEvalParameter: Returns the value of the "param" parameter passed in a previous table evaluation.  Use this when you have Javascript or Python script that will modify the value during the table evaluation and you need the resulting vaule.
-	C++:
-		wstring GetEvalParameter(wstring tableName)
-	C#:
-		string GetEvalParameter(string tableName)
-	Javascript:
-		string GetEvalParameter(tableName)
-
-ResetTable: Clears the attribute name/value state for a given table.  This is called internally as needed, and typically the coder should not need to call it.
-	C++:
-		void ResetTable(wstring tableName)
-	C#:
-		void ResetTable(string tableName)
-	Javascript:
-		ResetTable(tableName)
+		array ReverseEvaluateTableForAttr(tableName, inputAttr, bool bGetAll, context)
 		
 Translations
 The translation functions make use of any string translations you may have defined in the rule table project.  These translations can be used to tranalate internal table cell values into other languages, or to provide a way to maintain a form of shorthand in the rules while displaying a longer description as the solution in the client application.  All internal rules are considered to be written in a "nuetral" language.
@@ -268,28 +235,20 @@ Translaate: Converts translated text from one locale to another.  If the sourceL
 Debugging
 WIth debugging enabled in the compiled rules xml file, there are a couple of ways to do rule debugging within the client code.  Table evaluation status messages can be routed through a function pointer for tracking.  Alternatively, messages can be stored in a cache within the rules engine and pulled as needed by the caller.  Keep in mind that if you created the rules via a DecisionLogic table editor, that application can "catch" messages via a TCP connection from the C++ and C# libraries and provide rule row/column highlighting in the source decision table project.  Of course, debugging will slow down rules execution.  You can limit the performance hit bit limiting the scope of tables to be debugged in the rules xml file.
 
-SetDebugHandler: Function pointer to output table evaluation/value states as they occur and error messages.
+DebugHandlerPtr: Function pointer to output table evaluation/value states as they occur and error messages.
 	C++:
-		void SetDebugHandler(void (*DebugHandler) (wstring))
+		function<void(const wstring&)>
+	C#:
+		delegate void DebugHandlerDelegate(String^ msg)
 	Javascript:
-		void SetDebugHandler(func)
-		
-DebugDelegate: Similar to the SetDebugHandler methods, but using a C# delegate: 
-	public delegate void DebugHandlerDelegate(String^ msg)
+		function(message)
 
-GenerateDebugMessages: In C++ enables or disables the storage of debugging messsages in an internal cache.  Access the cache value with the GetDebugMessages function.
-	C++:
-		void SetDebugHandler(void (*DebugHandler) (wstring))
-
-GetDebugMessages: In C++ retrieves the debugging message cache.  The intermal cache is then cleared.
-	C++:
-		wstring GetDebugMessages()
-
-SetDebugging: In C#, turns on the rule debugger so that the DebugDelegate can receive messages.  Internally, this calls the wrapped C++ method GenerateDebugMessages function to enable/disable the internal message cache, and later calls GetDebugMessages at appropriate times.
+EnableRemoteDebugger: In C++ and C# attempts to connect and post to a TCP connection specified in the compiled rules all debugging output strings.
+	EnableRemoteDebugger(bool enable)
 
 Relational Object Model
-Relational Object Model is a lightweight rules engine and application state model based on the EDSEngine libraries.  It has a tree-like XML structure, and supports XPATH queries.  The basic state and quuery engine are part of the main ROMNode class/prototype.  ROMDictionary and the inheritied LinearEngine provide the functionality for a basic rules engine.
-All of the language ports of the Relational Object Model library have a similar interface.  The main class names are slightly alterted to prevent confusion when inheriting the unmanaged C++ libraries in the managed C++ CLI/C# libraries.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  A silverlight wrapper for the javascript library is also available and generally follows the same interface as the .NET library.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
+Relational Object Model is a lightweight rules engine and application state model based on the EDSEngine libraries.  It has a tree-like XML structure, and supports XPATH queries.  The basic state and quuery engine are part of the main ROMNode class/prototype.  LinearEngine and the inheritied ROMDictionary provide the functionality for a basic rules engine.
+All of the language ports of the Relational Object Model library have a similar interface.  The main class names are slightly alterted to prevent confusion when inheriting the unmanaged C++ libraries in the managed C++ CLI/C# libraries.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
 
 Constructors
 The constructor for Relational Object Model simply requires a path string to the souce rules xml or zipped xml file.  Zipped xml files are not supported in javascript (you should be compressing static files on your web server using gzip or deflate anyways).
@@ -647,13 +606,16 @@ LoadXML - Sets the current object state to the previously saved XML.  Returns tr
 		
 Table Debugging
 EDSEngine table debugging is available and triggered slightly differently on the different implementations.
-SetRulesDebugHandler - Pushes debugging messages out thorugh a function pointer. 
+SetTableDebugHandler - Pushes debugging messages out thorugh a function pointer. 
 	C++:
-		void SetTableDebugHandler(void (*DebugHandler) (wstring)); //pass pointer to function
+		void SetTableDebugHandler(function<void(const wstring&)> debugger); //pass pointer to function or functional object
 	Javascript
 		SetTableDebugHandler(func) //pass reference to function
 
-DebugHandlerDelegate (property) - The .NET implementation can push messages out to a function delegate.  The fucntion SetDebugging(bool set) must first be called with the set parmater as "true" to enable debugging.  Messages will be passed at appropriate times automatically.  They can be manaully pulled and purged with the PumpDebugMessages() fucntion.
+DebugHandlerDelegate (property) - The .NET implementation can push messages out to a function delegate.
+
+EnableRemoteDebugger: In C++ and C# attempts to connect and post to a TCP connection specified in the compiled rules all debugging output strings.
+	EnableRemoteDebugger(bool enable)
 		
 LinearEngine
 LinearEngine provides a linear, deterministic rules engine based on ROMNode and EDSEngine.  Some methods inherit from the ROMDictionay class/prototype, which handles some of the organizational data.
