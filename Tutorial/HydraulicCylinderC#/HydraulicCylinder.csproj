@@ -41,7 +41,7 @@
   <ItemGroup>
     <Reference Include="LogicianDebuggerWPF, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\trunk\Utilities\LogicianDebuggerWPF\bin\Release\LogicianDebuggerWPF.dll</HintPath>
+      <HintPath>..\..\src\trunk\Utilities\LogicianDebuggerWPF\bin\x86\Release\LogicianDebuggerWPF.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>

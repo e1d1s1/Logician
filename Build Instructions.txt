@@ -5,7 +5,7 @@ Logician relies upon open source and freely available cross-platform tools, so y
 Prerequisites:
 Rules Engine: EDSEngine
 All platforms: 
-- boost C++ libraries v1.49+
+- boost C++ libraries v1.55+
 - iconv v1.9.2
 - libxml2 v2.7.8+
 - libxslt v1.1.26+
@@ -16,7 +16,7 @@ Windows:
 
 Rule Table Builder GUI: DecisionLogic
 All platforms:
-- wxWidgets GUI toolkit v2.8.10+, v2.9.3+ for VS2010 project
+- wxWidgets GUI toolkit v3.0+
 - iconv v1.9.2
 - libxml2 v2.7.8+
 
@@ -40,12 +40,6 @@ Windows .NET tools:
 - Relation Object Model v1.0
 
 WinRT wrappers have the same basic requirements as .NET.  If you can build the base C++ libraries, VS2012 will have no problem building the wrappers.
-
-Silverlight Rules Engine and Relational Object Model
-- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  Silverlight v4.0 recommended and tested. Visual Studio 2010 project files provided.
-
-Adobe Flash/Actionscript Rules Engine and Relational Object Model
-- Just a wrapper for the Javascript libraries, interface similar to the .NET library.  However, overloading restrictions cause some function names to differ and in those cases are named similar to the javascript method.  Flash 10.1 tested.  FlashDevelop project files provided.
 
 Android/iPhone notes:
 - An example project utilizing the Google Android SDK and the Open Source "PhoneGap" project is provided.  PhoneGap enables you to write cross-platform mobile applications utilizing HTML5 and Javascript tools.  As such, the example shows how the Javascript libraies can be utilized for mobile development.  See http://www.phonegap.com for details.  Additionally, the C++ library should be useable by iPhone developers with Objective-C++, however this has not currently been tested or confirmed.

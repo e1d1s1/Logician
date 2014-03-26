@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EDSEngineNET">
-      <HintPath>..\..\src\trunk\VC11\EDSEngineNET.dll</HintPath>
+      <HintPath>..\..\src\trunk\EDSEngineNET\Debug\EDSEngineNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

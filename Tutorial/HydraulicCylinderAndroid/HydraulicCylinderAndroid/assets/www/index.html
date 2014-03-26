@@ -38,7 +38,7 @@
                     return;
                 }
 
-                m_rootNode.SetRulesDebugHandler(DebugCallback);
+                m_rootNode.SetTableDebugHandler(DebugCallback);
                 m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
                 m_engine.EvaluateAll();
 
