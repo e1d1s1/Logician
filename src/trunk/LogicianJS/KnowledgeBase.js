@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
+Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 
     The JavaScript code in this page is free software: you can
     redistribute it and/or modify it under the terms of the GNU
