@@ -308,7 +308,8 @@ namespace EDSNET
 			Object^ ctxt = nullptr;
 			if (context != nullptr)
 			{
-				ctxt = Marshal::PtrToStructure(IntPtr(context), Object::typeid);
+				GCHandle handle = GCHandle::FromIntPtr(IntPtr(context));
+				ctxt = handle.Target;
 			}
 			String^ attrValue = InputGetterDelegate(gcnew String(attrName.c_str()), ctxt);
 			retval = MarshalString(attrValue);
