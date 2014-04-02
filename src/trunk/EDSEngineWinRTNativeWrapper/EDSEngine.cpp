@@ -1,6 +1,6 @@
 ﻿/*
 This file is part of EDSEngineWinRT.
-Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
+Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 
     EDSEngineWinRT is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
