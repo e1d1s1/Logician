@@ -39,11 +39,14 @@ UninstPage instfiles
 Section "DecisionLogic (required)"
 	SectionIn RO
 
-	; VS2008 Redist
+	; VS2013 Redist
 	SetOutPath $TEMP
 	File "vcredist_x86.exe"
-	Exec '/q:a /c:"vcredist_x86.exe /q"'
-	Delete /REBOOTOK "vcredist_x86.exe"
+	ReadRegStr $1 HKLM "SOFTWARE\Microsoft\VisualStudio\12.0\VC\Runtimes\x86" "Installed"
+	StrCmp $1 1 installedVCRuntime
+	ExecWait '"vcredist_x86.exe" /install /passive /norestart'
+
+	installedVCRuntime:
 
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic
