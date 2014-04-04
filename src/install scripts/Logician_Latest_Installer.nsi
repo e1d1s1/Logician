@@ -6,6 +6,7 @@
 ; It will install hte Logician Suite into a directory that the user selects,
 
 ;--------------------------------
+!include x64.nsh
 
 ; The name of the installer
 Name "Logician Suite (Dev)"
@@ -42,8 +43,28 @@ Section "Visual C++ 2013 Runtime"
 	; VS2013 Redist
 	SetOutPath $TEMP
 	File "vcredist_x86.exe"
-	ExecWait '"vcredist_x86.exe" /q:a /c:"VCREDI~1.EXE /q:a /c:""msiexec /i vcredist.msi /qb!"" "'
+	File "vcredist_x64.exe"
+	
+${If} ${RunningX64}
+		ReadRegStr $1 HKLM "SOFTWARE\Microsoft\VisualStudio\12.0\VC\Runtimes\x64" "Installed"
+		StrCmp $1 1 installed64VCRuntime
+        ExecWait '"vcredist_x64.exe" /install /passive /norestart'
+		
+		installed64VCRuntime:
+		
+		ReadRegStr $1 HKLM "SOFTWARE\Microsoft\VisualStudio\12.0\VC\Runtimes\x86" "Installed"
+		StrCmp $1 1 installedVCRuntime
+		ExecWait '"vcredist_x86.exe" /install /passive /norestart'
+${Else}
+		ReadRegStr $1 HKLM "SOFTWARE\Microsoft\VisualStudio\12.0\VC\Runtimes\x86" "Installed"
+		StrCmp $1 1 installedVCRuntime
+        ExecWait '"vcredist_x86.exe" /install /passive /norestart'
+${EndIf}
+
+	installedVCRuntime:
+	
 	Delete /REBOOTOK "vcredist_x86.exe"
+	Delete /REBOOTOK "vcredist_x64.exe"	
 SectionEnd
 
 Section "Logician Suite"
