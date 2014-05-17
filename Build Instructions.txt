@@ -55,8 +55,8 @@ USE_WINDOWS_SCRIPTING: on windows when javascript support is enabled, uses the w
 POSIX: compliant (Linux) environments should enable this define
 DISABLE_DECISIONLOGIC_INTEGRATION: In the EDSEngine build, adding this define to a build will disable intergrated DeicisionLogic debugging over a TCP Socket connection.  It's a handy feature to keep around, but you can eliminate this boost library dependency if you wish.
 Windows:
-Visual Studio 2008/2010/2012 project files are included.  Configurations for both MSXML and libxml2 based builds are included, MSXML is recommended at this time.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.  The projects also build fine with the Windows Platform SDK tools, v7 or 7.1.  Just use the included bat files in the trunk directory.  Make sure you have WXWIN and BOOST_ROOT path vairables set when building from the command line.
-Only Visual Studio 2012 projects support building x64 libraries at this time.
+Visual Studio 2013 project files are included.  Configurations for both MSXML and libxml2 based builds are included, MSXML is recommended at this time.  You will have to download the prerequisites and build them as well.  Prereq binaries are available as a zip file in the repository.  The projects also build fine with the Windows Platform SDK tools, v7 or 7.1.  Just use the included bat files in the trunk directory.  Make sure you have WXWIN and BOOST_ROOT path vairables set when building from the command line.
+
 Get prebuilt Boost binaries from: http://boost.teeks99.com/ or SourceForge.
 
 Linux: (Ubuntu 9.10+, 12.04 recommended, or Mint 14+)

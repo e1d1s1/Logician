@@ -11,13 +11,13 @@ Title:       Logician: A Table-based Rules Engine In C++/.NET/JavaScript using X
 Author:      Eric D. Schmidt
 Email:       ericdschmidt@digirulesolutions.com
 Member ID:   1152733
-Language:    C++, JavaScript, C#/.NET/WInRT
+Language:    C++, JavaScript, C#/.NET/WinRT
 Platform:    Windows, Mac, Linux, Web, Mobile
 Technology:  XML, Business Rules & Automation
 Level:       Intermediate
 Description: Overview of a cross-platform spreadsheet-based rules enigne 
              with algorithms implemented in C++ and JavaScript, and wrappers 
-             to C#/.NET/WInRT/Silverlight, Flash, and Mobile Platforms(via PhoneGap)
+             to C#/.NET/WInRT and Mobile Platforms(via PhoneGap)
 Section      General Programming
 SubSection   Algorithms & Recipes
 License:     GPL
@@ -61,19 +61,31 @@ Any one of these 3 solutions gets the job done, but the first is certainly easie
 <h2>Decision Table Engine Background</h2>
 <p>
 As stated before, the table rules read sequentially, for a given series of inputs, the output(s) are determined.  In the example above they work top to bottom, left to right.  The decision table evaluator (EDSEngine library) creates a truth table given the information supplied to it by your code and the stored xml rule data.  By itself it is stateless, but it is easy to determine and supply the necessary variables.  The basic steps that occur are: 
-<br />1.  Code determines it needs to evaluate a table, asks EDSEngine what input values from the current application "state" it needs. 
-<br />2.  EDSEngine loads the table and returns the list of inputs in the table.
-<br />3.  Code provides the corresponding list of current values for those inputs.
+<br />1.  User code determines it needs to evaluate a table.
+<br />2.  EDSEngine loads the table and obtains the list of inputs in the table.
+<br />3.  User code provides the corresponding list of current values for those inputs via a function pointer, delegate, etc
 <br />4.  EDSEngine evaluates the decision table and returns results
 <br />
 You should be able to automate steps 1-3 in your code, depending on how you design your data model.  Something as simple as this might work: 
 </p>
 <pre>
 //C++
-map&lt;string, string&gt; mAppData; //application state as attribute-value pairs
+map&lt;wstring, wstring&gt; mAppData; //application state as attribute-value pairs
 CKnowledgeBase m_TableEvaluator;
 
 //...application stuff, you loaded the rules file, etc
+m_TableEvaluator.CreateKnowledgeBase("ColorRules.xml");
+
+//assign a way to lookup input values using a function pointer or anonymous method, as the case here
+m_TableEvaluator.InputValueGetterPtr = [](const wstring& attrName, void* context)
+{
+	wstring wval;
+	if (mAppData.find(attrName) != end(mAppData))
+	{
+		wval = mAppData[attrName];
+	}
+	return wval;
+};
 
 string GetResultingColor()
 {  
@@ -81,12 +93,7 @@ string GetResultingColor()
 }
 
 string GetSingleSolution(string tableToEvaluate, string nameOfOutput) //could reuse this function for all similar aplication events
-{
-  vector&lt;string&gt; inputsNeeded = m_TableEvaluator.GetInputDependencies(tableToEvaluate);
-  //from our application data, obtain the values
-  for (int i = 0; i < inputsNeeded.size(); i++)
-    m_TableEvaluator.SetInputValue(inputsNeeded[i], mAppData[inputsNeeded[i]]);
-  
+{ 
   vector&lt;string&gt; results = m_TableEvaluator.EvaluateTable(tableToEvaluate, nameOfOutput);
   //EDSEngine supports returning multiple true results on a sigle line, but in this case we expect just a single result (the first one it finds)
   
@@ -193,7 +200,7 @@ When using the ROM component, decision tables are evaluated against a particular
 </p>
 <h2>Tutorial</h2>
 <p>
-In this tutorial we will demonstrate how to model a real world product configurator in both a JavaScript-enabled webpage and a C# WinForms application using the Logician tools (A C++, Silverlight, Flash, and Android example is also available).  For this demonstration, we will attempt to model the properties and catalog number generation for a commercially available "Heavy-Duty Imperial Mill Type" Hydraulic Cylider (technical specification PDF with source code)</a>.  Given the formula for the generation of a product catalog number, a simple graphical layout, or group of selections can be defined.  The names of each control will match the "attribute" names we use in the decision tables. 
+In this tutorial we will demonstrate how to model a real world product configurator in both a JavaScript-enabled webpage and a C# WinForms application using the Logician tools (A C++ and Android example is also available).  For this demonstration, we will attempt to model the properties and catalog number generation for a commercially available "Heavy-Duty Imperial Mill Type" Hydraulic Cylider (technical specification PDF with source code)</a>.  Given the formula for the generation of a product catalog number, a simple graphical layout, or group of selections can be defined.  The names of each control will match the "attribute" names we use in the decision tables. 
 </p>
 <p>
 Before any rule evaluation can take place, you have to substantiate an instance of the Relational Object Modeler.  You can pass the path to the rules xml file we will create also to load them in the second step, and finally set up the built-in rules engine implementation and apply the rules:
@@ -259,7 +266,7 @@ Figure 4<br />
 One of the great advantages of using these packages on the web is you can effectively eliminate server callbacks to run business logic and perform page updates.  You have the ability to offload a lot of the application logic and CPU cycles onto the user's browser.  With all of these components working in concert, you have Logician, a powerful, flexible, and open source rules engine application framework. 
 </p>
 <p>
-Download the sample application code in C#, C++, JavaScript, Flash, WinRT, Silverlight, and the Android SDK (via <a href="http://www.phonegap.com">PhoneGap</a> JavaScript wrapping) along with the rule table samples to get a better understanding of the application logic.  Visit our project webpage at <a href="http://logician.sourceforge.net">http://logician.sourceforge.net</a>
+Download the sample application code in C#, C++, JavaScript, and the Android SDK (via <a href="http://www.phonegap.com">PhoneGap</a> JavaScript wrapping) along with the rule table samples to get a better understanding of the application logic.  Visit our project webpage at <a href="http://logician.sourceforge.net">http://logician.sourceforge.net</a>
 </p>
 </body>
 </html>

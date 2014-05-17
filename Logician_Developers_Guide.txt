@@ -4,7 +4,8 @@ EDSEngine is the decision table evaluator of the Logician suite.  It can be used
 All of the language ports of the EDSEngine library have a similar interface.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
 
 Constructors
-The constructor for EDSEngine simply requires a path string to the souce rules xml or zipped xml file.  Zipped xml files are not supported in javascript.
+The constructor for EDSEngine simply requires a path string to the souce rules xml or zipped xml file.  Zipped xml files are not supported in javascript.  You should use server side file compression in that case anyways.
+
 	C++:
 		CKonweldegeBase(wstring knowledge_file);
 		//optional 2-step C++
