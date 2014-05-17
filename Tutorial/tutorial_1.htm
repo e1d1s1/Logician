@@ -95,8 +95,8 @@ string GetResultingColor()
 string GetSingleSolution(string tableToEvaluate, string nameOfOutput) //could reuse this function for all similar aplication events
 { 
   vector&lt;string&gt; results = m_TableEvaluator.EvaluateTable(tableToEvaluate, nameOfOutput);
-  //EDSEngine supports returning multiple true results on a sigle line, but in this case we expect just a single result (the first one it finds)
-  
+
+  //EDSEngine supports returning multiple true results on a sigle line, but in this case we expect just a single result (the first one it finds)  
   if (results.size() > 0)
     return results[0];
   else
