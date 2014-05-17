@@ -19,7 +19,7 @@ void pause()
 #endif
 
 EDS::CKnowledgeBase m_TableEvaluator;
-map<string, string> mAppData;
+map<wstring, wstring> mAppData;
 
 string GetSingleSolution(string tableToEvaluate, string nameOfOutput) //could reuse this function for all similar aplication events
 {
@@ -43,24 +43,19 @@ int main(int argc, char* argv[])
 	m_TableEvaluator.CreateKnowledgeBase("ColorRules.xml");
 	m_TableEvaluator.InputValueGetterPtr = [](const wstring& attrName, void* context)
 	{
-		string attr;
-		attr.assign(attrName.begin(), attrName.end());
 		wstring wval;
-		if (mAppData.find(attr) != end(mAppData))
+		if (mAppData.find(attrName) != end(mAppData))
 		{
-			string val = mAppData[attr];			
-			wval.assign(val.begin(), val.end());
-			return wval;
+			wval = mAppData[attrName];
 		}
-		else
-			return wval;
+		return wval;
 	};
 	cout<<"done\n";
 
 	cout<<"Enter red or blue for first paint color:";
-	cin>>mAppData["PaintColor1"];
+	wcin>>mAppData[L"PaintColor1"];
 	cout<<"Enter yellow or blue for second paint color:";
-	cin>>mAppData["PaintColor2"];
+	wcin>>mAppData[L"PaintColor2"];
 
 	cout<<"The result is: " + GetResultingColor() + "\n";
 
