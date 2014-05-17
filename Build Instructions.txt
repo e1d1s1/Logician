@@ -5,10 +5,10 @@ Logician relies upon open source and freely available cross-platform tools, so y
 Prerequisites:
 Rules Engine: EDSEngine
 All platforms: 
-- boost C++ libraries v1.55+
-- iconv v1.9.2
-- libxml2 v2.7.8+
-- libxslt v1.1.26+
+- boost C++ libraries v1.55+ (optional, for integrated DecisionLogic debugging)
+- iconv v1.9.2 (GCC builds)
+- libxml2 v2.7.8+ (GCC builds)
+- libxslt v1.1.26+ (GCC builds)
 - Python 2.6+ (optional compile-time switch, disabled in default windows build configuration)
 - Mozilla Spidermonkey Javascript engine 1.85 (optional compile-time switch).  Windows builds the integrated Windows Scripting or Chakra, depending on what is available on the host.
 Windows:
@@ -22,9 +22,9 @@ All platforms:
 
 C++ Dynamic application modeler: Relational Object Model
 All platforms:
-- iconv v1.9.2
-- libxml2 v2.7.8+
-- libxslt v1.1.26+
+- iconv v1.9.2 (GCC builds)
+- libxml2 v2.7.8+ (GCC builds)
+- libxslt v1.1.26+ (GCC builds)
 - EDSEngine v1.0
 Windows:
 - MSXML v6.0 (preferred build in lieu of libxml, libxslt, and iconv)
