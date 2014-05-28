@@ -101,7 +101,7 @@ int runTest(int thread_id)
 	if (!knowledge.IsOpen())
 		knowledge.CreateKnowledgeBase(L"test_project.gz");
 	#else
-	EDS::CKnowledgeBase knowledge(L"test_project.gz");
+	EDS::CKnowledgeBase knowledge(L"../../test_project.gz");
 	#endif
 
 	if (!knowledge.IsOpen())
