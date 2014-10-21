@@ -409,6 +409,21 @@ namespace ROMNET {
 			}
 		}
 
+		property String^ Value
+		{
+			virtual String^ get()
+			{
+				if (m_ROMDictionaryAttribute)
+					return gcnew String(m_ROMDictionaryAttribute->Value.c_str());
+				else return "";
+			}
+			virtual void set(String^ value)
+			{
+				if (m_ROMDictionaryAttribute)
+					m_ROMDictionaryAttribute->Value = MarshalString(value);
+			}
+		}
+
 	public protected:
 		ROMDictionaryAttribute(IntPtr^ ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr->ToPointer(); m_canDelete = false;}
 

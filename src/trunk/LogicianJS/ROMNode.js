@@ -261,7 +261,8 @@ function GetROMDictAttrArray(arr)
 		obj.Visible = arr[idx].Visible;
 		obj.Enabled = arr[idx].Enabled;
 		obj.PossibleValues = arr[idx].PossibleValues;
-		obj.AvailableValues = arr[idx].AvailableValues;		
+		obj.AvailableValues = arr[idx].AvailableValues;
+		obj.Value = arr[idx].Value;
 		obj.m_guid = arr[idx].m_guid;
 		retval.push(obj);
 	}
@@ -1633,7 +1634,8 @@ function ROMDictionaryAttribute() {
     this.Visible = true;
     this.Enabled = true;
     this.PossibleValues = new Array();
-    this.AvailableValues = new Array();	
+    this.AvailableValues = new Array();
+    this.Value = "";
     this.Index = 0;
 	this.m_guid = MakeGUID();
 }
@@ -2105,6 +2107,8 @@ function LinearEngine(context, dictionaryTable) {
                         this.base.m_dict[dictAttrName].Enabled = false;
                     this.base.m_context.SetAttribute(dictAttrName, currentValue);
                 }
+
+                this.base.m_dict[dictAttrName].Value = this.base.m_context.GetAttribute(dictAttrName, true);
             }
             catch (err) {
                 ReportError(err);
@@ -2237,6 +2241,8 @@ function LinearEngine(context, dictionaryTable) {
                 else {
                     this.base.m_dict[dictAttrName].Visible = true;
                 }
+
+                this.base.m_dict[dictAttrName].Value = this.base.m_context.GetAttribute(dictAttrName, true);
             }
             catch (err) {
                 ReportError(err);
@@ -2332,6 +2338,8 @@ function LinearEngine(context, dictionaryTable) {
                             this.base.m_context.SetAttribute(dictAttrName, finalValue);
                     }
                 }
+
+                this.base.m_dict[dictAttrName].Value = this.base.m_context.GetAttribute(dictAttrName, true);
             }
             catch (err) {
                 ReportError(err);
@@ -2416,6 +2424,8 @@ function LinearEngine(context, dictionaryTable) {
                     
                     this.RemoveTouchedByUser(dictAttrName);
                 }
+
+                this.base.m_dict[dictAttrName].Value = this.base.m_context.GetAttribute(dictAttrName, true);
             }
             catch (err) {
                 ReportError(err);

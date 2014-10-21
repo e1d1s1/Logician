@@ -392,6 +392,8 @@ namespace ROM
 				m_dict[dictAttrName].Enabled = false;
 			m_ROMContext->SetAttribute(dictAttrName, currentValue);
 		}
+
+		m_dict[dictAttrName].Value = m_ROMContext->GetAttribute(dictAttrName, true);
 	}
 
 	void LinearEngine::EvalEdit(const wstring& dictAttrName, const wstring& value)
@@ -544,6 +546,8 @@ namespace ROM
 			m_dict[dictAttrName].Visible = false;
 		else
 			m_dict[dictAttrName].Visible = true;
+
+		m_dict[dictAttrName].Value = m_ROMContext->GetAttribute(dictAttrName, true);
 	}
 
 	void LinearEngine::EvalMultiSelect(const wstring& dictAttrName, const vector<wstring>& values)
@@ -647,6 +651,8 @@ namespace ROM
 					m_ROMContext->SetAttribute(dictAttrName, finalValue);
 			}
 		}
+
+		m_dict[dictAttrName].Value = m_ROMContext->GetAttribute(dictAttrName, true);
 	}
 
 	//drop down list, radio button groups, etc
@@ -739,6 +745,8 @@ namespace ROM
 
 			RemoveTouchedByUser(dictAttrName);
 		}
+
+		m_dict[dictAttrName].Value = m_ROMContext->GetAttribute(dictAttrName, true);
 	}
 
 	vector<wstring> LinearEngine::ParseOutPrefixes(int AttributeType, const vector<wstring>& origValues, vector<wstring> &valuesWithoutPrefixes)
