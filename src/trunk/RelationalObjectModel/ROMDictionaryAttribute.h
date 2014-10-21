@@ -39,6 +39,7 @@ namespace ROM
 
 		vector<wstring> PossibleValues;
 		vector<wstring> AvailableValues;
+		wstring Value;
 	};
 
 	enum ATTRTYPE_E
