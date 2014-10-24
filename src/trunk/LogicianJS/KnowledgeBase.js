@@ -265,8 +265,8 @@ function Bimapper()
 {
     try
     {
-        this.m_IndexToStringsMap = new Array();
-        this.m_StringsToIndexMap = new Array();
+        this.m_IndexToStringsMap = {};
+        this.m_StringsToIndexMap = {};
         this.maxID = 0;    
 
         Bimapper.prototype.AddString = function(id, s)
@@ -752,7 +752,7 @@ function RuleTable()
 
         this.EvaluateTable = function(bGetAll, bForward, context)
         {
-            var retval = new Array();
+            var retval = {};
             try
             {
                 var resultCollection = null;
