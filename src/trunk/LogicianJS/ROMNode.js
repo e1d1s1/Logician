@@ -1665,7 +1665,7 @@ function CreateROMDictionaryByGUID(guid) {
 
 function ROMDictionary(node) {
     this.m_context = node;
-    this.m_dict = new Array();
+    this.m_dict = {};
     this.m_guid = MakeGUID();
 
     this.GenerateTableDebugMessages = function (bGenerate) {
@@ -1680,7 +1680,7 @@ function ROMDictionary(node) {
 
     this.LoadDictionary = function (dictionaryTable) {
         try {
-            this.m_dict = new Array();
+            this.m_dict = {};
             var res = this.m_context.EvaluateTable(dictionaryTable, true);
             var allNames = res["Name"];
             for (var i = 0; i < ArraySize(allNames); i++) {
@@ -1790,11 +1790,10 @@ function LinearEngine(context, dictionaryTable) {
     this.base = new ROMDictionary(context);
 
     this.m_EvalList = new Array();
-    this.m_mapTriggers = new Array();
+    this.m_mapTriggers = {};
     this.m_CurrentRecursion = 0;
     this.m_EvalListRecursChecker = new Array();
     this.m_EvalInternal = false;
-    this.m_EvalListRecursChecker = null;
     this.m_guid = this.base.m_guid;
 
     try {
