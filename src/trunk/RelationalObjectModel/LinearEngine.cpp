@@ -411,6 +411,7 @@ namespace ROM
 		if (m_dict[dictAttrName].RuleTable.size() == 0)
 		{
 			m_ROMContext->SetAttribute(dictAttrName, newValue);
+			m_dict[dictAttrName].Value = newValue;
 			return;
 		}
 

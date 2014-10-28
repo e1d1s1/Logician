@@ -466,7 +466,8 @@ function CreateROMNode(id) {
 function ROMNode(id) {
     this.m_xmlDoc = null;
     this.m_KnowledgeBase = null;
-    id = id.replace(" ", "_");
+    if (id != undefined && id != null)
+        id = id.replace(" ", "_");
     this.m_id = id;
     this.m_guid = MakeGUID();
     this.m_parent = null;
@@ -2127,6 +2128,7 @@ function LinearEngine(context, dictionaryTable) {
                 if (this.base.m_dict[dictAttrName].RuleTable.length == 0)
                 {
                     this.base.m_context.SetAttribute(dictAttrName, newValue);
+                    this.base.m_dict[dictAttrName].Value = newValue;
                     return;
                 }
 
