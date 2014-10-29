@@ -380,6 +380,28 @@
             alert("DEBUGGING:\n" + str);
         }
 
+        function TestInheritance(id)
+        {
+            ROMNode.call(this, id);
+        }
+        TestInheritance.prototype = new ROMNode();
+        TestInheritance.prototype.GetAttribute = function (id, immediate)
+        {
+            var retval = "";
+            switch (id)
+            {
+                case "overridevalue":
+                    retval = "overridden";
+                    break;
+                default:
+                    retval = ROMNode.prototype.GetAttribute.call(this, id, immediate);
+                    break;
+            }
+            return retval;
+        }
+
+
+
         function btnTest2_onclick() 
         {
             var start = 0; var elapsed = 0; var testROMTreeStart = 0; var testROMTreeEnd = 0; var testROMNodeStart = 0; var testROMNodeEnd = 0;
@@ -391,7 +413,7 @@
 
                 write_result("Test ROMNode Objects");
                 write_result("Creating root node");
-                var rootNode = new ROMNode("Test Application");
+                var rootNode = new TestInheritance("Test Application");
                 write_result("Root ROMNode created");
 
                 write_result("Setting some attributes");
@@ -463,6 +485,14 @@
 	                    write_result("Key: " + it_kvp + " Value: " + kvp[it_kvp]);
 	                }
                 }
+
+                write_result('Testing inheritance');
+                if (rootNode.GetAttribute("inputAttr1", true) == "A" &&
+                    rootNode.GetAttribute("overridevalue", true) == "overridden")
+                    write_result("inheritance working");
+                else
+                    write_result("FAILURE calling inherited object method");
+
 
 	            write_result("loading rules");
 	            //if (rootNode.LoadRulesFromString(rules))
