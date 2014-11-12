@@ -665,6 +665,16 @@ namespace ROM
 		m_dict[dictAttrName].Enabled = true;
 		m_dict[dictAttrName].Valid = true;
 
+		//if no rules table defined, allow any value
+		if (m_dict[dictAttrName].RuleTable.size() == 0)
+		{
+			m_ROMContext->SetAttribute(dictAttrName, newValue);
+			m_dict[dictAttrName].Value = newValue;
+			availableValues.push_back(newValue);
+			m_dict[dictAttrName].AvailableValues = availableValues;
+			return;
+		}
+
 		//the list of results is what is available for selection in the control
 		vector<wstring> prefixes = ParseOutPrefixes(SINGLESELECT, res, availableValues);
 		m_dict[dictAttrName].AvailableValues = availableValues;

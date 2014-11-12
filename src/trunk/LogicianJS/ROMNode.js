@@ -2357,6 +2357,15 @@ LinearEngine.prototype.EvalSingleSelect = function (dictAttrName, newValue) {
         this.m_dict[dictAttrName].Enabled = true;
         this.m_dict[dictAttrName].Valid = true;
 
+        //if no rules table defined, allow any value
+        if (this.m_dict[dictAttrName].RuleTable.length == 0) {
+            this.m_context.SetAttribute(dictAttrName, newValue);
+            availableValues.push(newValue);
+            this.m_dict[dictAttrName].Value = newValue;
+            this.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
+            return;
+        }
+
         //the list of results is what is available for selection in the control
         var prefixes = this.ParseOutPrefixes(Enum.ATTRTYPE_E.SINGLESELECT, res, availableValues);
         this.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
