@@ -30,6 +30,17 @@ function GetIndexOfItem(arr, obj) {
     return -1;
 }
 
+function ArraySize(arr) //for associative array sizes
+{
+    var l = 0;
+	if (length in arr)
+		return arr.length;
+    for (var k in arr) {
+        l++;
+    }
+    return l;
+}
+
 function getKeysOfObject(o) { var keys = [], i; for (i in o) { keys.push(i); } return keys; }
 
 function ReportError(err) {
