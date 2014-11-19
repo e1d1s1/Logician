@@ -2165,7 +2165,8 @@ LinearEngine.prototype.EvalEdit = function (dictAttrName, newValue) {
             if (prefixes[0].indexOf(this.DISABLEPREFIX) >= 0) {
                 this.m_dict[dictAttrName].Enabled = false;
                 this.RemoveTouchedByUser(dictAttrName);
-                this.m_context.SetAttribute(dictAttrName, prefixes[0]);
+                this.m_context.SetAttribute(dictAttrName, availableValues[0]);
+                this.m_dict[dictAttrName].Value = availableValues[0];
                 return;
             }
             else

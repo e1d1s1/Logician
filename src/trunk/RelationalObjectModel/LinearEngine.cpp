@@ -435,7 +435,9 @@ namespace ROM
 			{
 				m_dict[dictAttrName].Enabled = false;
 				RemoveTouchedByUser(dictAttrName);
-				m_ROMContext->SetAttribute(dictAttrName, prefixes[0]);
+				m_ROMContext->SetAttribute(dictAttrName, availableValues[0]);
+				m_dict[dictAttrName].Value = availableValues[0];
+				return;
 			}
 			else
 				m_dict[dictAttrName].Enabled = true;
