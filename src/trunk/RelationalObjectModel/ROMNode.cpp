@@ -72,16 +72,16 @@ ROMNode::~ROMNode(void)
 
 ROMNode* ROMNode::GetRoot()
 {
-	ROMNode *nextParent = this;
+	ROMNode *lastParent = this;
+	ROMNode *nextParent = nullptr;
 	do
 	{
+		nextParent = nextParent->GetParent();
 		if (nextParent != nullptr)
-			nextParent = nextParent->GetParent();
+			lastParent = nextParent;
 	} while (nextParent != nullptr);
 
-	if (!nextParent)
-		nextParent = this;
-	return nextParent;
+	return lastParent;
 }
 
 bool ROMNode::AddChildROMObject(ROMNode *child)
