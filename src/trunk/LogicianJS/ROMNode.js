@@ -488,17 +488,20 @@ function ROMNode(id) {
     this.m_nodeValues = new Array();    
 }
 
+ROMNode.prototype.constructor = ROMNode;
+
 ROMNode.prototype.GetRoot = function () {
     try {
-        var nextParent = this;
+        var lastParent = this;
+        var nextParent = null;
         do {
-            if (nextParent != null)
-                nextParent = nextParent.GetParent();
+            nextParent = lastParent.GetParent();
+            if (nextParent != null) {
+                lastParent = nextParent;                
+            }
         } while (nextParent != null);
 
-        if (nextParent == null)
-            nextParent = this;
-        return nextParent;
+        return lastParent;
     }
     catch (err) {
         ReportError(err);
