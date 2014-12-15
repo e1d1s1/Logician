@@ -1,3 +1,6 @@
+2.1 - 12/15/2014
+Accumulation of minor bugfixes and addition of some minor features such as prototype based inheritence pattern in JavaScript implementation.  Added "Value" to represent current attribute value in the ROM DictionaryAttr class for use in databinding situations.
+
 2.0 - 3/26/2014
 Library is now threadsafe and makes use of C++11 concepts.  Some API changes, see user documentation.  Suuport for Silverlight and Flash wrappers dropped.
 
