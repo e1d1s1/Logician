@@ -9,10 +9,10 @@
 !include x64.nsh
 
 ; The name of the installer
-Name "Logician Suite 2.0.0"
+Name "Logician Suite 2.1.0"
 
 ; The file to write
-OutFile "Logician_v200_Setup.exe"
+OutFile "Logician_v210_Setup.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Logician
@@ -70,62 +70,62 @@ Section "Logician Suite"
 	; Set output path to the installation directory.
 		
 	SetOutPath $INSTDIR\VC12
-	File "..\tags\v2.0.0\VC12\EDSEngine.lib"
-	File "..\tags\v2.0.0\VC12\EDSEngineNET.dll"
-	File "..\tags\v2.0.0\VC12\RelationalObjectModel.lib"
-	File "..\tags\v2.0.0\VC12\ROMNET.dll"
-	File "..\tags\v2.0.0\VC12\LogicianDebuggerWPF.dll"
-	File "..\tags\v2.0.0\VC12\WPFToolkit.dll"
+	File "..\tags\v2.1.0\VC12\EDSEngine.lib"
+	File "..\tags\v2.1.0\VC12\EDSEngineNET.dll"
+	File "..\tags\v2.1.0\VC12\RelationalObjectModel.lib"
+	File "..\tags\v2.1.0\VC12\ROMNET.dll"
+	File "..\tags\v2.1.0\VC12\LogicianDebuggerWPF.dll"
+	File "..\tags\v2.1.0\VC12\WPFToolkit.dll"
 	SetOutPath $INSTDIR\VC12\EDSEngineWinRT
-	File "..\tags\v2.0.0\VC12\EDSEngineWinRT\EDSEngineWinRT.winmd"
-	File "..\tags\v2.0.0\VC12\EDSEngineWinRT\EDSEngineWinRT.pri"
-	File "..\tags\v2.0.0\VC12\EDSEngineWinRT\EDSEngineWinRT.lib"
-	File "..\tags\v2.0.0\VC12\EDSEngineWinRT\EDSEngineWinRT.exp"
-	File "..\tags\v2.0.0\VC12\EDSEngineWinRT\EDSEngineWinRT.dll"
+	File "..\tags\v2.1.0\VC12\EDSEngineWinRT\EDSEngineWinRT.winmd"
+	File "..\tags\v2.1.0\VC12\EDSEngineWinRT\EDSEngineWinRT.pri"
+	File "..\tags\v2.1.0\VC12\EDSEngineWinRT\EDSEngineWinRT.lib"
+	File "..\tags\v2.1.0\VC12\EDSEngineWinRT\EDSEngineWinRT.exp"
+	File "..\tags\v2.1.0\VC12\EDSEngineWinRT\EDSEngineWinRT.dll"
 	SetOutPath $INSTDIR\VC12\ROMWinRT
-	File "..\tags\v2.0.0\VC12\ROMWinRT\ROMWinRT.winmd"
-	File "..\tags\v2.0.0\VC12\ROMWinRT\ROMWinRT.pri"
-	File "..\tags\v2.0.0\VC12\ROMWinRT\ROMWinRT.lib"
-	File "..\tags\v2.0.0\VC12\ROMWinRT\ROMWinRT.exp"
-	File "..\tags\v2.0.0\VC12\ROMWinRT\ROMWinRT.dll"
+	File "..\tags\v2.1.0\VC12\ROMWinRT\ROMWinRT.winmd"
+	File "..\tags\v2.1.0\VC12\ROMWinRT\ROMWinRT.pri"
+	File "..\tags\v2.1.0\VC12\ROMWinRT\ROMWinRT.lib"
+	File "..\tags\v2.1.0\VC12\ROMWinRT\ROMWinRT.exp"
+	File "..\tags\v2.1.0\VC12\ROMWinRT\ROMWinRT.dll"
 	SetOutPath $INSTDIR\VC12\x64
-	File "..\tags\v2.0.0\VC12\x64\EDSEngine.lib"
-	File "..\tags\v2.0.0\VC12\x64\EDSEngineNET.dll"
-	File "..\tags\v2.0.0\VC12\x64\RelationalObjectModel.lib"
-	File "..\tags\v2.0.0\VC12\x64\ROMNET.dll"
-	File "..\tags\v2.0.0\VC12\x64\LogicianDebuggerWPF.dll"
-	File "..\tags\v2.0.0\VC12\x64\WPFToolkit.dll"
+	File "..\tags\v2.1.0\VC12\x64\EDSEngine.lib"
+	File "..\tags\v2.1.0\VC12\x64\EDSEngineNET.dll"
+	File "..\tags\v2.1.0\VC12\x64\RelationalObjectModel.lib"
+	File "..\tags\v2.1.0\VC12\x64\ROMNET.dll"
+	File "..\tags\v2.1.0\VC12\x64\LogicianDebuggerWPF.dll"
+	File "..\tags\v2.1.0\VC12\x64\WPFToolkit.dll"
 	SetOutPath $INSTDIR\VC12\x64\EDSEngineWinRT
-	File "..\tags\v2.0.0\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.winmd"
-	File "..\tags\v2.0.0\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.pri"
-	File "..\tags\v2.0.0\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.lib"
-	File "..\tags\v2.0.0\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.exp"
-	File "..\tags\v2.0.0\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.dll"	
+	File "..\tags\v2.1.0\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.winmd"
+	File "..\tags\v2.1.0\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.pri"
+	File "..\tags\v2.1.0\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.lib"
+	File "..\tags\v2.1.0\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.exp"
+	File "..\tags\v2.1.0\VC12\x64\EDSEngineWinRT\EDSEngineWinRT.dll"	
 	SetOutPath $INSTDIR\VC12\x64\ROMWinRT
-	File "..\tags\v2.0.0\VC12\x64\ROMWinRT\ROMWinRT.winmd"
-	File "..\tags\v2.0.0\VC12\x64\ROMWinRT\ROMWinRT.pri"
-	File "..\tags\v2.0.0\VC12\x64\ROMWinRT\ROMWinRT.lib"
-	File "..\tags\v2.0.0\VC12\x64\ROMWinRT\ROMWinRT.exp"
-	File "..\tags\v2.0.0\VC12\x64\ROMWinRT\ROMWinRT.dll"
+	File "..\tags\v2.1.0\VC12\x64\ROMWinRT\ROMWinRT.winmd"
+	File "..\tags\v2.1.0\VC12\x64\ROMWinRT\ROMWinRT.pri"
+	File "..\tags\v2.1.0\VC12\x64\ROMWinRT\ROMWinRT.lib"
+	File "..\tags\v2.1.0\VC12\x64\ROMWinRT\ROMWinRT.exp"
+	File "..\tags\v2.1.0\VC12\x64\ROMWinRT\ROMWinRT.dll"
 
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic
 	; Put file there
-	File "..\tags\v2.0.0\VC12\DecisionLogic.exe"
-	File "..\tags\v2.0.0\DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
-	File "..\tags\v2.0.0\DecisionLogic\vc_mswu\Figure1.png"
-	File "..\tags\v2.0.0\DecisionLogic\vc_mswu\Figure2.png"
-	File "..\tags\v2.0.0\DecisionLogic\vc_mswu\Figure3.png"
-	File "..\tags\v2.0.0\DecisionLogic\vc_mswu\Figure4.png"
-	File "..\tags\v2.0.0\DecisionLogic\vc_mswu\Figure5.png"
-	File "..\tags\v2.0.0\DecisionLogic\vc_mswu\Figure6.png"
+	File "..\tags\v2.1.0\VC12\DecisionLogic.exe"
+	File "..\tags\v2.1.0\DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
+	File "..\tags\v2.1.0\DecisionLogic\vc_mswu\Figure1.png"
+	File "..\tags\v2.1.0\DecisionLogic\vc_mswu\Figure2.png"
+	File "..\tags\v2.1.0\DecisionLogic\vc_mswu\Figure3.png"
+	File "..\tags\v2.1.0\DecisionLogic\vc_mswu\Figure4.png"
+	File "..\tags\v2.1.0\DecisionLogic\vc_mswu\Figure5.png"
+	File "..\tags\v2.1.0\DecisionLogic\vc_mswu\Figure6.png"
 	
 	SetOutPath $INSTDIR
-	File "..\tags\v2.0.0\LogicianJS\KnowledgeBase.js"
-	File "..\tags\v2.0.0\LogicianJS\ROMNode.js"
+	File "..\tags\v2.1.0\LogicianJS\KnowledgeBase.js"
+	File "..\tags\v2.1.0\LogicianJS\ROMNode.js"
 	
 	SetOutPath $INSTDIR\ajaxslt
-	File "..\tags\v2.0.0\LogicianJS\ajaxslt\*.*"	
+	File "..\tags\v2.1.0\LogicianJS\ajaxslt\*.*"	
 	
 	SetOutPath $INSTDIR
 	; Write the installation path into the registry
