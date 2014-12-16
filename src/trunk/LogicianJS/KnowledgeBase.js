@@ -137,7 +137,7 @@ if (val.indexOf(parm.charAt(i),0) == -1) return false;
 return true;
 }
 
-function isNumber(parm) {return isValid(parm,numb);}
+function isNumber(parm) { return !isNaN(parseFloat(parm)) && isFinite(parm); }
 function isLower(parm) {return isValid(parm,lwr);}
 function isUpper(parm) {return isValid(parm,upr);}
 function isAlpha(parm) {return isValid(parm,lwr+upr);}
