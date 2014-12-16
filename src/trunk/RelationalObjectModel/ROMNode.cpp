@@ -76,7 +76,7 @@ ROMNode* ROMNode::GetRoot()
 	ROMNode *nextParent = nullptr;
 	do
 	{
-		nextParent = nextParent->GetParent();
+		nextParent = lastParent->GetParent();
 		if (nextParent != nullptr)
 			lastParent = nextParent;
 	} while (nextParent != nullptr);

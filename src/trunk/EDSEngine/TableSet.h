@@ -36,6 +36,7 @@ public:
 		vector<wstring> formulaInputs, CBimapper *stringMap, wstring name = L"defualt", bool GetAll = false);
 	void Initialize();
 	CRuleTable* GetTable(const wstring& tableName);
+	CRuleTable GetTableCopy(const wstring& tableName, bool *found);
 	vector<wstring> GetInputAttrs(const wstring& tableName);
 	vector<wstring> GetInputDependencies(const wstring& tableName);
 	vector<wstring> GetOutputAttrs(const wstring& tableName);
