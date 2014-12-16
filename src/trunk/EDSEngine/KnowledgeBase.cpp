@@ -204,22 +204,21 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 	vector<wstring> retval;
 	try
 	{
-		CRuleTable *table = m_TableSet.GetTable(tableName);
+		//isolate the evaluation memory space for thead safety
+		bool tableExists = false;
+		CRuleTable table = m_TableSet.GetTableCopy(tableName, &tableExists);
 
-		if (table == nullptr)
+		if (!tableExists)
 			return retval;
 
 		iRecursingDepth++;
 
-		if (table == nullptr)
-			return retval;
+		table.EnbleDebugging(DebugThisTable(tableName));
+		table.InputValueGetter = InputValueGetterPtr;
 
-		table->EnbleDebugging(DebugThisTable(tableName));
-		table->InputValueGetter = InputValueGetterPtr;
-
-		vector<wstring> results = table->EvaluateTable(outputAttr, bGetAll, true, context);
+		vector<wstring> results = table.EvaluateTable(outputAttr, bGetAll, true, context);
 		//check for existance of table chain
-		if (table->HasChain() == true)
+		if (table.HasChain() == true)
 		{
 			vector<wstring> eraseResults;
 			vector<wstring> newResults;
@@ -253,7 +252,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 					}
 					if (DebugThisTable(tableName) && chainedResults.size() > 0)
 					{ //replace the eval( string with the actual value
-						table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + debugVals);
+						table.DebugMessage = EDSUTIL::FindAndReplace(table.DebugMessage, *it, *it + debugVals);
 					}
 				}
 				else
@@ -271,7 +270,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 
 		//check for existance of runtime scripting, JavaScript or Python
 	#ifdef USE_JAVASCRIPT
-		if (table->HasJS() == true)
+		if (table.HasJS() == true)
 		{
 			vector<wstring> eraseResults;
 			vector<wstring> newResults;
@@ -425,7 +424,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 
 					if (DebugThisTable(tableName))
 					{ //replace the js( string with the actual value
-						table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + L":" + XMLSafe(val));
+						table.DebugMessage = EDSUTIL::FindAndReplace(table.DebugMessage, *it, *it + L":" + XMLSafe(val));
 					}
 				}
 				else
@@ -443,7 +442,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 	#endif
 
 	#ifdef USE_PYTHON
-		if (table->HasPython() == true)
+		if (table.HasPython() == true)
 		{
 			vector<wstring> eraseResults;
 			vector<wstring> newResults;
@@ -499,7 +498,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 
 					if (DebugThisTable(tableName))
 					{	//replace the py( string with the actual value
-						table->DebugMessage = EDSUTIL::FindAndReplace(table->DebugMessage, *it, *it + L":" + XMLSafe(val));
+						table.DebugMessage = EDSUTIL::FindAndReplace(table.DebugMessage, *it, *it + L":" + XMLSafe(val));
 					}
 				}
 				else
@@ -520,7 +519,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 
 		if (DebugThisTable(tableName) == true)
 		{
-			SendToDebugServer(table->DebugMessage);
+			SendToDebugServer(table.DebugMessage);
 		}
 
 		retval = results;
@@ -552,12 +551,13 @@ vector<wstring> CKnowledgeBase::ReverseEvaluateTable(const wstring& tableName, c
 	//no chaining or scripting in reverse
 	try
 	{
-		CRuleTable *table = m_TableSet.GetTable(tableName);
-		if (table != nullptr)
+		bool exists = false;
+		CRuleTable table = m_TableSet.GetTableCopy(tableName, &exists);
+		if (exists)
 		{
-			table->EnbleDebugging(DebugThisTable(tableName));
-			table->InputValueGetter = InputValueGetterPtr;
-			retval = table->EvaluateTable(inputAttr, bGetAll, false, context);
+			table.EnbleDebugging(DebugThisTable(tableName));
+			table.InputValueGetter = InputValueGetterPtr;
+			retval = table.EvaluateTable(inputAttr, bGetAll, false, context);
 		}
 	}
 	catch (...)
@@ -573,16 +573,17 @@ map<wstring, vector<wstring> > CKnowledgeBase::ReverseEvaluateTable(const wstrin
 
 	try
 	{
-		CRuleTable *table = m_TableSet.GetTable(tableName);
-		if (table == nullptr)
+		bool exists = false;
+		CRuleTable table = m_TableSet.GetTableCopy(tableName, &exists);
+		if (!exists)
 			return retval;
-		table->EnbleDebugging(DebugThisTable(tableName));
-		table->InputValueGetter = InputValueGetterPtr;
-		vector<pair<wstring, vector<CRuleCell> > > outputCollection = table->GetInputAttrsTests();
+		table.EnbleDebugging(DebugThisTable(tableName));
+		table.InputValueGetter = InputValueGetterPtr;
+		vector<pair<wstring, vector<CRuleCell> > > outputCollection = table.GetInputAttrsTests();
 		//for all the outputs get the results
 		for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = outputCollection.begin(); itOut != outputCollection.end(); itOut++)
 		{
-			vector<wstring> result = table->EvaluateTable((*itOut).first, bGetAll, false, context);
+			vector<wstring> result = table.EvaluateTable((*itOut).first, bGetAll, false, context);
 			retval[(*itOut).first] = result;
 		}
 	}
@@ -1313,12 +1314,13 @@ string CKnowledgeBase::GetFirstTableResult(const string& tableName, const string
 vector<string> CKnowledgeBase::ReverseEvaluateTable(const string& tableName, const string& inputAttr, bool bGetAll, void* context)
 {
 	//no chaining or scripting in reverse
-	CRuleTable *table = m_TableSet.GetTable(MBCStrToWStr(tableName));
-	if (table != nullptr)
+	bool exists = false;
+	CRuleTable table = m_TableSet.GetTableCopy(MBCStrToWStr(tableName), &exists);
+	if (exists)
 	{
-		table->EnbleDebugging(DebugThisTable(MBCStrToWStr(tableName)));
-		table->InputValueGetter = InputValueGetterPtr;
-		return EDSUTIL::ToMBCStringVector(table->EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false, context));
+		table.EnbleDebugging(DebugThisTable(MBCStrToWStr(tableName)));
+		table.InputValueGetter = InputValueGetterPtr;
+		return EDSUTIL::ToMBCStringVector(table.EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false, context));
 	}
 	else
 		return vector<string>();

@@ -132,6 +132,15 @@ CRuleTable* CTableSet::GetTable(const wstring& tableName)
 		return nullptr;
 }
 
+CRuleTable CTableSet::GetTableCopy(const wstring& tableName, bool *found)
+{
+	*found = m_tables.find(tableName) != m_tables.end();
+	if (*found)
+		return m_tables[tableName];
+	else
+		return CRuleTable();
+}
+
 vector<wstring> CTableSet::GetInputAttrs(const wstring& tableName)
 {
 	if (m_inputAttrsByTable.find(tableName) != m_inputAttrsByTable.end())
