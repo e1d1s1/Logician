@@ -501,6 +501,7 @@ namespace ROMNET {
 			wstring dict = MarshalString(dictionaryTable);
 			m_LinearEngine = new ROM::LinearEngine((ROM::ROMNode*)context->GetROMPtr()->ToPointer(), dict);
 		}
+		void ResetEngine() { m_LinearEngine->ResetEngine(); }
 		virtual ~LinearEngine() {this->!LinearEngine();}
 		!LinearEngine() {if (m_LinearEngine) delete m_LinearEngine; m_LinearEngine = NULL;}
 

@@ -1675,6 +1675,7 @@ function CreateROMDictionaryByGUID(guid) {
 
 function ROMDictionary(node) {
     this.m_context = node;
+    this.m_tableName = "";
     this.m_dict = {};
     this.m_guid = MakeGUID();
 }
@@ -1692,7 +1693,8 @@ ROMDictionary.prototype.GenerateTableDebugMessages = function (bGenerate) {
 ROMDictionary.prototype.LoadDictionary = function (dictionaryTable) {
     try {
         this.m_dict = {};
-        var res = this.m_context.EvaluateTable(dictionaryTable, true);
+        this.m_tableName = dictionaryTable;
+        var res = this.m_context.EvaluateTable(this.m_tableName, true);
         var allNames = res["Name"];
         for (var i = 0; i < ArraySize(allNames); i++) {
             var dictAttr = new ROMDictionaryAttribute();
@@ -1806,10 +1808,10 @@ function LinearEngine(context, dictionaryTable) {
     this.m_EvalInternal = false;
 
     try {
-        if (context === undefined || dictionaryTable === undefined)
+        if (dictionaryTable === undefined)
             return;
         else {            
-            this.CreateLinearEngine(context, dictionaryTable);
+            this.CreateLinearEngine(dictionaryTable);
         }
     }
     catch (err) {
@@ -2592,7 +2594,19 @@ LinearEngine.prototype.SetTableDebugHandler = function (func) {
         this.m_context.m_KnowledgeBase.DebugHandler = func;
 }
 
-LinearEngine.prototype.CreateLinearEngine = function (context, dictionaryTable) {
+LinearEngine.prototype.ResetEngine = function()
+{
+    this.m_EvalList = new Array();
+    this.m_mapTriggers = {};
+    this.m_EvalListRecursChecker = new Array();
+    this.CreateLinearEngine(this.m_tableName);
+    for (var attr in this.m_dict) {
+        this.m_context.SetAttribute(this.m_dict[attr].Name, "");
+    }
+    this.EvaluateAll();
+}
+
+LinearEngine.prototype.CreateLinearEngine = function (dictionaryTable) {
     try {
         this.LoadDictionary(dictionaryTable);
         //open each attr in dict, load its dependency info to create m_EvalList, m_mapTriggers
@@ -2624,7 +2638,8 @@ LinearEngine.prototype.CreateLinearEngine = function (context, dictionaryTable) 
 
         this.LoadTrackingAttrs();
         //based on the triggers, re-order the dictionary
-        m_CurrentRecursion = 0;
+        this.m_CurrentRecursion = 0;
+        this.m_EvalInternal = false;
         this.OrderDictionary();
     }
     catch (err) {

@@ -26,6 +26,7 @@ using namespace ROMUTIL;
 void ROMDictionary::CreateROMDictionary(ROMNode* context)
 {
 	m_ROMContext = context;
+	m_tableName = L"";
 }
 
 /*A dictionary table should have the following outputs:
@@ -38,8 +39,9 @@ RuleTable - table to evaluate to obtain the value (will override default if exis
 */
 void ROMDictionary::LoadDictionary(const wstring& dictionaryTable)
 {
+	m_tableName = dictionaryTable;
 	m_dict.clear();
-	map<wstring, vector<wstring> > res = m_ROMContext->EvaluateTable(dictionaryTable, true);
+	map<wstring, vector<wstring> > res = m_ROMContext->EvaluateTable(m_tableName, true);
 	vector<wstring> allNames = res[L"Name"];
 
 	for (size_t i = 0; i < allNames.size(); i++)

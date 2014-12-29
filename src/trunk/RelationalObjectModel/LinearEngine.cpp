@@ -21,7 +21,7 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 
 namespace ROM
 {
-	void LinearEngine::CreateLinearEngine(ROMNode* context, const wstring& dictionaryTable)
+	void LinearEngine::CreateLinearEngine(const wstring& dictionaryTable)
 	{
 		InvalidateMode = NORMALINVALIDATE;
 		TBUATTR = L"TBU_";
@@ -71,6 +71,14 @@ namespace ROM
 			OrderDictionary();
 			m_vEvalListRecursChecker.clear();
 		}
+	}
+
+	void LinearEngine::ResetEngine()
+	{
+		InitializeEngine(this->m_tableName);
+		for (map<wstring, ROMDictionaryAttribute>::iterator it = m_dict.begin(); it != m_dict.end(); it++)
+			m_ROMContext->SetAttribute(it->first, L"");
+		EvaluateAll();
 	}
 
 	void LinearEngine::LoadTrackingAttrs()

@@ -51,5 +51,6 @@ namespace ROM
 		ROMNode *m_ROMContext;
 
 		map<wstring, ROMDictionaryAttribute> m_dict;
+		wstring m_tableName;
 	};
 }
