@@ -35,8 +35,9 @@ namespace ROM
 	{
 	public:
 		LinearEngine(){InvalidateMode = NORMALINVALIDATE;}
-		LinearEngine(ROMNode* context, const wstring& dictionaryTable) :ROMDictionary(context) { CreateLinearEngine(context, dictionaryTable); }
-		void CreateLinearEngine(ROMNode* context, const wstring& dictionaryTable);
+		LinearEngine(ROMNode* context, const wstring& dictionaryTable) :ROMDictionary(context) { CreateLinearEngine(dictionaryTable); }
+		void CreateLinearEngine(const wstring& dictionaryTable);
+		void ResetEngine();
 		virtual ~LinearEngine(){}
 		void EvaluateForAttribute(const wstring& dictAttrName, vector<wstring>& newValues, bool bEvalDependents = true);
 		void EvaluateForAttribute(const wstring& dictAttrName, const wstring& newValue, bool bEvalDependents = true);
