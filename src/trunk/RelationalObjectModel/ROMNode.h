@@ -46,6 +46,7 @@ namespace ROM
 		void				CreateROMNode(const string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
 		void				SetTableDebugHandler(function<void(const wstring&)> debugger);
 		void				EnableRemoteDebugger(bool enable) { if (m_KnowledgeBase) m_KnowledgeBase->EnableRemoteDebugger(enable); }
+		function<ROMNode*(wstring)> ROMObjectFactory;
 
 		//relational functions
 		ROMNode*			GetRoot();

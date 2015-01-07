@@ -55,6 +55,10 @@ void ROMNode::_init()
 	m_KnowledgeBase = nullptr;
 	m_children.reserve(256);
 	m_bChanged = true;
+
+	ROMObjectFactory = [](wstring id){
+		return new ROMNode(id);
+	};
 }
 
 ROMNode::~ROMNode(void)
@@ -254,7 +258,7 @@ bool ROMNode::DestroyROMObject()
 
 ROMNode* ROMNode::Clone()
 {
-	ROMNode* newNode = new ROMNode(m_id);
+	ROMNode* newNode = ROMObjectFactory(m_id);
 	newNode->m_attrs = m_attrs;
 	newNode->m_nodeValues = m_nodeValues;
 	for (ROMNode* node : m_children)
@@ -1007,7 +1011,7 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 	}
 	else
 	{
-		newNode = new ROMNode(id);
+		newNode = ROMObjectFactory(id);
 		newNode->m_guid = ToASCIIString(guid);
 	}
 

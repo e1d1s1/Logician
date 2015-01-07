@@ -485,10 +485,15 @@ function ROMNode(id) {
     this.m_lastContents = "";
     this.m_lastAttrContents = "";
     this.m_attrs = new Array();
-    this.m_nodeValues = new Array();    
+    this.m_nodeValues = new Array();
 }
 
 ROMNode.prototype.constructor = ROMNode;
+
+ROMNode.prototype.ROMObjectFactory = function(id)
+{
+    return new ROMNode(id);
+}
 
 ROMNode.prototype.GetRoot = function () {
     try {
@@ -808,7 +813,7 @@ ROMNode.prototype.DestroyROMObject = function () {
 ROMNode.prototype.Clone = function () {
     var newNode = null;
     try {
-        newNode = new ROMNode(this.m_id);
+        newNode = this.ROMObjectFactory(this.m_id);
         newNode.m_attrs = deepClone(this.m_attrs);
         newNode.m_nodeValues = deepClone(this.m_nodeValues);
         for (var i = 0; i < this.m_children.length; i++) {
@@ -1498,7 +1503,7 @@ ROMNode.prototype._buildObject = function (objectNode, parent) {
             newNode = this;
         }
         else {
-            newNode = new ROMNode(id);
+            newNode = this.ROMObjectFactory(id);
             newNode.m_guid = guid;
         }
 
