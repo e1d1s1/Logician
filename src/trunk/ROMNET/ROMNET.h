@@ -41,30 +41,24 @@ using namespace System::Runtime::InteropServices;
 namespace ROMNET {
 	delegate void FireDebugMessageDelegate(const wstring&);
 	delegate wstring GetTheValueDelegate(const wstring&, void* context);
+	delegate ROM::ROMNode* GetROMObjectDelegate(const wstring& id);
 
 	public delegate void DebugHandlerDelegate(String^ msg);
 	public delegate String^ InputValueGetterDelegate(String^ attrName, Object^ context);
+	
+	ref class ROMNode;
+	public delegate ROMNode^ ROMObjectFactoryDelegate(String^ id);
 
 	public ref class ROMNode
 	{
 	public:
-		ROMNode() {CreateROMNode(""); m_KnowledgeBase = NULL;}		
-		ROMNode(String^ id) {CreateROMNode(id);}
-		bool CreateROMNode(System::String^ id);
+		ROMNode() {CreateROMNode("", (IntPtr)nullptr); m_KnowledgeBase = NULL;}		
+		ROMNode(String^ id) {CreateROMNode(id, (IntPtr)nullptr);}
+		bool CreateROMNode(System::String^ id, IntPtr ptr);
 		~ROMNode() {this->!ROMNode();}
 		!ROMNode() {DestroyROMObject();}
 
 		//some useful operators/casts for the managed/unmanaged boundry
-		static operator long(ROMNode^ romObj)
-		{
-			if (Equals(romObj, nullptr))
-				return 0;
-			else if (romObj->m_ROMNode != NULL)
-				return (long)romObj->m_ROMNode;
-			else
-				return 0;		
-		}
-
 		static bool operator ==(ROMNode^ romObj, ROMNode^ romObj2)
 		{
 			if (Equals(romObj, romObj2))
@@ -115,6 +109,18 @@ namespace ROMNET {
 			}
 		}
 		void				EnableRemoteDebugger(bool enable) { if (m_ROMNode) m_ROMNode->EnableRemoteDebugger(enable); }
+
+		property ROMObjectFactoryDelegate^		ROMObjectFactory
+		{
+			ROMObjectFactoryDelegate^ get()
+			{
+				return m_factory;
+			}
+			void set(ROMObjectFactoryDelegate^ value)
+			{
+				m_factory = value;				
+			}
+		}
 
 		//relational functions
 		ROMNode^			GetRoot();
@@ -170,26 +176,30 @@ namespace ROMNET {
 
 		//IO
 		String^				SaveXML(bool indented);
-		bool				LoadXML(String^ xmlStr);
+		static ROMNode^		LoadXML(String^ xmlStr, ROMObjectFactoryDelegate^ factory);
 
 		//XPATH
 		String^				EvaluateXPATH(String^ xpath, String^ guid);
 		String^				EvaluateXPATH(String^ xpath) {return EvaluateXPATH(xpath, GetROMGUID());}
 
 	public protected:
-		IntPtr^				GetROMPtr() {return (IntPtr)m_ROMNode;}
-		IntPtr^				GetEDSPtr() {return (IntPtr)m_KnowledgeBase;}
+		IntPtr				GetROMPtr() {return (IntPtr)m_ROMNode;}
+		IntPtr				GetEDSPtr() {return (IntPtr)m_KnowledgeBase;}
 
 	private:		
-		ROMNode(IntPtr^ ptr) {m_ROMNode = (ROM::ROMNode*)ptr->ToPointer(); m_KnowledgeBase = m_ROMNode->GetKnowledgeBase(); m_canDelete = false;}
+		//ROMNode(IntPtr ptr);
 		array<ROMNode^>^			GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
 		void						_fireDebug(const wstring& msg);
+		static ROMNode^				_managedFactory(String^ id);
 
-		DebugHandlerDelegate^		m_debugger;
-		GCHandle					m_gchDebug;
-		ROM::ROMNode				*m_ROMNode;
-		EDS::CKnowledgeBase			*m_KnowledgeBase;
-		bool						m_canDelete;
+		DebugHandlerDelegate^					m_debugger;
+		ROMObjectFactoryDelegate^				m_factory;
+		GCHandle								m_gchDebug;
+		GCHandle								m_gchFactory;
+		ROM::ROMNode							*m_ROMNode;
+		EDS::CKnowledgeBase						*m_KnowledgeBase;
+		bool									m_canDelete;
+		Dictionary<String^, ROMNode^>^			m_managedTreeObjects;
 	};
 
 	public enum class ATTRTYPE
@@ -425,7 +435,7 @@ namespace ROMNET {
 		}
 
 	public protected:
-		ROMDictionaryAttribute(IntPtr^ ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr->ToPointer(); m_canDelete = false;}
+		ROMDictionaryAttribute(IntPtr ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr.ToPointer(); m_canDelete = false;}
 
 	private:
 		ROM::ROMDictionaryAttribute* m_ROMDictionaryAttribute;
@@ -439,7 +449,7 @@ namespace ROMNET {
 		ROMDictionary(ROMNode^ context) {CreateROMDictionary(context);}
 		void CreateROMDictionary(ROMNode^ context) 
 		{
-			m_ROMDictionary = new ROM::ROMDictionary((ROM::ROMNode*)context->GetROMPtr()->ToPointer());
+			m_ROMDictionary = new ROM::ROMDictionary((ROM::ROMNode*)context->GetROMPtr().ToPointer());
 		}
 		virtual ~ROMDictionary() {this->!ROMDictionary();}
 		!ROMDictionary() {if (m_ROMDictionary) delete m_ROMDictionary; m_ROMDictionary = NULL;}
@@ -499,7 +509,7 @@ namespace ROMNET {
 		void CreateLinearEngine(ROMNode^ context, String^ dictionaryTable) 
 		{
 			wstring dict = MarshalString(dictionaryTable);
-			m_LinearEngine = new ROM::LinearEngine((ROM::ROMNode*)context->GetROMPtr()->ToPointer(), dict);
+			m_LinearEngine = new ROM::LinearEngine((ROM::ROMNode*)context->GetROMPtr().ToPointer(), dict);
 		}
 		void ResetEngine() { m_LinearEngine->ResetEngine(); }
 		virtual ~LinearEngine() {this->!LinearEngine();}

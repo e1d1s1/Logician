@@ -56,7 +56,7 @@ void ROMNode::_init()
 	m_children.reserve(256);
 	m_bChanged = true;
 
-	ROMObjectFactory = [](wstring id){
+	ROMObjectFactory = [](const wstring& id){
 		return new ROMNode(id);
 	};
 }
@@ -922,32 +922,35 @@ wstring ROMNode::_generateXML(bool bRegen)
 wstring ROMNode::SaveXML(bool indented)
 {
 	_createXMLDoc(true);
-	return _convertXMLDocToString(indented);
+	return _convertXMLDocToString(indented, m_xmlDoc);
 }
 
-bool ROMNode::LoadXML(const wstring& xmlStr)
+ROMNode* ROMNode::LoadXML(const wstring& xmlStr, ObjectFactory factory)
 {
-	bool retval = false;
+	ROMNode* retval = nullptr;
+
+	if (factory == nullptr)
+	{
+		factory = [](const wstring& id){
+			return new ROMNode(id);
+		};
+	}
 
 #ifdef USE_MSXML
-	if (m_xmlDoc != nullptr)
-		m_xmlDoc.Release();
-
-	m_xmlDoc = _createMSXMLDoc();
+	Document xmlDoc = _createMSXMLDoc();
 
 	try
 	{
-		VARIANT_BOOL ok = m_xmlDoc->loadXML(_bstr_t(xmlStr.c_str()));
+		VARIANT_BOOL ok = xmlDoc->loadXML(_bstr_t(xmlStr.c_str()));
 		if (ok == VARIANT_TRUE)
 		{
-			Node objectNode = m_xmlDoc->selectSingleNode("Object");
-			if (_buildObject(objectNode, nullptr) != nullptr)
-				retval = true;
+			Node objectNode = xmlDoc->selectSingleNode("Object");
+			retval = _buildObject(objectNode, factory);
 		}
 		else
 		{
-			if (m_xmlDoc != nullptr && m_xmlDoc->parseError->errorCode != 0)
-				ReportROMError(ToASCIIString((wstring)(m_xmlDoc->parseError->reason)));
+			if (xmlDoc != nullptr && xmlDoc->parseError->errorCode != 0)
+				ReportROMError(ToASCIIString((wstring)(xmlDoc->parseError->reason)));
 			else
 				ReportROMError("Error loading XML");
 		}
@@ -968,19 +971,17 @@ bool ROMNode::LoadXML(const wstring& xmlStr)
 #ifdef USE_LIBXML
 	try
 	{
-		m_xmlDoc = nullptr;
 		string buff = WStrToMBCStr(xmlStr);
-		m_xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
+		Document xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
 
-		xmlXPathContextPtr xpathCtx = xmlXPathNewContext(m_xmlDoc);
+		xmlXPathContextPtr xpathCtx = xmlXPathNewContext(xmlDoc);
 		xmlChar* objXPath = (xmlChar*)"Object";
 		xmlXPathObjectPtr xpathObjs = xmlXPathEvalExpression(objXPath, xpathCtx);
 		NodeList allObjs = xpathObjs->nodesetval;
 		if (allObjs != nullptr)
 		{
 			Node objectNode = allObjs->nodeTab[0];
-			if (_buildObject(objectNode, nullptr) != nullptr)
-				retval = true;
+			retval = _buildObject(objectNode, factory);
 		}
 	}
 	catch(...)
@@ -994,7 +995,7 @@ bool ROMNode::LoadXML(const wstring& xmlStr)
 	return retval;
 }
 
-ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
+ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 {
 	//create object
 	ROMNode* newNode = nullptr;
@@ -1002,18 +1003,9 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 #ifdef USE_MSXML
 	wstring id = objectNode->attributes->getNamedItem("id")->nodeValue.bstrVal;
 	wstring guid = objectNode->attributes->getNamedItem("guid")->nodeValue.bstrVal;
-	if (parent == nullptr)
-	{
-		DestroyROMObject();
-		m_id = id;
-		m_guid = ToASCIIString(guid);
-		newNode = this;
-	}
-	else
-	{
-		newNode = ROMObjectFactory(id);
-		newNode->m_guid = ToASCIIString(guid);
-	}
+
+	newNode = factory(id);
+	newNode->m_guid = ToASCIIString(guid);	
 
 	//set object values
 	for (long i = 0; i < objectNode->attributes->Getlength(); i++)
@@ -1048,7 +1040,7 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 	for (long childCnt = 0; childCnt < childNodes->Getlength(); childCnt++)
 	{
 		Node childNode = childNodes->item[childCnt];
-		ROMNode *newChildObject = _buildObject(childNode, this);
+		ROMNode *newChildObject = _buildObject(childNode, factory);
 		if (newChildObject != nullptr && newNode != nullptr)
 		{
 			newNode->AddChildROMObject(newChildObject);
@@ -1115,7 +1107,7 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 		for (int i = 0; i < allObjs->nodeNr; i++)
 		{
 			Node childNode = allObjs->nodeTab[i];
-			ROMNode *newChildObject = _buildObject(childNode, this);
+			ROMNode *newChildObject = _buildObject(childNode, factory);
 			if (newChildObject != nullptr && newNode != nullptr)
 			{
 				newNode->AddChildROMObject(newChildObject);
@@ -1125,10 +1117,10 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ROMNode* parent)
 
 #endif
 #ifdef _DEBUG
-	m_bChanged = true;
-	_createXMLDoc();
+	newNode->m_bChanged = true;
+	newNode->_createXMLDoc();
 	string str;
-	wstring xml = _convertXMLDocToString(true);
+	wstring xml = _convertXMLDocToString(true, newNode->m_xmlDoc);
 	str.assign(xml.begin(), xml.end());
 	ReportROMError(str);
 #endif
@@ -1183,17 +1175,17 @@ wstring	ROMNode::EvaluateXPATH(const wstring& xpath, const string& guid)
 	return retval;
 }
 
-wstring ROMNode::_convertXMLDocToString(bool indented)
+wstring ROMNode::_convertXMLDocToString(bool indented, Document xmlDoc)
 {
 	wstring retval;
 	retval.reserve(BIGSTRING);
 
-	if (m_xmlDoc != nullptr)
+	if (xmlDoc != nullptr)
 	{
 #ifdef USE_MSXML
 		//By default it is writing the encoding = UTF-16. Change the encoding to UTF-8
 		// <?xml version="1.0" encoding="UTF-8"?>
-		MSXML2::IXMLDOMNodePtr pXMLFirstChild = m_xmlDoc->GetfirstChild();
+		MSXML2::IXMLDOMNodePtr pXMLFirstChild = xmlDoc->GetfirstChild();
 		MSXML2::IXMLDOMNodePtr pXMLEncodNode = nullptr;
 		// A map of the a attributes (vesrsion, encoding) values (1.0, UTF-8) pair
 		MSXML2::IXMLDOMNamedNodeMapPtr pXMLAttributeMap =  nullptr;
@@ -1207,17 +1199,17 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 			pXMLEncodNode->PutnodeValue(bstr_t("utf-8")); //encoding = UTF-8. Serializer usually omits it in output, it is the default encoding
 		else
 		{
-			MSXML2::IXMLDOMElementPtr pXMLRootElem = m_xmlDoc->GetdocumentElement();
+			MSXML2::IXMLDOMElementPtr pXMLRootElem = xmlDoc->GetdocumentElement();
 			if (pXMLRootElem != nullptr)
 			{
 				MSXML2::IXMLDOMProcessingInstructionPtr pXMLProcessingNode =
-					m_xmlDoc->createProcessingInstruction("xml", " version='1.0' encoding='UTF-8'");
+					xmlDoc->createProcessingInstruction("xml", " version='1.0' encoding='UTF-8'");
 				_variant_t vtObject;
 				vtObject.vt = VT_DISPATCH;
 				vtObject.pdispVal = pXMLRootElem;
 				vtObject.pdispVal->AddRef();
 
-				m_xmlDoc->insertBefore(pXMLProcessingNode,vtObject);
+				xmlDoc->insertBefore(pXMLProcessingNode, vtObject);
 			}
 		}
 
@@ -1235,7 +1227,7 @@ wstring ROMNode::_convertXMLDocToString(bool indented)
 				pWriter->put_indent(VARIANT_TRUE);
 
 			pReader->putContentHandler(handler);
-			pReader->parse(m_xmlDoc.GetInterfacePtr());
+			pReader->parse(xmlDoc.GetInterfacePtr());
 
 			//utf-16 here
 			retval = (wstring)pWriter->output.bstrVal;

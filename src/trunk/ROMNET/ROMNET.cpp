@@ -22,18 +22,43 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 
 namespace ROMNET
 {
-	bool ROMNode::CreateROMNode(System::String^ id)
+	bool ROMNode::CreateROMNode(System::String^ id, IntPtr ptr)
 	{
-		wstring wsID = MarshalString(id);
-		m_ROMNode = new ROM::ROMNode(wsID);
-		m_canDelete = true;
-		if (m_ROMNode)
-		{
-			m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
-			return true;
-		}
+		wstring wsID = MarshalString(id);	
+		if (ptr.ToPointer() == nullptr)
+			m_ROMNode = new ROM::ROMNode(wsID);
 		else
-			return false;
+			m_ROMNode = (ROM::ROMNode*)ptr.ToPointer();
+
+		ROMObjectFactory = gcnew ROMObjectFactoryDelegate(&ROMNode::_managedFactory);
+		m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
+		m_managedTreeObjects[GetROMGUID()] = this;
+		m_canDelete = true;
+
+		m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
+		return true;
+	}
+
+	//ROMNode::ROMNode(IntPtr ptr)
+	//{
+	//	m_ROMNode = (ROM::ROMNode*)ptr.ToPointer();
+	//	m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
+	//	m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
+	//	m_managedTreeObjects[GetROMGUID()] = this;
+	//	//for each (ROM::ROMNode* obj in m_ROMNode->GetAllChildren(true))
+	//	//{
+	//	//	String^ guid = gcnew String(obj->GetROMGUID().c_str());
+	//	//	ROMNode^ managedNode = ROMObjectFactory(gcnew String(obj->GetROMObjectID().c_str()), (IntPtr)obj);
+	//	//	m_managedTreeObjects[guid] = managedNode;
+	//	//	managedNode->m_managedTreeObjects = m_managedTreeObjects;
+	//	//	managedNode->m_canDelete = false;
+	//	//}
+	//	m_canDelete = true;
+	//}
+
+	ROMNode^ ROMNode::_managedFactory(String^ id)
+	{
+		return gcnew ROMNode(id);
 	}
 
 	ROMNode^ ROMNode::GetRoot()
@@ -44,13 +69,13 @@ namespace ROMNET
 			ROM::ROMNode *rootNode = m_ROMNode->GetRoot();
 			if (rootNode)
 			{
-				retval = gcnew ROMNode((IntPtr)rootNode);
+				retval = m_managedTreeObjects[gcnew String(rootNode->GetROMGUID().c_str())];
 			}
 		}
 		return retval;
 	}
 
-	ROMNode^	ROMNode::Parent()
+	ROMNode^ ROMNode::Parent()
 	{
 		ROMNode^ retval = nullptr;
 		if (m_ROMNode)
@@ -58,7 +83,7 @@ namespace ROMNET
 			ROM::ROMNode *parentNode = m_ROMNode->GetParent();
 			if (parentNode)
 			{
-				retval = gcnew ROMNode((IntPtr)parentNode);
+				retval = m_managedTreeObjects[gcnew String(parentNode->GetROMGUID().c_str())];
 			}
 		}
 		return retval;
@@ -109,7 +134,8 @@ namespace ROMNET
 		{
 			string sguid = MarshalStringA(guid);
 			ROM::ROMNode* node = m_ROMNode->FindObjectByGUID(sguid);
-			retval = gcnew ROMNode((IntPtr)node);
+			if (node != nullptr)
+				retval = m_managedTreeObjects[gcnew String(sguid.c_str())];
 		}
 
 		return retval;
@@ -121,6 +147,11 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			retval = m_ROMNode->AddChildROMObject(child->m_ROMNode);
+			for each (KeyValuePair<String^, ROMNode^> kvp in child->m_managedTreeObjects)
+			{
+				m_managedTreeObjects[kvp.Key] = kvp.Value;
+			}
+			child->m_managedTreeObjects  = m_managedTreeObjects;
 			child->m_canDelete = false;
 		}
 		return retval;
@@ -132,6 +163,14 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			retval = m_ROMNode->RemoveChildROMObject(child->m_ROMNode);
+			m_managedTreeObjects->Remove(child->GetROMGUID());
+			child->m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
+			for each (ROMNode^ obj in child->GetAllChildren(true))
+			{
+				String^ guid = obj->GetROMGUID();
+				m_managedTreeObjects->Remove(guid);
+				child->m_managedTreeObjects[guid] = obj;
+			}
 			child->m_canDelete = true;
 		}
 		return retval;
@@ -139,12 +178,26 @@ namespace ROMNET
 
 	bool ROMNode::RemoveFromParent()
 	{
+		bool retval = false;
 		if (m_ROMNode)
 		{
-			return m_ROMNode->RemoveFromParent();
-			m_canDelete = true;
+			ROMNode^ parent = Parent();
+			retval = m_ROMNode->RemoveFromParent();
+
+			if (retval == true && parent != nullptr)
+			{
+				parent->m_managedTreeObjects->Remove(GetROMGUID());
+				m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
+				for each (ROMNode^ obj in GetAllChildren(true))
+				{
+					String^ guid = obj->GetROMGUID();
+					parent->m_managedTreeObjects->Remove(guid);
+					m_managedTreeObjects[guid] = obj;
+				}
+				m_canDelete = true;
+			}			
 		}
-		return false;
+		return retval;
 	}
 
 	array<ROMNode^>^ ROMNode::GetAllFriends()
@@ -190,14 +243,19 @@ namespace ROMNET
 
 	bool ROMNode::DestroyROMObject()
 	{
-		bool retval = false;
 		if (m_ROMNode)
 		{			
 			if (m_canDelete)
+			{				
 				delete m_ROMNode;
+			}
+				
+			m_managedTreeObjects->Clear();
 			m_ROMNode = NULL;
+			return true;
 		}
-		return retval;
+		
+		return false;
 	}
 
 	ROMNode^ ROMNode::Clone()
@@ -206,8 +264,29 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			ROM::ROMNode* node = m_ROMNode->Clone();
-			retval = gcnew ROMNode((IntPtr)node);
-			retval->m_canDelete = true;  //creates a new root node in new memory space ok to delete
+			retval = ROMObjectFactory(gcnew String(node->GetROMObjectID().c_str()));
+			
+			if (retval->m_ROMNode != nullptr)
+				delete retval->m_ROMNode;
+			retval->m_ROMNode = node;
+			retval->m_KnowledgeBase = node->GetKnowledgeBase();
+			retval->m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
+			retval->m_managedTreeObjects[gcnew String(node->GetROMGUID().c_str())] = retval;
+
+			for each (ROM::ROMNode* obj in node->GetAllChildren(true))
+			{
+				String^ guid = gcnew String(obj->GetROMGUID().c_str());
+				ROMNode^ managedNode = ROMObjectFactory(gcnew String(obj->GetROMObjectID().c_str()));
+				if (managedNode->m_ROMNode != nullptr)
+					delete managedNode->m_ROMNode;
+				managedNode->m_ROMNode = obj;
+				managedNode->m_KnowledgeBase = obj->GetKnowledgeBase();
+				retval->m_managedTreeObjects[guid] = managedNode;
+				managedNode->m_managedTreeObjects = retval->m_managedTreeObjects;
+				managedNode->m_canDelete = false;
+			}
+
+			m_canDelete = true;
 		}
 		return retval;
 	}
@@ -549,14 +628,39 @@ namespace ROMNET
 		return retval;
 	}
 
-	bool ROMNode::LoadXML(String^ xmlStr)
+	ROMNode^ ROMNode::LoadXML(String^ xmlStr, ROMObjectFactoryDelegate^ factory)
 	{
-		bool retval = false;
-		if (m_ROMNode)
+		ROMNode^ retval = nullptr;
+
+		if (factory == nullptr)
 		{
-			wstring wsXML = MarshalString(xmlStr);
-			retval = m_ROMNode->LoadXML(wsXML);
+			factory = gcnew ROMObjectFactoryDelegate(&ROMNode::_managedFactory);
 		}
+		
+		wstring wsXML = MarshalString(xmlStr);
+		ROM::ROMNode* node = ROM::ROMNode::LoadXML(wsXML, nullptr);
+		retval = factory(gcnew String(node->GetROMObjectID().c_str()));
+		
+		if (retval->m_ROMNode != nullptr)
+			delete retval->m_ROMNode;
+		retval->m_ROMNode = node;
+		retval->m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
+		retval->m_managedTreeObjects[gcnew String(node->GetROMGUID().c_str())] = retval;
+		retval->m_KnowledgeBase = node->GetKnowledgeBase();
+
+		for each (ROM::ROMNode* obj in node->GetAllChildren(true))
+		{
+			String^ guid = gcnew String(obj->GetROMGUID().c_str());
+			ROMNode^ managedNode = factory(gcnew String(obj->GetROMObjectID().c_str()));
+			if (managedNode->m_ROMNode != nullptr)
+				delete managedNode->m_ROMNode;
+			managedNode->m_ROMNode = obj;
+			managedNode->m_KnowledgeBase = obj->GetKnowledgeBase();
+			retval->m_managedTreeObjects[guid] = managedNode;
+			managedNode->m_managedTreeObjects = retval->m_managedTreeObjects;
+			managedNode->m_canDelete = false;
+		}
+		
 		return retval;
 	}
 
@@ -580,7 +684,8 @@ namespace ROMNET
 		array<ROMNode^>^ arr = gcnew array<ROMNode^>(vect.size());
 		for (size_t i = 0; i < vect.size(); i++)
 		{
-			arr[i] = gcnew ROMNode((IntPtr)vect[i]);
+			String^ guid = gcnew String(vect[i]->GetROMGUID().c_str());
+			arr[i] = m_managedTreeObjects[guid];
 		}
 		return arr;
 	}
@@ -592,7 +697,6 @@ namespace ROMNET
 			DebugDelegate(gcnew String(msg.c_str()));
 		}
 	}
-
 
 	//dictionary
 	void ROMDictionary::LoadDictionary(String^ dictionaryTable)

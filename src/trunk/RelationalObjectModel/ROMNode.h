@@ -29,8 +29,13 @@ using namespace ROMUTIL;
 using namespace std;
 using namespace EDS;
 
+
+
 namespace ROM
 {
+	class ROMNode;
+	typedef function<ROMNode*(const wstring&)> ObjectFactory;
+
 	class ROMNode
 	{
 	friend class ROMDictionary;
@@ -38,7 +43,7 @@ namespace ROM
 	public:
 		virtual ~ROMNode(void);
 		ROMNode(){_init();}
-		ROMNode(wstring id) {CreateROMNode(id);}
+		ROMNode(const wstring id) {CreateROMNode(id);}
 		ROMNode(string id) {CreateROMNode(id);}
 		ROMNode(const ROMNode&) = delete;             // Prevent copy-construction
 		ROMNode& operator=(const ROMNode&) = delete;  // Prevent assignment
@@ -46,7 +51,7 @@ namespace ROM
 		void				CreateROMNode(const string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
 		void				SetTableDebugHandler(function<void(const wstring&)> debugger);
 		void				EnableRemoteDebugger(bool enable) { if (m_KnowledgeBase) m_KnowledgeBase->EnableRemoteDebugger(enable); }
-		function<ROMNode*(wstring)> ROMObjectFactory;
+		ObjectFactory		ROMObjectFactory;
 
 		//relational functions
 		ROMNode*			GetRoot();
@@ -102,7 +107,7 @@ namespace ROM
 
 		//IO
 		wstring				SaveXML(bool indented);
-		bool				LoadXML(const wstring& xmlStr);
+		static ROMNode*		LoadXML(const wstring& xmlStr, ObjectFactory factory);
 
 		//XPATH
 		wstring				EvaluateXPATH(const wstring& xpath, const string& guid);
@@ -150,14 +155,14 @@ namespace ROM
 		bool					_anyHasChanged();
 		void					_setAllUnchanged();
 		wstring					_generateXML(bool bRegen);
-		ROMNode*				_buildObject(Node objectNode, ROMNode* parent);
+		static ROMNode*			_buildObject(Node objectNode, ObjectFactory factory);
 		void					_createXMLDoc(bool bForceLoad = false);
-		wstring					_convertXMLDocToString(bool indented);
+		static wstring			_convertXMLDocToString(bool indented, Document xmlDoc);
 		EDS::CKnowledgeBase*	_getKnowledge();
 		ROMNode*				_getActiveContext();
 		void					_init();
 #ifdef USE_MSXML
-		Document				_createMSXMLDoc();
+		static Document			_createMSXMLDoc();
 #endif
 
 		wstring m_id;

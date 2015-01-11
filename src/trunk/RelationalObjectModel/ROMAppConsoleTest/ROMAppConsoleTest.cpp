@@ -17,6 +17,78 @@ using namespace ROM;
 #include <sys/time.h>
 #endif
 
+class BaseObject : public ROMNode
+{
+public:
+	BaseObject(wstring id) : ROMNode(id) { }
+	virtual ~BaseObject(void) {}
+
+	using ROMNode::GetAttribute;
+	virtual wstring GetAttribute(const wstring& id, const wstring& name, bool immediate = false) override
+	{
+		if (id == L"CLASS")
+			return L"BaseObject";
+		return ROMNode::GetAttribute(id, name, immediate);
+	}
+};
+
+class ApplicationObject : public BaseObject
+{
+public:
+	ApplicationObject(wstring id) : BaseObject(id) { }
+	virtual ~ApplicationObject(void) {}
+
+	using BaseObject::GetAttribute;
+	virtual wstring GetAttribute(const wstring& id, const wstring& name, bool immediate = false) override
+	{
+		if (id == L"CLASS")
+			return L"ApplicationObject";
+		return BaseObject::GetAttribute(id, name, immediate);;
+	}
+};
+
+class DerivedObject : public BaseObject
+{
+public:
+	DerivedObject(wstring id) : BaseObject(id) {}
+	virtual ~DerivedObject(void) {}
+
+	using BaseObject::GetAttribute;
+	virtual wstring GetAttribute(const wstring& id, const wstring& name, bool immediate = false) override
+	{
+		if (id == L"CLASS")
+			return L"DerivedObject";
+		return BaseObject::GetAttribute(id, name, immediate);
+	}
+};
+
+class DerivedObject2 : public BaseObject
+{
+public:
+	DerivedObject2(wstring id) : BaseObject(id) { }
+	virtual ~DerivedObject2(void) {}
+
+	using BaseObject::GetAttribute;
+	virtual wstring GetAttribute(const wstring& id, const wstring& name, bool immediate = false) override
+	{
+		if (id == L"CLASS")
+			return L"DerivedObject2";
+		return BaseObject::GetAttribute(id, name, immediate);
+	}
+};
+
+ROMNode* ROMObjectFactory(wstring id)
+{
+	if (id == L"TestApplication")
+		return new ApplicationObject(id);
+	else if (id == L"ChildObject")
+		return new DerivedObject(id);
+	else if (id == L"ChildObject2")
+		return new DerivedObject2(id);
+
+	return nullptr;
+}
+
 void Log(std::string strLogLine)
 {
 	std::cout<<strLogLine<<endl;
@@ -52,12 +124,12 @@ void DebugMessage(wstring msg)
 void CreateChildNodes(ROMNode *rootNode)
 {
 	Log("Creating a child object");
-	ROMNode *childNode = new ROMNode(L"ChildObject");
+	ROMNode *childNode = new DerivedObject(L"ChildObject");
 	rootNode->AddChildROMObject(childNode);
 	childNode->SetAttribute(L"childAttr", L"some value of value");
 	//setting a value on the Object Node
 	childNode->SetROMObjectValue(L"valueTest", L"myValue");
-	ROMNode *childOfChild = new ROMNode(L"ChildObject2");
+	ROMNode *childOfChild = new DerivedObject2(L"ChildObject2");
 	childNode->AddChildROMObject(childOfChild);
 }
 
@@ -77,7 +149,7 @@ int runTest(int thread_id)
 
     Log("Testing ROMNode Objects");
     Log("Creating root node");
-    ROMNode rootNode(L"TestApplication");
+    ApplicationObject rootNode(L"TestApplication");
     Log("Root ROMNode created");
 
     Log("Setting some attributes");
@@ -110,20 +182,48 @@ int runTest(int thread_id)
 
     Log("Testing Cloning");
     auto clone = unique_ptr<ROMNode>(rootNode.Clone());
-    findTest = clone->FindAllObjectsByID("ChildObject", true);
-    findTestXPATH = clone->FindObjects("//Object[@id='ChildObject']");
-    findTestXPATH2 = clone->FindObjects("//Object[@id='ChildObject2']");
-    if (findTest.size() == 1 && findTestXPATH.size() == 1 && findTestXPATH2.size() == 1 &&
-        findTestXPATH[0]->GetROMGUID() == findTest[0]->GetROMGUID() &&
-        findTestXPATH2[0]->GetROMObjectID() == L"ChildObject2")
-        Log("Clone OK");
-    else
-        Log("FAILURE cloning");
 
 	Log("Dump clone xml state");
 	result = clone->SaveXML(true);
 	string sClone(result.begin(), result.end());
 	Log(sClone);
+
+    findTest = clone->FindAllObjectsByID("ChildObject", true);
+    findTestXPATH = clone->FindObjects("//Object[@id='ChildObject']");
+    findTestXPATH2 = clone->FindObjects("//Object[@id='ChildObject2']");
+    if (findTest.size() == 1 && findTestXPATH.size() == 1 && findTestXPATH2.size() == 1 &&
+        findTestXPATH[0]->GetROMGUID() == findTest[0]->GetROMGUID() &&
+        findTestXPATH2[0]->GetROMObjectID() == L"ChildObject2" &&
+		result.length() == s.length())
+        Log("Cloned object OK");
+    else
+        Log("FAILURE cloning");
+
+	Log("Test loading from xml");
+	auto loadedObj = unique_ptr<ROMNode>(ROMNode::LoadXML(result, ROMObjectFactory));
+	wstring testLoaded = loadedObj->SaveXML(true);
+	if (result.length() == testLoaded.length() &&
+		rootNode.GetAllChildren(true).size() == loadedObj->GetAllChildren(true).size())
+		Log("XML loading OK");
+	else
+		Log("FAILURE loading from xml");
+
+	Log("Test the object factory and inheritence pattern");
+	auto rootTest = (ApplicationObject*)loadedObj->FindAllObjectsByID("TestApplication", true)[0];
+	auto childTest = (DerivedObject2*)loadedObj->FindObjects("//Object[@id='ChildObject2']")[0];
+	if (rootTest->GetAttribute(L"CLASS", true) == L"ApplicationObject" &&
+		childTest->GetAttribute(L"CLASS", true) == L"DerivedObject2")
+		Log("inheritence OK");
+	else
+		Log("FAILURE in inheritence pattern");
+
+	Log("Test for equlity");
+	auto childTest2 = (DerivedObject2*)loadedObj->FindObjects("//Object[@id='ChildObject2']")[0];
+	if ((ROMNode*)childTest == (ROMNode*)childTest2 && (ROMNode*)childTest != (ROMNode*)rootTest)
+		Log("equality test OK");
+	else
+		Log("FAILURE equality test");
+
 
     Log("Setting attrs to test eval, inputAttr1 = A, inputAttr2 = 1");
     rootNode.SetAttribute(L"inputAttr1", L"A");
