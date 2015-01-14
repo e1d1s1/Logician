@@ -34,14 +34,14 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 using namespace std;
 using namespace ROM;
 
-void ROMNode::CreateROMNode(const wstring id)
+void ROMNode::CreateROMNode(const wstring id, ObjectFactory factory)
 {
 	wstring newid = FindAndReplace(id, L" ", L"_");
 	m_id = newid;
-	_init();
+	_init(factory);
 }
 
-void ROMNode::_init()
+void ROMNode::_init(ObjectFactory factory)
 {
 #ifdef USE_LIBXML
 	xmlInitParser();
@@ -56,9 +56,16 @@ void ROMNode::_init()
 	m_children.reserve(256);
 	m_bChanged = true;
 
-	ROMObjectFactory = [](const wstring& id){
-		return new ROMNode(id);
-	};
+	if (factory == nullptr)
+	{
+		ROMObjectFactory = [](const wstring& id){
+			return new ROMNode(id);
+		};
+	}
+	else
+	{
+		ROMObjectFactory = factory;
+	}
 }
 
 ROMNode::~ROMNode(void)
@@ -271,7 +278,7 @@ ROMNode* ROMNode::Clone()
 
 vector<ROMNode*> ROMNode::FindObjects(const wstring& xpath)
 {
-	_createXMLDoc();
+	_createXMLDoc(false, false);
 	vector<ROMNode*> retval;
 	vector<Node> nodes;
 #ifdef USE_MSXML
@@ -750,12 +757,12 @@ wstring ROMNode::GetATableInputValue(const wstring& input)
 }
 
 //IO
-void ROMNode::_createXMLDoc(bool bForceLoad)
+void ROMNode::_createXMLDoc(bool bForceLoad, bool prettyprint)
 {
 	bool bChanged = (bForceLoad || _anyHasChanged());
 	if (bChanged)
 	{
-		wstring genXML = _generateXML(bChanged);
+		wstring genXML = _generateXML(bChanged, prettyprint);
 #ifdef USE_MSXML
 		if (m_xmlDoc != nullptr)
 			m_xmlDoc.Release();
@@ -846,7 +853,7 @@ bool ROMNode::_anyHasChanged()
 	return retval;
 }
 
-wstring ROMNode::_generateXML(bool bRegen)
+wstring ROMNode::_generateXML(bool bRegen, bool prettyprint)
 {
 	wstring retval;
 	retval.reserve(BIGSTRING);
@@ -878,20 +885,25 @@ wstring ROMNode::_generateXML(bool bRegen)
 		{
 			wstring allAttrs = L"";
 			//attributes of this object
-			for (auto it = m_attrs.begin(); it != m_attrs.end(); it++)
+			if (prettyprint)
 			{
-				wstring attrObject = L"<Attribute id=\"";
-				attrObject+=it->first;
-				attrObject+=L"\" ";
-				for (auto itValue = it->second.begin(); itValue != it->second.end(); itValue++)
+				vector<wstring> attrList;
+				std::transform(m_attrs.begin(), m_attrs.end(), std::back_inserter(attrList), [](const std::unordered_map<wstring, std::unordered_map<wstring, wstring> >::value_type &pair)
+					{ return pair.first; });
+				std::sort(begin(attrList), end(attrList));
+				for (auto& id : attrList)
 				{
-					attrObject+=itValue->first;
-					attrObject+=L"=\"";
-					attrObject+=ROMUTIL::encodeForXml(itValue->second);
-					attrObject+=L"\" ";
+					wstring attrObject = _generateAttrNode(id);
+					allAttrs += attrObject;
 				}
-				attrObject+=L"/>";
-				allAttrs += attrObject;
+			}
+			else
+			{
+				for (auto it = m_attrs.begin(); it != m_attrs.end(); it++)
+				{
+					wstring attrObject = _generateAttrNode(it->first);
+					allAttrs += attrObject;
+				}
 			}
 			retval += allAttrs;
 			m_lastAttrContents = allAttrs;
@@ -905,7 +917,7 @@ wstring ROMNode::_generateXML(bool bRegen)
 		for (vector<ROMNode*>::iterator itNode = m_children.begin(); itNode != m_children.end(); itNode++)
 		{
 			ROMNode* node = *itNode;
-			retval += node->_generateXML(node->m_bChanged);
+			retval += node->_generateXML(node->m_bChanged, false);
 		}
 
 		retval+=L"</Object>";
@@ -919,10 +931,27 @@ wstring ROMNode::_generateXML(bool bRegen)
 	return retval;
 }
 
-wstring ROMNode::SaveXML(bool indented)
+wstring ROMNode::_generateAttrNode(const wstring& id)
 {
-	_createXMLDoc(true);
-	return _convertXMLDocToString(indented, m_xmlDoc);
+	wstring attrObject = L"<Attribute id=\"";
+	attrObject += id;
+	attrObject += L"\" ";
+	auto mapAttrs = m_attrs[id];
+	for (auto itValue = mapAttrs.begin(); itValue != mapAttrs.end(); itValue++)
+	{
+		attrObject += itValue->first;
+		attrObject += L"=\"";
+		attrObject += ROMUTIL::encodeForXml(itValue->second);
+		attrObject += L"\" ";
+	}
+	attrObject += L"/>";
+	return attrObject;
+}
+
+wstring ROMNode::SaveXML(bool prettyprint)
+{
+	_createXMLDoc(true, prettyprint);
+	return _convertXMLDocToString(prettyprint, m_xmlDoc);
 }
 
 ROMNode* ROMNode::LoadXML(const wstring& xmlStr, ObjectFactory factory)
@@ -1118,7 +1147,7 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 #endif
 #ifdef _DEBUG
 	newNode->m_bChanged = true;
-	newNode->_createXMLDoc();
+	newNode->_createXMLDoc(false, false);
 	string str;
 	wstring xml = _convertXMLDocToString(true, newNode->m_xmlDoc);
 	str.assign(xml.begin(), xml.end());
@@ -1144,7 +1173,7 @@ wstring	ROMNode::EvaluateXPATH(const wstring& xpath, const string& guid)
 	match += ROMUTIL::MBCStrToWStr(guid) + L"\']\"><xsl:value-of select=\"";
 	wstring xslt_text = XSLT_TOP + match + xpath + XSLT_BOTTOM;
 
-	_createXMLDoc();
+	_createXMLDoc(false, false);
 	if (m_xmlDoc != nullptr)
 	{
 #ifdef USE_MSXML
@@ -1175,7 +1204,7 @@ wstring	ROMNode::EvaluateXPATH(const wstring& xpath, const string& guid)
 	return retval;
 }
 
-wstring ROMNode::_convertXMLDocToString(bool indented, Document xmlDoc)
+wstring ROMNode::_convertXMLDocToString(bool prettyprint, Document xmlDoc)
 {
 	wstring retval;
 	retval.reserve(BIGSTRING);
@@ -1223,7 +1252,7 @@ wstring ROMNode::_convertXMLDocToString(bool indented, Document xmlDoc)
 
 		if (pWriter != nullptr && pReader != nullptr)
 		{
-			if (indented)
+			if (prettyprint)
 				pWriter->put_indent(VARIANT_TRUE);
 
 			pReader->putContentHandler(handler);

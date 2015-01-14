@@ -177,189 +177,6 @@ function isUpper(parm) {return isValid(parm,upr);}
 function isAlpha(parm) {return isValid(parm,lwr+upr);}
 function isAlphanum(parm) {return isValid(parm,lwr+upr+numb);} 
 
-// flash support //////////////////////////////////////////////////////////////
-var ActiveROMObjects = new Array(); //for flash access, guid keyed objects
-var ActiveROMDictionaryAttributes = new Array();
-var ActiveROMDictObjects = new Array();
-var ActiveEngineObjects = new Array();
-function GetROMObject(guid) {
-    if (guid in ActiveROMObjects)
-        return ActiveROMObjects[guid];	
-    else
-        return null;
-}
-function UpdateROMGUID(guid) {
-	var ROM = null;
-	if (guid in ActiveROMObjects)
-		ROM = ActiveROMObjects[guid];
-	
-	if (ROM != null)
-	{
-		ActiveROMObjects[ROM.m_guid] = ROM;
-		return ROM.m_guid;
-	}
-	else
-		return guid;
-}
-function GetROMObjectGenericGUID(guid) {
-	var ROM = null;
-    if (guid in ActiveROMObjects)
-        ROM = ActiveROMObjects[guid];	
-
-	if (ROM != null)
-	{
-		var obj = new Object();
-		obj.m_id = ROM.m_id;
-		obj.m_guid = ROM.m_guid;
-		return obj;
-	}
-	return null;
-}
-function GetROMObjectGeneric(obj) {
-	if (obj != null)
-	{
-		if (obj.m_guid != null)
-			return GetROMObjectGenericGUID(obj.m_guid);
-	}
-	return null;
-}
-
-function GetROMObjectArray(arr)
-{
-	var retval = new Array();
-	for (var idx in arr)
-	{
-		var obj = new Object();
-		obj.m_id = arr[idx].m_id;
-		obj.m_guid = arr[idx].m_guid;
-		retval.push(obj);
-	}
-	return retval;
-}
-function DestroyROMObject(guid) {
-    if (ActiveROMObjects != null && ActiveROMObjects[guid] != null)
-        delete ActiveROMObjects[guid];
-}
-function CleanROMObjects() {
-    for (var guid in ActiveROMObjects) {
-        DestroyROMObject(guid)
-    }
-    if (ActiveROMObjects != null) 
-        delete ActiveROMObjects;
-    ActiveROMObjects = new Array();
-}
-
-function GetROMDictAttrObject(guid) {
-    if (guid in ActiveROMDictObjects)
-        return ActiveROMDictionaryAttributes[guid];
-    else
-        return null;
-}
-function GetROMDictAttrArray(arr)
-{
-	var retval = new Array();
-	for (var idx in arr)
-	{
-		var obj = new Object();
-		obj.Name = arr[idx].Name;
-		obj.Description = arr[idx].Description;
-		obj.DefaultValue = arr[idx].DefaultValue;
-		obj.RuleTable = arr[idx].RuleTable;		
-		obj.AttributeType = arr[idx].AttributeType;
-		obj.ValueChanged = arr[idx].ValueChanged;
-		obj.ChangedByUser = arr[idx].ChangedByUser;
-		obj.Valid = arr[idx].Valid;
-		obj.Visible = arr[idx].Visible;
-		obj.Enabled = arr[idx].Enabled;
-		obj.PossibleValues = arr[idx].PossibleValues;
-		obj.AvailableValues = arr[idx].AvailableValues;
-		obj.Value = arr[idx].Value;
-		obj.m_guid = arr[idx].m_guid;
-		retval.push(obj);
-	}
-	return retval;
-}
-
-function DestroyROMDictAttrObject(guid) {
-    if (ActiveROMDictionaryAttributes != null && ActiveROMDictionaryAttributes[guid] != null)
-        delete ActiveROMDictionaryAttributes[guid];
-}
-function CleanROMDictAttrObjects() {
-    for (var guid in ActiveROMDictionaryAttributes) {
-        DestroyROMDictObject(guid)
-    }
-    if (ActiveROMDictionaryAttributes != null) 
-        delete ActiveROMDictionaryAttributes;
-    ActiveROMDictionaryAttributes = new Array();
-}
-
-function GetROMDictObject(guid) {
-    if (guid in ActiveROMDictObjects)
-        return ActiveROMDictObjects[guid];
-    else
-        return null;
-}
-function DestroyROMDictObject(guid) {
-    if (ActiveROMDictObjects != null && ActiveROMODictbjects[guid] != null)
-        delete ActiveROMDictObjects[guid];
-}
-function CleanROMDictObjects() {
-    for (var guid in ActiveROMDictObjects) {
-        DestroyROMDictObject(guid)
-    }
-    if (ActiveROMDictObjects != null) 
-        delete ActiveROMDictObjects;
-    ActiveROMDictObjects = new Array();
-}
-
-function GetEngineObject(guid) {
-    if (guid in ActiveEngineObjects)
-        return ActiveEngineObjects[guid];
-    else
-        return null;
-}
-function DestroyEngineObject(guid) {
-    if (ActiveEngineObjects != null && ActiveEngineObjects[guid] != null)
-        delete ActiveEngineObjects[guid];
-}
-function CleanEngineObjects() {
-    for (var guid in ActiveEngineObjects) {
-        DestroyEngineObject(guid)
-    }
-    if (ActiveEngineObjects != null) 
-        delete ActiveEngineObjects;
-    ActiveEngineObjects = new Array();
-}
-function DictionaryToObjArray(dict) {
-	var objArray = new Array();
-	if (dict != null) for (var key in dict)
-	{
-		var obj = new Object();
-		obj.key = key;
-		obj.values = dict[key];
-		objArray.push(obj);
-	}
-	return objArray;
-}
-function AttributeDictionaryToObjArray(dict) {
-	var objArray = new Array();
-	if (dict != null) for (var key in dict)
-	{
-		var obj = new Object();
-		obj.key = key;
-		var attrValuePairs = new Array();
-		var kvp = dict[key];
-		for (var name in kvp)
-		{
-			attrValuePairs.push(name);
-			attrValuePairs.push(kvp[name]);
-		}
-		obj.values = attrValuePairs;
-		objArray.push(obj);
-	}
-	return objArray;
-}
-
 function decodeFromHex(str){
 	var r="";
 	var e=str.length;
@@ -465,13 +282,8 @@ var ATTRIBUTE_NODE = "Attribute";
 var OBJECT_NODE = "Object";
 var XSLT_TOP = "<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><xsl:output method=\"text\" omit-xml-declaration=\"yes\" encoding=\"UTF-8\"/>"
 var XSLT_BOTTOM = "\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
-function CreateROMNode(id) {
-    var retval = new ROMNode(id);
-    ActiveROMObjects[retval.m_guid] = retval;
-    return retval;
-}
 
-function ROMNode(id) {
+function ROMNode(id, factory) {
     this.m_xmlDoc = null;
     this.m_KnowledgeBase = null;
     if (id != undefined && id != null)
@@ -486,14 +298,16 @@ function ROMNode(id) {
     this.m_lastAttrContents = "";
     this.m_attrs = new Array();
     this.m_nodeValues = new Array();
+    if (factory === undefined || factory == null) {
+        this.ROMObjectFactory = function (id) {
+            return new ROMNode(id);
+        };
+    }
+    else {
+        this.ROMObjectFactory = factory;
+    }
 }
-
 ROMNode.prototype.constructor = ROMNode;
-
-ROMNode.prototype.ROMObjectFactory = function(id)
-{
-    return new ROMNode(id);
-}
 
 ROMNode.prototype.GetRoot = function () {
     try {
@@ -816,6 +630,7 @@ ROMNode.prototype.Clone = function () {
         newNode = this.ROMObjectFactory(this.m_id);
         newNode.m_attrs = deepClone(this.m_attrs);
         newNode.m_nodeValues = deepClone(this.m_nodeValues);
+        newNode.ROMObjectFactory = this.ROMObjectFactory;
         for (var i = 0; i < this.m_children.length; i++) {
 			var node = this.m_children[i];
 			if (node != null) {
@@ -1276,8 +1091,11 @@ ROMNode.prototype.GetPossibleValues = function (evalTable, outputName) {
 }
 
     //IO
-ROMNode.prototype._generateXML = function (bRegen) {
+ROMNode.prototype._generateXML = function (bRegen, prettyprint) {
     var retval = "";
+    if (prettyprint === undefined || prettyprint == null)
+        prettyprint = false;
+    
     try {
         if (bRegen) {
             //this object
@@ -1303,18 +1121,23 @@ ROMNode.prototype._generateXML = function (bRegen) {
             if (this.m_bChanged) {
                 var allAttrs = "";
                 //attributes of this object
-                for (var it in this.m_attrs) {
-                    var attrObject = "<Attribute id=\"";
-                    attrObject += it;
-                    attrObject += "\" ";
-                    for (var itValue in this.m_attrs[it]) {
-                        attrObject += itValue;
-                        attrObject += "=\"";
-                        attrObject += encodeXml(this.m_attrs[it][itValue]);
-                        attrObject += "\" ";
+                if (prettyprint) //sort attrs alphabetically for easy reading
+                {
+                    var unsortedList = [];
+                    for (var it in this.m_attrs)
+                        unsortedList.push(it);
+                    
+                    var sortedList = unsortedList.sort();
+                    for (var i = 0; i < sortedList.length; i++) {
+                        var attrObject = this._generateAttrNode(sortedList[i]);
+                        allAttrs += attrObject;
                     }
-                    attrObject += "/>";
-                    allAttrs += attrObject;
+                }
+                else {
+                    for (var it in this.m_attrs) {
+                        var attrObject = this._generateAttrNode(it);
+                        allAttrs += attrObject;
+                    }
                 }
                 retval += allAttrs;
                 this.m_lastAttrContents = allAttrs;
@@ -1327,7 +1150,7 @@ ROMNode.prototype._generateXML = function (bRegen) {
             for (var itNode in this.m_children) {
                 var node = this.m_children[itNode];
                 if (node != null)
-                    retval += node._generateXML(node.m_bChanged);
+                    retval += node._generateXML(node.m_bChanged, prettyprint);
             }
 
             retval += "</Object>";
@@ -1343,7 +1166,22 @@ ROMNode.prototype._generateXML = function (bRegen) {
     return retval;
 }
 
-ROMNode.prototype._convertXMLDocToString = function (indented) {
+ROMNode.prototype._generateAttrNode = function(id)
+{
+    var attrObject = "<Attribute id=\"";
+    attrObject += id;
+    attrObject += "\" ";
+    for (var value in this.m_attrs[id]) {
+        attrObject += value;
+        attrObject += "=\"";
+        attrObject += encodeXml(this.m_attrs[id][value]);
+        attrObject += "\" ";
+    }
+    attrObject += "/>";
+    return attrObject;
+}
+
+ROMNode.prototype._convertXMLDocToString = function (prettyprint) {
     var retval = "";
     try {
         if (this.m_xmlDoc != null) {
@@ -1359,7 +1197,7 @@ ROMNode.prototype._convertXMLDocToString = function (indented) {
                 else
                 {           
                     var serializer = new XMLSerializer();
-                    //if (indented && IsMoz())
+                    //if (prettyprint && IsMoz())
                     //    retval = XML(serializer.serializeToString(this.m_xmlDoc)).toXMLString();
                     //else
                         retval = serializer.serializeToString(this.m_xmlDoc);
@@ -1373,14 +1211,14 @@ ROMNode.prototype._convertXMLDocToString = function (indented) {
     return retval;
 }
 
-ROMNode.prototype._createXMLDoc = function (bForceLoad) {
+ROMNode.prototype._createXMLDoc = function (bForceLoad, prettyprint) {
     try {
 		if (bForceLoad === undefined)
 			bForceLoad = false;
 			
         var bChanged = (bForceLoad || this._anyHasChanged());
         if (bChanged) {
-            var genXML = this._generateXML(bChanged);
+            var genXML = this._generateXML(bChanged, prettyprint);
             if (IsIE()) {
                 this.m_xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
                 this.m_xmlDoc.async = "false";
@@ -1408,13 +1246,13 @@ ROMNode.prototype._createXMLDoc = function (bForceLoad) {
     }
 }
 
-ROMNode.prototype.SaveXML = function (indented) {
+ROMNode.prototype.SaveXML = function (prettyprint) {
     var retval = "";
-    if (indented === undefined)
-        indented = false;
+    if (prettyprint === undefined)
+        prettyprint = false;
     try {
-        this._createXMLDoc(true);
-        retval = this._convertXMLDocToString(indented);
+        this._createXMLDoc(true, prettyprint);
+        retval = this._convertXMLDocToString(prettyprint);
     }
     catch (err) {
         ReportError(err);
@@ -1422,32 +1260,32 @@ ROMNode.prototype.SaveXML = function (indented) {
     return retval;
 }
 	
-ROMNode.prototype.LoadXML = function (xmlStr) {
-	var retval = false;
+ROMNode.LoadXML = function (xmlStr, factory) {
+	var retval = null;
     try {
+        var xmlDoc = null;
         var rootNode = null;
         if (IsIE()) {
-            this.m_xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-            this.m_xmlDoc.async = "false";
-            this.m_xmlDoc.setProperty("SelectionLanguage", "XPath");
-            this.m_xmlDoc.loadXML(xmlStr);
-            rootNode = this.m_xmlDoc.selectSingleNode("Object");
+            xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+            xmlDoc.async = "false";
+            xmlDoc.setProperty("SelectionLanguage", "XPath");
+            xmlDoc.loadXML(xmlStr);
+            rootNode = xmlDoc.selectSingleNode("Object");
         }
         else {
             if (DetectAndroidWebKit())
             {
-                this.m_xmlDoc = new ExprContext(xmlParse(xmlStr));
+                xmlDoc = new ExprContext(xmlParse(xmlStr));
                 var rootEval = xpathParse("Object");
-                var rootNodes = rootEval.evaluate(this.m_xmlDoc).nodeSetValue();
+                var rootNodes = rootEval.evaluate(xmlDoc).nodeSetValue();
                 if (rootNodes != null && rootNodes.length > 0)
                     rootNode = rootNodes[0];
             }
             else
             {
                 var parser = new DOMParser();
-				this.m_xmlDoc = null;
-                this.m_xmlDoc = parser.parseFromString(xmlStr, "text/xml");
-				rootNode = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, FIRST_ORDERED_NODE_TYPE, null);			
+                xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+                rootNode = xmlDoc.evaluate("Object", xmlDoc, null, FIRST_ORDERED_NODE_TYPE, null);
 				delete parser;
 			}	
 		}
@@ -1455,25 +1293,25 @@ ROMNode.prototype.LoadXML = function (xmlStr) {
         if (rootNode != null) {
             var objectNode = null;
             if (IsIE())
-                objectNode = this.m_xmlDoc.selectSingleNode("Object");
+                objectNode = xmlDoc.selectSingleNode("Object");
             else {
                 if (DetectAndroidWebKit())
                 {
                     var objectNodeEval = xpathParse("Object");
-                    var objectNodes = objectNodeEval.evaluate(this.m_xmlDoc).nodeSetValue();
+                    var objectNodes = objectNodeEval.evaluate(xmlDoc).nodeSetValue();
                     if (objectNodes != null && objectNodes.length == 1)
                         objectNode = objectNodes[0];
                 }
                 else
                 {
-                    var objectNodeSnap = this.m_xmlDoc.evaluate("Object", this.m_xmlDoc, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                    var objectNodeSnap = xmlDoc.evaluate("Object", xmlDoc, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
                     if (objectNodeSnap != null && objectNodeSnap.snapshotLength == 1)
                         objectNode = objectNodeSnap.snapshotItem(0);
                 }
             }
 
-            if (objectNode != null && this._buildObject(objectNode, null) != null)
-                retval = true;
+            if (objectNode != null)
+                retval = ROMNode._buildObject(objectNode, xmlDoc, factory);
         }
     }
     catch (err) {
@@ -1482,7 +1320,7 @@ ROMNode.prototype.LoadXML = function (xmlStr) {
     return retval;
 }
 
-ROMNode.prototype._buildObject = function (objectNode, parent) {
+ROMNode._buildObject = function (objectNode, xmlDoc, factory) {
     var newNode = null;
     try {
         var id = "";
@@ -1496,16 +1334,8 @@ ROMNode.prototype._buildObject = function (objectNode, parent) {
 			guid = objectNode.getAttribute("guid");
         }
 
-        if (parent == null) {
-            this.DestroyROMObject();
-            this.m_id = id;
-            this.m_guid = guid;
-            newNode = this;
-        }
-        else {
-            newNode = this.ROMObjectFactory(id);
-            newNode.m_guid = guid;
-        }
+        newNode = factory(id);
+        newNode.m_guid = guid;        
 
         //set object values
         for (var i = 0; i < objectNode.attributes.length; i++) {
@@ -1533,7 +1363,7 @@ ROMNode.prototype._buildObject = function (objectNode, parent) {
             var childNodes = objectNode.selectNodes("Object");
             if (childNodes != null) for (var childCnt = 0; childCnt < childNodes.length; childCnt++) {
                 var childNode = childNodes[childCnt];
-                var newChildObject = this._buildObject(childNode, this);
+                var newChildObject = ROMNode._buildObject(childNode, xmlDoc, factory);
                 if (newChildObject != null && newNode != null) {
                     newNode.AddChildROMObject(newChildObject);
                 }
@@ -1563,7 +1393,7 @@ ROMNode.prototype._buildObject = function (objectNode, parent) {
                 var childNodes = childNodeEval.evaluate(ctx).nodeSetValue();
                 if (childNodes != null) for (var childCnt = 0; childCnt < childNodes.length; childCnt++) {
                     var childNode = childNodes[childCnt];
-                    var newChildObject = this._buildObject(childNode, this);
+                    var newChildObject = ROMNode._buildObject(childNode, xmlDoc, factory);
                     if (newChildObject != null && newNode != null) {
                         newNode.AddChildROMObject(newChildObject);
                     }
@@ -1572,7 +1402,7 @@ ROMNode.prototype._buildObject = function (objectNode, parent) {
             }
             else
             {                    
-                var attrNodes = this.m_xmlDoc.evaluate("Attribute", objectNode, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                var attrNodes = xmlDoc.evaluate("Attribute", objectNode, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
                 for (var attrCnt = 0; attrCnt < attrNodes.snapshotLength; attrCnt++) {
                     var attrNode = attrNodes.snapshotItem(attrCnt);
                     var idAttr = attrNode.getAttribute("id");
@@ -1586,10 +1416,10 @@ ROMNode.prototype._buildObject = function (objectNode, parent) {
                 }                
 
                 //children recursivley
-                var childNodes = this.m_xmlDoc.evaluate("Object", objectNode, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
+                var childNodes = xmlDoc.evaluate("Object", objectNode, null, ORDERED_NODE_SNAPSHOT_TYPE, null);
                 if (childNodes != null) for (var childCnt = 0; childCnt < childNodes.snapshotLength; childCnt++) {
                     var childNode = childNodes.snapshotItem(childCnt);
-                    var newChildObject = this._buildObject(childNode, this);
+                    var newChildObject = ROMNode._buildObject(childNode, xmlDoc, factory);
                     if (newChildObject != null && newNode != null) {
                         newNode.AddChildROMObject(newChildObject);
                     }

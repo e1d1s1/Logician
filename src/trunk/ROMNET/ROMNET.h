@@ -52,9 +52,10 @@ namespace ROMNET {
 	public ref class ROMNode
 	{
 	public:
-		ROMNode() {CreateROMNode("", (IntPtr)nullptr); m_KnowledgeBase = NULL;}		
-		ROMNode(String^ id) {CreateROMNode(id, (IntPtr)nullptr);}
-		bool CreateROMNode(System::String^ id, IntPtr ptr);
+		ROMNode() {CreateROMNode("", nullptr, (IntPtr)nullptr); m_KnowledgeBase = NULL;}
+		ROMNode(String^ id) { CreateROMNode(id, nullptr, (IntPtr)nullptr); }
+		ROMNode(String^ id, ROMObjectFactoryDelegate^ factory) { CreateROMNode(id, factory, (IntPtr)nullptr); }
+		bool CreateROMNode(System::String^ id, ROMObjectFactoryDelegate^ factory, IntPtr ptr);
 		~ROMNode() {this->!ROMNode();}
 		!ROMNode() {DestroyROMObject();}
 
