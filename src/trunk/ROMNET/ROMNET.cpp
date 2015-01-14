@@ -22,7 +22,7 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 
 namespace ROMNET
 {
-	bool ROMNode::CreateROMNode(System::String^ id, IntPtr ptr)
+	bool ROMNode::CreateROMNode(System::String^ id, ROMObjectFactoryDelegate^ factory, IntPtr ptr)
 	{
 		wstring wsID = MarshalString(id);	
 		if (ptr.ToPointer() == nullptr)
@@ -30,7 +30,11 @@ namespace ROMNET
 		else
 			m_ROMNode = (ROM::ROMNode*)ptr.ToPointer();
 
-		ROMObjectFactory = gcnew ROMObjectFactoryDelegate(&ROMNode::_managedFactory);
+		if (factory == nullptr)
+			ROMObjectFactory = gcnew ROMObjectFactoryDelegate(&ROMNode::_managedFactory);
+		else
+			ROMObjectFactory = factory;
+
 		m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
 		m_managedTreeObjects[GetROMGUID()] = this;
 		m_canDelete = true;

@@ -380,18 +380,18 @@
             alert("DEBUGGING:\n" + str);
         }
 
-        function TestInheritance(id)
+        function BaseObject(id, factory)
         {
-            ROMNode.call(this, id);
+            ROMNode.call(this, id, factory);
         }
-        TestInheritance.prototype = new ROMNode();
-        TestInheritance.prototype.GetAttribute = function (id, immediate)
+        BaseObject.prototype = Object.create(ROMNode.prototype);
+        BaseObject.prototype.GetAttribute = function (id, immediate)
         {
             var retval = "";
             switch (id)
             {
-                case "overridevalue":
-                    retval = "overridden";
+                case "CLASS":
+                    retval = "BaseObject";
                     break;
                 default:
                     retval = ROMNode.prototype.GetAttribute.call(this, id, immediate);
@@ -400,7 +400,80 @@
             return retval;
         }
 
+        function ApplicationObject(id, factory) {
+            BaseObject.call(this, id, factory);
+        }
+        ApplicationObject.prototype = Object.create(BaseObject.prototype);
+        ApplicationObject.prototype.GetAttribute = function (id, immediate) {
+            var retval = "";
+            switch (id) {
+                case "CLASS":
+                    retval = "ApplicationObject";
+                    break;
+                default:
+                    retval = BaseObject.prototype.GetAttribute.call(this, id, immediate);
+                    break;
+            }
+            return retval;
+        }
 
+        function DerivedObject(id, factory) {
+            BaseObject.call(this, id, factory);
+        }
+        DerivedObject.prototype = Object.create(BaseObject.prototype);
+        DerivedObject.prototype.GetAttribute = function (id, immediate) {
+            var retval = "";
+            switch (id) {
+                case "CLASS":
+                    retval = "DerivedObject";
+                    break;
+                default:
+                    retval = BaseObject.prototype.GetAttribute.call(this, id, immediate);
+                    break;
+            }
+            return retval;
+        }
+
+        function DerivedObject2(id, factory) {
+            BaseObject.call(this, id, factory);
+        }
+        DerivedObject2.prototype = Object.create(BaseObject.prototype);
+        DerivedObject2.prototype.GetAttribute = function (id, immediate) {
+            var retval = "";
+            switch (id) {
+                case "CLASS":
+                    retval = "DerivedObject2";
+                    break;
+                default:
+                    retval = BaseObject.prototype.GetAttribute.call(this, id, immediate);
+                    break;
+            }
+            return retval;
+        }
+
+        function CreateChildNodes(rootNode)
+        {
+            write_result("Creating a child objects");
+            var childNode = ROMObjectFactory("ChildObject");
+            rootNode.AddChildROMObject(childNode);
+            childNode.SetAttribute("childAttr", "some value of value");
+            //setting a value on the Object Node
+            childNode.SetROMObjectValue("valueTest", "myValue");
+            var childOfChild = ROMObjectFactory("ChildObject2");
+            childNode.AddChildROMObject(childOfChild);
+        }
+
+        function ROMObjectFactory(id)
+        {
+	        if (id == "TestApplication")            
+	            return new ApplicationObject(id, ROMObjectFactory);
+            else if (id == "ChildObject")
+                return new DerivedObject(id, ROMObjectFactory);
+            else if (id == "ChildObject2")
+                return new DerivedObject2(id, ROMObjectFactory);
+
+            return null;            
+        }
 
         function btnTest2_onclick() 
         {
@@ -413,7 +486,8 @@
 
                 write_result("Test ROMNode Objects");
                 write_result("Creating root node");
-                var rootNode = new TestInheritance("Test Application");
+                var rootNode = new ApplicationObject("TestApplication", ROMObjectFactory);
+
                 write_result("Root ROMNode created");
 
                 write_result("Setting some attributes");
@@ -427,14 +501,7 @@
                 write_result("Testing what we have set");
                 write_result("inputAttr1 = " + rootNode.GetAttribute("inputAttr1", true));
 
-	            write_result("Creating a child object");
-	            var childNode = new ROMNode("ChildObject");
-	            rootNode.AddChildROMObject(childNode);
-	            childNode.SetAttribute("childAttr", "some value of value");
-	            //setting a value on the Object Node
-	            childNode.SetROMObjectValue("valueTest", "myValue");
-	            var childOfChild = new ROMNode("ChildObject2");
-	            childNode.AddChildROMObject(childOfChild);
+                CreateChildNodes(rootNode);	            
 	            var findTest = rootNode.FindAllObjectsByID("ChildObject", true);
 	            var findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
 	            var findTestXPATH2 = rootNode.FindObjects("//Object[@id='ChildObject2']");
@@ -451,19 +518,55 @@
 				
 				write_result("Testing clone");
 				var clone = rootNode.Clone();
+
+				write_result("Dump clone xml state");
+				var sClone = clone.SaveXML(true);
+				write_result(sClone);
+
 	            var findTest = clone.FindAllObjectsByID("ChildObject", true);
 	            var findTestXPATH = clone.FindObjects("//Object[@id='ChildObject']");
 	            var findTestXPATH2 = clone.FindObjects("//Object[@id='ChildObject2']");
                 if (ArraySize(findTest) == 1 && ArraySize(findTestXPATH) == 1 && ArraySize(findTestXPATH2) == 1 &&
                     findTest[0].GetROMGUID() == findTestXPATH[0].GetROMGUID() &&
-                    findTestXPATH2[0].GetROMObjectID() == "ChildObject2")
+                    findTestXPATH2[0].GetROMObjectID() == "ChildObject2" &&
+                    result.length == sClone.length)
                     write_result("Clone OK");
                 else
-                    write_result("FAILURE cloning/obtaining child object"); 
+                    write_result("FAILURE cloning/obtaining child object");
 
-	            write_result("Dump clone xml state");
-	            var result = clone.SaveXML(true);
-	            write_result(result);
+                write_result("Test the object factory and inheritence pattern on the clone");
+                var rootTest = clone.FindAllObjectsByID("TestApplication", true)[0];
+                var childTest = clone.FindObjects("//Object[@id='ChildObject2']")[0];
+                if (rootTest.GetAttribute("CLASS", true) == "ApplicationObject" &&
+                    childTest.GetAttribute("CLASS", true) == "DerivedObject2")
+                    write_result("inheritence on clone OK");
+                else
+                    write_result("FAILURE in inheritence pattern of cloned object");
+
+                write_result("Test loading from xml");
+                var loadedObj = ROMNode.LoadXML(result, ROMObjectFactory);
+                var testLoaded = loadedObj.SaveXML(true);
+                if (result.length == testLoaded.length &&
+                    rootNode.GetAllChildren(true).length == loadedObj.GetAllChildren(true).length)
+                    write_result("XML loading OK");
+                else
+                    write_result("FAILURE loading from xml");
+
+                write_result("Test the object factory and inheritence pattern on loaded xml");
+                var rootTest = loadedObj.FindAllObjectsByID("TestApplication", true)[0];
+                var childTest = loadedObj.FindObjects("//Object[@id='ChildObject2']")[0];
+                if (rootTest.GetAttribute("CLASS", true) == "ApplicationObject" &&
+                    childTest.GetAttribute("CLASS", true) == "DerivedObject2")
+                    write_result("inheritence on loaded XML OK");
+                else
+                    write_result("FAILURE in inheritence pattern of loaded XML");
+
+                write_result("Test for equlity");
+                var childTest2 = loadedObj.FindObjects("//Object[@id='ChildObject2']")[0];
+                if (childTest == childTest2 && childTest != rootTest)
+                    write_result("equality test OK");
+                else
+		            write_result("FAILURE equality test");
 
 	            write_result("Setting attrs to test eval, inputAttr1 = A, inputAttr2 = 1");
 	            rootNode.SetAttribute("inputAttr1", "A");
@@ -485,14 +588,6 @@
 	                    write_result("Key: " + it_kvp + " Value: " + kvp[it_kvp]);
 	                }
                 }
-
-                write_result('Testing inheritance');
-                if (rootNode.GetAttribute("inputAttr1", true) == "A" &&
-                    rootNode.GetAttribute("overridevalue", true) == "overridden")
-                    write_result("inheritance working");
-                else
-                    write_result("FAILURE calling inherited object method");
-
 
 	            write_result("loading rules");
 	            //if (rootNode.LoadRulesFromString(rules))

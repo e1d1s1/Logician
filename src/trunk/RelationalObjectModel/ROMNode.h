@@ -43,12 +43,12 @@ namespace ROM
 	public:
 		virtual ~ROMNode(void);
 		ROMNode(){_init();}
-		ROMNode(const wstring id) {CreateROMNode(id);}
-		ROMNode(string id) {CreateROMNode(id);}
+		ROMNode(const wstring id, ObjectFactory factory = nullptr) { CreateROMNode(id, factory); }
+		ROMNode(string id, ObjectFactory factory = nullptr) { CreateROMNode(id, factory); }
 		ROMNode(const ROMNode&) = delete;             // Prevent copy-construction
 		ROMNode& operator=(const ROMNode&) = delete;  // Prevent assignment
-		void				CreateROMNode(const wstring id);
-		void				CreateROMNode(const string id) {CreateROMNode(ROMUTIL::MBCStrToWStr(id));}
+		void				CreateROMNode(const wstring id, ObjectFactory factory = nullptr);
+		void				CreateROMNode(const string id, ObjectFactory factory) { CreateROMNode(ROMUTIL::MBCStrToWStr(id), factory); }
 		void				SetTableDebugHandler(function<void(const wstring&)> debugger);
 		void				EnableRemoteDebugger(bool enable) { if (m_KnowledgeBase) m_KnowledgeBase->EnableRemoteDebugger(enable); }
 		ObjectFactory		ROMObjectFactory;
@@ -106,7 +106,7 @@ namespace ROM
 
 
 		//IO
-		wstring				SaveXML(bool indented);
+		wstring				SaveXML(bool prettyprint);
 		static ROMNode*		LoadXML(const wstring& xmlStr, ObjectFactory factory);
 
 		//XPATH
@@ -154,13 +154,14 @@ namespace ROM
 		void					_findObjects(const wstring& id, bool recurs, vector<ROMNode*>* res);
 		bool					_anyHasChanged();
 		void					_setAllUnchanged();
-		wstring					_generateXML(bool bRegen);
+		wstring					_generateXML(bool bRegen, bool prettyprint);
+		wstring					_generateAttrNode(const wstring& id);
 		static ROMNode*			_buildObject(Node objectNode, ObjectFactory factory);
-		void					_createXMLDoc(bool bForceLoad = false);
-		static wstring			_convertXMLDocToString(bool indented, Document xmlDoc);
+		void					_createXMLDoc(bool bForceLoad, bool prettyprint);
+		static wstring			_convertXMLDocToString(bool prettyprint, Document xmlDoc);
 		EDS::CKnowledgeBase*	_getKnowledge();
 		ROMNode*				_getActiveContext();
-		void					_init();
+		void					_init(ObjectFactory factory = nullptr);
 #ifdef USE_MSXML
 		static Document			_createMSXMLDoc();
 #endif

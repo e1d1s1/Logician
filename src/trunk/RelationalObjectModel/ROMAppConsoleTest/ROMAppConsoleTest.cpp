@@ -20,7 +20,7 @@ using namespace ROM;
 class BaseObject : public ROMNode
 {
 public:
-	BaseObject(wstring id) : ROMNode(id) { }
+	BaseObject(wstring id, ObjectFactory factory) : ROMNode(id, factory) { }
 	virtual ~BaseObject(void) {}
 
 	using ROMNode::GetAttribute;
@@ -35,7 +35,7 @@ public:
 class ApplicationObject : public BaseObject
 {
 public:
-	ApplicationObject(wstring id) : BaseObject(id) { }
+	ApplicationObject(wstring id, ObjectFactory factory) : BaseObject(id, factory) { }
 	virtual ~ApplicationObject(void) {}
 
 	using BaseObject::GetAttribute;
@@ -50,7 +50,7 @@ public:
 class DerivedObject : public BaseObject
 {
 public:
-	DerivedObject(wstring id) : BaseObject(id) {}
+	DerivedObject(wstring id, ObjectFactory factory) : BaseObject(id, factory) {}
 	virtual ~DerivedObject(void) {}
 
 	using BaseObject::GetAttribute;
@@ -65,7 +65,7 @@ public:
 class DerivedObject2 : public BaseObject
 {
 public:
-	DerivedObject2(wstring id) : BaseObject(id) { }
+	DerivedObject2(wstring id, ObjectFactory factory) : BaseObject(id, factory) { }
 	virtual ~DerivedObject2(void) {}
 
 	using BaseObject::GetAttribute;
@@ -80,11 +80,11 @@ public:
 ROMNode* ROMObjectFactory(wstring id)
 {
 	if (id == L"TestApplication")
-		return new ApplicationObject(id);
+		return new ApplicationObject(id, ROMObjectFactory);
 	else if (id == L"ChildObject")
-		return new DerivedObject(id);
+		return new DerivedObject(id, ROMObjectFactory);
 	else if (id == L"ChildObject2")
-		return new DerivedObject2(id);
+		return new DerivedObject2(id, ROMObjectFactory);
 
 	return nullptr;
 }
@@ -124,12 +124,12 @@ void DebugMessage(wstring msg)
 void CreateChildNodes(ROMNode *rootNode)
 {
 	Log("Creating a child object");
-	ROMNode *childNode = new DerivedObject(L"ChildObject");
+	ROMNode *childNode = ROMObjectFactory(L"ChildObject");
 	rootNode->AddChildROMObject(childNode);
 	childNode->SetAttribute(L"childAttr", L"some value of value");
 	//setting a value on the Object Node
 	childNode->SetROMObjectValue(L"valueTest", L"myValue");
-	ROMNode *childOfChild = new DerivedObject2(L"ChildObject2");
+	ROMNode *childOfChild = ROMObjectFactory(L"ChildObject2");
 	childNode->AddChildROMObject(childOfChild);
 }
 
@@ -149,7 +149,7 @@ int runTest(int thread_id)
 
     Log("Testing ROMNode Objects");
     Log("Creating root node");
-    ApplicationObject rootNode(L"TestApplication");
+	ApplicationObject rootNode(L"TestApplication", ROMObjectFactory);
     Log("Root ROMNode created");
 
     Log("Setting some attributes");
@@ -199,6 +199,15 @@ int runTest(int thread_id)
     else
         Log("FAILURE cloning");
 
+	Log("Test the object factory and inheritence pattern on the clone");
+	auto rootTest = (ApplicationObject*)clone->FindAllObjectsByID("TestApplication", true)[0];
+	auto childTest = (DerivedObject2*)clone->FindObjects("//Object[@id='ChildObject2']")[0];
+	if (rootTest->GetAttribute(L"CLASS", true) == L"ApplicationObject" &&
+		childTest->GetAttribute(L"CLASS", true) == L"DerivedObject2")
+		Log("inheritence OK");
+	else
+		Log("FAILURE in inheritence pattern");
+
 	Log("Test loading from xml");
 	auto loadedObj = unique_ptr<ROMNode>(ROMNode::LoadXML(result, ROMObjectFactory));
 	wstring testLoaded = loadedObj->SaveXML(true);
@@ -208,9 +217,9 @@ int runTest(int thread_id)
 	else
 		Log("FAILURE loading from xml");
 
-	Log("Test the object factory and inheritence pattern");
-	auto rootTest = (ApplicationObject*)loadedObj->FindAllObjectsByID("TestApplication", true)[0];
-	auto childTest = (DerivedObject2*)loadedObj->FindObjects("//Object[@id='ChildObject2']")[0];
+	Log("Test the object factory and inheritence pattern on loaded XML");
+	rootTest = (ApplicationObject*)loadedObj->FindAllObjectsByID("TestApplication", true)[0];
+	childTest = (DerivedObject2*)loadedObj->FindObjects("//Object[@id='ChildObject2']")[0];
 	if (rootTest->GetAttribute(L"CLASS", true) == L"ApplicationObject" &&
 		childTest->GetAttribute(L"CLASS", true) == L"DerivedObject2")
 		Log("inheritence OK");

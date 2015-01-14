@@ -19,7 +19,7 @@ namespace ROM2NETTestApplication
                 rulesPath = args[0];
 
             Log("Creating the root node");
-            ROMNode rootNode = new ApplicationObject("TestApplication");
+            ROMNode rootNode = new ApplicationObject("TestApplication", ObjectFactory);
             Log("Root created");	
 
             Log("Setting some attributes");
@@ -56,8 +56,17 @@ namespace ROM2NETTestApplication
             else
                 Log("FAILURE Cloning root");
 
+            Log("Test the object factory and inheritence pattern on the clone");
+            ApplicationObject rootTest = (ApplicationObject)clonedObj.FindAllObjectsByID("TestApplication", true)[0];
+            DerivedObject2 childTest = (DerivedObject2)clonedObj.FindObjects("//Object[@id='ChildObject2']")[0];
+            if (rootTest.GetAttribute("CLASS", true) == "ApplicationObject" &&
+                childTest.GetAttribute("CLASS", true) == "DerivedObject2")
+                Log("inheritence OK");
+            else
+                Log("FAILURE in inheritence pattern of cloned object");
+
             Log("Test loading from xml");
-            ROMNode loadedObj = ROMNode.LoadXML(s, BaseObject.ObjectFactory);
+            ROMNode loadedObj = ROMNode.LoadXML(s, ObjectFactory);
             string testLoaded = loadedObj.SaveXML(true);
             if (s.Length == testLoaded.Length &&
                 rootNode.GetAllChildren(true).Length == loadedObj.GetAllChildren(true).Length)
@@ -65,14 +74,14 @@ namespace ROM2NETTestApplication
             else
                 Log("FAILURE loading from xml");
 
-            Log("Test the object factory and inheritence pattern");
-            ApplicationObject rootTest = (ApplicationObject)loadedObj.FindAllObjectsByID("TestApplication", true)[0];
-            DerivedObject2 childTest = (DerivedObject2)loadedObj.FindObjects("//Object[@id='ChildObject2']")[0];
+            Log("Test the object factory and inheritence pattern of loaded xml");
+            rootTest = (ApplicationObject)loadedObj.FindAllObjectsByID("TestApplication", true)[0];
+            childTest = (DerivedObject2)loadedObj.FindObjects("//Object[@id='ChildObject2']")[0];
             if (rootTest.GetAttribute("CLASS", true) == "ApplicationObject" &&
                 childTest.GetAttribute("CLASS", true) == "DerivedObject2")
                 Log("inheritence OK");
             else
-                Log("FAILURE in inheritence pattern");
+                Log("FAILURE in inheritence pattern of loaded xml");
 
             Log("Test for equlity");
             DerivedObject2 childTest2 = (DerivedObject2)loadedObj.FindObjects("//Object[@id='ChildObject2']")[0];
@@ -288,12 +297,12 @@ namespace ROM2NETTestApplication
         private static void CreateChildNodes(ROMNode rootNode)
         {
             Log("Creating a child object");
-            ROMNode childNode = new DerivedObject("ChildObject");
+            ROMNode childNode = ObjectFactory("ChildObject");
             rootNode.AddChildROMObject(childNode);
             childNode.SetAttribute("childAttr", "some value of value");
             //setting a value on the Object Node
             childNode.SetROMObjectValue("valueTest", "myValue");
-            ROMNode childOfChild = new DerivedObject2("ChildObject2");
+            ROMNode childOfChild = ObjectFactory("ChildObject2");
             childNode.AddChildROMObject(childOfChild);
         }
 
@@ -307,12 +316,25 @@ namespace ROM2NETTestApplication
 	        Log("DEBUGGER: " + msg);
         }
 
-        
+        public static ROMNode ObjectFactory(string id)
+        {
+            switch (id)
+            {
+                case "TestApplication":
+                    return new ApplicationObject(id, ObjectFactory);
+                case "ChildObject":
+                    return new DerivedObject(id, ObjectFactory);
+                case "ChildObject2":
+                    return new DerivedObject2(id, ObjectFactory);
+            }
+            return null;
+        }
     }
+    
 
     abstract class BaseObject : ROMNode
     {
-        public BaseObject(string id) : base(id) { }
+        public BaseObject(string id, ROMObjectFactoryDelegate factory) : base(id, factory) { }
 
         public override string GetAttribute(string id, string name, bool immediate)
         {
@@ -320,25 +342,11 @@ namespace ROM2NETTestApplication
                 return "BaseObject";
             return base.GetAttribute(id, name, immediate);
         }
-
-        public static ROMNode ObjectFactory(string id)
-        {
-            switch (id)
-            {
-                case "TestApplication":
-                    return new ApplicationObject(id);
-                case "ChildObject":
-                    return new DerivedObject(id);
-                case "ChildObject2":
-                    return new DerivedObject2(id);
-            }
-            return null;
-        }
     }
 
     class ApplicationObject : BaseObject
     {
-        public ApplicationObject(string id) : base(id) { }
+        public ApplicationObject(string id, ROMObjectFactoryDelegate factory) : base(id, factory) { }
 
         public override string GetAttribute(string id, string name, bool immediate)
         {
@@ -350,7 +358,7 @@ namespace ROM2NETTestApplication
 
     class DerivedObject : BaseObject
     {
-        public DerivedObject(string id) : base(id) {}
+        public DerivedObject(string id, ROMObjectFactoryDelegate factory) : base(id, factory) { }
 
         public override string GetAttribute(string id, string name, bool immediate)
         {
@@ -362,7 +370,7 @@ namespace ROM2NETTestApplication
 
     class DerivedObject2 : BaseObject
     {
-        public DerivedObject2(string id) : base(id) { }
+        public DerivedObject2(string id, ROMObjectFactoryDelegate factory) : base(id, factory) { }
 
         public override string GetAttribute(string id, string name, bool immediate)
         {
