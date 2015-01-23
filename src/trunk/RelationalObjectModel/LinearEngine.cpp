@@ -347,7 +347,6 @@ namespace ROM
 				m_ROMContext->SetAttribute(dictAttrName, L"N");
 				RemoveTouchedByUser(dictAttrName);
 				m_dict[dictAttrName].Enabled = false;
-				return;
 			}
 			else if (availableValues[0] == L"YN") //allow Yes or No with a default of Y
 			{
@@ -423,9 +422,9 @@ namespace ROM
 		}
 
 		bool setTheValue = true;
+		wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, true);
 		if (InvalidateMode != NORMALINVALIDATE)
-		{
-			wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, true);
+		{			
 			setTheValue = currentValue.length() == 0;
 		}
 
@@ -445,6 +444,18 @@ namespace ROM
 				m_ROMContext->SetAttribute(dictAttrName, availableValues[0]);
 				m_dict[dictAttrName].Value = availableValues[0];
 				return;
+			}
+			else if (ROMUTIL::StringContains(prefixes[0], DEFAULTPREFIX) && 
+				ROMUTIL::StringContains(availableValues[0], L"["))
+			{
+				wstring defaultValue = availableValues[0].substr(0, availableValues[0].find(L"["));
+				availableValues[0] = availableValues[0].substr(availableValues[0].find(L"["));				
+				if (currentValue.length() == 0)
+				{
+					newValue = defaultValue;
+					RemoveTouchedByUser(dictAttrName);
+				}
+				m_dict[dictAttrName].Enabled = true;
 			}
 			else
 				m_dict[dictAttrName].Enabled = true;
@@ -572,7 +583,7 @@ namespace ROM
 		vector<wstring> prefixes = ParseOutPrefixes(MULTISELECT, res, availableValues);
 		m_dict[dictAttrName].AvailableValues = availableValues;
 
-		wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, false);
+		wstring currentValue = m_ROMContext->GetAttribute(dictAttrName, true);
 		vector<wstring> currentValues = ROMUTIL::Split(currentValue, L"|");
 		vector<wstring> selectedValues;
 

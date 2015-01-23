@@ -1912,7 +1912,8 @@ LinearEngine.prototype.EvalBoolean = function (dictAttrName, newValue) {
         {
             if (availableValues[0].length == 0 || availableValues[0] == "N") {
                 this.m_context.SetAttribute(dictAttrName, "N");
-                return;
+                this.RemoveTouchedByUser(dictAttrName);
+                this.m_dict[dictAttrName].Enabled = false;
             }
             else if (availableValues[0] == "YN") //allow Yes or No with a default of Y
             {
@@ -1988,13 +1989,11 @@ LinearEngine.prototype.EvalEdit = function (dictAttrName, newValue) {
         }
 
         var setTheValue = true;
+        var currentValue = this.m_context.GetAttribute(dictAttrName, true);
         if (this.InvalidateMode != Enum.INVALIDATEMODE_E.NORMALINVALIDATE)
         {
-            var currentValue = this.m_context.GetAttribute(dictAttrName, true);
             setTheValue = currentValue.length == 0;
-        }
-
-        var currentValue = this.m_context.GetAttribute(dictAttrName, false);
+        }        
 
         //set the dictionary default on load
         if (newValue.length == 0) {
@@ -2009,6 +2008,17 @@ LinearEngine.prototype.EvalEdit = function (dictAttrName, newValue) {
                 this.m_context.SetAttribute(dictAttrName, availableValues[0]);
                 this.m_dict[dictAttrName].Value = availableValues[0];
                 return;
+            }
+            else if (prefixes[0].indexOf(this.DEFAULTPREFIX) >= 0 &&
+                availableValues[0].indexOf('[') > 0) {
+                var defaultValue = availableValues[0].substr(0, availableValues[0].indexOf('['));
+                availableValues[0] = availableValues[0].substr(availableValues[0].indexOf('['));
+                if (currentValue.length == 0)
+                {
+                    newValue = defaultValue;
+                    this.RemoveTouchedByUser(dictAttrName);
+                }
+                this.m_dict[dictAttrName].Enabled = true;
             }
             else
                 this.m_dict[dictAttrName].Enabled = true;
@@ -2117,7 +2127,7 @@ LinearEngine.prototype.EvalMultiSelect = function (dictAttrName, newValues) {
         this.m_dict[dictAttrName].Enabled = true;
         this.m_dict[dictAttrName].Valid = true;
 
-        var currentValue = this.m_context.GetAttribute(dictAttrName, false);
+        var currentValue = this.m_context.GetAttribute(dictAttrName, true);
         var currentValues = currentValue.split("|");
         var selectedValues = new Array();
                 
@@ -2223,7 +2233,7 @@ LinearEngine.prototype.EvalSingleSelect = function (dictAttrName, newValue) {
         var prefixes = this.ParseOutPrefixes(Enum.ATTRTYPE_E.SINGLESELECT, res, availableValues);
         this.m_dict[dictAttrName].AvailableValues = availableValues.slice(0);
 
-        var currentValue = this.m_context.GetAttribute(dictAttrName, false);
+        var currentValue = this.m_context.GetAttribute(dictAttrName, true);
         var bFound = GetIndexOfItem(availableValues, newValue) >= 0;
         var setTheValue = currentValue.length == 0 || this.InvalidateMode == Enum.INVALIDATEMODE_E.NORMALINVALIDATE;
 
@@ -2395,7 +2405,7 @@ LinearEngine.prototype.ParseOutPrefixes = function (AttributeType, values, value
 LinearEngine.prototype.GetSelectedValues = function (attr) {
     var retval = new Array();
     try {
-        var currentValue = this.m_context.GetAttribute(attr.Name, false);
+        var currentValue = this.m_context.GetAttribute(attr.Name, true);
         switch (attr.AttributeType) {
             case Enum.ATTRTYPE_E.SINGLESELECT:
                 retval.push(currentValue);
