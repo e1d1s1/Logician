@@ -184,10 +184,10 @@ namespace ROM
 
 	void LinearEngine::EvaluateForAttribute(const wstring& dictAttrName, vector<wstring>& newValues, bool bEvalDependents)
 	{
-		ResetValueChanged();
-
 		if (!m_EvalInternal)
 		{
+			ResetValueChanged();
+
 			//resets other atts when setting this one
 			m_ROMContext->SetAttribute(L"currentattr", dictAttrName);
 			vector<wstring> attrsToReset = m_ROMContext->EvaluateTable((wstring)L"reset", (wstring)L"attr");
@@ -211,7 +211,6 @@ namespace ROM
 						m_dict[*it].Valid = false;
 				}
 			}
-
 		}
 
 
@@ -219,8 +218,8 @@ namespace ROM
 		if (itFind != m_dict.end())
 		{
 			m_dict[dictAttrName].ValueChanged = true;
-			bool bChanged = !m_EvalInternal;
-			if (bChanged)
+			bool bUserChanged = !m_EvalInternal;
+			if (bUserChanged)
 				SetTouchedByUser(dictAttrName);
 
 			switch (m_dict[dictAttrName].AttributeType)
