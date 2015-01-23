@@ -1679,10 +1679,11 @@ LinearEngine.prototype.ResetValueChanged = function () {
 
 LinearEngine.prototype.EvaluateForAttribute = function (dictAttrName, newValues, bEvalDependents) {
     //newValues could be a string or an array
-    try {
-        this.ResetValueChanged();
+    try {        
         if (!this.m_EvalInternal)
         {
+			this.ResetValueChanged();
+			
             //resets other atts when setting this one
             this.m_context.SetAttribute("currentattr", dictAttrName);
             var attrsToReset = this.m_context.EvaluateTableForAttr("reset", "attr");
