@@ -31,12 +31,12 @@ namespace ROM2NETTestApplication
             Log("Attrs set");
 
             CreateChildNodes(rootNode);
-            ROMNode[] findTest = rootNode.FindAllObjectsByID("ChildObject", true);
-            ROMNode[] findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
-            ROMNode[] findTestXPATH2 = rootNode.FindObjects("//Object[@id='ChildObject2']");
+            ROMNode[] findTest = rootNode.FindAllObjectsByID("DerivedObject", true);
+            ROMNode[] findTestXPATH = rootNode.FindObjects("//Object[@id='DerivedObject']");
+            ROMNode[] findTestXPATH2 = rootNode.FindObjects("//Object[@id='DerivedObject2']");
             if (findTest.Length == 1 && findTestXPATH.Length == 1 && findTestXPATH2.Length == 1 &&
                 findTest[0].GetROMGUID() == findTestXPATH[0].GetROMGUID() &&
-                findTestXPATH2[0].GetROMObjectID() == "ChildObject2")
+                findTestXPATH2[0].GetROMObjectID() == "DerivedObject2")
                 Log("OK");
             else
                 Log("FAILURE creating/obtaining child object");
@@ -58,7 +58,7 @@ namespace ROM2NETTestApplication
 
             Log("Test the object factory and inheritence pattern on the clone");
             ApplicationObject rootTest = (ApplicationObject)clonedObj.FindAllObjectsByID("TestApplication", true)[0];
-            DerivedObject2 childTest = (DerivedObject2)clonedObj.FindObjects("//Object[@id='ChildObject2']")[0];
+            DerivedObject2 childTest = (DerivedObject2)clonedObj.FindObjects("//Object[@id='DerivedObject2']")[0];
             if (rootTest.GetAttribute("CLASS", true) == "ApplicationObject" &&
                 childTest.GetAttribute("CLASS", true) == "DerivedObject2")
                 Log("inheritence OK");
@@ -66,7 +66,7 @@ namespace ROM2NETTestApplication
                 Log("FAILURE in inheritence pattern of cloned object");
 
             Log("Test loading from xml");
-            ROMNode loadedObj = ROMNode.LoadXML(s, ObjectFactory);
+            ROMNode loadedObj = ROMNode.LoadXMLFromString(s, ObjectFactory);
             string testLoaded = loadedObj.SaveXML(true);
             if (s.Length == testLoaded.Length &&
                 rootNode.GetAllChildren(true).Length == loadedObj.GetAllChildren(true).Length)
@@ -76,7 +76,7 @@ namespace ROM2NETTestApplication
 
             Log("Test the object factory and inheritence pattern of loaded xml");
             rootTest = (ApplicationObject)loadedObj.FindAllObjectsByID("TestApplication", true)[0];
-            childTest = (DerivedObject2)loadedObj.FindObjects("//Object[@id='ChildObject2']")[0];
+            childTest = (DerivedObject2)loadedObj.FindObjects("//Object[@id='DerivedObject2']")[0];
             if (rootTest.GetAttribute("CLASS", true) == "ApplicationObject" &&
                 childTest.GetAttribute("CLASS", true) == "DerivedObject2")
                 Log("inheritence OK");
@@ -84,7 +84,7 @@ namespace ROM2NETTestApplication
                 Log("FAILURE in inheritence pattern of loaded xml");
 
             Log("Test for equlity");
-            DerivedObject2 childTest2 = (DerivedObject2)loadedObj.FindObjects("//Object[@id='ChildObject2']")[0];
+            DerivedObject2 childTest2 = (DerivedObject2)loadedObj.FindObjects("//Object[@id='DerivedObject2']")[0];
             if (childTest == childTest2 && childTest != rootTest)
                 Log("equality test OK");
             else
@@ -95,14 +95,23 @@ namespace ROM2NETTestApplication
             rootNode.SetAttribute("inputAttr2", "10");
             rootNode.SetAttribute("outsideAttr1", "28");
             Log("loading rules: " + rulesPath);
-            bool bLoaded = rootNode.LoadRules(rulesPath);
-            if (!bLoaded)
-                bLoaded = rootNode.LoadRules(filename);
 
-            if (bLoaded)
+            EDSNET.EDSEngine rules = new EDSNET.EDSEngine(rulesPath);
+            if (!rules.IsOpen())
+                rules = new EDSNET.EDSEngine(filename);
+            if (rules.IsOpen())
             {
-                rootNode.DebugDelegate = DebugMessage;
-                rootNode.EnableRemoteDebugger(false);
+                rules.DebugDelegate = DebugMessage;
+                rules.EnableRemoteDebugger(false);
+                EDSNET.InputValueGetterDelegate getValueDelegate = (string attrName, object context) =>
+                {
+                    ROMNode objContext = (ROMNET.ROMNode)context;
+                    return objContext.GetAttribute(attrName, false);
+                };
+                rules.InputGetterDelegate = getValueDelegate;
+
+                rootNode.Rules = rules;
+
                 Log("...loaded");
                 Log("Evaluating table testtable1");
                 string[] res = rootNode.EvaluateTable("testtable1", "outputAttr1", true);
@@ -122,6 +131,7 @@ namespace ROM2NETTestApplication
 
                 Log("Testing the LinearEngine class");
                 LinearEngine engine = new LinearEngine(rootNode, "Dictionary");
+                engine.InitializeEngine();
 
                 Log("Checking dictionary size");
                 Dictionary<string, ROMDictionaryAttribute> attrs = engine.GetAllDictionaryAttrs();
@@ -297,12 +307,12 @@ namespace ROM2NETTestApplication
         private static void CreateChildNodes(ROMNode rootNode)
         {
             Log("Creating a child object");
-            ROMNode childNode = ObjectFactory("ChildObject");
+            ROMNode childNode = ObjectFactory("DerivedObject");
             rootNode.AddChildROMObject(childNode);
             childNode.SetAttribute("childAttr", "some value of value");
             //setting a value on the Object Node
             childNode.SetROMObjectValue("valueTest", "myValue");
-            ROMNode childOfChild = ObjectFactory("ChildObject2");
+            ROMNode childOfChild = ObjectFactory("DerivedObject2");
             childNode.AddChildROMObject(childOfChild);
         }
 
@@ -322,9 +332,9 @@ namespace ROM2NETTestApplication
             {
                 case "TestApplication":
                     return new ApplicationObject(id, ObjectFactory);
-                case "ChildObject":
+                case "DerivedObject":
                     return new DerivedObject(id, ObjectFactory);
-                case "ChildObject2":
+                case "DerivedObject2":
                     return new DerivedObject2(id, ObjectFactory);
             }
             return null;

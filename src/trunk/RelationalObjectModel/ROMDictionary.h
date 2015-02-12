@@ -26,7 +26,7 @@ using namespace std;
 
 namespace ROM
 {
-	class ROMDictionary
+	class ROMDictionary : public IDictionaryInterface
 	{
 	friend class LinearEngine;
 	public:
@@ -35,17 +35,22 @@ namespace ROM
 		void CreateROMDictionary(ROMNode* context);
 		virtual ~ROMDictionary(void){}		
 		
-		void LoadDictionary(const wstring& dictionaryTable);
-		ROMDictionaryAttribute* GetDictionaryAttr(const wstring& dictAttrName);
-		map<wstring, ROMDictionaryAttribute>* GetAllDictionaryAttrs() {return &m_dict;}
-
-		//debugging
-		void SetTableDebugHandler(std::function<void(const wstring&)> debugger) { if (m_ROMContext) m_ROMContext->SetTableDebugHandler(debugger); }
-		void EnableRemoteDebugger(bool enable) { if (m_ROMContext) m_ROMContext->EnableRemoteDebugger(enable); }
+		virtual void LoadDictionary(const wstring& dictionaryTable) override { _loadDictionary(dictionaryTable, m_ROMContext); }
+		virtual ROMDictionaryAttribute* GetDictionaryAttr(const wstring& dictAttrName) override;
+		virtual map<wstring, ROMDictionaryAttribute>* GetAllDictionaryAttrs() override { return &m_dict; }
 
 		//ASCII overloadas
 		void LoadDictionary(const string& dictionaryTable);
 		ROMDictionaryAttribute* GetDictionaryAttr(const string& dictAttrName);
+
+#ifndef CLR //these internal methods are called by .NET to assist with passing of managed objects
+	private:
+		virtual void _loadDictionary(const wstring& dictionaryTable, void* context);
+#else
+	public:
+		virtual void _loadDictionary(const wstring& dictionaryTable, void* context) override;
+#endif
+		
 
 	private:
 		ROMNode *m_ROMContext;

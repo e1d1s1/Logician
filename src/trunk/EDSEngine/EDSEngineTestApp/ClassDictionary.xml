@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="ClassDictionary" getall="false">
+  <Table name="ClassDictionary" getall="true">
     <Inputs>
       <Attr>inputAttr1</Attr>
       <Value/>
@@ -15,9 +15,9 @@
       <Value/>
     </Inputs>
     <Inputs>
-      <Attr>CLASSID</Attr>
+      <Attr>CLASS</Attr>
       <Value operation="1">TestApplication</Value>
-      <Value operation="1">SubClass1</Value>
+      <Value operation="1">DerivedObject</Value>
       <Value operation="2">TestApplication</Value>
       <Value/>
       <Value/>
@@ -43,8 +43,8 @@
     <Outputs>
       <Attr>Description</Attr>
       <Value operation="4096">eval(Dictionary, Description)</Value>
-      <Value operation="1">Will be 2 Attrs</Value>
-      <Value operation="1">SubClass2 single Boolean Attribute</Value>
+      <Value operation="1">DerivedObject singleselect</Value>
+      <Value operation="1">DerivedObject2 single Boolean Attribute</Value>
       <Value/>
       <Value/>
       <Value/>

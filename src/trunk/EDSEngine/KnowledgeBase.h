@@ -36,8 +36,8 @@ namespace EDS
 	public:
 		~CKnowledgeBase(void);
 		CKnowledgeBase();
-		CKnowledgeBase(wstring knowledge_fil);
-		bool CreateKnowledgeBase(wstring knowledge_fil);
+		CKnowledgeBase(wstring knowledge_file);
+		bool CreateKnowledgeBase(wstring knowledge_file);
 		bool CreateKnowledgeBaseFromString(wstring xmlStr);
 		size_t TableCount() {return m_TableSet.Count();}
 		bool IsOpen() {return m_IsOpen;}
@@ -100,10 +100,10 @@ namespace EDS
 
 	private:
 		bool _parseXML(Document xmlDocument);
-		vector<pair<wstring, vector<CRuleCell> > > GetTableRowFromXML(NodeList nodes, Document xmlDocument);
-		void SendToDebugServer(const wstring& msg);
-		wstring XMLSafe(const wstring& str);
-		bool DebugThisTable(const wstring& tableName);
+		vector<pair<wstring, vector<CRuleCell> > > _getTableRowFromXML(NodeList nodes, Document xmlDocument);
+		void _sendToDebugServer(const wstring& msg);
+		wstring _XMLSafe(const wstring& str);
+		bool _debugThisTable(const wstring& tableName);
 
 		CBimapper m_stringsMap;
 		CTableSet m_TableSet;
