@@ -31,20 +31,28 @@ using namespace System::Runtime::InteropServices;
 
 namespace EDSNET
 {
-	bool EDSEngine::CreateKnowledgeBase(System::String ^knowledge_file)
+	bool EDSEngine::CreateKnowledgeBase(System::String^ knowledge_file)
 	{
 		wstring file = MarshalString(knowledge_file);
 		DebugDelegate = nullptr;
-		m_KnowledgeBase = new EDS::CKnowledgeBase(file);	
+		m_KnowledgeBase = new EDS::CKnowledgeBase();	
+		return m_KnowledgeBase->CreateKnowledgeBase(file);
+	}
 
-		GetTheValueDelegate^ fp = gcnew GetTheValueDelegate(this, &EDSEngine::_getValue);
-		m_gchInput = GCHandle::Alloc(fp);
-		IntPtr ip = Marshal::GetFunctionPointerForDelegate(fp);
-		VALUECB cb = static_cast<VALUECB>(ip.ToPointer());	
+	bool EDSEngine::CreateKnowledgeBaseFromString(System::String^ rules)
+	{
+		wstring rulesStr = MarshalString(rules);
+		DebugDelegate = nullptr;
+		m_KnowledgeBase = new EDS::CKnowledgeBase();
+		return m_KnowledgeBase->CreateKnowledgeBaseFromString(rulesStr);
+	}
 
-		if (m_KnowledgeBase)
-		{			
-			m_KnowledgeBase->InputValueGetterPtr = cb;
+	bool EDSEngine::CreateKnowledgeBase(IntPtr ptr)
+	{
+		if (ptr.ToPointer() != nullptr)
+		{
+			DebugDelegate = nullptr;
+			m_KnowledgeBase = (EDS::CKnowledgeBase*)ptr.ToPointer();
 			return true;
 		}
 		else
@@ -306,12 +314,14 @@ namespace EDSNET
 		if (InputGetterDelegate != nullptr)
 		{
 			Object^ ctxt = nullptr;
+			GCHandle handle;
 			if (context != nullptr)
 			{
-				GCHandle handle = GCHandle::FromIntPtr(IntPtr(context));
+				handle = GCHandle::FromIntPtr(IntPtr(context));
 				ctxt = handle.Target;
 			}
 			String^ attrValue = InputGetterDelegate(gcnew String(attrName.c_str()), ctxt);
+
 			retval = MarshalString(attrValue);
 		}
 		return retval;

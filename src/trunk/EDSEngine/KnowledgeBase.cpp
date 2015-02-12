@@ -213,7 +213,7 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 
 		iRecursingDepth++;
 
-		table.EnbleDebugging(DebugThisTable(tableName));
+		table.EnbleDebugging(_debugThisTable(tableName));
 		table.InputValueGetter = InputValueGetterPtr;
 
 		vector<wstring> results = table.EvaluateTable(outputAttr, bGetAll, true, context);
@@ -239,18 +239,18 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 						for (vector<wstring>::iterator itRes = chainedResults.begin(); itRes != chainedResults.end(); itRes++)
 						{
 							newResults.push_back((*itRes));
-							if (DebugThisTable(chainTableName))
+							if (_debugThisTable(chainTableName))
 							{
 								if (debugVals.size() > 0)
 									debugVals+=L"|";
 								else
 									debugVals = L":";
 
-								debugVals+=XMLSafe(*itRes);
+								debugVals+=_XMLSafe(*itRes);
 							}
 						}
 					}
-					if (DebugThisTable(tableName) && chainedResults.size() > 0)
+					if (_debugThisTable(tableName) && chainedResults.size() > 0)
 					{ //replace the eval( string with the actual value
 						table.DebugMessage = EDSUTIL::FindAndReplace(table.DebugMessage, *it, *it + debugVals);
 					}
@@ -422,9 +422,9 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 
 					newResults.push_back(val);
 
-					if (DebugThisTable(tableName))
+					if (_debugThisTable(tableName))
 					{ //replace the js( string with the actual value
-						table.DebugMessage = EDSUTIL::FindAndReplace(table.DebugMessage, *it, *it + L":" + XMLSafe(val));
+						table.DebugMessage = EDSUTIL::FindAndReplace(table.DebugMessage, *it, *it + L":" + _XMLSafe(val));
 					}
 				}
 				else
@@ -496,9 +496,9 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 					}
 					newResults.push_back(val);
 
-					if (DebugThisTable(tableName))
+					if (_debugThisTable(tableName))
 					{	//replace the py( string with the actual value
-						table.DebugMessage = EDSUTIL::FindAndReplace(table.DebugMessage, *it, *it + L":" + XMLSafe(val));
+						table.DebugMessage = EDSUTIL::FindAndReplace(table.DebugMessage, *it, *it + L":" + _XMLSafe(val));
 					}
 				}
 				else
@@ -517,9 +517,9 @@ vector<wstring> CKnowledgeBase::EvaluateTableWithParam(const wstring& tableName,
 
 		iRecursingDepth--;
 
-		if (DebugThisTable(tableName) == true)
+		if (_debugThisTable(tableName) == true)
 		{
-			SendToDebugServer(table.DebugMessage);
+			_sendToDebugServer(table.DebugMessage);
 		}
 
 		retval = results;
@@ -555,7 +555,7 @@ vector<wstring> CKnowledgeBase::ReverseEvaluateTable(const wstring& tableName, c
 		CRuleTable table = m_TableSet.GetTableCopy(tableName, &exists);
 		if (exists)
 		{
-			table.EnbleDebugging(DebugThisTable(tableName));
+			table.EnbleDebugging(_debugThisTable(tableName));
 			table.InputValueGetter = InputValueGetterPtr;
 			retval = table.EvaluateTable(inputAttr, bGetAll, false, context);
 		}
@@ -577,7 +577,7 @@ map<wstring, vector<wstring> > CKnowledgeBase::ReverseEvaluateTable(const wstrin
 		CRuleTable table = m_TableSet.GetTableCopy(tableName, &exists);
 		if (!exists)
 			return retval;
-		table.EnbleDebugging(DebugThisTable(tableName));
+		table.EnbleDebugging(_debugThisTable(tableName));
 		table.InputValueGetter = InputValueGetterPtr;
 		vector<pair<wstring, vector<CRuleCell> > > outputCollection = table.GetInputAttrsTests();
 		//for all the outputs get the results
@@ -595,7 +595,7 @@ map<wstring, vector<wstring> > CKnowledgeBase::ReverseEvaluateTable(const wstrin
 	return retval;
 }
 
-wstring CKnowledgeBase::XMLSafe(const wstring& str)
+wstring CKnowledgeBase::_XMLSafe(const wstring& str)
 {
 	//replace any illegal characters with escapes
 	wstring retval = EDSUTIL::FindAndReplace(str, L"\"", L"&quot;");
@@ -606,7 +606,7 @@ wstring CKnowledgeBase::XMLSafe(const wstring& str)
 	return retval;
 }
 
-void CKnowledgeBase::SendToDebugServer(const wstring& msg)
+void CKnowledgeBase::_sendToDebugServer(const wstring& msg)
 {
 	try
 	{
@@ -637,7 +637,7 @@ void CKnowledgeBase::SendToDebugServer(const wstring& msg)
 	}
 }
 
-bool CKnowledgeBase::DebugThisTable(const wstring& tableName)
+bool CKnowledgeBase::_debugThisTable(const wstring& tableName)
 {
 	if (m_DEBUGGING_MSGS && (m_remoteDebugging || DebugHandlerPtr != nullptr))
 	{
@@ -777,9 +777,9 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 		Node TableNode = allTables->item[i];
 
 		NodeList inputList = TableNode->selectNodes("Inputs");
-		InputAttrsTests = GetTableRowFromXML(inputList, xmlDocument);
+		InputAttrsTests = _getTableRowFromXML(inputList, xmlDocument);
 		NodeList outputList = TableNode->selectNodes("Outputs");
-		OutputAttrsValues = GetTableRowFromXML(outputList, xmlDocument);
+		OutputAttrsValues = _getTableRowFromXML(outputList, xmlDocument);
 
 		wstring name = VariantToWStr(TableNode->attributes->getNamedItem("name")->nodeValue);
 		wstring sGetAll = VariantToWStr(TableNode->attributes->getNamedItem("getall")->nodeValue);
@@ -904,8 +904,8 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 				FormulaInputs.push_back(EDSUTIL::XMLStrToWStr(xmlNodeGetContent(formulaInputNode)));
 			}
 
-			vector<pair<wstring, vector<CRuleCell> > > InputAttrsTests = GetTableRowFromXML(inputList, xmlDocument);
-			vector<pair<wstring, vector<CRuleCell> > > OutputAttrsValues = GetTableRowFromXML(outputList, xmlDocument);
+			vector<pair<wstring, vector<CRuleCell> > > InputAttrsTests = _getTableRowFromXML(inputList, xmlDocument);
+			vector<pair<wstring, vector<CRuleCell> > > OutputAttrsValues = _getTableRowFromXML(outputList, xmlDocument);
 
 			m_TableSet.AddTable(InputAttrsTests, OutputAttrsValues, FormulaInputs, &m_stringsMap, name, bGetAll);
 			FormulaInputs.clear();
@@ -1120,7 +1120,7 @@ bool CKnowledgeBase::CreateKnowledgeBase(wstring knowledge_file)
 }
 
 //private
-vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::GetTableRowFromXML(NodeList nodes, Document xmlDocument)
+vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::_getTableRowFromXML(NodeList nodes, Document xmlDocument)
 {
 	vector<pair<wstring, vector<CRuleCell> > > retval;
 	try
@@ -1256,7 +1256,7 @@ vector<pair<wstring, vector<CRuleCell> > > CKnowledgeBase::GetTableRowFromXML(No
 	}
 	catch(...)
 	{
-		ReportError("CKnowledgeBase::GetTableRowFromXML");
+		ReportError("CKnowledgeBase::_getTableRowFromXML");
 	}
 
 	return retval;
@@ -1318,7 +1318,7 @@ vector<string> CKnowledgeBase::ReverseEvaluateTable(const string& tableName, con
 	CRuleTable table = m_TableSet.GetTableCopy(MBCStrToWStr(tableName), &exists);
 	if (exists)
 	{
-		table.EnbleDebugging(DebugThisTable(MBCStrToWStr(tableName)));
+		table.EnbleDebugging(_debugThisTable(MBCStrToWStr(tableName)));
 		table.InputValueGetter = InputValueGetterPtr;
 		return EDSUTIL::ToMBCStringVector(table.EvaluateTable(MBCStrToWStr(inputAttr), bGetAll, false, context));
 	}

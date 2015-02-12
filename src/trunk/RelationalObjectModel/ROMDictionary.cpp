@@ -37,11 +37,11 @@ AttributeType - default empty value(SINGLESELECT), SINGLESELECT, MULTISELECT, BO
 RuleTable - table to evaluate to obtain the value (will override default if exists). Each rule table should have
 	an output column name that matches the attribute name
 */
-void ROMDictionary::LoadDictionary(const wstring& dictionaryTable)
+void ROMDictionary::_loadDictionary(const wstring& dictionaryTable, void* context)
 {
 	m_tableName = dictionaryTable;
 	m_dict.clear();
-	map<wstring, vector<wstring> > res = m_ROMContext->EvaluateTable(m_tableName, true);
+	map<wstring, vector<wstring> > res = m_ROMContext->_evaluateTable(m_tableName, true, context);
 	vector<wstring> allNames = res[L"Name"];
 
 	for (size_t i = 0; i < allNames.size(); i++)
@@ -90,7 +90,7 @@ void ROMDictionary::LoadDictionary(const wstring& dictionaryTable)
 		}
 
 		if (dictAttr.RuleTable.length() > 0)
-			dictAttr.PossibleValues = m_ROMContext->GetPossibleValues(dictAttr.RuleTable, dictAttr.Name);
+			dictAttr.PossibleValues = m_ROMContext->_getPossibleValues(dictAttr.RuleTable, dictAttr.Name);
 
 		m_dict[dictAttr.Name] = dictAttr;
 	}

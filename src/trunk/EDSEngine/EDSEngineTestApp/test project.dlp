@@ -97,6 +97,9 @@
     <Token id="46">Another Single Selection</Token>
     <Token id="18">BOOLEAN</Token>
     <Token id="71">C</Token>
+    <Token id="7">DerivedObject</Token>
+    <Token id="12">DerivedObject singleselect</Token>
+    <Token id="13">DerivedObject2 single Boolean Attribute</Token>
     <Token id="53">DictAttr1</Token>
     <Token id="54">DictAttr2</Token>
     <Token id="20">DictAttr3</Token>
@@ -116,12 +119,9 @@
     <Token id="17">SINGLESELECT</Token>
     <Token id="33">Selection1</Token>
     <Token id="36">Selection2</Token>
-    <Token id="7">SubClass1</Token>
-    <Token id="13">SubClass2 single Boolean Attribute</Token>
     <Token id="6">TestApplication</Token>
     <Token id="72">TestParameterJS</Token>
     <Token id="73">TestParameterPY</Token>
-    <Token id="12">Will be 2 Attrs</Token>
     <Token id="62">X</Token>
     <Token id="89">XPATH Worked and UNICODE check:些些些 3 simplifed chinese U+4E9B</Token>
     <Token id="32">Y</Token>

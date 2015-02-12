@@ -50,7 +50,10 @@ namespace EDSNET {
 	public:
 		EDSEngine() { DebugDelegate = nullptr; InputGetterDelegate = nullptr; }
 		EDSEngine(String^ knowledge_file) {CreateKnowledgeBase(knowledge_file);}
+		EDSEngine(IntPtr ptr) { CreateKnowledgeBase(ptr); }
 		bool CreateKnowledgeBase(String^ knowledge_file);
+		bool CreateKnowledgeBase(IntPtr ptr);
+		bool EDSEngine::CreateKnowledgeBaseFromString(System::String^ rules);
 		~EDSEngine() 
 		{
 			if (m_gchInput.IsAllocated)			
@@ -87,14 +90,39 @@ namespace EDSNET {
 				}
 			}
 		}
+
+		property InputValueGetterDelegate^		InputGetterDelegate
+		{
+			InputValueGetterDelegate^ get()
+			{
+				return m_getter;
+			}
+			void set(InputValueGetterDelegate^ value)
+			{
+				m_getter = value;
+				if (m_KnowledgeBase != nullptr)
+				{
+					if (m_getter != nullptr)
+					{
+						GetTheValueDelegate^ fp = gcnew GetTheValueDelegate(this, &EDSEngine::_getValue);
+						m_gchInput = GCHandle::Alloc(fp);
+						IntPtr ip = Marshal::GetFunctionPointerForDelegate(fp);
+						VALUECB cb = static_cast<VALUECB>(ip.ToPointer());
+						m_KnowledgeBase->InputValueGetterPtr = cb;
+					}
+					else
+					{
+						m_KnowledgeBase->InputValueGetterPtr = nullptr;
+					}
+				}
+			}
+		}
 		void									EnableRemoteDebugger(bool enable) { if (m_KnowledgeBase) m_KnowledgeBase->EnableRemoteDebugger(enable); }
 
 		size_t									TableCount();
 		bool									IsOpen();
 		bool									TableHasScript(String^ tableName);
 		bool									TableIsGetAll(String^ tableName);
-
-		InputValueGetterDelegate^				InputGetterDelegate;
 
 		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, bool bGetAll, String^% param, Object^ context);
 		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^% param, Object^ context) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, context); }
@@ -133,11 +161,14 @@ namespace EDSNET {
 		String^									DeLocalize(String^ localeValue);
 		String^									Translate(String^ source, String^ sourceLocale, String^ destLocale);
 
+		IntPtr									GetEDSPtr() { return (IntPtr)m_KnowledgeBase; }
+
 	private:		
 		wstring									_getValue(const wstring& attrName, void* context);
 		void									_fireDebug(const wstring& msg);
 
 		DebugHandlerDelegate^					m_debugger;
+		InputValueGetterDelegate^				m_getter;
 		EDS::CKnowledgeBase						*m_KnowledgeBase;
 		GCHandle								m_gchInput, m_gchDebug;
 	};

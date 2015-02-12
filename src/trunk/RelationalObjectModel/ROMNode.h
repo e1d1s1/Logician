@@ -22,6 +22,7 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 #include <algorithm>
 #include <functional>
 #include <unordered_map>
+#include "ROMInterfaces.h"
 #include "KnowledgeBase.h"
 #include "utilities.h"
 
@@ -49,8 +50,6 @@ namespace ROM
 		ROMNode& operator=(const ROMNode&) = delete;  // Prevent assignment
 		void				CreateROMNode(const wstring id, ObjectFactory factory = nullptr);
 		void				CreateROMNode(const string id, ObjectFactory factory) { CreateROMNode(ROMUTIL::MBCStrToWStr(id), factory); }
-		void				SetTableDebugHandler(function<void(const wstring&)> debugger);
-		void				EnableRemoteDebugger(bool enable) { if (m_KnowledgeBase) m_KnowledgeBase->EnableRemoteDebugger(enable); }
 		ObjectFactory		ROMObjectFactory;
 
 		//relational functions
@@ -86,28 +85,29 @@ namespace ROM
 		string				GetROMGUID() {return m_guid;}
 		unordered_map<wstring, std::unordered_map<wstring, wstring>> GetAllAttributes() { return m_attrs; }
 
-		//rules
-		bool				LoadRules(const wstring& knowledge_file);
-		bool				LoadRulesFromString(const wstring& xmlStr);
-		vector<wstring>		EvaluateTable(const wstring& evalTable, const wstring& output, bool bGetAll);
-		vector<wstring>		EvaluateTable(const wstring& evalTable, const wstring& output);
-		map<wstring, vector<wstring> > EvaluateTable(const wstring& evalTable, bool bGetAll);
-		map<wstring, vector<wstring> > EvaluateTable(const wstring& evalTable);
-		vector<wstring>		EvaluateTableWithParam(const wstring& evalTable, const wstring& output, bool bGetAll, wstring& param);
-		vector<wstring>		EvaluateTableWithParam(const wstring& evalTable, const wstring& output, wstring& param);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(const wstring& evalTable, bool bGetAll, wstring& param);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(const wstring& evalTable, wstring& param);
-		wstring				GetFirstTableResult(const wstring& tableName, const wstring& output);
-		vector<wstring>		ReverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, bool bGetAll);
-		vector<wstring>		ReverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr);
-		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring& evalTable, bool bGetAll);
-		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring& evalTable);
-		EDS::CKnowledgeBase* GetKnowledgeBase() {return _getKnowledge();}
+		//rules		
+		vector<wstring>		EvaluateTable(const wstring& evalTable, const wstring& output, bool bGetAll) { return _evaluateTable(evalTable, output, bGetAll, this); }
+		vector<wstring>		EvaluateTable(const wstring& evalTable, const wstring& output) { return _evaluateTable(evalTable, output, this); }
+		map<wstring, vector<wstring> > EvaluateTable(const wstring& evalTable, bool bGetAll) { return _evaluateTable(evalTable, bGetAll, this); }
+		map<wstring, vector<wstring> > EvaluateTable(const wstring& evalTable) { return _evaluateTable(evalTable, this); }
+		vector<wstring>		EvaluateTableWithParam(const wstring& evalTable, const wstring& output, bool bGetAll, wstring& param) { return _evaluateTableWithParam(evalTable, output, bGetAll, param, this); }
+		vector<wstring>		EvaluateTableWithParam(const wstring& evalTable, const wstring& output, wstring& param) { return _evaluateTableWithParam(evalTable, output, param, this); }
+		map<wstring, vector<wstring> > EvaluateTableWithParam(const wstring& evalTable, bool bGetAll, wstring& param) { return _evaluateTableWithParam(evalTable, bGetAll, param, this); }
+		map<wstring, vector<wstring> > EvaluateTableWithParam(const wstring& evalTable, wstring& param) { return _evaluateTableWithParam(evalTable, param, this); }
+		wstring				GetFirstTableResult(const wstring& tableName, const wstring& output) { return _getFirstTableResult(tableName, output, this); }
+		vector<wstring>		ReverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, bool bGetAll) { return _reverseEvaluateTable(evalTable, inputAttr, bGetAll, this); }
+		vector<wstring>		ReverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr) { return _reverseEvaluateTable(evalTable, inputAttr, this); }
+		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring& evalTable, bool bGetAll) { return _reverseEvaluateTable(evalTable, bGetAll, this); }
+		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring& evalTable) { return _reverseEvaluateTable(evalTable, this); }
+		EDS::CKnowledgeBase* GetKnowledgeBase() { ROMNode* owner = nullptr; return _getKnowledge(owner); }
+		EDS::CKnowledgeBase* GetKnowledgeBase(ROMNode*& owner) { return _getKnowledge(owner); }
+		void				SetKnowledgeBase(EDS::CKnowledgeBase* rules) { m_KnowledgeBase = rules; }
 
 
 		//IO
 		wstring				SaveXML(bool prettyprint);
-		static ROMNode*		LoadXML(const wstring& xmlStr, ObjectFactory factory);
+		static ROMNode*		LoadXML(const wstring& xmlFile, ObjectFactory factory) { return ROMNode::_loadXML(xmlFile, true, factory); }
+		static ROMNode*		LoadXMLFromString(const wstring& xmlStr, ObjectFactory factory) { return ROMNode::_loadXML(xmlStr, false, factory); }
 
 		//XPATH
 		wstring				EvaluateXPATH(const wstring& xpath, const string& guid);
@@ -128,8 +128,6 @@ namespace ROM
 		bool				RemoveROMObjectValue(const string& id) { return RemoveROMObjectValue(ROMUTIL::MBCStrToWStr(id)); }
 		string				GetROMObjectIDA() {return ROMUTIL::ToASCIIString(m_id);}
 		void				SetROMObjectID(const string& name) { m_id = ROMUTIL::MBCStrToWStr(name); }
-		bool				LoadRules(const string& knowledge_file) { return LoadRules(ROMUTIL::MBCStrToWStr(knowledge_file)); }
-		bool				LoadRulesFromString(const string& xmlStr) { return LoadRulesFromString(ROMUTIL::MBCStrToWStr(xmlStr)); }
 		vector<string>		EvaluateTable(const string& evalTable, const string& output, bool bGetAll) { return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll)); }
 		vector<string>		EvaluateTable(const string& evalTable, const string& output) { return ROMUTIL::WStrToMBCStrVector(EvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(output))); }
 		map<string, vector<string> > EvaluateTable(const string& evalTable, bool bGetAll) { return ROMUTIL::WStrToMBCStrMapVector(EvaluateTable(MBCStrToWStr(evalTable), bGetAll)); }
@@ -143,12 +141,31 @@ namespace ROM
 		vector<string>		ReverseEvaluateTable(const string& evalTable, const string& inputAttr) { return ROMUTIL::WStrToMBCStrVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), MBCStrToWStr(inputAttr))); }
 		map<string, vector<string> > ReverseEvaluateTable(const string& evalTable, bool bGetAll) { return ROMUTIL::WStrToMBCStrMapVector(ReverseEvaluateTable(MBCStrToWStr(evalTable), bGetAll)); }
 		map<string, vector<string> > ReverseEvaluateTable(const string& evalTable) { return ROMUTIL::WStrToMBCStrMapVector(ReverseEvaluateTable(MBCStrToWStr(evalTable))); }
+		
 		string				EvaluateXPATH(const string& xpath, const string& guid) { return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath), guid)); }
 		string				EvaluateXPATH(const string& xpath) { return ROMUTIL::WStrToMBCStr(EvaluateXPATH(ROMUTIL::MBCStrToWStr(xpath), m_guid)); }
 
+#ifndef CLR //these internal methods are called by .NET to assist with passing of managed objects
 	private:
-		vector<wstring>			GetPossibleValues(const wstring& evalTable, const wstring& outputName);
-		wstring					GetATableInputValue(const wstring& input);
+#else
+	public:
+#endif
+		vector<wstring>		_evaluateTable(const wstring& evalTable, const wstring& output, bool bGetAll, void* context);
+		vector<wstring>		_evaluateTable(const wstring& evalTable, const wstring& output, void* context);
+		map<wstring, vector<wstring> > _evaluateTable(const wstring& evalTable, bool bGetAll, void* context);
+		map<wstring, vector<wstring> > _evaluateTable(const wstring& evalTable, void* context);
+		vector<wstring>		_evaluateTableWithParam(const wstring& evalTable, const wstring& output, bool bGetAll, wstring& param, void* context);
+		vector<wstring>		_evaluateTableWithParam(const wstring& evalTable, const wstring& output, wstring& param, void* context);
+		map<wstring, vector<wstring> > _evaluateTableWithParam(const wstring& evalTable, bool bGetAll, wstring& param, void* context);
+		map<wstring, vector<wstring> > _evaluateTableWithParam(const wstring& evalTable, wstring& param, void* context);
+		wstring				_getFirstTableResult(const wstring& tableName, const wstring& output, void* context);
+		vector<wstring>		_reverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, bool bGetAll, void* context);
+		vector<wstring>		_reverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, void* context);
+		map<wstring, vector<wstring> > _reverseEvaluateTable(const wstring& evalTable, bool bGetAll, void* context);
+		map<wstring, vector<wstring> > _reverseEvaluateTable(const wstring& evalTable, void* context);
+
+	private:
+		vector<wstring>			_getPossibleValues(const wstring& evalTable, const wstring& outputName);
 		ROMNode*				_findObjectGUID(const string& guid);
 		void					_findAllChildObjects(vector<ROMNode*>* res);
 		void					_findObjects(const wstring& id, bool recurs, vector<ROMNode*>* res);
@@ -159,9 +176,11 @@ namespace ROM
 		static ROMNode*			_buildObject(Node objectNode, ObjectFactory factory);
 		void					_createXMLDoc(bool bForceLoad, bool prettyprint);
 		static wstring			_convertXMLDocToString(bool prettyprint, Document xmlDoc);
-		EDS::CKnowledgeBase*	_getKnowledge();
+		EDS::CKnowledgeBase*	_getKnowledge(ROMNode*& owner);
+		EDS::CKnowledgeBase*	_getKnowledge() { ROMNode* owner = nullptr; return _getKnowledge(owner); }
 		ROMNode*				_getActiveContext();
 		void					_init(ObjectFactory factory = nullptr);
+		static ROMNode*			_loadXML(const wstring& xmlStr, bool isFile, ObjectFactory factory);
 #ifdef USE_MSXML
 		static Document			_createMSXMLDoc();
 #endif

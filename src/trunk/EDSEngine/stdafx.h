@@ -68,3 +68,7 @@ inline void ReportError(std::string errorMsg)
 	err.assign(errorMsg.begin(), errorMsg.end());
 	ReportErrorW(err);
 }
+
+struct IManagedInterface //helper class to distinguish C++ pointers from managed interop
+{
+};

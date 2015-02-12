@@ -37,32 +37,20 @@ namespace ROMNET
 
 		m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
 		m_managedTreeObjects[GetROMGUID()] = this;
+		
 		m_canDelete = true;
 
-		m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
 		return true;
 	}
-
-	//ROMNode::ROMNode(IntPtr ptr)
-	//{
-	//	m_ROMNode = (ROM::ROMNode*)ptr.ToPointer();
-	//	m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
-	//	m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
-	//	m_managedTreeObjects[GetROMGUID()] = this;
-	//	//for each (ROM::ROMNode* obj in m_ROMNode->GetAllChildren(true))
-	//	//{
-	//	//	String^ guid = gcnew String(obj->GetROMGUID().c_str());
-	//	//	ROMNode^ managedNode = ROMObjectFactory(gcnew String(obj->GetROMObjectID().c_str()), (IntPtr)obj);
-	//	//	m_managedTreeObjects[guid] = managedNode;
-	//	//	managedNode->m_managedTreeObjects = m_managedTreeObjects;
-	//	//	managedNode->m_canDelete = false;
-	//	//}
-	//	m_canDelete = true;
-	//}
 
 	ROMNode^ ROMNode::_managedFactory(String^ id)
 	{
 		return gcnew ROMNode(id);
+	}
+
+	String^ ROMNode::_managedGetter(String^ attrName, Object^ context)
+	{
+		return ((ROMNode^)context)->GetAttribute(attrName, false);
 	}
 
 	ROMNode^ ROMNode::GetRoot()
@@ -153,7 +141,7 @@ namespace ROMNET
 			retval = m_ROMNode->AddChildROMObject(child->m_ROMNode);
 			for each (KeyValuePair<String^, ROMNode^> kvp in child->m_managedTreeObjects)
 			{
-				m_managedTreeObjects[kvp.Key] = kvp.Value;
+				m_managedTreeObjects[kvp.Key] = kvp.Value;				
 			}
 			child->m_managedTreeObjects  = m_managedTreeObjects;
 			child->m_canDelete = false;
@@ -273,7 +261,6 @@ namespace ROMNET
 			if (retval->m_ROMNode != nullptr)
 				delete retval->m_ROMNode;
 			retval->m_ROMNode = node;
-			retval->m_KnowledgeBase = node->GetKnowledgeBase();
 			retval->m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
 			retval->m_managedTreeObjects[gcnew String(node->GetROMGUID().c_str())] = retval;
 
@@ -284,7 +271,7 @@ namespace ROMNET
 				if (managedNode->m_ROMNode != nullptr)
 					delete managedNode->m_ROMNode;
 				managedNode->m_ROMNode = obj;
-				managedNode->m_KnowledgeBase = obj->GetKnowledgeBase();
+
 				retval->m_managedTreeObjects[guid] = managedNode;
 				managedNode->m_managedTreeObjects = retval->m_managedTreeObjects;
 				managedNode->m_canDelete = false;
@@ -432,82 +419,96 @@ namespace ROMNET
 		return retval;
 	}
 
-	//rules
-	bool ROMNode::LoadRules(String^ knowledge_file)
+	//rules		
+	EDSNET::EDSEngine^ ROMNode::_getManagedRules()
 	{
-		bool retval = false;
-		if (m_ROMNode)
+		ROM::ROMNode* owner = nullptr;
+		EDS::CKnowledgeBase* rules = m_ROMNode->GetKnowledgeBase(owner);
+		if (rules != nullptr && owner != nullptr)
 		{
-			wstring wsFile = MarshalString(knowledge_file);
-			retval = m_ROMNode->LoadRules(wsFile);
-			m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
+			return m_managedTreeObjects[gcnew String(owner->GetROMGUID().c_str())]->m_KnowledgeBase;
 		}
-		return retval;
+		else
+		{
+			return nullptr;
+		}
 	}
 
-	bool ROMNode::LoadRulesFromString(String^ xmlStr)
-	{
-		bool retval = false;
-		if (m_ROMNode)
-		{
-			wstring wsXML = MarshalString(xmlStr);
-			retval = m_ROMNode->LoadRulesFromString(wsXML);
-			m_KnowledgeBase = m_ROMNode->GetKnowledgeBase();
-		}
-		return retval;
-	}
-		
-	array<String^>^ ROMNode::EvaluateTable(String^ evalTable, String^ output, bool bGetAll)
+	array<String^>^ ROMNode::EvaluateTable(String^ evalTable, String^ output, bool bGetAll, Object^ context)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsTable = MarshalString(evalTable);
 			wstring wsOutput = MarshalString(output);
-			vector<wstring> res = m_ROMNode->EvaluateTable(wsTable, wsOutput, bGetAll);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			vector<wstring> res = m_ROMNode->_evaluateTable(wsTable, wsOutput, bGetAll, ctx);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
+
 			retval = GetArrayFromVectorStrings(res);
 		}
 		return retval;
 	}
 
-	array<String^>^ ROMNode::EvaluateTable(String^ evalTable, String^ output)
+	array<String^>^ ROMNode::EvaluateTable(String^ evalTable, String^ output, Object^ context)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsTable = MarshalString(evalTable);
 			wstring wsOutput = MarshalString(output);
-			vector<wstring> res = m_ROMNode->EvaluateTable(wsTable, wsOutput);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			vector<wstring> res = m_ROMNode->_evaluateTable(wsTable, wsOutput, ctx);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
+
 			retval = GetArrayFromVectorStrings(res);
 		}
 		return retval;
 	}
 
-	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTable(String^ evalTable, bool bGetAll)
+	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTable(String^ evalTable, bool bGetAll, Object^ context)
 	{
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsTable = MarshalString(evalTable);
-			map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTable(wsTable, bGetAll);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			map<wstring, vector<wstring> > res = m_ROMNode->_evaluateTable(wsTable, bGetAll, ctx);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
+
 			retval = GetDictionaryFromMapStrings(res);
 		}		
 		return retval;
 	}	
 
-	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTable(String^ evalTable)
+	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTable(String^ evalTable, Object^ context)
 	{
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsTable = MarshalString(evalTable);
-			map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTable(wsTable);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			map<wstring, vector<wstring> > res = m_ROMNode->_evaluateTable(wsTable, ctx);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
+
 			retval = GetDictionaryFromMapStrings(res);
 		}		
 		return retval;
 	}
 
-	array<String^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, String^ output, bool bGetAll, String^ param)
+	array<String^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, String^ output, bool bGetAll, String^ param, Object^ context)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
@@ -515,13 +516,19 @@ namespace ROMNET
 			wstring wsTable = MarshalString(evalTable);
 			wstring wsOutput = MarshalString(output);
 			wstring par = MarshalString(param);
-			vector<wstring> res = m_ROMNode->EvaluateTableWithParam(wsTable, wsOutput, bGetAll, par);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			vector<wstring> res = m_ROMNode->_evaluateTableWithParam(wsTable, wsOutput, bGetAll, par, ctx);
+			
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
+
 			retval = GetArrayFromVectorStrings(res);
 		}
 		return retval;
 	}
 
-	array<String^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, String^ output, String^ param)
+	array<String^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, String^ output, String^ param, Object^ context)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
@@ -529,93 +536,133 @@ namespace ROMNET
 			wstring wsTable = MarshalString(evalTable);
 			wstring wsOutput = MarshalString(output);
 			wstring par = MarshalString(param);
-			vector<wstring> res = m_ROMNode->EvaluateTableWithParam(wsTable, wsOutput, par);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			vector<wstring> res = m_ROMNode->_evaluateTableWithParam(wsTable, wsOutput, par, ctx);
+			
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
+
 			retval = GetArrayFromVectorStrings(res);
 		}
 		return retval;
 	}
 
-	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, bool bGetAll, String^ param)
+	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, bool bGetAll, String^ param, Object^ context)
 	{
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsTable = MarshalString(evalTable);
 			wstring par = MarshalString(param);
-			map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTableWithParam(wsTable, bGetAll, par);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			map<wstring, vector<wstring> > res = m_ROMNode->_evaluateTableWithParam(wsTable, bGetAll, par, ctx);
+			
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
+
 			retval = GetDictionaryFromMapStrings(res);
 		}		
 		return retval;
 	}	
 
-	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, String^ param)
+	Dictionary<String^, array<String^>^>^ ROMNode::EvaluateTableWithParam(String^ evalTable, String^ param, Object^ context)
 	{
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsTable = MarshalString(evalTable);
 			wstring par = MarshalString(param);
-			map<wstring, vector<wstring> > res = m_ROMNode->EvaluateTableWithParam(wsTable, par);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			map<wstring, vector<wstring> > res = m_ROMNode->_evaluateTableWithParam(wsTable, par, ctx);
+			
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free(); 
+			
 			retval = GetDictionaryFromMapStrings(res);
 		}		
 		return retval;
 	}
 
-	String^ ROMNode::GetFirstTableResult(String^ evalTable, String^ output)
+	String^ ROMNode::GetFirstTableResult(String^ evalTable, String^ output, Object^ context)
 	{
 		String^ retval = gcnew String("");
-		array<String^>^ resAll = EvaluateTable(evalTable, output);
+
+		array<String^>^ resAll = EvaluateTable(evalTable, output, false, context);
+		
 		if (resAll != nullptr && resAll->Length > 0)
 			retval = resAll[0];
 		return retval;
 	}
 
-	array<String^>^ ROMNode::ReverseEvaluateTable(String^ evalTable, String^ output, bool bGetAll)
+	array<String^>^ ROMNode::ReverseEvaluateTable(String^ evalTable, String^ output, bool bGetAll, Object^ context)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsTable = MarshalString(evalTable);
 			wstring wsOutput = MarshalString(output);
-			vector<wstring> res = m_ROMNode->ReverseEvaluateTable(wsTable, wsOutput, bGetAll);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			vector<wstring> res = m_ROMNode->_reverseEvaluateTable(wsTable, wsOutput, bGetAll, ctx);
 			retval = GetArrayFromVectorStrings(res);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
 		}
 		return retval;
 	}
 
-	array<String^>^ ROMNode::ReverseEvaluateTable(String^ evalTable, String^ output)
+	array<String^>^ ROMNode::ReverseEvaluateTable(String^ evalTable, String^ output, Object^ context)
 	{
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsTable = MarshalString(evalTable);
 			wstring wsOutput = MarshalString(output);
-			vector<wstring> res = m_ROMNode->ReverseEvaluateTable(wsTable, wsOutput);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			vector<wstring> res = m_ROMNode->_reverseEvaluateTable(wsTable, wsOutput, ctx);
 			retval = GetArrayFromVectorStrings(res);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
 		}
 		return retval;
 	}
 
-	Dictionary<String^, array<String^>^>^ ROMNode::ReverseEvaluateTable(String^ evalTable, bool bGetAll)
+	Dictionary<String^, array<String^>^>^ ROMNode::ReverseEvaluateTable(String^ evalTable, bool bGetAll, Object^ context)
 	{
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsTable = MarshalString(evalTable);
-			map<wstring, vector<wstring> > res = m_ROMNode->ReverseEvaluateTable(wsTable, bGetAll);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			map<wstring, vector<wstring> > res = m_ROMNode->_reverseEvaluateTable(wsTable, bGetAll, ctx);
 			retval = GetDictionaryFromMapStrings(res);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
 		}
 		return retval;
 	}
 
-	Dictionary<String^, array<String^>^>^ ROMNode::ReverseEvaluateTable(String^ evalTable)
+	Dictionary<String^, array<String^>^>^ ROMNode::ReverseEvaluateTable(String^ evalTable, Object^ context)
 	{
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
 			wstring wsTable = MarshalString(evalTable);
-			map<wstring, vector<wstring> > res = m_ROMNode->ReverseEvaluateTable(wsTable);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
+
+			map<wstring, vector<wstring> > res = m_ROMNode->_reverseEvaluateTable(wsTable, ctx);
 			retval = GetDictionaryFromMapStrings(res);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
 		}
 		return retval;
 	}
@@ -632,25 +679,41 @@ namespace ROMNET
 		return retval;
 	}
 
-	ROMNode^ ROMNode::LoadXML(String^ xmlStr, ROMObjectFactoryDelegate^ factory)
+	ROMNode^ ROMNode::LoadXML(String^ xmlFile, ROMObjectFactoryDelegate^ factory)
 	{
-		ROMNode^ retval = nullptr;
-
 		if (factory == nullptr)
 		{
 			factory = gcnew ROMObjectFactoryDelegate(&ROMNode::_managedFactory);
 		}
 		
+		wstring wsXMLFile = MarshalString(xmlFile);
+		ROM::ROMNode* node = ROM::ROMNode::LoadXML(wsXMLFile, nullptr);
+
+		return _loadNode(node, factory);
+	}
+
+	ROMNode^ ROMNode::LoadXMLFromString(String^ xmlStr, ROMObjectFactoryDelegate^ factory)
+	{
+		if (factory == nullptr)
+		{
+			factory = gcnew ROMObjectFactoryDelegate(&ROMNode::_managedFactory);
+		}
+
 		wstring wsXML = MarshalString(xmlStr);
-		ROM::ROMNode* node = ROM::ROMNode::LoadXML(wsXML, nullptr);
-		retval = factory(gcnew String(node->GetROMObjectID().c_str()));
-		
+		ROM::ROMNode* node = ROM::ROMNode::LoadXMLFromString(wsXML, nullptr);
+
+		return _loadNode(node, factory);
+	}
+
+	ROMNode^ ROMNode::_loadNode(ROM::ROMNode* node, ROMObjectFactoryDelegate^ factory)
+	{
+		ROMNode^ retval = factory(gcnew String(node->GetROMObjectID().c_str()));
+
 		if (retval->m_ROMNode != nullptr)
 			delete retval->m_ROMNode;
 		retval->m_ROMNode = node;
 		retval->m_managedTreeObjects = gcnew Dictionary<String^, ROMNode^>();
 		retval->m_managedTreeObjects[gcnew String(node->GetROMGUID().c_str())] = retval;
-		retval->m_KnowledgeBase = node->GetKnowledgeBase();
 
 		for each (ROM::ROMNode* obj in node->GetAllChildren(true))
 		{
@@ -659,12 +722,13 @@ namespace ROMNET
 			if (managedNode->m_ROMNode != nullptr)
 				delete managedNode->m_ROMNode;
 			managedNode->m_ROMNode = obj;
-			managedNode->m_KnowledgeBase = obj->GetKnowledgeBase();
+
 			retval->m_managedTreeObjects[guid] = managedNode;
 			managedNode->m_managedTreeObjects = retval->m_managedTreeObjects;
+
 			managedNode->m_canDelete = false;
 		}
-		
+
 		return retval;
 	}
 
@@ -694,21 +758,18 @@ namespace ROMNET
 		return arr;
 	}
 
-	void ROMNode::_fireDebug(const wstring& msg)
-	{
-		if (DebugDelegate != nullptr)
-		{
-			DebugDelegate(gcnew String(msg.c_str()));
-		}
-	}
-
 	//dictionary
 	void ROMDictionary::LoadDictionary(String^ dictionaryTable)
 	{
 		if (m_ROMDictionary)
 		{
 			wstring wsDict = MarshalString(dictionaryTable);
-			m_ROMDictionary->LoadDictionary(wsDict);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
+
+			m_ROMDictionary->_loadDictionary(wsDict, ctx);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
 		}
 	}
 
@@ -743,16 +804,8 @@ namespace ROMNET
 		return retval;
 	}
 
-	void ROMDictionary::_fireDebug(const wstring& msg)
-	{
-		if (DebugDelegate != nullptr)
-		{
-			DebugDelegate(gcnew String(msg.c_str()));
-		}
-	}
-
 	//LinearEngine
-	void LinearEngine::LoadDictionary(String^ dictionaryTable)
+	/*void LinearEngine::LoadDictionary(String^ dictionaryTable)
 	{
 		if (m_LinearEngine)
 		{
@@ -790,6 +843,19 @@ namespace ROMNET
 			}
 		}
 		return retval;
+	}*/
+
+	void LinearEngine::InitializeEngine()
+	{
+		if (m_LinearEngine)
+		{
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
+
+			m_LinearEngine->_initializeEngine(ctx);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
+		}
 	}
 
 	void LinearEngine::EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents)
@@ -798,7 +864,12 @@ namespace ROMNET
 		{
 			wstring name = MarshalString(dictAttrName);
 			vector<wstring> vals = GetVectorFromArrayStrings(newValues);
-			m_LinearEngine->EvaluateForAttribute(name, vals, bEvalDependents);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
+
+			m_LinearEngine->_evaluateForAttribute(name, vals, bEvalDependents, ctx);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
 		}
 	}
 
@@ -808,7 +879,25 @@ namespace ROMNET
 		{
 			wstring name = MarshalString(dictAttrName);
 			wstring val = MarshalString(newValue);
-			m_LinearEngine->EvaluateForAttribute(name, val, bEvalDependents);
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
+
+			m_LinearEngine->_evaluateForAttribute(name, val, bEvalDependents, ctx);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
+		}
+	}
+
+	void LinearEngine::EvaluateAll()
+	{
+		if (m_LinearEngine)
+		{
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
+
+			m_LinearEngine->_evaluateAll(ctx);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
 		}
 	}
 
@@ -849,13 +938,5 @@ namespace ROMNET
 			}			
 		}
 		return retval;
-	}
-
-	void LinearEngine::_fireDebug(const wstring& msg)
-	{
-		if (DebugDelegate != nullptr)
-		{
-			DebugDelegate(gcnew String(msg.c_str()));
-		}
 	}
 }

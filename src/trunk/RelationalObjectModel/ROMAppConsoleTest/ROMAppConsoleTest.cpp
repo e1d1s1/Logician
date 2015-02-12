@@ -81,9 +81,9 @@ ROMNode* ROMObjectFactory(wstring id)
 {
 	if (id == L"TestApplication")
 		return new ApplicationObject(id, ROMObjectFactory);
-	else if (id == L"ChildObject")
+	else if (id == L"DerivedObject")
 		return new DerivedObject(id, ROMObjectFactory);
-	else if (id == L"ChildObject2")
+	else if (id == L"DerivedObject2")
 		return new DerivedObject2(id, ROMObjectFactory);
 
 	return nullptr;
@@ -124,12 +124,12 @@ void DebugMessage(wstring msg)
 void CreateChildNodes(ROMNode *rootNode)
 {
 	Log("Creating a child object");
-	ROMNode *childNode = ROMObjectFactory(L"ChildObject");
+	ROMNode *childNode = ROMObjectFactory(L"DerivedObject");
 	rootNode->AddChildROMObject(childNode);
 	childNode->SetAttribute(L"childAttr", L"some value of value");
 	//setting a value on the Object Node
 	childNode->SetROMObjectValue(L"valueTest", L"myValue");
-	ROMNode *childOfChild = ROMObjectFactory(L"ChildObject2");
+	ROMNode *childOfChild = ROMObjectFactory(L"DerivedObject2");
 	childNode->AddChildROMObject(childOfChild);
 }
 
@@ -164,12 +164,12 @@ int runTest(int thread_id)
     Log(L"inputAttr1 = " + rootNode.GetAttribute(L"inputAttr1"));
 
     CreateChildNodes(&rootNode);
-    vector<ROMNode*> findTest = rootNode.FindAllObjectsByID("ChildObject", true);
-    vector<ROMNode*> findTestXPATH = rootNode.FindObjects("//Object[@id='ChildObject']");
-    vector<ROMNode*> findTestXPATH2 = rootNode.FindObjects("//Object[@id='ChildObject2']");
+    vector<ROMNode*> findTest = rootNode.FindAllObjectsByID("DerivedObject", true);
+    vector<ROMNode*> findTestXPATH = rootNode.FindObjects("//Object[@id='DerivedObject']");
+    vector<ROMNode*> findTestXPATH2 = rootNode.FindObjects("//Object[@id='DerivedObject2']");
     if (findTest.size() == 1 && findTestXPATH.size() == 1 && findTestXPATH2.size() == 1 &&
         findTestXPATH[0]->GetROMGUID() == findTest[0]->GetROMGUID() &&
-        findTestXPATH2[0]->GetROMObjectID() == L"ChildObject2")
+        findTestXPATH2[0]->GetROMObjectID() == L"DerivedObject2")
         Log("OK");
     else
         Log("FAILURE creating/obtaining child object");
@@ -188,12 +188,12 @@ int runTest(int thread_id)
 	string sClone(result.begin(), result.end());
 	Log(sClone);
 
-    findTest = clone->FindAllObjectsByID("ChildObject", true);
-    findTestXPATH = clone->FindObjects("//Object[@id='ChildObject']");
-    findTestXPATH2 = clone->FindObjects("//Object[@id='ChildObject2']");
+    findTest = clone->FindAllObjectsByID("DerivedObject", true);
+    findTestXPATH = clone->FindObjects("//Object[@id='DerivedObject']");
+    findTestXPATH2 = clone->FindObjects("//Object[@id='DerivedObject2']");
     if (findTest.size() == 1 && findTestXPATH.size() == 1 && findTestXPATH2.size() == 1 &&
         findTestXPATH[0]->GetROMGUID() == findTest[0]->GetROMGUID() &&
-        findTestXPATH2[0]->GetROMObjectID() == L"ChildObject2" &&
+        findTestXPATH2[0]->GetROMObjectID() == L"DerivedObject2" &&
 		result.length() == s.length())
         Log("Cloned object OK");
     else
@@ -201,7 +201,7 @@ int runTest(int thread_id)
 
 	Log("Test the object factory and inheritence pattern on the clone");
 	auto rootTest = (ApplicationObject*)clone->FindAllObjectsByID("TestApplication", true)[0];
-	auto childTest = (DerivedObject2*)clone->FindObjects("//Object[@id='ChildObject2']")[0];
+	auto childTest = (DerivedObject2*)clone->FindObjects("//Object[@id='DerivedObject2']")[0];
 	if (rootTest->GetAttribute(L"CLASS", true) == L"ApplicationObject" &&
 		childTest->GetAttribute(L"CLASS", true) == L"DerivedObject2")
 		Log("inheritence OK");
@@ -209,7 +209,7 @@ int runTest(int thread_id)
 		Log("FAILURE in inheritence pattern");
 
 	Log("Test loading from xml");
-	auto loadedObj = unique_ptr<ROMNode>(ROMNode::LoadXML(result, ROMObjectFactory));
+	auto loadedObj = unique_ptr<ROMNode>(ROMNode::LoadXMLFromString(result, ROMObjectFactory));
 	wstring testLoaded = loadedObj->SaveXML(true);
 	if (result.length() == testLoaded.length() &&
 		rootNode.GetAllChildren(true).size() == loadedObj->GetAllChildren(true).size())
@@ -219,7 +219,7 @@ int runTest(int thread_id)
 
 	Log("Test the object factory and inheritence pattern on loaded XML");
 	rootTest = (ApplicationObject*)loadedObj->FindAllObjectsByID("TestApplication", true)[0];
-	childTest = (DerivedObject2*)loadedObj->FindObjects("//Object[@id='ChildObject2']")[0];
+	childTest = (DerivedObject2*)loadedObj->FindObjects("//Object[@id='DerivedObject2']")[0];
 	if (rootTest->GetAttribute(L"CLASS", true) == L"ApplicationObject" &&
 		childTest->GetAttribute(L"CLASS", true) == L"DerivedObject2")
 		Log("inheritence OK");
@@ -227,7 +227,7 @@ int runTest(int thread_id)
 		Log("FAILURE in inheritence pattern");
 
 	Log("Test for equlity");
-	auto childTest2 = (DerivedObject2*)loadedObj->FindObjects("//Object[@id='ChildObject2']")[0];
+	auto childTest2 = (DerivedObject2*)loadedObj->FindObjects("//Object[@id='DerivedObject2']")[0];
 	if ((ROMNode*)childTest == (ROMNode*)childTest2 && (ROMNode*)childTest != (ROMNode*)rootTest)
 		Log("equality test OK");
 	else
@@ -257,11 +257,19 @@ int runTest(int thread_id)
     }
 
     Log("loading rules");
-    if (!rootNode.LoadRules(path))
-        rootNode.LoadRules(filename);
-    if (rootNode.GetKnowledgeBase() != NULL && rootNode.GetKnowledgeBase()->IsOpen())
-    {
-        rootNode.SetTableDebugHandler(DebugMessage);
+	EDS::CKnowledgeBase* rules = new EDS::CKnowledgeBase();
+	bool bLoaded = rules->CreateKnowledgeBase(path);
+	if (!bLoaded)
+		bLoaded = rules->CreateKnowledgeBase(filename);
+	if (bLoaded && rules->IsOpen())
+    {		
+		rules->DebugHandlerPtr = DebugMessage;
+		rules->InputValueGetterPtr = [](const wstring& attrName, void* obj)
+		{
+			return ((ROMNode*)obj)->GetAttribute(attrName, false);
+		};
+
+		rootNode.SetKnowledgeBase(rules);
 
         Log("...loaded");
         Log("Evaluating table testtable1");
@@ -281,7 +289,8 @@ int runTest(int thread_id)
         Log("Evaluation complete");
 
         Log("Testing the LinearEngine class");
-        LinearEngine engine2(&rootNode, L"ClassDictionary");
+        LinearEngine engine2(&rootNode, L"Dictionary");
+		engine2.InitializeEngine();
 
         Log("Checking dictionary size");
         map<wstring, ROMDictionaryAttribute>* attrs = engine2.GetAllDictionaryAttrs();
@@ -303,18 +312,22 @@ int runTest(int thread_id)
             Log("FAILURE to assess the evaluation order");
 
 		Log("Checking a subclass dictionary");
-		ROMNode* childNode = new ROMNode(L"SubClass1");
+		ROMNode* childNode = ROMObjectFactory(L"DerivedObject");
 		rootNode.AddChildROMObject(childNode);
 		LinearEngine engineSubclass1(childNode, L"ClassDictionary");
+		engineSubclass1.InitializeEngine();
+
 		map<wstring, ROMDictionaryAttribute>* attrs2 = engineSubclass1.GetAllDictionaryAttrs();
 		if (attrs2->size() == 2)
 			Log("subclass dictionary ok");
 		else
-			Log("FAILURE loading subClass1 dictionary");
+			Log("FAILURE loading subclass dictionary");
 
-		ROMNode* childNode2 = new ROMNode(L"SubClass2");
+		ROMNode* childNode2 = ROMObjectFactory(L"DerivedObject2");
 		rootNode.AddChildROMObject(childNode2);
 		LinearEngine engineSubclass2(childNode2, L"ClassDictionary");
+		engineSubclass2.InitializeEngine();
+
 		map<wstring, ROMDictionaryAttribute>* attrs3 = engineSubclass2.GetAllDictionaryAttrs();
 		if (attrs3->size() == 1)
 			Log("subclass dictionary ok");
@@ -367,7 +380,7 @@ int runTest(int thread_id)
         string dictAttr2 = rootNode.GetAttribute("dDictAttr2");
         string boolDict3 = rootNode.GetAttribute("aDictAttr3");
         string boolDict6 = rootNode.GetAttribute("eDictAttr6");
-        engine2.EvaluateForAttribute("eDictAttr6", "Y");
+        engine2.EvaluateForAttribute(L"eDictAttr6", L"Y");
         boolDict6 = rootNode.GetAttribute("eDictAttr6");
     }
     else

@@ -35,13 +35,14 @@ namespace ROM
 	{
 	public:
 		LinearEngine(){InvalidateMode = NORMALINVALIDATE;}
-		LinearEngine(ROMNode* context, const wstring& dictionaryTable) :ROMDictionary(context) { CreateLinearEngine(dictionaryTable); }
+		LinearEngine(ROMNode* context, const wstring& dictionaryTable) : ROMDictionary(context) { CreateLinearEngine(dictionaryTable); }
 		void CreateLinearEngine(const wstring& dictionaryTable);
-		void ResetEngine();
+		void InitializeEngine() { _initializeEngine(m_ROMContext); }
+		void ResetEngine() { _resetEngine(m_ROMContext); }
 		virtual ~LinearEngine(){}
-		void EvaluateForAttribute(const wstring& dictAttrName, vector<wstring>& newValues, bool bEvalDependents = true);
-		void EvaluateForAttribute(const wstring& dictAttrName, const wstring& newValue, bool bEvalDependents = true);
-		void EvaluateAll();
+		void EvaluateForAttribute(const wstring& dictAttrName, vector<wstring>& newValues, bool bEvalDependents = true) { _evaluateForAttribute(dictAttrName, newValues, bEvalDependents, m_ROMContext); }
+		void EvaluateForAttribute(const wstring& dictAttrName, const wstring& newValue, bool bEvalDependents = true) { _evaluateForAttribute(dictAttrName, newValue, bEvalDependents, m_ROMContext); }
+		void EvaluateAll() { _evaluateAll(m_ROMContext); }
 		vector<ROMDictionaryAttribute*> GetEvalList() {return m_vEvalList;}
 		map<wstring, vector<wstring> > GetTriggers() {return m_mapTriggers;}
 		bool DictionaryIsValid();
@@ -49,28 +50,32 @@ namespace ROM
 		//behavioral properties
 		int InvalidateMode;
 
-		//ASCII overloads
-		LinearEngine(ROMNode* context, const string& dictionaryTable);
-		void EvaluateForAttribute(const string& dictAttrName, const vector<string>& newValues, bool bEvalDependents = true);
-		void EvaluateForAttribute(const string& dictAttrName, const string& newValue, bool bEvalDependents = true);
-
-
+#ifndef CLR //these internal methods are called by .NET to assist with passing of managed objects
 	private:
-		void InitializeEngine(const wstring& dictionaryTable);
-		void OrderDictionary();
-		void EvalSingleSelect(const wstring& dictAttrName, const wstring& newValue);
-		void EvalMultiSelect(const wstring& dictAttrName, const vector<wstring>& newValues);
-		void EvalBoolean(const wstring& dictAttrName, const wstring& newValue);
-		void EvalEdit(const wstring& dictAttrName, const wstring& newValue);
-		void EvaluateDependencies(const wstring& dictAttrName);
-		void FlagAttrInvalid(const wstring& dictAttrName);
-		bool IsTouchedByUser(const wstring& dictAttrName);
-		void SetTouchedByUser(const wstring& dictAttrName);
-		void RemoveTouchedByUser(const wstring& dictAttrName);
-		void LoadTrackingAttrs();
-		vector<wstring> ParseOutPrefixes(int AttributeType, const vector<wstring>& values, vector<wstring>& valuesWithoutPrefixes); //remove the special character flags from the values
-		vector<wstring> GetSelectedValues(ROMDictionaryAttribute* attr);
-		void ResetValueChanged();		
+#else
+	public:
+#endif
+		void _evaluateForAttribute(const wstring& dictAttrName, vector<wstring>& newValues, bool bEvalDependents, void* context);
+		void _evaluateForAttribute(const wstring& dictAttrName, const wstring& newValue, bool bEvalDependents, void* context);
+		void _evaluateAll(void* context);
+		void _initializeEngine(void* context);
+
+	private:		
+		void _orderDictionary();
+		void _evalSingleSelect(const wstring& dictAttrName, const wstring& newValue, void* context);
+		void _evalMultiSelect(const wstring& dictAttrName, const vector<wstring>& newValues, void* context);
+		void _evalBoolean(const wstring& dictAttrName, const wstring& newValue, void* context);
+		void _evalEdit(const wstring& dictAttrName, const wstring& newValue, void* context);
+		void _evaluateDependencies(const wstring& dictAttrName, void* context);
+		void _flagAttrInvalid(const wstring& dictAttrName);
+		bool _isTouchedByUser(const wstring& dictAttrName);
+		void _setTouchedByUser(const wstring& dictAttrName);
+		void _removeTouchedByUser(const wstring& dictAttrName);
+		void _loadTrackingAttrs();
+		vector<wstring> _parseOutPrefixes(int AttributeType, const vector<wstring>& values, vector<wstring>& valuesWithoutPrefixes); //remove the special character flags from the values
+		vector<wstring> _getSelectedValues(ROMDictionaryAttribute* attr);
+		void _resetValueChanged();		
+		void _resetEngine(void* context);
 
 		vector<ROMDictionaryAttribute*> m_vEvalList;
 		map<wstring, vector<wstring> > m_mapTriggers;

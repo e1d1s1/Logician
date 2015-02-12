@@ -380,12 +380,6 @@ void ROMNode::_findAllChildObjects(vector<ROMNode*>* res)
 	}
 }
 
-void ROMNode::SetTableDebugHandler(std::function<void(const wstring&)> debugger)
-{
-	if (m_KnowledgeBase)
-		m_KnowledgeBase->DebugHandlerPtr = debugger;
-}
-
 wstring ROMNode::GetAttribute(const wstring& id, const wstring& name, bool immediate)
 {
 	wstring retval = L"";
@@ -506,112 +500,90 @@ bool ROMNode::RemoveROMObjectValue(const wstring& name)
 }
 
 //rules
-bool ROMNode::LoadRules(const wstring& knowledge_file)
-{
-	if (m_KnowledgeBase)
-	{
-		delete m_KnowledgeBase;
-		m_KnowledgeBase = nullptr;
-	}
-
-	if (m_parent == nullptr) //only the root will have the reference to the rules
-	{
-		m_KnowledgeBase = new EDS::CKnowledgeBase();
-		bool retval = m_KnowledgeBase->CreateKnowledgeBase(knowledge_file);
-		m_KnowledgeBase->InputValueGetterPtr = [=](const wstring& attrName, void* obj)
-		{
-			return ((ROMNode*)obj)->GetATableInputValue(attrName);
-		};
-		return retval;
-	}
-	else
-		return false;
-}
-
-bool ROMNode::LoadRulesFromString(const wstring& xmlStr)
-{
-	if (m_KnowledgeBase)
-	{
-		delete m_KnowledgeBase;
-		m_KnowledgeBase = nullptr;
-	}
-
-	if (m_parent == nullptr) //only the root will have the reference to the rules
-	{
-		m_KnowledgeBase = new EDS::CKnowledgeBase();
-		bool retval = m_KnowledgeBase->CreateKnowledgeBaseFromString(xmlStr);
-		m_KnowledgeBase->InputValueGetterPtr = [&](const wstring& attrName, void* obj)
-		{
-			return ((ROMNode*)obj)->GetATableInputValue(attrName);
-		};
-		return retval;
-	}
-	else
-		return false;
-}
-
-vector<wstring> ROMNode::EvaluateTable(const wstring& evalTable, const wstring& output, bool bGetAll)
+vector<wstring> ROMNode::_evaluateTable(const wstring& evalTable, const wstring& output, bool bGetAll, void* context)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->EvaluateTable(evalTable, output, bGetAll, this);
+		retval = knowledge->EvaluateTable(evalTable, output, bGetAll, context);
 	}
 	return retval;
 }
 
-vector<wstring> ROMNode::EvaluateTable(const wstring& evalTable, const wstring& output)
+vector<wstring> ROMNode::_evaluateTable(const wstring& evalTable, const wstring& output, void* context)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->EvaluateTable(evalTable, output, this);
+		retval = knowledge->EvaluateTable(evalTable, output, context);
 	}
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::EvaluateTable(const wstring& evalTable, bool bGetAll)
+map<wstring, vector<wstring> > ROMNode::_evaluateTable(const wstring& evalTable, bool bGetAll, void* context)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->EvaluateTable(evalTable, bGetAll, this);
+		retval = knowledge->EvaluateTable(evalTable, bGetAll, context);
 	}
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::EvaluateTable(const wstring& evalTable)
+map<wstring, vector<wstring> > ROMNode::_evaluateTable(const wstring& evalTable, void* context)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->EvaluateTable(evalTable, this);
+		retval = knowledge->EvaluateTable(evalTable, context);
 	}
 	return retval;
 }
 
-vector<wstring> ROMNode::EvaluateTableWithParam(const wstring& evalTable, const wstring& output, bool bGetAll, wstring& param)
+map<wstring, vector<wstring> > ROMNode::_evaluateTableWithParam(const wstring& evalTable, bool bGetAll, wstring& param, void* context)
+{
+	map<wstring, vector<wstring> > retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		retval = knowledge->EvaluateTableWithParam(evalTable, bGetAll, param, context);
+	}
+	return retval;
+}
+
+map<wstring, vector<wstring> > ROMNode::_evaluateTableWithParam(const wstring& evalTable, wstring& param, void* context)
+{
+	map<wstring, vector<wstring> > retval;
+	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	if (knowledge)
+	{
+		retval = knowledge->EvaluateTableWithParam(evalTable, param, context);
+	}
+	return retval;
+}
+
+vector<wstring> ROMNode::_evaluateTableWithParam(const wstring& evalTable, const wstring& output, bool bGetAll, wstring& param, void* context)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->EvaluateTableWithParam(evalTable, output, bGetAll, param, this);
+		retval = knowledge->EvaluateTableWithParam(evalTable, output, bGetAll, param, context);
 	}
 	return retval;
 }
 
-vector<wstring> ROMNode::EvaluateTableWithParam(const wstring& evalTable, const wstring& output, wstring& param)
+vector<wstring> ROMNode::_evaluateTableWithParam(const wstring& evalTable, const wstring& output, wstring& param, void* context)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->EvaluateTableWithParam(evalTable, output, param, this);
+		retval = knowledge->EvaluateTableWithParam(evalTable, output, param, context);
 	}
 	return retval;
 }
@@ -628,30 +600,8 @@ vector<string> ROMNode::EvaluateTableWithParam(const string& evalTable, const st
 {
     wstring wsParam = MBCStrToWStr(param);
     vector<string> retval = ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), wsParam));
-    param =ROMUTIL::WStrToMBCStr(wsParam);
+    param = ROMUTIL::WStrToMBCStr(wsParam);
     return retval;
-}
-
-map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(const wstring& evalTable, bool bGetAll, wstring& param)
-{
-	map<wstring, vector<wstring> > retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
-	if (knowledge)
-	{
-		retval = knowledge->EvaluateTableWithParam(evalTable, bGetAll, param, this);
-	}
-	return retval;
-}
-
-map<wstring, vector<wstring> > ROMNode::EvaluateTableWithParam(const wstring& evalTable, wstring& param)
-{
-	map<wstring, vector<wstring> > retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
-	if (knowledge)
-	{
-		retval = knowledge->EvaluateTableWithParam(evalTable, param, this);
-	}
-	return retval;
 }
 
 map<string, vector<string> > ROMNode::EvaluateTableWithParam(const string& evalTable, bool bGetAll, string& param)
@@ -670,60 +620,60 @@ map<string, vector<string> > ROMNode::EvaluateTableWithParam(const string& evalT
     return retval;
 }
 
-wstring ROMNode::GetFirstTableResult(const wstring& tableName, const wstring& output)
+wstring ROMNode::_getFirstTableResult(const wstring& tableName, const wstring& output, void* context)
 {
 	wstring retval = L"";
-	vector<wstring> res = EvaluateTable(tableName, output, this);
+	vector<wstring> res = _evaluateTable(tableName, output, false, context);
 	if (res.size() > 0)
 		retval = res[0];
 	return retval;
 }
 
-vector<wstring> ROMNode::ReverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, bool bGetAll)
+vector<wstring> ROMNode::_reverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, bool bGetAll, void* context)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->ReverseEvaluateTable(evalTable, inputAttr, bGetAll, this);
+		retval = knowledge->ReverseEvaluateTable(evalTable, inputAttr, bGetAll, context);
 	}
 	return retval;
 }
 
-vector<wstring> ROMNode::ReverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr)
+vector<wstring> ROMNode::_reverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, void* context)
 {
 	vector<wstring> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->ReverseEvaluateTable(evalTable, inputAttr, this);
+		retval = knowledge->ReverseEvaluateTable(evalTable, inputAttr, context);
 	}
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::ReverseEvaluateTable(const wstring& evalTable, bool bGetAll)
+map<wstring, vector<wstring> > ROMNode::_reverseEvaluateTable(const wstring& evalTable, bool bGetAll, void* context)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->ReverseEvaluateTable(evalTable, bGetAll, this);
+		retval = knowledge->ReverseEvaluateTable(evalTable, bGetAll, context);
 	}
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::ReverseEvaluateTable(const wstring& evalTable)
+map<wstring, vector<wstring> > ROMNode::_reverseEvaluateTable(const wstring& evalTable, void* context)
 {
 	map<wstring, vector<wstring> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
-		retval = knowledge->ReverseEvaluateTable(evalTable, this);
+		retval = knowledge->ReverseEvaluateTable(evalTable, context);
 	}
 	return retval;
 }
 
-vector<wstring> ROMNode::GetPossibleValues(const wstring& evalTable, const wstring& outputName)
+vector<wstring> ROMNode::_getPossibleValues(const wstring& evalTable, const wstring& outputName)
 {
 	vector<wstring> outputs;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
@@ -732,28 +682,6 @@ vector<wstring> ROMNode::GetPossibleValues(const wstring& evalTable, const wstri
 		outputs = knowledge->GetAllPossibleOutputs(evalTable, outputName);
 	}
 	return outputs;
-}
-
-wstring ROMNode::GetATableInputValue(const wstring& input)
-{
-	wstring retval;
-	//parse out any XPATH Queries here and return values
-	if (StringContains(input, L"xpath("))
-	{
-		wstring cmdArg(input.begin() + 6, input.end() - 1);
-		//for sibling/child xpath axes to work, eval from root and identify current context by the Object's guid
-		retval = this->GetRoot()->EvaluateXPATH(cmdArg, this->m_guid);
-	}
-	else if (input == L"CLASSID")
-	{
-		retval = this->GetROMObjectID();
-	}
-	else
-	{
-		retval = GetAttribute(input);
-	}
-
-	return retval;
 }
 
 //IO
@@ -954,7 +882,7 @@ wstring ROMNode::SaveXML(bool prettyprint)
 	return _convertXMLDocToString(prettyprint, m_xmlDoc);
 }
 
-ROMNode* ROMNode::LoadXML(const wstring& xmlStr, ObjectFactory factory)
+ROMNode* ROMNode::_loadXML(const wstring& xmlStr, bool isFile, ObjectFactory factory)
 {
 	ROMNode* retval = nullptr;
 
@@ -970,7 +898,16 @@ ROMNode* ROMNode::LoadXML(const wstring& xmlStr, ObjectFactory factory)
 
 	try
 	{
-		VARIANT_BOOL ok = xmlDoc->loadXML(_bstr_t(xmlStr.c_str()));
+		VARIANT_BOOL ok = VARIANT_FALSE;
+		if (isFile)
+		{
+			ok = xmlDoc->load(xmlStr.c_str());
+		}
+		else
+		{
+			ok = xmlDoc->loadXML(_bstr_t(xmlStr.c_str()));
+		}
+		
 		if (ok == VARIANT_TRUE)
 		{
 			Node objectNode = xmlDoc->selectSingleNode("Object");
@@ -1001,7 +938,17 @@ ROMNode* ROMNode::LoadXML(const wstring& xmlStr, ObjectFactory factory)
 	try
 	{
 		string buff = WStrToMBCStr(xmlStr);
-		Document xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
+		Document xmlDoc = nullptr;
+		
+		if (isFile)
+		{
+			xmlDoc = xmlParseFile(buff.c_str());
+		}
+		else
+		{
+			xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
+		}
+		
 
 		xmlXPathContextPtr xpathCtx = xmlXPathNewContext(xmlDoc);
 		xmlChar* objXPath = (xmlChar*)"Object";
@@ -1275,12 +1222,16 @@ wstring ROMNode::_convertXMLDocToString(bool prettyprint, Document xmlDoc)
 	return retval;
 }
 
-EDS::CKnowledgeBase* ROMNode::_getKnowledge()
+EDS::CKnowledgeBase* ROMNode::_getKnowledge(ROMNode*& owner)
 {
+	owner = nullptr;
 	EDS::CKnowledgeBase *knowledge = nullptr;
 	ROMNode* current = this;
 	if (current->m_KnowledgeBase != nullptr)
+	{
 		knowledge = m_KnowledgeBase;
+		owner = current;
+	}
 	else
 	{
 		while (knowledge == nullptr)
@@ -1291,6 +1242,7 @@ EDS::CKnowledgeBase* ROMNode::_getKnowledge()
 				if (parent->m_KnowledgeBase)
 				{
 					knowledge = parent->m_KnowledgeBase;
+					owner = parent;
 					break;
 				}
 				else

@@ -17,6 +17,11 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 */
 #pragma once
 
+#include <string>
+#include <vector>
+
+using namespace std;
+
 namespace ROM
 {
 	class ROMDictionaryAttribute
