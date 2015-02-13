@@ -465,6 +465,14 @@ ROMNode.prototype.FindObjects = function (xpath) {
     return retval;
 }
 
+ROMNode.prototype.FindFirstObject = function (xpath) {
+  var objs = this.FindObjects(xpath);
+  if (objs.length > 0)
+    return objs[0];
+  else
+    return null;
+}
+
 ROMNode.prototype.FindAllObjectsByID = function (id, recurs) {
     var retval = new Array();
     try {

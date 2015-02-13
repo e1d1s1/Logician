@@ -57,6 +57,7 @@ namespace ROM
 		ROMNode*			GetParent() {return m_parent;}
 		vector<ROMNode*>	GetAllChildren(bool recurs);
 		vector<ROMNode*>	FindObjects(const wstring& xpath);
+		ROMNode*			FindFirstObject(const wstring& xpath);
 		vector<ROMNode*>	FindAllObjectsByID(const wstring& id, bool recurs);
 		ROMNode*			FindObjectByGUID(const wstring& guid){ return FindObjectByGUID(ToASCIIString(guid)); }
 		bool				AddChildROMObject(ROMNode *child);
@@ -114,7 +115,7 @@ namespace ROM
 		wstring				EvaluateXPATH(const wstring& xpath) { return EvaluateXPATH(xpath, m_guid); }
 
 		//ascii overloads
-		vector<ROMNode*>	FindObjects(const string& xpath){return FindObjects(MBCStrToWStr(xpath));}
+		vector<ROMNode*>	FindObjects(const string& xpath){return FindObjects(MBCStrToWStr(xpath));}		
 		vector<ROMNode*>	FindAllObjectsByID(const string& id, bool recurs){ return FindAllObjectsByID(MBCStrToWStr(id), recurs); }
 		ROMNode*			FindObjectByGUID(const string& guid);
 		string				GetAttribute(const string& id, const string& name, bool immediate = false) { return ROMUTIL::WStrToMBCStr(GetAttribute(ROMUTIL::MBCStrToWStr(id), ROMUTIL::MBCStrToWStr(name), immediate)); }

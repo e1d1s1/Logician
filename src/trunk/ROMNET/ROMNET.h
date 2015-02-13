@@ -105,6 +105,7 @@ namespace ROMNET {
 		ROMNode^			Parent();
 		array<ROMNode^>^	GetAllChildren(bool recurs);
 		array<ROMNode^>^	FindObjects(String^ xpath);
+		ROMNode^			FindFirstObject(String^ xpath);
 		array<ROMNode^>^	FindAllObjectsByID(String^ id, bool recurs);
 		ROMNode^			FindObjectByGUID(String^ guid);
 		bool				AddChildROMObject(ROMNode^ child);

@@ -83,7 +83,7 @@ namespace ROMNET
 
 	array<ROMNode^>^ ROMNode::GetAllChildren(bool recurs)
 	{
-		array<ROMNode^>^ retval = nullptr;
+		array<ROMNode^>^ retval = gcnew array<ROMNode^>(0);
 		if (m_ROMNode)
 		{
 			vector<ROM::ROMNode*> vChildren = m_ROMNode->GetAllChildren(recurs);
@@ -95,7 +95,7 @@ namespace ROMNET
 
 	array<ROMNode^>^ ROMNode::FindObjects(String^ xpath)
 	{
-		array<ROMNode^>^ retval = nullptr;
+		array<ROMNode^>^ retval = gcnew array<ROMNode^>(0);
 		if (m_ROMNode)
 		{
 			wstring wsxpath = MarshalString(xpath);
@@ -106,9 +106,18 @@ namespace ROMNET
 		return retval;
 	}
 
+	ROMNode^ ROMNode::FindFirstObject(String^ xpath)
+	{
+		auto objs = FindObjects(xpath);
+		if (objs->Length > 0)
+			return objs[0];
+		else
+			return nullptr;
+	}
+
 	array<ROMNode^>^ ROMNode::FindAllObjectsByID(String^ id, bool recurs)
 	{
-		array<ROMNode^>^ retval = nullptr;
+		array<ROMNode^>^ retval = gcnew array<ROMNode^>(0);
 		if (m_ROMNode)
 		{
 			wstring wsID = MarshalString(id);
@@ -194,7 +203,7 @@ namespace ROMNET
 
 	array<ROMNode^>^ ROMNode::GetAllFriends()
 	{
-		array<ROMNode^>^ retval = nullptr;
+		array<ROMNode^>^ retval = gcnew array<ROMNode^>(0);
 		if (m_ROMNode)
 		{
 			vector<ROM::ROMNode*> vFriends = m_ROMNode->GetAllFriends();
