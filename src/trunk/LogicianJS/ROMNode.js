@@ -1878,7 +1878,7 @@ LinearEngine.prototype.LoadTrackingAttrs = function () {
     {
         if (it.indexOf(this.TBUATTR) >= 0)
         {
-            var dictAttrName = it;
+            var dictAttrName = it.substr(this.TBUATTR.length);
 	        if (dictAttrName in this.m_dict)	               
 	            this.m_dict[dictAttrName].ChangedByUser = true;	                
 	    }
