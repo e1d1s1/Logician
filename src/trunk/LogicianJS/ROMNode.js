@@ -337,6 +337,7 @@ ROMNode.prototype.AddChildROMObject = function (child) {
         if (child.m_parent == null) {
             child.m_parent = this;
             this.m_children.push(child);
+            this.m_bChanged = true;
             return true;
         }
     }
