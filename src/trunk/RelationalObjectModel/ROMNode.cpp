@@ -334,6 +334,15 @@ vector<ROMNode*> ROMNode::FindObjects(const wstring& xpath)
 	return retval;
 }
 
+ROMNode* ROMNode::FindFirstObject(const wstring& xpath)
+{
+	auto objs = FindObjects(xpath);
+	if (!objs.empty())
+		return objs[0];
+	else
+		return nullptr;
+}
+
 ROMNode* ROMNode::_findObjectGUID(const string& guid)
 {
 	ROMNode* retval = nullptr;
