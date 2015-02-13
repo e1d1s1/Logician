@@ -101,6 +101,7 @@ bool ROMNode::AddChildROMObject(ROMNode *child)
 	{
 		m_children.push_back(child);
 		child->m_parent = this;
+		m_bChanged = true;
 		return true;
 	}
 	else
