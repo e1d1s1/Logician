@@ -51,13 +51,6 @@
     <None Include="EDSEngineWinRTTestApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="EDSEngineNET" Condition="'$(Platform)'=='x86'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Release\EDSEngineWinRT\EDSEngineWinRT.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <SDKReference Include="Microsoft.WinJS.2.0, Version=1.0" />
   </ItemGroup>
   <ItemGroup>
