@@ -812,48 +812,7 @@ namespace ROMNET
 		}
 		return retval;
 	}
-
-	//LinearEngine
-	/*void LinearEngine::LoadDictionary(String^ dictionaryTable)
-	{
-		if (m_LinearEngine)
-		{
-			wstring wsDict = MarshalString(dictionaryTable);
-			m_LinearEngine->LoadDictionary(wsDict);
-		}
-	}
-
-	ROMDictionaryAttribute^ LinearEngine::GetDictionaryAttr(String^ dictAttrName)
-	{
-		ROMDictionaryAttribute^ retval = nullptr;
-		if (m_LinearEngine)
-		{
-			wstring wsName = MarshalString(dictAttrName);
-			ROM::ROMDictionaryAttribute* attr = m_LinearEngine->GetDictionaryAttr(wsName);
-			if (attr)
-			{
-				retval = gcnew ROMDictionaryAttribute((IntPtr)attr);
-			}
-		}
-		return retval;
-	}
-
-	Dictionary<String^, ROMDictionaryAttribute^>^ LinearEngine::GetAllDictionaryAttrs()
-	{
-		Dictionary<String^, ROMDictionaryAttribute^>^ retval = gcnew Dictionary<String^, ROMDictionaryAttribute^>();
-		if (m_LinearEngine)
-		{
-			map<wstring, ROM::ROMDictionaryAttribute>* allAttrs = m_LinearEngine->GetAllDictionaryAttrs();
-			for (map<wstring, ROM::ROMDictionaryAttribute>::iterator it = allAttrs->begin(); it != allAttrs->end(); it++)
-			{
-				String^ key = gcnew String(it->first.c_str());
-				ROMDictionaryAttribute^ value = gcnew ROMDictionaryAttribute((IntPtr)(&(it->second)));
-				retval->Add(key, value);
-			}
-		}
-		return retval;
-	}*/
-
+	
 	void LinearEngine::InitializeEngine()
 	{
 		if (m_LinearEngine)

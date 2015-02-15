@@ -267,7 +267,8 @@ void MyFrame::UpdateControls()
 	map<wstring, ROMDictionaryAttribute> *allAttrs = m_engine->GetAllDictionaryAttrs();
 	for (map<wstring, ROMDictionaryAttribute>::iterator it = allAttrs->begin(); it != allAttrs->end(); it++)
 	{
-		SetControlUI(it->second);
+		if (it->second.ValueChanged)
+			SetControlUI(it->second);
 	}
 	bLoadingItems = false;
 	UpdateCatalog();
@@ -406,33 +407,43 @@ void MyFrame::OnOpen(wxCommandEvent& WXUNUSED(event))
 	if (openFileDialog.ShowModal() == wxID_CANCEL)
 		return;
 
-	wxFileInputStream input_stream(openFileDialog.GetPath());
-	if (!input_stream.IsOk())
-    {
-        wxLogError(_T("Cannot open file '%s'."), openFileDialog.GetPath());
-        return;
-    }
+	wstring filepath = openFileDialog.GetPath().wc_str();
 
-	wxTextInputStream text(input_stream, wxT("\x09"), wxConvUTF8 );
-	wxString docXML;
-	while (input_stream.IsOk() && !input_stream.Eof())
-	{
-		wxString line = text.ReadLine();
-		docXML+=line;
-	}
+	//wxFileInputStream input_stream(openFileDialog.GetPath());
+	//if (!input_stream.IsOk())
+ //   {
+ //       wxLogError(_T("Cannot open file '%s'."), openFileDialog.GetPath());
+ //       return;
+ //   }
+
+	//wxTextInputStream text(input_stream, wxT("\x09"), wxConvUTF8 );
+	//wxString docXML;
+	//while (input_stream.IsOk() && !input_stream.Eof())
+	//{
+	//	wxString line = text.ReadLine();
+	//	docXML+=line;
+	//}
 
 	//reload
-	if (m_rootNode->LoadXML(docXML.wc_str()))
+	if (filepath.length() > 0)
 	{
 		if (m_engine)
 		{
 			delete m_engine;
-			m_engine = NULL;
+			m_engine = nullptr;
 		}
-		m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
-		m_engine->EvaluateAll();
 
-		UpdateControls();
+		ROMNode* newNode = ROMNode::LoadXML(filepath, true, nullptr);
+
+		if (newNode != nullptr)
+		{
+			newNode->Get();
+			m_rootNode = newNode;
+			m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
+			m_engine->EvaluateAll();
+
+			UpdateControls();
+		}
 	}
 }
 

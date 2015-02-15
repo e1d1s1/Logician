@@ -477,10 +477,6 @@ namespace ROMNET {
 		virtual ~LinearEngine() {this->!LinearEngine();}
 		!LinearEngine() { if (m_LinearEngine) delete m_LinearEngine; m_LinearEngine = nullptr; m_ROMDictionary = nullptr; }
 
-/*		void					LoadDictionary(String^ dictionaryTable);
-		ROMDictionaryAttribute^	GetDictionaryAttr(String^ dictAttrName);
-		Dictionary<String^, ROM*DictionaryAttribute^>^ GetAllDictionaryAttrs();
-*/
 		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents);
 		void EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues) {EvaluateForAttribute(dictAttrName, newValues, true);}
 		void EvaluateForAttribute(String^ dictAttrName, String^ newValue, bool bEvalDependents);

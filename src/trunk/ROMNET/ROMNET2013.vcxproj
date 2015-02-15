@@ -97,7 +97,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>EDSEngine.lib;RelationalObjectModel.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\EDSEngine\Debug MSXML;..\RelationalObjectModel\Debug MSXML;$(BOOST_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\Debug MSXML CLR;..\RelationalObjectModel\Debug MSXML CLR;$(BOOST_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
       <TargetMachine>MachineX86</TargetMachine>

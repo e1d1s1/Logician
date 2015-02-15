@@ -97,6 +97,7 @@ namespace EDSEngineWinRT
 		String^								DeLocalize(String^ localeValue);
 		String^								Translate(String^ source, String^ sourceLocale, String^ destLocale);
 
+		IntPtr								GetEDSPtr() { return (IntPtr)m_KnowledgeBase; }
 	private:		
 		wstring								_getValue(const wstring& attrName, void* context);
 		void								_fireDebug(const wstring& msg);

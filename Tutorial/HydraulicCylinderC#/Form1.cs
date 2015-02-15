@@ -46,8 +46,9 @@ namespace HydraulicCylinder
             bLoadingItems = true;
             Dictionary<string, ROMDictionaryAttribute> allAttrs = m_engine.GetAllDictionaryAttrs();
             foreach (KeyValuePair<string, ROMDictionaryAttribute> kvp in allAttrs)
-            {                
-                SetControlUI(kvp.Value);
+            {
+                if (kvp.Value.ValueChanged)
+                    SetControlUI(kvp.Value);
             }
             bLoadingItems = false;
             UpdateCatalog();
@@ -166,12 +167,17 @@ namespace HydraulicCylinder
             }
 
             //reload
-            if (!string.IsNullOrEmpty(contents) && m_rootNode.LoadXML(contents))
+            if (!string.IsNullOrEmpty(contents))
             {
-                m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
-                m_engine.EvaluateAll();
+                var newNode = ROMNode.LoadXML(contents, null);
+                if (newNode != null)
+                {
+                    m_rootNode = newNode;
+                    m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
+                    m_engine.EvaluateAll();
 
-                UpdateControls();
+                    UpdateControls();
+                }
             }
         }
 
@@ -198,6 +204,13 @@ namespace HydraulicCylinder
                 debugger.Initialize(m_rootNode);
                 debugger.Show();
             }
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_engine.ResetEngine();
+            m_engine.EvaluateAll();
+            UpdateControls();
         }
     }
 }
