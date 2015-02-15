@@ -177,7 +177,7 @@ namespace ROMNET {
 		IntPtr				GetROMPtr() { return (IntPtr)m_ROMNode; }
 
 	private:		
-		array<ROMNode^>^			GetArrayFromVectorROM(vector<ROM::ROMNode*> vect);
+		array<ROMNode^>^			_getArrayFromVectorROM(vector<ROM::ROMNode*> vect);
 		static ROMNode^				_managedFactory(String^ id);
 		static ROMNode^				_loadNode(ROM::ROMNode* node, ROMObjectFactoryDelegate^ factory);
 		static String^				_managedGetter(String^ attrName, Object^ context);
