@@ -157,6 +157,14 @@ string ROMUTIL::ToASCIIString(const wstring& s)
 	return retval;
 }
 
+//this is only for integer and ascii conversion
+wstring ROMUTIL::ToWString(const string& s)
+{
+	wstring retval;
+	retval.assign(s.begin(), s.end());
+	return retval;
+}
+
 vector<string> ROMUTIL::ToASCIIStringVector(const vector<wstring>& vectWS)
 {
 	vector<string> retval;

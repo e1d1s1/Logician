@@ -87,7 +87,7 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			vector<ROM::ROMNode*> vChildren = m_ROMNode->GetAllChildren(recurs);
-			retval = GetArrayFromVectorROM(vChildren);
+			retval = _getArrayFromVectorROM(vChildren);
 		}
 		
 		return retval;
@@ -100,7 +100,7 @@ namespace ROMNET
 		{
 			wstring wsxpath = MarshalString(xpath);
 			vector<ROM::ROMNode*> vChildren = m_ROMNode->FindObjects(wsxpath);
-			retval = GetArrayFromVectorROM(vChildren);
+			retval = _getArrayFromVectorROM(vChildren);
 		}
 
 		return retval;
@@ -122,7 +122,7 @@ namespace ROMNET
 		{
 			wstring wsID = MarshalString(id);
 			vector<ROM::ROMNode*> vChildren = m_ROMNode->FindAllObjectsByID(wsID, recurs);
-			retval = GetArrayFromVectorROM(vChildren);
+			retval = _getArrayFromVectorROM(vChildren);
 		}
 		
 		return retval;
@@ -207,7 +207,7 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			vector<ROM::ROMNode*> vFriends = m_ROMNode->GetAllFriends();
-			retval = GetArrayFromVectorROM(vFriends);
+			retval = _getArrayFromVectorROM(vFriends);
 		}
 		return retval;
 	}
@@ -246,13 +246,11 @@ namespace ROMNET
 	{
 		if (m_ROMNode)
 		{			
-			if (m_canDelete)
-			{				
-				delete m_ROMNode;
-			}
+			if (m_canDelete)					
+				delete m_ROMNode;			
 				
 			m_managedTreeObjects->Clear();
-			m_ROMNode = NULL;
+			m_ROMNode = nullptr;
 			return true;
 		}
 		
@@ -756,7 +754,7 @@ namespace ROMNET
 	}
 
 
-	array<ROMNode^>^ ROMNode::GetArrayFromVectorROM(vector<ROM::ROMNode*> vect)
+	array<ROMNode^>^ ROMNode::_getArrayFromVectorROM(vector<ROM::ROMNode*> vect)
 	{
 		array<ROMNode^>^ arr = gcnew array<ROMNode^>(vect.size());
 		for (size_t i = 0; i < vect.size(); i++)
