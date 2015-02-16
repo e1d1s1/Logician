@@ -268,6 +268,7 @@ int runTest(int thread_id)
 		{
 			return ((ROMNode*)obj)->GetAttribute(attrName, false);
 		};
+		rules->SetMaxThreads(4);
 
 		rootNode.SetKnowledgeBase(rules);
 

@@ -169,3 +169,9 @@ size_t CTableSet::Count()
 {
 	return m_tables.size();
 }
+
+void CTableSet::SetMaxThreads(size_t threads)
+{
+	for (auto& table : m_tables)
+		table.second.SetThreadCount(threads);
+}

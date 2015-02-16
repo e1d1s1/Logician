@@ -42,6 +42,7 @@ namespace EDS
 		size_t TableCount() {return m_TableSet.Count();}
 		bool IsOpen() {return m_IsOpen;}
 		void EnableRemoteDebugger(bool enable) { m_remoteDebugging = enable; }
+		void SetMaxThreads(size_t threads);
 
 		bool TableHasScript(const wstring& tableName);
 		bool TableIsGetAll(const wstring& tableName);
