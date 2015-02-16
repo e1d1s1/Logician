@@ -42,6 +42,7 @@ public:
 	vector<wstring> GetOutputAttrs(const wstring& tableName);
 	size_t Count();
 	void LoadTableInfo(CRuleTable *table);
+	void SetMaxThreads(size_t threads);
 private:
 	vector<wstring> ParseTablesAndChainsForInputs(const wstring& tableName);
 	map<wstring, CRuleTable> m_tables;

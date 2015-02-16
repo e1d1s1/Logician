@@ -743,6 +743,11 @@ bool CKnowledgeBase::CreateKnowledgeBaseFromString(wstring xmlStr)
 	return retval;
 }
 
+void CKnowledgeBase::SetMaxThreads(size_t threads)
+{
+	m_TableSet.SetMaxThreads(threads);
+}
+
 bool CKnowledgeBase::_parseXML(Document xmlDocument)
 {
 	//parse the table data and create tables in the tableset

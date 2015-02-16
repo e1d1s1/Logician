@@ -61,6 +61,7 @@ public:
 		vector<wstring>& formulaInputs, CBimapper *stringMap,
 		const wstring& name = L"default", bool GetAll = false) { CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll); }
 	void EnbleDebugging(bool enable) { m_DEBUGGING = enable; }
+	void SetThreadCount(size_t threads);
 
 	wstring DebugMessage;
 	function<wstring(const wstring&, void*)> InputValueGetter;
@@ -82,6 +83,8 @@ private:
 	bool bHasJavascript;
 	bool bGetAll;
 	bool m_DEBUGGING;
+	size_t m_Threads;
+	bool m_ThreadingEnabled;
 };
 
 
