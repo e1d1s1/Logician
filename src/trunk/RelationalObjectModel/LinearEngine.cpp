@@ -76,8 +76,9 @@ namespace ROM
 	void LinearEngine::_resetEngine(void* context)
 	{
 		_initializeEngine(context);
-		for (map<wstring, ROMDictionaryAttribute>::iterator it = m_dict.begin(); it != m_dict.end(); it++)
+		for (auto it = m_dict.begin(); it != m_dict.end(); it++)
 			m_ROMContext->SetAttribute(it->first, L"");
+		_loadDictionary(m_tableName, context);
 		_evaluateAll(context);
 	}
 

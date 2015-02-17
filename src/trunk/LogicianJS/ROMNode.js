@@ -2456,8 +2456,9 @@ LinearEngine.prototype.ResetEngine = function()
     this.m_EvalListRecursChecker = new Array();
     this.CreateLinearEngine(this.m_tableName);
     for (var attr in this.m_dict) {
-        this.m_context.SetAttribute(this.m_dict[attr].Name, "");
+        this.m_context.SetAttribute(this.m_dict[attr].Name, "");        
     }
+    this.LoadDictionary(this.m_tableName);
     this.EvaluateAll();
 }
 
