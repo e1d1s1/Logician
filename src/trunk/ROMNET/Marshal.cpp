@@ -18,68 +18,59 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 #include "stdafx.h"
 #include "Marshal.h"
 
-string MarshalStringA ( String ^ s ) {
-   using namespace Runtime::InteropServices;
-   const char* chars = 
-      (const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
-   string retval = chars;
-   Marshal::FreeHGlobal(IntPtr((void*)chars));
-   return retval;
-}
-
-wstring MarshalString ( String ^ s) {
+string MarshalString ( String ^ s) {
    using namespace Runtime::InteropServices;
    const wchar_t* chars = 
       (const wchar_t*)(Marshal::StringToHGlobalUni(s)).ToPointer();
-   wstring retval = chars;
+   string retval = ROMUTIL::Narrow(chars);
    Marshal::FreeHGlobal(IntPtr((void*)chars));
    return retval;
 }
 
-stdext::hash_map<wstring, size_t> MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict)
+stdext::hash_map<string, size_t> MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict)
 {
-	stdext::hash_map<wstring, size_t> retval;
+	stdext::hash_map<string, size_t> retval;
 	for each(KeyValuePair<String^, size_t> kvp in dict)
 	{		
-		wstring key = MarshalString(kvp.Key);
+		string key = MarshalString(kvp.Key);
 		retval[key] = kvp.Value;
 	}
 	return retval;
 }
 
-array<String^>^ GetArrayFromVectorStrings(const vector<wstring> &vect)
+array<String^>^ GetArrayFromVectorStrings(const vector<string> &vect)
 {
 	array<String^>^ arr = gcnew array<String^>(vect.size());
 	for (size_t i = 0; i < vect.size(); i++)
 	{
-		arr[i] = gcnew String(vect[i].c_str());
+		arr[i] = gcnew String(ROMUTIL::Widen(vect[i]).c_str());
 	}
 	return arr;
 }
 
-vector<wstring> GetVectorFromArrayStrings(array<String^>^ arr)
+vector<string> GetVectorFromArrayStrings(array<String^>^ arr)
 {
-	vector<wstring> retval;
+	vector<string> retval;
 	for each (String^ s in arr)
 	{
-		wstring ws = MarshalString(s);
+		string ws = MarshalString(s);
 		retval.push_back(ws);
 	}
 	return retval;
 }
 
-Dictionary<String^, array<String^>^>^ GetDictionaryFromMapStrings(const map<wstring, vector<wstring> > &mp)
+Dictionary<String^, array<String^>^>^ GetDictionaryFromMapStrings(const map<string, vector<string> > &mp)
 {
 	Dictionary<String^,	array<String^>^>^ dict = gcnew Dictionary<String^, array<String^>^>();
 
-	for (map<wstring, vector<wstring> >::const_iterator it = mp.begin(); it != mp.end(); it++)
+	for (auto it = mp.begin(); it != mp.end(); it++)
 	{
 		array<String^>^ arr = gcnew array<String^>(it->second.size());
 		for (size_t i = 0; i < it->second.size(); i++)
 		{
-			arr[i] = gcnew String(it->second[i].c_str());
+			arr[i] = gcnew String(ROMUTIL::Widen(it->second[i]).c_str());
 		}
-		String^ key = gcnew String(it->first.c_str());
+		String^ key = gcnew String(ROMUTIL::Widen(it->first).c_str());
 		dict->Add(key, arr);
 	}
 

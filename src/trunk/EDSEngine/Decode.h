@@ -29,19 +29,19 @@ using namespace std;
 class CDecode
 {
 public:
-	CDecode(CRuleCell& outputCell, function<wstring(const wstring&, void*)> inputAttrGetter, CBimapper* stringMap, void* context = nullptr);
-	CDecode(CToken& inputValue, CRuleCell& cell, function<wstring(const wstring&, void*)> inputAttrGetter, CBimapper* stringMap, void* context = nullptr);
+	CDecode(CRuleCell& outputCell, function<string(const string&, void*)> inputAttrGetter, CBimapper* stringMap, void* context = nullptr);
+	CDecode(CToken& inputValue, CRuleCell& cell, function<string(const string&, void*)> inputAttrGetter, CBimapper* stringMap, void* context = nullptr);
 	~CDecode(void);
 	bool EvaluateInputCell();
-	vector<wstring> EvaluateOutputCell();
+	vector<string> EvaluateOutputCell();
 
 private:
-	wstring GetString(size_t lKey);
-	wstring ParseStringForGets(size_t lKey, bool bForceZero);
-	wstring ReplaceAGet(const wstring& s, bool bForceZero);
+	string GetString(size_t lKey);
+	string ParseStringForGets(size_t lKey, bool bForceZero);
+	string ReplaceAGet(const string& s, bool bForceZero);
 	void CheckForInputGets();
 
-	function<wstring(const wstring&, void*)> m_inputAttrGetter;
+	function<string(const string&, void*)> m_inputAttrGetter;
 	CToken *m_value;
 	vector<size_t> *m_tests;
 	long m_operator;

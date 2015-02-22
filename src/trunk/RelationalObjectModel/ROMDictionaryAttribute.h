@@ -30,10 +30,10 @@ namespace ROM
 		ROMDictionaryAttribute() {CreateROMDictionaryAttribute();}
 		~ROMDictionaryAttribute() {}
 		void CreateROMDictionaryAttribute() {Visible = true; Valid = false; ValueChanged = false; ChangedByUser = false; Enabled = true; Index = 0;}
-		wstring Name;
-		wstring Description;
-		wstring DefaultValue;
-		wstring RuleTable;
+		string Name;
+		string Description;
+		string DefaultValue;
+		string RuleTable;
 		int AttributeType;
 		size_t Index;
 		bool ValueChanged;
@@ -42,9 +42,9 @@ namespace ROM
 		bool Visible;
 		bool Enabled;
 
-		vector<wstring> PossibleValues;
-		vector<wstring> AvailableValues;
-		wstring Value;
+		vector<string> PossibleValues;
+		vector<string> AvailableValues;
+		string Value;
 	};
 
 	enum ATTRTYPE_E

@@ -18,55 +18,46 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 #include "stdafx.h"
 #include "Marshal.h"
 
-string MarshalStringA(String ^ s) {
-	using namespace Runtime::InteropServices;
-	const char* chars =
-		(const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
-	string retval = chars;
-	Marshal::FreeHGlobal(IntPtr((void*)chars));
-	return retval;
-}
-
-wstring MarshalString(String ^ s) {
+string MarshalString(String ^ s) {
 	using namespace Runtime::InteropServices;
 	const wchar_t* chars =
 		(const wchar_t*)(Marshal::StringToHGlobalUni(s)).ToPointer();
-	wstring retval = chars;
+	string retval = EDSUTIL::Narrow(chars);
 	Marshal::FreeHGlobal(IntPtr((void*)chars));
 	return retval;
 }
 
-void MarshalDictionaryStringUInt(Dictionary<String^, size_t>^ dict, unordered_map<wstring, size_t> &mp)
+void MarshalDictionaryStringUInt(Dictionary<String^, size_t>^ dict, unordered_map<string, size_t> &mp)
 {
 	for each(KeyValuePair<String^, size_t> kvp in dict)
 	{
-		wstring key = MarshalString(kvp.Key);
+		string key = MarshalString(kvp.Key);
 		mp[key] = kvp.Value;
 	}
 }
 
-array<String^>^ GetArrayFromVectorStrings(const vector<wstring> &vect)
+array<String^>^ GetArrayFromVectorStrings(const vector<string> &vect)
 {
 	array<String^>^ arr = gcnew array<String^>(vect.size());
 	for (size_t i = 0; i < vect.size(); i++)
 	{
-		arr[i] = gcnew String(vect[i].c_str());
+		arr[i] = gcnew String(EDSUTIL::Widen(vect[i]).c_str());
 	}
 	return arr;
 }
 
-Dictionary<String^, array<String^>^>^ GetDictionaryFromMapStrings(const map<wstring, vector<wstring> > &mp)
+Dictionary<String^, array<String^>^>^ GetDictionaryFromMapStrings(const map<string, vector<string> > &mp)
 {
 	Dictionary<String^,	array<String^>^>^ dict = gcnew Dictionary<String^, array<String^>^>();
 
-	for (map<wstring, vector<wstring> >::const_iterator it = mp.begin(); it != mp.end(); it++)
+	for (auto it = mp.begin(); it != mp.end(); it++)
 	{
 		array<String^>^ arr = gcnew array<String^>(it->second.size());
 		for (size_t i = 0; i < it->second.size(); i++)
 		{
-			arr[i] = gcnew String(it->second[i].c_str());
+			arr[i] = gcnew String(EDSUTIL::Widen(it->second[i]).c_str());
 		}
-		String^ key = gcnew String(it->first.c_str());
+		String^ key = gcnew String(EDSUTIL::Widen(it->first).c_str());
 		dict->Add(key, arr);
 	}
 

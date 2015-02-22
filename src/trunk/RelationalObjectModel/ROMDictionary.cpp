@@ -26,7 +26,7 @@ using namespace ROMUTIL;
 void ROMDictionary::CreateROMDictionary(ROMNode* context)
 {
 	m_ROMContext = context;
-	m_tableName = L"";
+	m_tableName = "";
 }
 
 /*A dictionary table should have the following outputs:
@@ -37,24 +37,24 @@ AttributeType - default empty value(SINGLESELECT), SINGLESELECT, MULTISELECT, BO
 RuleTable - table to evaluate to obtain the value (will override default if exists). Each rule table should have
 	an output column name that matches the attribute name
 */
-void ROMDictionary::_loadDictionary(const wstring& dictionaryTable, void* context)
+void ROMDictionary::_loadDictionary(const string& dictionaryTable, void* context)
 {
 	m_tableName = dictionaryTable;
 	m_dict.clear();
-	map<wstring, vector<wstring> > res = m_ROMContext->_evaluateTable(m_tableName, true, context);
-	vector<wstring> allNames = res[L"Name"];
+	map<string, vector<string> > res = m_ROMContext->_evaluateTable(m_tableName, true, context);
+	vector<string> allNames = res["Name"];
 
 	for (size_t i = 0; i < allNames.size(); i++)
 	{
 		ROMDictionaryAttribute dictAttr;
 		dictAttr.Name = allNames[i];
 		dictAttr.Index = i;
-		if (res[L"DefaultValue"].size() > 0 && res[L"DefaultValue"][i] != L"~") dictAttr.DefaultValue = res[L"DefaultValue"][i];
-		if (res[L"Description"].size() > 0 && res[L"Description"][i] != L"~") dictAttr.Description = res[L"Description"][i];
-		if (res[L"RuleTable"].size() > 0 && res[L"RuleTable"][i] != L"~") dictAttr.RuleTable = res[L"RuleTable"][i];
+		if (res["DefaultValue"].size() > 0 && res["DefaultValue"][i] != "~") dictAttr.DefaultValue = res["DefaultValue"][i];
+		if (res["Description"].size() > 0 && res["Description"][i] != "~") dictAttr.Description = res["Description"][i];
+		if (res["RuleTable"].size() > 0 && res["RuleTable"][i] != "~") dictAttr.RuleTable = res["RuleTable"][i];
 
 		string strAttrType;
-		if (res[L"AttributeType"].size() > 0  && res[L"AttributeType"][i] != L"~") strAttrType = ToASCIIString(res[L"AttributeType"][i]);
+		if (res["AttributeType"].size() > 0  && res["AttributeType"][i] != "~") strAttrType = res["AttributeType"][i];
 		transform(strAttrType.begin(), strAttrType.end(), strAttrType.begin(), ::toupper);
 
 		if (strAttrType.length() == 0 || strAttrType == "SINGLESELECT")
@@ -80,8 +80,8 @@ void ROMDictionary::_loadDictionary(const wstring& dictionaryTable, void* contex
 
 		//on load, just set default values and possibilities
 		//only set a default if there is no rules table and no current value
-		wstring value = m_ROMContext->GetAttribute(dictAttr.Name);
-		if (((value.length() == 0 && dictAttr.RuleTable.length() == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length() > 0 && dictAttr.DefaultValue != L"~")
+		string value = m_ROMContext->GetAttribute(dictAttr.Name);
+		if (((value.length() == 0 && dictAttr.RuleTable.length() == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length() > 0 && dictAttr.DefaultValue != "~")
 		{
 			if (dictAttr.AttributeType == BOOLEANSELECT)
 				m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue.substr(0, 1));
@@ -96,25 +96,14 @@ void ROMDictionary::_loadDictionary(const wstring& dictionaryTable, void* contex
 	}
 }
 
-ROMDictionaryAttribute* ROMDictionary::GetDictionaryAttr(const wstring& dictAttrName)
+ROMDictionaryAttribute* ROMDictionary::GetDictionaryAttr(const string& dictAttrName)
 {
 	ROMDictionaryAttribute* retval = nullptr;
 
-	map<wstring, ROMDictionaryAttribute>::iterator itFind = m_dict.find(dictAttrName);
+	map<string, ROMDictionaryAttribute>::iterator itFind = m_dict.find(dictAttrName);
 	if (itFind != m_dict.end())
 		retval = &m_dict[dictAttrName];
 
 	return retval;
-}
-
-//ASCII Overloads
-void ROMDictionary::LoadDictionary(const string& dictionaryTable)
-{
-	LoadDictionary(ROMUTIL::MBCStrToWStr(dictionaryTable));
-}
-
-ROMDictionaryAttribute* ROMDictionary::GetDictionaryAttr(const string& dictAttrName)
-{
-	return GetDictionaryAttr(ROMUTIL::MBCStrToWStr(dictAttrName));
 }
 

@@ -27,8 +27,8 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 #include "Marshal.h"
 using namespace std;
 
-typedef wstring(__stdcall *VALUECB)(const wstring&, void*);
-typedef void(__stdcall *DEBUGCB)(const wstring&);
+typedef string(__stdcall *VALUECB)(const string&, void*);
+typedef void(__stdcall *DEBUGCB)(const string&);
 
 #pragma managed
 #using <mscorlib.dll>
@@ -374,10 +374,10 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 				{
-					vector<wstring> vals(value->Length);
+					vector<string> vals(value->Length);
 					for each (String^ val in value)
 					{
-						wstring wsVal = MarshalString(val);
+						string wsVal = MarshalString(val);
 						vals.push_back(wsVal);
 					}
 					m_ROMDictionaryAttribute->PossibleValues = vals;
@@ -397,10 +397,10 @@ namespace ROMNET {
 			{
 				if (m_ROMDictionaryAttribute)
 				{
-					vector<wstring> vals(value->Length);
+					vector<string> vals(value->Length);
 					for each (String^ val in value)
 					{
-						wstring wsVal = MarshalString(val);
+						string wsVal = MarshalString(val);
 						vals.push_back(wsVal);
 					}
 					m_ROMDictionaryAttribute->AvailableValues = vals;
@@ -467,7 +467,7 @@ namespace ROMNET {
 		LinearEngine(ROMNode^ context, String^ dictionaryTable) : ROMDictionary() { CreateLinearEngine(context, dictionaryTable); }
 		void CreateLinearEngine(ROMNode^ context, String^ dictionaryTable) 
 		{
-			wstring dict = MarshalString(dictionaryTable);
+			string dict = MarshalString(dictionaryTable);
 			m_ROMContext = context;
 			m_LinearEngine = new ROM::LinearEngine((ROM::ROMNode*)context->GetROMPtr().ToPointer(), dict);
 			m_ROMDictionary = m_LinearEngine;

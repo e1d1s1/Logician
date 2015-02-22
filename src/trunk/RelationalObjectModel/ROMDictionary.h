@@ -35,27 +35,23 @@ namespace ROM
 		void CreateROMDictionary(ROMNode* context);
 		virtual ~ROMDictionary(void){}		
 		
-		virtual void LoadDictionary(const wstring& dictionaryTable) override { _loadDictionary(dictionaryTable, m_ROMContext); }
-		virtual ROMDictionaryAttribute* GetDictionaryAttr(const wstring& dictAttrName) override;
-		virtual map<wstring, ROMDictionaryAttribute>* GetAllDictionaryAttrs() override { return &m_dict; }
-
-		//ASCII overloadas
-		void LoadDictionary(const string& dictionaryTable);
-		ROMDictionaryAttribute* GetDictionaryAttr(const string& dictAttrName);
+		virtual void LoadDictionary(const string& dictionaryTable) override { _loadDictionary(dictionaryTable, m_ROMContext); }
+		virtual ROMDictionaryAttribute* GetDictionaryAttr(const string& dictAttrName) override;
+		virtual map<string, ROMDictionaryAttribute>* GetAllDictionaryAttrs() override { return &m_dict; }
 
 #ifndef CLR //these internal methods are called by .NET to assist with passing of managed objects
 	private:
-		virtual void _loadDictionary(const wstring& dictionaryTable, void* context);
+		virtual void _loadDictionary(const string& dictionaryTable, void* context);
 #else
 	public:
-		virtual void _loadDictionary(const wstring& dictionaryTable, void* context) override;
+		virtual void _loadDictionary(const string& dictionaryTable, void* context) override;
 #endif
 		
 
 	private:
 		ROMNode *m_ROMContext;
 
-		map<wstring, ROMDictionaryAttribute> m_dict;
-		wstring m_tableName;
+		map<string, ROMDictionaryAttribute> m_dict;
+		string m_tableName;
 	};
 }

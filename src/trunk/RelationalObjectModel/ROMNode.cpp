@@ -34,9 +34,9 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 using namespace std;
 using namespace ROM;
 
-void ROMNode::CreateROMNode(const wstring id, ObjectFactory factory)
+void ROMNode::CreateROMNode(const string id, ObjectFactory factory)
 {
-	wstring newid = FindAndReplace(id, L" ", L"_");
+	string newid = ROMUTIL::FindAndReplace(id, " ", "_");
 	m_id = newid;
 	_init(factory);
 }
@@ -49,7 +49,7 @@ void ROMNode::_init(ObjectFactory factory)
 #ifdef USE_MSXML
 	CoInitialize(nullptr);
 #endif
-	m_guid = MakeGUID();
+	m_guid = ROMUTIL::MakeGUID();
 	m_parent = nullptr;
 	m_xmlDoc = nullptr;
 	m_KnowledgeBase = nullptr;
@@ -58,7 +58,7 @@ void ROMNode::_init(ObjectFactory factory)
 
 	if (factory == nullptr)
 	{
-		ROMObjectFactory = [](const wstring& id){
+		ROMObjectFactory = [](const string& id){
 			return new ROMNode(id);
 		};
 	}
@@ -195,7 +195,7 @@ bool ROMNode::RemoveAllFriends()
 	return retval;
 }
 
-vector<ROMNode*> ROMNode::FindAllObjectsByID(const wstring& id, bool recurs)
+vector<ROMNode*> ROMNode::FindAllObjectsByID(const string& id, bool recurs)
 {
 	vector<ROMNode*> retval;
 
@@ -277,13 +277,13 @@ ROMNode* ROMNode::Clone()
 	return newNode;
 }
 
-vector<ROMNode*> ROMNode::FindObjects(const wstring& xpath)
+vector<ROMNode*> ROMNode::FindObjects(const string& xpath)
 {
 	_createXMLDoc(false, false);
 	vector<ROMNode*> retval;
 	vector<Node> nodes;
 #ifdef USE_MSXML
-	NodeList res = m_xmlDoc->selectNodes(xpath.c_str());
+	NodeList res = m_xmlDoc->selectNodes(ROMUTIL::Widen(xpath).c_str());
 	if (res != nullptr)
 	{
 		for (long i = 0; i < res->length; i++)
@@ -297,7 +297,7 @@ vector<ROMNode*> ROMNode::FindObjects(const wstring& xpath)
 	for (vector<Node>::iterator it = nodes.begin(); it != nodes.end(); it++)
 	{
 		Node objNode = (*it);
-		wstring guid = objNode->attributes->getNamedItem("guid")->nodeValue.bstrVal;
+		string guid = ROMUTIL::Narrow(objNode->attributes->getNamedItem("guid")->nodeValue.bstrVal);
 		if (guid.length() > 0)
 		{
 			ROMNode* node = FindObjectByGUID(guid);
@@ -308,7 +308,7 @@ vector<ROMNode*> ROMNode::FindObjects(const wstring& xpath)
 #endif
 #ifdef USE_LIBXML
 	xmlXPathContextPtr xpathCtx = xmlXPathNewContext(m_xmlDoc);
-	xmlXPathObjectPtr xpathObjSearch = xmlXPathEvalExpression((xmlChar*)WStrToMBCStr(xpath).c_str(), xpathCtx);
+	xmlXPathObjectPtr xpathObjSearch = xmlXPathEvalExpression((xmlChar*)Narrow(xpath).c_str(), xpathCtx);
 	NodeList res = xpathObjSearch->nodesetval;
 	if (res != nullptr)
 	{
@@ -323,7 +323,7 @@ vector<ROMNode*> ROMNode::FindObjects(const wstring& xpath)
 	for (vector<Node>::iterator it = nodes.begin(); it != nodes.end(); it++)
 	{
 		Node objNode = (*it);
-		wstring guid = XMLStrToWStr(xmlGetProp(objNode, (xmlChar*)"guid"));
+		string guid = XMLStrToWStr(xmlGetProp(objNode, (xmlChar*)"guid"));
 		if (guid.length() > 0)
 		{
 			ROMNode* node = FindObjectByGUID(guid);
@@ -335,7 +335,7 @@ vector<ROMNode*> ROMNode::FindObjects(const wstring& xpath)
 	return retval;
 }
 
-ROMNode* ROMNode::FindFirstObject(const wstring& xpath)
+ROMNode* ROMNode::FindFirstObject(const string& xpath)
 {
 	auto objs = FindObjects(xpath);
 	if (!objs.empty())
@@ -364,7 +364,7 @@ ROMNode* ROMNode::_findObjectGUID(const string& guid)
 	return retval;
 }
 
-void ROMNode::_findObjects(const wstring& id, bool recurs, vector<ROMNode*>* res)
+void ROMNode::_findObjects(const string& id, bool recurs, vector<ROMNode*>* res)
 {
 	for (vector<ROMNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
 	{
@@ -390,9 +390,22 @@ void ROMNode::_findAllChildObjects(vector<ROMNode*>* res)
 	}
 }
 
-wstring ROMNode::GetAttribute(const wstring& id, const wstring& name, bool immediate)
+string ROMNode::_getAttributeInternal(const string& id, const string& name, bool immediate)
 {
-	wstring retval = L"";
+	string retval = "";
+
+	bool bFound = false;
+	retval = _getSpecialAttribute(id, &bFound);
+
+	if (!bFound)
+		retval = _getAttribute(id, name, immediate);
+
+	return retval;
+}
+
+string ROMNode::_getAttribute(const string& id, const string& name, bool immediate)
+{
+	string retval = "";
 	bool bFound = false;
 
 	auto it = m_attrs.find(id);
@@ -411,14 +424,14 @@ wstring ROMNode::GetAttribute(const wstring& id, const wstring& name, bool immed
 		ROMNode *parent = GetParent();
 		if (parent != nullptr)
 		{
-			retval = parent->GetAttribute(id, name, immediate);
+			retval = parent->_getAttribute(id, name, immediate);
 		}
 	}
 
 	return retval;
 }
 
-bool ROMNode::GetAttributeExists(const wstring& id, const wstring& name)
+bool ROMNode::GetAttributeExists(const string& id, const string& name)
 {
 	bool bFound = false;
 	auto it = m_attrs.find(id);
@@ -433,7 +446,7 @@ bool ROMNode::GetAttributeExists(const wstring& id, const wstring& name)
 	return bFound;
 }
 
-bool ROMNode::SetAttribute(const wstring& id, const wstring& name, const wstring& value)
+bool ROMNode::SetAttribute(const string& id, const string& name, const string& value)
 {
 	bool retval = true;
 
@@ -443,14 +456,14 @@ bool ROMNode::SetAttribute(const wstring& id, const wstring& name, const wstring
 	return retval;
 }
 
-bool ROMNode::RemoveAttribute(const wstring& id, const wstring& name)
+bool ROMNode::RemoveAttribute(const string& id, const string& name)
 {
 	bool retval = false;
 
 	auto it = m_attrs.find(id);
 	if (it != m_attrs.end())
 	{
-		if (name.length() == 0 || name == L"value")
+		if (name.length() == 0 || name == "value")
 		{
 			m_attrs.erase(it);
 			retval = true;
@@ -470,20 +483,20 @@ bool ROMNode::RemoveAttribute(const wstring& id, const wstring& name)
 	return retval;
 }
 
-bool ROMNode::SetROMObjectValue(const wstring& name, const wstring& value)
+bool ROMNode::SetROMObjectValue(const string& name, const string& value)
 {
 	bool retval = true;
 
-	wstring newName = FindAndReplace(name, L" ", L"_");
+	string newName = ROMUTIL::FindAndReplace(name, " ", "_");
 	m_nodeValues[newName] = value;
 	m_bChanged = retval;
 
 	return retval;
 }
 
-wstring ROMNode::GetROMObjectValue(const wstring& name)
+string ROMNode::GetROMObjectValue(const string& name)
 {
-	wstring retval = L"";
+	string retval = "";
 
 	auto it = m_nodeValues.find(name);
 	if (it != m_nodeValues.end())
@@ -494,7 +507,7 @@ wstring ROMNode::GetROMObjectValue(const wstring& name)
 	return retval;
 }
 
-bool ROMNode::RemoveROMObjectValue(const wstring& name)
+bool ROMNode::RemoveROMObjectValue(const string& name)
 {
 	bool retval = false;
 
@@ -510,9 +523,9 @@ bool ROMNode::RemoveROMObjectValue(const wstring& name)
 }
 
 //rules
-vector<wstring> ROMNode::_evaluateTable(const wstring& evalTable, const wstring& output, bool bGetAll, void* context)
+vector<string> ROMNode::_evaluateTable(const string& evalTable, const string& output, bool bGetAll, void* context)
 {
-	vector<wstring> retval;
+	vector<string> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -521,9 +534,9 @@ vector<wstring> ROMNode::_evaluateTable(const wstring& evalTable, const wstring&
 	return retval;
 }
 
-vector<wstring> ROMNode::_evaluateTable(const wstring& evalTable, const wstring& output, void* context)
+vector<string> ROMNode::_evaluateTable(const string& evalTable, const string& output, void* context)
 {
-	vector<wstring> retval;
+	vector<string> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -532,9 +545,9 @@ vector<wstring> ROMNode::_evaluateTable(const wstring& evalTable, const wstring&
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::_evaluateTable(const wstring& evalTable, bool bGetAll, void* context)
+map<string, vector<string> > ROMNode::_evaluateTable(const string& evalTable, bool bGetAll, void* context)
 {
-	map<wstring, vector<wstring> > retval;
+	map<string, vector<string> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -543,9 +556,9 @@ map<wstring, vector<wstring> > ROMNode::_evaluateTable(const wstring& evalTable,
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::_evaluateTable(const wstring& evalTable, void* context)
+map<string, vector<string> > ROMNode::_evaluateTable(const string& evalTable, void* context)
 {
-	map<wstring, vector<wstring> > retval;
+	map<string, vector<string> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -554,9 +567,9 @@ map<wstring, vector<wstring> > ROMNode::_evaluateTable(const wstring& evalTable,
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::_evaluateTableWithParam(const wstring& evalTable, bool bGetAll, wstring& param, void* context)
+map<string, vector<string> > ROMNode::_evaluateTableWithParam(const string& evalTable, bool bGetAll, string& param, void* context)
 {
-	map<wstring, vector<wstring> > retval;
+	map<string, vector<string> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -565,9 +578,9 @@ map<wstring, vector<wstring> > ROMNode::_evaluateTableWithParam(const wstring& e
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::_evaluateTableWithParam(const wstring& evalTable, wstring& param, void* context)
+map<string, vector<string> > ROMNode::_evaluateTableWithParam(const string& evalTable, string& param, void* context)
 {
-	map<wstring, vector<wstring> > retval;
+	map<string, vector<string> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -576,9 +589,9 @@ map<wstring, vector<wstring> > ROMNode::_evaluateTableWithParam(const wstring& e
 	return retval;
 }
 
-vector<wstring> ROMNode::_evaluateTableWithParam(const wstring& evalTable, const wstring& output, bool bGetAll, wstring& param, void* context)
+vector<string> ROMNode::_evaluateTableWithParam(const string& evalTable, const string& output, bool bGetAll, string& param, void* context)
 {
-	vector<wstring> retval;
+	vector<string> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -587,9 +600,9 @@ vector<wstring> ROMNode::_evaluateTableWithParam(const wstring& evalTable, const
 	return retval;
 }
 
-vector<wstring> ROMNode::_evaluateTableWithParam(const wstring& evalTable, const wstring& output, wstring& param, void* context)
+vector<string> ROMNode::_evaluateTableWithParam(const string& evalTable, const string& output, string& param, void* context)
 {
-	vector<wstring> retval;
+	vector<string> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -598,50 +611,18 @@ vector<wstring> ROMNode::_evaluateTableWithParam(const wstring& evalTable, const
 	return retval;
 }
 
-vector<string> ROMNode::EvaluateTableWithParam(const string& evalTable, const string& output, bool bGetAll, string& param)
+string ROMNode::_getFirstTableResult(const string& tableName, const string& output, void* context)
 {
-    wstring wsParam = MBCStrToWStr(param);
-    vector<string> retval = ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), bGetAll, wsParam));
-    param =ROMUTIL::WStrToMBCStr(wsParam);
-    return retval;
-}
-
-vector<string> ROMNode::EvaluateTableWithParam(const string& evalTable, const string& output, string& param)
-{
-    wstring wsParam = MBCStrToWStr(param);
-    vector<string> retval = ROMUTIL::WStrToMBCStrVector(EvaluateTableWithParam(MBCStrToWStr(evalTable), MBCStrToWStr(output), wsParam));
-    param = ROMUTIL::WStrToMBCStr(wsParam);
-    return retval;
-}
-
-map<string, vector<string> > ROMNode::EvaluateTableWithParam(const string& evalTable, bool bGetAll, string& param)
-{
-    wstring wsParam = ROMUTIL::MBCStrToWStr(param);
-    map<string, vector<string> > retval = ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(ROMUTIL::MBCStrToWStr(evalTable), bGetAll, wsParam));
-    param =ROMUTIL::WStrToMBCStr(wsParam);
-    return retval;
-}
-
-map<string, vector<string> > ROMNode::EvaluateTableWithParam(const string& evalTable, string& param)
-{
-    wstring wsParam = ROMUTIL::MBCStrToWStr(param);
-    map<string, vector<string> > retval = ROMUTIL::WStrToMBCStrMapVector(EvaluateTableWithParam(ROMUTIL::MBCStrToWStr(evalTable), wsParam));
-    param =ROMUTIL::WStrToMBCStr(wsParam);
-    return retval;
-}
-
-wstring ROMNode::_getFirstTableResult(const wstring& tableName, const wstring& output, void* context)
-{
-	wstring retval = L"";
-	vector<wstring> res = _evaluateTable(tableName, output, false, context);
+	string retval = "";
+	vector<string> res = _evaluateTable(tableName, output, false, context);
 	if (res.size() > 0)
 		retval = res[0];
 	return retval;
 }
 
-vector<wstring> ROMNode::_reverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, bool bGetAll, void* context)
+vector<string> ROMNode::_reverseEvaluateTable(const string& evalTable, const string& inputAttr, bool bGetAll, void* context)
 {
-	vector<wstring> retval;
+	vector<string> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -650,9 +631,9 @@ vector<wstring> ROMNode::_reverseEvaluateTable(const wstring& evalTable, const w
 	return retval;
 }
 
-vector<wstring> ROMNode::_reverseEvaluateTable(const wstring& evalTable, const wstring& inputAttr, void* context)
+vector<string> ROMNode::_reverseEvaluateTable(const string& evalTable, const string& inputAttr, void* context)
 {
-	vector<wstring> retval;
+	vector<string> retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -661,9 +642,9 @@ vector<wstring> ROMNode::_reverseEvaluateTable(const wstring& evalTable, const w
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::_reverseEvaluateTable(const wstring& evalTable, bool bGetAll, void* context)
+map<string, vector<string> > ROMNode::_reverseEvaluateTable(const string& evalTable, bool bGetAll, void* context)
 {
-	map<wstring, vector<wstring> > retval;
+	map<string, vector<string> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -672,9 +653,9 @@ map<wstring, vector<wstring> > ROMNode::_reverseEvaluateTable(const wstring& eva
 	return retval;
 }
 
-map<wstring, vector<wstring> > ROMNode::_reverseEvaluateTable(const wstring& evalTable, void* context)
+map<string, vector<string> > ROMNode::_reverseEvaluateTable(const string& evalTable, void* context)
 {
-	map<wstring, vector<wstring> > retval;
+	map<string, vector<string> > retval;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -683,9 +664,9 @@ map<wstring, vector<wstring> > ROMNode::_reverseEvaluateTable(const wstring& eva
 	return retval;
 }
 
-vector<wstring> ROMNode::_getPossibleValues(const wstring& evalTable, const wstring& outputName)
+vector<string> ROMNode::_getPossibleValues(const string& evalTable, const string& outputName)
 {
-	vector<wstring> outputs;
+	vector<string> outputs;
 	EDS::CKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
@@ -694,22 +675,43 @@ vector<wstring> ROMNode::_getPossibleValues(const wstring& evalTable, const wstr
 	return outputs;
 }
 
+string ROMNode::_getSpecialAttribute(const string& input, bool* bFound)
+{
+	string retval;
+	*bFound = false;
+	//parse out any XPATH Queries here and return values
+	if (EDSUTIL::StringContains(input, "xpath("))
+	{
+		string cmdArg(input.begin() + 6, input.end() - 1);
+		//for sibling/child xpath axes to work, eval from root and identify current context by the Object's guid
+		retval = this->GetRoot()->EvaluateXPATH(cmdArg, this->m_guid);
+		*bFound = true;
+	}
+	else if (input == "CLASSID")
+	{
+		retval = this->GetROMObjectID();
+		*bFound = true;
+	}
+
+	return retval;
+}
+
 //IO
 void ROMNode::_createXMLDoc(bool bForceLoad, bool prettyprint)
 {
 	bool bChanged = (bForceLoad || _anyHasChanged());
 	if (bChanged)
 	{
-		wstring genXML = _generateXML(bChanged, prettyprint);
+		string genXML = _generateXML(bChanged, prettyprint);
 #ifdef USE_MSXML
 		if (m_xmlDoc != nullptr)
 			m_xmlDoc.Release();
 		m_xmlDoc = _createMSXMLDoc();
-		VARIANT_BOOL res = m_xmlDoc->loadXML(genXML.c_str()); //-1 is true
+		VARIANT_BOOL res = m_xmlDoc->loadXML(ROMUTIL::Widen(genXML).c_str()); //-1 is true
 #endif
 #ifdef USE_LIBXML
 		m_xmlDoc = nullptr;
-		string buff = WStrToMBCStr(genXML);
+		string buff = Narrow(genXML);
 		m_xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
 #endif
 		_setAllUnchanged();
@@ -791,47 +793,47 @@ bool ROMNode::_anyHasChanged()
 	return retval;
 }
 
-wstring ROMNode::_generateXML(bool bRegen, bool prettyprint)
+string ROMNode::_generateXML(bool bRegen, bool prettyprint)
 {
-	wstring retval;
+	string retval;
 	retval.reserve(BIGSTRING);
 
 	if (bRegen)
 	{
 		//this object
-		wstring beginObject = L"<Object";
-		beginObject+=L" id=\"";
+		string beginObject = "<Object";
+		beginObject+=" id=\"";
 		beginObject+=m_id;
-		beginObject+=L"\" guid=\"";
-		beginObject+=ROMUTIL::MBCStrToWStr(m_guid);
-		beginObject+=L"\" ";
+		beginObject+="\" guid=\"";
+		beginObject+=m_guid;
+		beginObject+="\" ";
 
 		//object values
-		wstring objAttrs = L" ";
+		string objAttrs = " ";
 		for (auto itObjValue = m_nodeValues.begin(); itObjValue != m_nodeValues.end(); itObjValue++)
 		{
 			objAttrs+= itObjValue->first;
-			objAttrs+=L"=\"";
+			objAttrs+="=\"";
 			objAttrs+=itObjValue->second;
-			objAttrs+=L"\" ";
+			objAttrs+="\" ";
 		}
 		beginObject+=objAttrs;
-		beginObject+=L">";
+		beginObject+=">";
 		retval += beginObject;
 
 		if (m_bChanged)
 		{
-			wstring allAttrs = L"";
+			string allAttrs = "";
 			//attributes of this object
 			if (prettyprint)
 			{
-				vector<wstring> attrList;
-				std::transform(m_attrs.begin(), m_attrs.end(), std::back_inserter(attrList), [](const std::unordered_map<wstring, std::unordered_map<wstring, wstring> >::value_type &pair)
+				vector<string> attrList;
+				std::transform(m_attrs.begin(), m_attrs.end(), std::back_inserter(attrList), [](const std::unordered_map<string, std::unordered_map<string, string> >::value_type &pair)
 					{ return pair.first; });
 				std::sort(begin(attrList), end(attrList));
 				for (auto& id : attrList)
 				{
-					wstring attrObject = _generateAttrNode(id);
+					string attrObject = _generateAttrNode(id);
 					allAttrs += attrObject;
 				}
 			}
@@ -839,7 +841,7 @@ wstring ROMNode::_generateXML(bool bRegen, bool prettyprint)
 			{
 				for (auto it = m_attrs.begin(); it != m_attrs.end(); it++)
 				{
-					wstring attrObject = _generateAttrNode(it->first);
+					string attrObject = _generateAttrNode(it->first);
 					allAttrs += attrObject;
 				}
 			}
@@ -858,7 +860,7 @@ wstring ROMNode::_generateXML(bool bRegen, bool prettyprint)
 			retval += node->_generateXML(node->m_bChanged, false);
 		}
 
-		retval+=L"</Object>";
+		retval+="</Object>";
 		m_lastContents = retval;
 	}
 	else
@@ -869,36 +871,36 @@ wstring ROMNode::_generateXML(bool bRegen, bool prettyprint)
 	return retval;
 }
 
-wstring ROMNode::_generateAttrNode(const wstring& id)
+string ROMNode::_generateAttrNode(const string& id)
 {
-	wstring attrObject = L"<Attribute id=\"";
+	string attrObject = "<Attribute id=\"";
 	attrObject += id;
-	attrObject += L"\" ";
+	attrObject += "\" ";
 	auto mapAttrs = m_attrs[id];
 	for (auto itValue = mapAttrs.begin(); itValue != mapAttrs.end(); itValue++)
 	{
 		attrObject += itValue->first;
-		attrObject += L"=\"";
+		attrObject += "=\"";
 		attrObject += ROMUTIL::encodeForXml(itValue->second);
-		attrObject += L"\" ";
+		attrObject += "\" ";
 	}
-	attrObject += L"/>";
+	attrObject += "/>";
 	return attrObject;
 }
 
-wstring ROMNode::SaveXML(bool prettyprint)
+string ROMNode::SaveXML(bool prettyprint)
 {
 	_createXMLDoc(true, prettyprint);
 	return _convertXMLDocToString(prettyprint, m_xmlDoc);
 }
 
-ROMNode* ROMNode::_loadXML(const wstring& xmlStr, bool isFile, ObjectFactory factory)
+ROMNode* ROMNode::_loadXML(const string& xmlStr, bool isFile, ObjectFactory factory)
 {
 	ROMNode* retval = nullptr;
 
 	if (factory == nullptr)
 	{
-		factory = [](const wstring& id){
+		factory = [](const string& id){
 			return new ROMNode(id);
 		};
 	}
@@ -911,11 +913,11 @@ ROMNode* ROMNode::_loadXML(const wstring& xmlStr, bool isFile, ObjectFactory fac
 		VARIANT_BOOL ok = VARIANT_FALSE;
 		if (isFile)
 		{
-			ok = xmlDoc->load(xmlStr.c_str());
+			ok = xmlDoc->load(ROMUTIL::Widen(xmlStr).c_str());
 		}
 		else
 		{
-			ok = xmlDoc->loadXML(_bstr_t(xmlStr.c_str()));
+			ok = xmlDoc->loadXML(_bstr_t(ROMUTIL::Widen(xmlStr).c_str()));
 		}
 		
 		if (ok == VARIANT_TRUE)
@@ -926,7 +928,7 @@ ROMNode* ROMNode::_loadXML(const wstring& xmlStr, bool isFile, ObjectFactory fac
 		else
 		{
 			if (xmlDoc != nullptr && xmlDoc->parseError->errorCode != 0)
-				ReportROMError(ToASCIIString((wstring)(xmlDoc->parseError->reason)));
+				ReportROMError(ROMUTIL::Narrow((wstring)xmlDoc->parseError->reason));
 			else
 				ReportROMError("Error loading XML");
 		}
@@ -934,7 +936,7 @@ ROMNode* ROMNode::_loadXML(const wstring& xmlStr, bool isFile, ObjectFactory fac
 	}
 	catch(const _com_error& e)
 	{
-		ReportROMError(ToASCIIString((wstring)(e.Description())));
+		ReportROMError(ROMUTIL::Narrow((wstring)e.Description()));
 	}
 	catch (...)
 	{
@@ -947,7 +949,7 @@ ROMNode* ROMNode::_loadXML(const wstring& xmlStr, bool isFile, ObjectFactory fac
 #ifdef USE_LIBXML
 	try
 	{
-		string buff = WStrToMBCStr(xmlStr);
+		string buff = Narrow(xmlStr);
 		Document xmlDoc = nullptr;
 		
 		if (isFile)
@@ -987,20 +989,20 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 	ROMNode* newNode = nullptr;
 
 #ifdef USE_MSXML
-	wstring id = objectNode->attributes->getNamedItem("id")->nodeValue.bstrVal;
-	wstring guid = objectNode->attributes->getNamedItem("guid")->nodeValue.bstrVal;
+	string id = ROMUTIL::Narrow(objectNode->attributes->getNamedItem("id")->nodeValue.bstrVal);
+	string guid = ROMUTIL::Narrow(objectNode->attributes->getNamedItem("guid")->nodeValue.bstrVal);
 
 	newNode = factory(id);
-	newNode->m_guid = ToASCIIString(guid);	
+	newNode->m_guid = guid;
 
 	//set object values
 	for (long i = 0; i < objectNode->attributes->Getlength(); i++)
 	{
 		Node objAttr = objectNode->attributes->Getitem(i);
-		wstring attrName = objAttr->nodeName.GetBSTR();
-		if (attrName != L"id" && attrName != L"guid")
+		string attrName = ROMUTIL::Narrow(objAttr->nodeName.GetBSTR());
+		if (attrName != "id" && attrName != "guid")
 		{
-			wstring attrValue = objAttr->nodeValue.bstrVal;
+			string attrValue = ROMUTIL::Narrow(objAttr->nodeValue.bstrVal);
 			newNode->SetROMObjectValue(attrName, attrValue);
 		}
 	}
@@ -1010,13 +1012,13 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 	for (long attrCnt = 0; attrCnt < attrNodes->Getlength(); attrCnt++)
 	{
 		Node attrNode = attrNodes->item[attrCnt];
-		wstring idAttr = attrNode->attributes->getNamedItem("id")->nodeValue.bstrVal;
+		string idAttr = ROMUTIL::Narrow(attrNode->attributes->getNamedItem("id")->nodeValue.bstrVal);
 		for (long i = 0; i < attrNode->attributes->Getlength(); i++)
 		{
 			Node attr = attrNode->attributes->Getitem(i);
-			wstring attrName = attr->nodeName.GetBSTR();
-			wstring attrValue = attr->nodeValue.bstrVal;
-			if (attrName != L"id")
+			string attrName = ROMUTIL::Narrow(attr->nodeName.GetBSTR());
+			string attrValue = ROMUTIL::Narrow(attr->nodeValue.bstrVal);
+			if (attrName != "id")
 				newNode->SetAttribute(idAttr, attrName, attrValue);
 		}
 	}
@@ -1035,8 +1037,8 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 #endif
 
 #ifdef USE_LIBXML
-	wstring id = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)"id"));
-	wstring guid = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)"guid"));
+	string id = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)"id"));
+	string guid = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)"guid"));
 	if (parent == nullptr)
 	{
 		DestroyROMObject();
@@ -1053,10 +1055,10 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 	//set object values
 	for (Attribute objValue = objectNode->properties; objValue != nullptr; objValue = objValue->next)
 	{
-		wstring attrName = XMLStrToWStr(objValue->name);
-		if (attrName != L"id" && attrName != L"guid")
+		string attrName = XMLStrToWStr(objValue->name);
+		if (attrName != "id" && attrName != "guid")
 		{
-			wstring value = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)WStrToMBCStr(id).c_str()));
+			string value = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)Narrow(id).c_str()));
 			newNode->SetROMObjectValue(id, value);
 		}
 	}
@@ -1071,13 +1073,13 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 		for (int i = 0; i < allAttrs->nodeNr; i++)
 		{
 			Node attrNode = allAttrs->nodeTab[i];
-			wstring idAttr = XMLStrToWStr(xmlGetProp(attrNode, (xmlChar*)"id"));
+			string idAttr = XMLStrToWStr(xmlGetProp(attrNode, (xmlChar*)"id"));
 			for (Attribute attr = attrNode->properties; attr != nullptr; attr = attr->next)
 			{
-				wstring name = XMLStrToWStr(attr->name);
-				if (name != L"id")
+				string name = XMLStrToWStr(attr->name);
+				if (name != "id")
 				{
-					wstring value = XMLStrToWStr(xmlGetProp(attrNode, (xmlChar*)WStrToMBCStr(name).c_str()));
+					string value = XMLStrToWStr(xmlGetProp(attrNode, (xmlChar*)Narrow(name).c_str()));
 					newNode->SetAttribute(idAttr, name, value);
 				}
 			}
@@ -1106,7 +1108,7 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 	newNode->m_bChanged = true;
 	newNode->_createXMLDoc(false, false);
 	string str;
-	wstring xml = _convertXMLDocToString(true, newNode->m_xmlDoc);
+	string xml = _convertXMLDocToString(true, newNode->m_xmlDoc);
 	str.assign(xml.begin(), xml.end());
 	ReportROMError(str);
 #endif
@@ -1123,12 +1125,12 @@ void ROMNode::_setAllUnchanged()
 	}
 }
 
-wstring	ROMNode::EvaluateXPATH(const wstring& xpath, const string& guid)
+string	ROMNode::EvaluateXPATH(const string& xpath, const string& guid)
 {
-	wstring retval;
-	wstring match = L"<xsl:template match=\"/\"><xsl:for-each select=\"//Object[@guid=\'";
-	match += ROMUTIL::MBCStrToWStr(guid) + L"\']\"><xsl:value-of select=\"";
-	wstring xslt_text = XSLT_TOP + match + xpath + XSLT_BOTTOM;
+	string retval;
+	string match = "<xsl:template match=\"/\"><xsl:for-each select=\"//Object[@guid=\'";
+	match += guid + "\']\"><xsl:value-of select=\"";
+	string xslt_text = XSLT_TOP + match + xpath + XSLT_BOTTOM;
 
 	_createXMLDoc(false, false);
 	if (m_xmlDoc != nullptr)
@@ -1139,11 +1141,11 @@ wstring	ROMNode::EvaluateXPATH(const wstring& xpath, const string& guid)
 		_bstr_t* valPtr = nullptr;
 		_bstr_t val = m_xmlDoc->transformNode(xsltDoc);
 		valPtr = &val;
-		retval = BSTR_T_ToWString(valPtr);
+		retval = ROMUTIL::Narrow(valPtr->GetBSTR());
 		xsltDoc.Release();
 #endif
 #ifdef USE_LIBXML
-		string buff = WStrToMBCStr(xslt_text);
+		string buff = Narrow(xslt_text);
 		Document xsltDoc = xmlParseMemory(buff.c_str(), (int)buff.length());
 
 		xsltStylesheetPtr xsl = xsltParseStylesheetDoc(xsltDoc);
@@ -1161,9 +1163,9 @@ wstring	ROMNode::EvaluateXPATH(const wstring& xpath, const string& guid)
 	return retval;
 }
 
-wstring ROMNode::_convertXMLDocToString(bool prettyprint, Document xmlDoc)
+string ROMNode::_convertXMLDocToString(bool prettyprint, Document xmlDoc)
 {
-	wstring retval;
+	string retval;
 	retval.reserve(BIGSTRING);
 
 	if (xmlDoc != nullptr)
@@ -1179,7 +1181,7 @@ wstring ROMNode::_convertXMLDocToString(bool prettyprint, Document xmlDoc)
 		if (pXMLFirstChild != nullptr)
 		{
 			pXMLAttributeMap = pXMLFirstChild->Getattributes();
-			pXMLAttributeMap->getNamedItem(bstr_t("encoding"));
+			pXMLEncodNode = pXMLAttributeMap->getNamedItem(bstr_t("encoding"));
 		}
 		if (pXMLEncodNode != nullptr)
 			pXMLEncodNode->PutnodeValue(bstr_t("utf-8")); //encoding = UTF-8. Serializer usually omits it in output, it is the default encoding
@@ -1212,11 +1214,24 @@ wstring ROMNode::_convertXMLDocToString(bool prettyprint, Document xmlDoc)
 			if (prettyprint)
 				pWriter->put_indent(VARIANT_TRUE);
 
+			pWriter->put_encoding(_bstr_t("UTF-8"));
+
 			pReader->putContentHandler(handler);
 			pReader->parse(xmlDoc.GetInterfacePtr());
 
-			//utf-16 here
-			retval = (wstring)pWriter->output.bstrVal;
+			//utf-16 here, MXXMLWriter only respects alternate encoding when output to file
+			wstring wstr = pWriter->output.bstrVal;
+			int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), nullptr, 0, nullptr, nullptr);
+			string ret(size_needed, 0);
+			WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &ret[0], size_needed, nullptr, nullptr);
+			
+			string::size_type found;
+			found = ret.find("UTF-16");
+			if (found != string::npos)
+			{
+				ret.replace(found, 6, "UTF-8");
+			}
+			retval = ret;
 		}
 #endif
 #ifdef USE_LIBXML
@@ -1227,6 +1242,7 @@ wstring ROMNode::_convertXMLDocToString(bool prettyprint, Document xmlDoc)
 			format = 1;
 		xmlDocDumpFormatMemory(m_xmlDoc, &xmlbuff, &buffersize, format);
 		retval = XMLStrToWStr(xmlbuff);
+		xmlFree(xmlbuff);
 #endif
 	}
 	return retval;

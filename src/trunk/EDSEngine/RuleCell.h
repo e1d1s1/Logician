@@ -21,7 +21,7 @@ class CToken
 {
 public:
 	size_t ID;
-	wstring Value;
+	string Value;
 };
 
 class CRuleCell

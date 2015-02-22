@@ -20,6 +20,7 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 #include <string>
 #include <functional>
 
+#include "utilities.h"
 #include "RuleTable.h"
 #include "TableSet.h"
 #include "XMLWrapper.h"
@@ -36,93 +37,68 @@ namespace EDS
 	public:
 		~CKnowledgeBase(void);
 		CKnowledgeBase();
-		CKnowledgeBase(wstring knowledge_file);
-		bool CreateKnowledgeBase(wstring knowledge_file);
-		bool CreateKnowledgeBaseFromString(wstring xmlStr);
+		CKnowledgeBase(string knowledge_file);
+		bool CreateKnowledgeBase(string knowledge_file);
+		bool CreateKnowledgeBaseFromString(string xmlStr);
 		size_t TableCount() {return m_TableSet.Count();}
 		bool IsOpen() {return m_IsOpen;}
 		void EnableRemoteDebugger(bool enable) { m_remoteDebugging = enable; }
 		void SetMaxThreads(size_t threads);
 
-		bool TableHasScript(const wstring& tableName);
-		bool TableIsGetAll(const wstring& tableName);
-		vector<wstring> EvaluateTableWithParam(const wstring& tableName, const wstring& outputAttr, bool bGetAll, wstring& param, void* context = nullptr);
-		vector<wstring> EvaluateTableWithParam(const wstring& tableName, const wstring& outputAttr, wstring& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, context); }
-		map<wstring, vector<wstring> > EvaluateTableWithParam(const wstring& tableName, bool bGetAll, wstring& param, void* context = nullptr);
-		map<wstring, vector<wstring> > EvaluateTableWithParam(const wstring& tableName, wstring& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, TableIsGetAll(tableName), param, context); }
-		vector<wstring> EvaluateTable(const wstring& tableName, const wstring& outputAttr, bool bGetAll, void* context = nullptr);
-		vector<wstring> EvaluateTable(const wstring& tableName, const wstring& outputAttr, void* context = nullptr) { return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName), context); }
-		map<wstring, vector<wstring> > EvaluateTable(const wstring& tableName, bool bGetAll, void* context = nullptr);
-		map<wstring, vector<wstring> > EvaluateTable(const wstring& tableName, void* context = nullptr) { return EvaluateTable(tableName, TableIsGetAll(tableName), context); }
-		wstring GetFirstTableResult(const wstring& tableName, const wstring& outputAttr, void* context = nullptr);
-		vector<wstring> ReverseEvaluateTable(const wstring& tableName, const wstring& inputAttr, bool bGetAll, void* context = nullptr);
-		vector<wstring> ReverseEvaluateTable(const wstring& tableName, const wstring& inputAttr, void* context = nullptr) { return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName), context); }
-		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring& tableName, bool bGetAll, void* context = nullptr);
-		map<wstring, vector<wstring> > ReverseEvaluateTable(const wstring& tableName, void* context = nullptr) { return ReverseEvaluateTable(tableName, TableIsGetAll(tableName), context); }
-
-
-		vector<wstring> GetInputAttrs(const wstring& tableName) { return m_TableSet.GetInputAttrs(tableName); }
-		vector<wstring> GetInputDependencies(const wstring& tableName) { return m_TableSet.GetInputDependencies(tableName); }
-		vector<wstring> GetOutputAttrs(const wstring& tableName) { return m_TableSet.GetOutputAttrs(tableName); }
-		vector<wstring> GetAllPossibleOutputs(const wstring& tableName, const wstring& outputName);
-
-		//Translations
-		wstring Localize(const wstring& baseValue, const wstring& locale) { return Translate(baseValue, L"", locale); }
-		wstring DeLocalize(const wstring& localeValue);
-		wstring Translate(const wstring& source, const wstring& sourceLocale, const wstring& destLocale);
-
-		//ASCII overloads
-		CKnowledgeBase(string knowledge_file);
-		bool CreateKnowledgeBase(string knowledge_fil);
-		bool CreateKnowledgeBaseFromString(string xmlStr);
 		bool TableHasScript(const string& tableName);
 		bool TableIsGetAll(const string& tableName);
-		vector<string> EvaluateTableWithParam(const string& tableName, const string& outputAttr, string& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, context); }
 		vector<string> EvaluateTableWithParam(const string& tableName, const string& outputAttr, bool bGetAll, string& param, void* context = nullptr);
-		map<string, vector<string> > EvaluateTableWithParam(const string& tableName, string& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, TableIsGetAll(tableName), param, context); }
+		vector<string> EvaluateTableWithParam(const string& tableName, const string& outputAttr, string& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, context); }
 		map<string, vector<string> > EvaluateTableWithParam(const string& tableName, bool bGetAll, string& param, void* context = nullptr);
-		vector<string> EvaluateTable(const string& tableName, const string& outputAttr, void* context = nullptr) { return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName), context); }
+		map<string, vector<string> > EvaluateTableWithParam(const string& tableName, string& param, void* context = nullptr) { return EvaluateTableWithParam(tableName, TableIsGetAll(tableName), param, context); }
 		vector<string> EvaluateTable(const string& tableName, const string& outputAttr, bool bGetAll, void* context = nullptr);
-		map<string, vector<string> > EvaluateTable(const string& tableName, void* context = nullptr) { return EvaluateTable(tableName, TableIsGetAll(tableName), context); }
+		vector<string> EvaluateTable(const string& tableName, const string& outputAttr, void* context = nullptr) { return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName), context); }
 		map<string, vector<string> > EvaluateTable(const string& tableName, bool bGetAll, void* context = nullptr);
+		map<string, vector<string> > EvaluateTable(const string& tableName, void* context = nullptr) { return EvaluateTable(tableName, TableIsGetAll(tableName), context); }
 		string GetFirstTableResult(const string& tableName, const string& outputAttr, void* context = nullptr);
-		vector<string> ReverseEvaluateTable(const string& tableName, const string& inputAttr, void* context = nullptr) { return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName), context); }
 		vector<string> ReverseEvaluateTable(const string& tableName, const string& inputAttr, bool bGetAll, void* context = nullptr);
-		map<string, vector<string> > ReverseEvaluateTable(const string& tableName, void* context = nullptr) { return ReverseEvaluateTable(tableName, TableIsGetAll(tableName), context); }
+		vector<string> ReverseEvaluateTable(const string& tableName, const string& inputAttr, void* context = nullptr) { return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName), context); }
 		map<string, vector<string> > ReverseEvaluateTable(const string& tableName, bool bGetAll, void* context = nullptr);
+		map<string, vector<string> > ReverseEvaluateTable(const string& tableName, void* context = nullptr) { return ReverseEvaluateTable(tableName, TableIsGetAll(tableName), context); }
 
-		vector<string> GetInputAttrs(const string& tableName);
-		vector<string> GetInputDependencies(const string& tableName);
-		vector<string> GetOutputAttrs(const string& tableName);
+
+		vector<string> GetInputAttrs(const string& tableName) { return m_TableSet.GetInputAttrs(tableName); }
+		vector<string> GetInputDependencies(const string& tableName) { return m_TableSet.GetInputDependencies(tableName); }
+		vector<string> GetOutputAttrs(const string& tableName) { return m_TableSet.GetOutputAttrs(tableName); }
 		vector<string> GetAllPossibleOutputs(const string& tableName, const string& outputName);
 
-		std::function<void(const wstring&)> DebugHandlerPtr;
-		std::function<wstring(const wstring&, void*)> InputValueGetterPtr;
+		//Translations
+		string Localize(const string& baseValue, const string& locale) { return Translate(baseValue, "", locale); }
+		string DeLocalize(const string& localeValue);
+		string Translate(const string& source, const string& sourceLocale, const string& destLocale);
+
+		std::function<void(const string&)> DebugHandlerPtr;
+		std::function<string(const string&, void*)> InputValueGetterPtr;
 
 	private:
 		bool _parseXML(Document xmlDocument);
-		vector<pair<wstring, vector<CRuleCell> > > _getTableRowFromXML(NodeList nodes, Document xmlDocument);
-		void _sendToDebugServer(const wstring& msg);
-		wstring _XMLSafe(const wstring& str);
-		bool _debugThisTable(const wstring& tableName);
+		vector<pair<string, vector<CRuleCell> > > _getTableRowFromXML(NodeList nodes, Document xmlDocument);
+		void _sendToDebugServer(const string& msg);
+		string _XMLSafe(const string& str);
+		bool _debugThisTable(const string& tableName);
 
 		CBimapper m_stringsMap;
 		CTableSet m_TableSet;
 		int iRecursingDepth;
 		bool m_DEBUGGING_MSGS;
-		vector<wstring> m_DebugTables;
-		wstring m_DEBUGGING_CON;
+		vector<string> m_DebugTables;
+		string m_DEBUGGING_CON;
 		bool m_remoteDebugging;
 		bool m_IsOpen;
-		wstring m_jsCode, m_pyCode;
-		unordered_map<size_t, unordered_map<wstring, wstring>> mapBaseIDtoTranslations;
+		string m_jsCode, m_pyCode;
+		unordered_map<size_t, unordered_map<string, string>> mapBaseIDtoTranslations;
 
 	//helper functions
 	#ifdef WIN32
-	wstring VariantToWStr(_variant_t mVar)
+	string VariantToMBCStr(_variant_t mVar)
 	{
-		wstring retval = mVar.bstrVal;
-		return retval;
+		wstring ws = mVar.bstrVal;
+		return EDSUTIL::Narrow(ws);
 	}
 	#endif
 	};

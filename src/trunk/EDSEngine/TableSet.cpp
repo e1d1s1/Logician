@@ -31,7 +31,7 @@ CTableSet::~CTableSet(void)
 {
 }
 
-void CTableSet::AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests, vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues, vector<wstring> formulaInputs, CBimapper *stringMap, wstring name, bool GetAll)
+void CTableSet::AddTable(vector<pair<string, vector<CRuleCell> > > inputAttrsTests, vector<pair<string, vector<CRuleCell> > > outputAttrsValues, vector<string> formulaInputs, CBimapper *stringMap, string name, bool GetAll)
 {
 	CRuleTable table (inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll);
 	m_tables[table.m_Name] = table;
@@ -39,7 +39,7 @@ void CTableSet::AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTe
 
 void CTableSet::Initialize()
 {
-	for (map<wstring, CRuleTable>::iterator it = m_tables.begin(); it != m_tables.end(); it++)
+	for (map<string, CRuleTable>::iterator it = m_tables.begin(); it != m_tables.end(); it++)
 	{
 		LoadTableInfo(&(*it).second);
 	}
@@ -49,31 +49,31 @@ void CTableSet::Initialize()
 void CTableSet::LoadTableInfo(CRuleTable *table)
 {
 	//get the input info for this table
-	vector<wstring> inputs = table->GetAllInputAttrNames();
+	vector<string> inputs = table->GetAllInputAttrNames();
 	if (inputs.size() > 0)
 		m_inputAttrsByTable[table->m_Name] = inputs;
 
 	//outputs
-	vector<wstring> outputs = table->GetAllOutputAttrNames();
+	vector<string> outputs = table->GetAllOutputAttrNames();
 	if (outputs.size() > 0)
 		m_outputAttrsByTable[table->m_Name] = outputs;
 
 	//dependancies
-	vector<wstring> inputDeps = table->GetAllInputDependencies();
-	for (vector<wstring>::iterator it = outputs.begin(); it != outputs.end(); it++)
+	vector<string> inputDeps = table->GetAllInputDependencies();
+	for (vector<string>::iterator it = outputs.begin(); it != outputs.end(); it++)
 	{
 		//check for table chaining
-		vector<wstring> values = table->GetAllPossibleOutputs((*it));
-		for (vector<wstring>::iterator itValue = values.begin(); itValue != values.end(); itValue++)
+		vector<string> values = table->GetAllPossibleOutputs((*it));
+		for (vector<string>::iterator itValue = values.begin(); itValue != values.end(); itValue++)
 		{
-			if (StringContains(*itValue, L"eval("))
+			if (StringContains(*itValue, "eval("))
 			{
-				wstring cmdArgs((*itValue).begin() + 5, (*itValue).end() - 1);
-				vector<wstring> args = Split(cmdArgs, L",");
+				string cmdArgs((*itValue).begin() + 5, (*itValue).end() - 1);
+				vector<string> args = Split(cmdArgs, ",");
 				if (args.size() > 0)
 				{
-					vector<wstring> chainInputs = ParseTablesAndChainsForInputs(args[0]); //recursive
-					for (vector<wstring>::iterator itChain = chainInputs.begin(); itChain != chainInputs.end(); itChain++)
+					vector<string> chainInputs = ParseTablesAndChainsForInputs(args[0]); //recursive
+					for (vector<string>::iterator itChain = chainInputs.begin(); itChain != chainInputs.end(); itChain++)
 					{
 						if (find(inputDeps.begin(), inputDeps.end(), *itChain) == inputDeps.end())
 							inputDeps.push_back(*itChain);
@@ -88,30 +88,30 @@ void CTableSet::LoadTableInfo(CRuleTable *table)
 
 }
 
-vector<wstring> CTableSet::ParseTablesAndChainsForInputs(const wstring& tableName)
+vector<string> CTableSet::ParseTablesAndChainsForInputs(const string& tableName)
 {
-	vector<wstring> retval;
+	vector<string> retval;
 
 	if (m_tables.find(tableName) == m_tables.end())
 		return retval;
 
 	CRuleTable table = m_tables[tableName];
 	retval = table.GetAllInputDependencies();
-	vector<wstring> outputs = table.GetAllOutputAttrNames();
+	vector<string> outputs = table.GetAllOutputAttrNames();
 
-	for (vector<wstring>::iterator it = outputs.begin(); it != outputs.end(); it++)
+	for (vector<string>::iterator it = outputs.begin(); it != outputs.end(); it++)
 	{
-		vector<wstring> values = table.GetAllPossibleOutputs((*it));
-		for (vector<wstring>::iterator itValue = values.begin(); itValue != values.end(); itValue++)
+		vector<string> values = table.GetAllPossibleOutputs((*it));
+		for (vector<string>::iterator itValue = values.begin(); itValue != values.end(); itValue++)
 		{
-			if (StringContains(*itValue, L"eval("))
+			if (StringContains(*itValue, "eval("))
 			{
-				wstring cmdArgs((*itValue).begin() + 5, (*itValue).end() - 1);
-				vector<wstring> args = Split(cmdArgs, L",");
+				string cmdArgs((*itValue).begin() + 5, (*itValue).end() - 1);
+				vector<string> args = Split(cmdArgs, ",");
 				if (args.size() > 0)
 				{
-					vector<wstring> chainInputs = ParseTablesAndChainsForInputs(args[0]);
-					for (vector<wstring>::iterator itChain = chainInputs.begin(); itChain != chainInputs.end(); itChain++)
+					vector<string> chainInputs = ParseTablesAndChainsForInputs(args[0]);
+					for (vector<string>::iterator itChain = chainInputs.begin(); itChain != chainInputs.end(); itChain++)
 					{
 						if (find(retval.begin(), retval.end(), *itChain) == retval.end())
 							retval.push_back(*itChain);
@@ -124,7 +124,7 @@ vector<wstring> CTableSet::ParseTablesAndChainsForInputs(const wstring& tableNam
 	return retval;
 }
 
-CRuleTable* CTableSet::GetTable(const wstring& tableName)
+CRuleTable* CTableSet::GetTable(const string& tableName)
 {
 	if (m_tables.find(tableName) != m_tables.end())
 		return &m_tables[tableName];
@@ -132,7 +132,7 @@ CRuleTable* CTableSet::GetTable(const wstring& tableName)
 		return nullptr;
 }
 
-CRuleTable CTableSet::GetTableCopy(const wstring& tableName, bool *found)
+CRuleTable CTableSet::GetTableCopy(const string& tableName, bool *found)
 {
 	*found = m_tables.find(tableName) != m_tables.end();
 	if (*found)
@@ -141,28 +141,28 @@ CRuleTable CTableSet::GetTableCopy(const wstring& tableName, bool *found)
 		return CRuleTable();
 }
 
-vector<wstring> CTableSet::GetInputAttrs(const wstring& tableName)
+vector<string> CTableSet::GetInputAttrs(const string& tableName)
 {
 	if (m_inputAttrsByTable.find(tableName) != m_inputAttrsByTable.end())
 		return m_inputAttrsByTable[tableName];
 	else
-		return vector<wstring>();
+		return vector<string>();
 }
 
-vector<wstring> CTableSet::GetOutputAttrs(const wstring&tableName)
+vector<string> CTableSet::GetOutputAttrs(const string&tableName)
 {
 	if (m_outputAttrsByTable.find(tableName) != m_outputAttrsByTable.end())
 		return m_outputAttrsByTable[tableName];
 	else
-		return vector<wstring>();
+		return vector<string>();
 }
 
-vector<wstring> CTableSet::GetInputDependencies(const wstring&tableName)
+vector<string> CTableSet::GetInputDependencies(const string&tableName)
 {
 	if (m_outputAttrsByTable.find(tableName) != m_outputAttrsByTable.end())
 		return m_inputDependenciesByTable[tableName];
 	else
-		return vector<wstring>();
+		return vector<string>();
 }
 
 size_t CTableSet::Count()

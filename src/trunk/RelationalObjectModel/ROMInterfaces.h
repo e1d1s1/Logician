@@ -29,12 +29,12 @@ namespace ROM
 	class IDictionaryInterface
 	{
 	public:
-		virtual void LoadDictionary(const wstring& dictionaryTable) = 0;
-		virtual ROMDictionaryAttribute* GetDictionaryAttr(const wstring& dictAttrName) = 0;
-		virtual map<wstring, ROMDictionaryAttribute>* GetAllDictionaryAttrs() = 0;
+		virtual void LoadDictionary(const string& dictionaryTable) = 0;
+		virtual ROMDictionaryAttribute* GetDictionaryAttr(const string& dictAttrName) = 0;
+		virtual map<string, ROMDictionaryAttribute>* GetAllDictionaryAttrs() = 0;
 
 #ifdef CLR //these internal methods are called by .NET to assist with passing of managed objects
-		virtual void _loadDictionary(const wstring& dictionaryTable, void* context) = 0;
+		virtual void _loadDictionary(const string& dictionaryTable, void* context) = 0;
 #endif
 	};
 }
