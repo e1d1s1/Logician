@@ -26,12 +26,12 @@ public:
 	CBimapper(void);
 	~CBimapper(void);
 
-	void AddString(size_t id, const wstring& s);
-	wstring GetStringByID(size_t id);
-	size_t GetIDByString(const wstring& s);
+	void AddString(size_t id, const string& s);
+	string GetStringByID(size_t id);
+	size_t GetIDByString(const string& s);
 
 private:
-	unordered_map<size_t, wstring> m_IndexToStringsMap;
-	unordered_map<wstring, size_t> m_StringsToIndexMap;
+	unordered_map<size_t, string> m_IndexToStringsMap;
+	unordered_map<string, size_t> m_StringsToIndexMap;
 	size_t maxID;
 };

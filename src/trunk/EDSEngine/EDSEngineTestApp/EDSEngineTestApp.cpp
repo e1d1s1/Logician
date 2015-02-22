@@ -21,20 +21,6 @@ void Log(std::string strLogLine, int thread_id)
 	std::cout<<strLogLine<<endl;
 }
 
-void Log(std::wstring strLogLine, int thread_id)
-{
-    std::cout<<"Thread: "<<thread_id<<" ";
-	std::wcout<<strLogLine<<endl;
-}
-
-std::string stringifyDouble(double x)
-{
-	std::ostringstream o;
-	if (!(o << x))
-	 throw std::runtime_error("stringify(double)");
-	return o.str();
-}
-
 class TestResult
 {
 public:
@@ -83,25 +69,25 @@ void pause()
 
 vector<TestResult> testResults;
 
-void DebugMessage(const wstring& msg)
+void DebugMessage(const string& msg)
 {
-	Log(L"DEBUGGER: " + msg, -1);
+	Log("DEBUGGER: " + msg, -1);
 }
 
 int runTest(int thread_id)
 //int main(int argc, char* argv[])
 {
-	map<wstring, wstring> state;
+	map<string, string> state;
 	//Loading
 	TestResult res;
 	Log("Loading Test project", thread_id);
 	//load up some sample table
 	#ifndef __GNUC__
-	EDS::CKnowledgeBase knowledge(L"..\\EDSEngineTestApp\\test_project.gz");
+	EDS::CKnowledgeBase knowledge("..\\EDSEngineTestApp\\test_project.gz");
 	if (!knowledge.IsOpen())
-		knowledge.CreateKnowledgeBase(L"test_project.gz");
+		knowledge.CreateKnowledgeBase("test_project.gz");
 	#else
-	EDS::CKnowledgeBase knowledge(L"../../test_project.gz");
+	EDS::CKnowledgeBase knowledge("../../test_project.gz");
 	#endif
 
 	if (!knowledge.IsOpen())
@@ -116,9 +102,9 @@ int runTest(int thread_id)
 	//decisionlogic connection
 	knowledge.EnableRemoteDebugger(false);
 
-	knowledge.InputValueGetterPtr = [&](const wstring& attrName, void* ctx)
+	knowledge.InputValueGetterPtr = [&](const string& attrName, void* ctx)
 	{
-		wstring retval;
+		string retval;
 		auto it = state.find(attrName);
 		if (it != end(state))
 		{
@@ -127,7 +113,7 @@ int runTest(int thread_id)
 		return retval;
 	};
 
-	string s = stringifyDouble(knowledge.TableCount());
+	string s = to_string(knowledge.TableCount());
 	Log("# of Tables loaded: " + s, thread_id);
 	if (s == "14")
 	{
@@ -139,15 +125,15 @@ int runTest(int thread_id)
 	}
 
 	//getting a table's attrs
-	wstring tableName = L"testtable1";
+	string tableName = "testtable1";
 	res.Reset();
 	Log("Loading attr output names for testtable1", thread_id);
-	vector<wstring> allOutputNames = knowledge.GetOutputAttrs(tableName);
+	vector<string> allOutputNames = knowledge.GetOutputAttrs(tableName);
 	for (size_t i = 0; i < allOutputNames.size(); i++)
 	{
 		Log(allOutputNames[i], thread_id);
 	}
-	if (allOutputNames.size() == 2 && allOutputNames[0] == L"anotherOutput" && allOutputNames[1] == L"outputAttr1")
+	if (allOutputNames.size() == 2 && allOutputNames[0] == "anotherOutput" && allOutputNames[1] == "outputAttr1")
 	{
 		res.SetResult(true, "", thread_id);
 	}
@@ -158,12 +144,12 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("Loading attr input names for testtable1", thread_id);
-	vector<wstring> allInputNames = knowledge.GetInputAttrs(tableName);
+	vector<string> allInputNames = knowledge.GetInputAttrs(tableName);
 	for (size_t i = 0; i < allInputNames.size(); i++)
 	{
 		Log(allInputNames[i], thread_id);
 	}
-	if (allInputNames.size() == 2 && allInputNames[0] == L"inputAttr1" && allInputNames[1] == L"inputAttr2" )
+	if (allInputNames.size() == 2 && allInputNames[0] == "inputAttr1" && allInputNames[1] == "inputAttr2" )
 	{
 		res.SetResult(true, "", thread_id);
 	}
@@ -174,14 +160,14 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("Loading dependency names for testtable1", thread_id);
-	vector<wstring> allDepNames = knowledge.GetInputDependencies(tableName);
+	vector<string> allDepNames = knowledge.GetInputDependencies(tableName);
 	for (size_t i = 0; i < allDepNames.size(); i++)
 	{
 		Log(allDepNames[i], thread_id);
 	}
-	if (allDepNames.size() == 3 && allDepNames[0] == L"inputAttr1" &&
-		allDepNames[1] == L"inputAttr2" &&
-		allDepNames[2] == L"outsideAttr1" )
+	if (allDepNames.size() == 3 && allDepNames[0] == "inputAttr1" &&
+		allDepNames[1] == "inputAttr2" &&
+		allDepNames[2] == "outsideAttr1" )
 	{
 		res.SetResult(true, "", thread_id);
 	}
@@ -192,21 +178,22 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("Getting all possible output values for outputAttr1", thread_id);
-	vector<wstring> allOutputs = knowledge.GetAllPossibleOutputs(tableName, L"outputAttr1");
+	vector<string> allOutputs = knowledge.GetAllPossibleOutputs(tableName, "outputAttr1");
 	for (size_t i = 0; i < allOutputs.size(); i++)
 	{
 		Log(allOutputs[i], thread_id);
 	}
-	if (allOutputs.size() == 9 &&
-		allOutputs[0] == L"1" &&
-		allOutputs[1] == L"2" &&
-		allOutputs[2] == L"get(outsideAttr1) with concat" &&
-		allOutputs[3] == L"4" &&
-		allOutputs[4] == L"5" &&
-		allOutputs[5] == L"py(get(outsideAttr1) + 2)" &&
-		allOutputs[6] == L"js(get(outsideAttr1) + 2)" &&
-		allOutputs[7] == L"js(alterparameter())" &&
-		allOutputs[8] == L"py(alterparameter())")
+	if (allOutputs.size() == 10 &&
+		allOutputs[0] == "1" &&
+		allOutputs[1] == "2" &&
+		allOutputs[2] == "get(outsideAttr1) with concat" &&
+		allOutputs[3] == "4" &&
+		allOutputs[4] == "5" &&
+		allOutputs[5] == "py(get(outsideAttr1) + 2)" &&
+		allOutputs[6] == "js(get(outsideAttr1) + 2)" &&
+		allOutputs[7] == "js(alterparameter())" &&
+		allOutputs[8] == "py(alterparameter())" &&
+		allOutputs[9] == "Threading")
 	{
 		res.SetResult(true, "", thread_id);
 	}
@@ -226,12 +213,12 @@ int runTest(int thread_id)
 	//testing table evaluation
 	res.Reset();
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', get first only", thread_id);
-	state[L"inputAttr1"] = L"C";
-	map<wstring, vector<wstring> > results2 = knowledge.EvaluateTable(tableName, false);
-	if (results2.size() == 2 && results2[L"outputAttr1"].size() == 1 &&
-		results2[L"outputAttr1"].at(0) == L"2")
+	state["inputAttr1"] = "C";
+	map<string, vector<string> > results2 = knowledge.EvaluateTable(tableName, false);
+	if (results2.size() == 2 && results2["outputAttr1"].size() == 1 &&
+		results2["outputAttr1"].at(0) == "2")
 	{
-		Log(results2[L"outputAttr1"].at(0), thread_id);
+		Log(results2["outputAttr1"].at(0), thread_id);
 		res.SetResult(true, "", thread_id);
 	}
 	else
@@ -242,16 +229,16 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', get all", thread_id);
-	state[L"inputAttr1"] = L"C";
-	map<wstring, vector<wstring> > results = knowledge.EvaluateTable(tableName, bIsGetAll);
-	if (results.size() == 2 && results[L"outputAttr1"].size() == 3 &&
-		results[L"outputAttr1"].at(0) == L"2" &&
-		results[L"outputAttr1"].at(1) == L"4" &&
-		results[L"outputAttr1"].at(2) == L"5")
+	state["inputAttr1"] = "C";
+	map<string, vector<string> > results = knowledge.EvaluateTable(tableName, bIsGetAll);
+	if (results.size() == 2 && results["outputAttr1"].size() == 3 &&
+		results["outputAttr1"].at(0) == "2" &&
+		results["outputAttr1"].at(1) == "4" &&
+		results["outputAttr1"].at(2) == "5")
 	{
-		Log(results[L"outputAttr1"].at(0), thread_id);
-		Log(results[L"outputAttr1"].at(1), thread_id);
-		Log(results[L"outputAttr1"].at(2), thread_id);
+		Log(results["outputAttr1"].at(0), thread_id);
+		Log(results["outputAttr1"].at(1), thread_id);
+		Log(results["outputAttr1"].at(2), thread_id);
 		res.SetResult(true, "", thread_id);
 	}
 	else
@@ -261,19 +248,19 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 10, get all", thread_id);
-	state[L"inputAttr1"] = L"C";
-	state[L"inputAttr2"] = L"10";
-	map<wstring, vector<wstring> > results3 = knowledge.EvaluateTable(tableName, bIsGetAll);
-	if (results3.size() == 2 && results3[L"outputAttr1"].size() == 4 &&
-		results3[L"outputAttr1"].at(0) == L"2" &&
-		results3[L"outputAttr1"].at(1) == L" with concat" && //empty becuase we never fed it outsideAttr1
-		results3[L"outputAttr1"].at(2) == L"4" &&
-		results3[L"outputAttr1"].at(3) == L"5")
+	state["inputAttr1"] = "C";
+	state["inputAttr2"] = "10";
+	map<string, vector<string> > results3 = knowledge.EvaluateTable(tableName, bIsGetAll);
+	if (results3.size() == 2 && results3["outputAttr1"].size() == 4 &&
+		results3["outputAttr1"].at(0) == "2" &&
+		results3["outputAttr1"].at(1) == " with concat" && //empty becuase we never fed it outsideAttr1
+		results3["outputAttr1"].at(2) == "4" &&
+		results3["outputAttr1"].at(3) == "5")
 	{
-		Log(results3[L"outputAttr1"].at(0), thread_id);
-		Log(results3[L"outputAttr1"].at(1), thread_id);
-		Log(results3[L"outputAttr1"].at(2), thread_id);
-		Log(results3[L"outputAttr1"].at(3), thread_id);
+		Log(results3["outputAttr1"].at(0), thread_id);
+		Log(results3["outputAttr1"].at(1), thread_id);
+		Log(results3["outputAttr1"].at(2), thread_id);
+		Log(results3["outputAttr1"].at(3), thread_id);
 		res.SetResult(true, "", thread_id);
 	}
 	else
@@ -283,22 +270,22 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing evaluation (Javascript) of testtable1 with inputAttr1 = 'C', inputAttr2 = 78, get all, outsideAttr1 = 28", thread_id);
-	state[L"inputAttr1"] = L"C";
-	state[L"inputAttr2"] = L"78";
-	state[L"outsideAttr1"] = L"28";
-	map<wstring, vector<wstring> > results4 = knowledge.EvaluateTable(tableName, bIsGetAll);
-	if (results4.size() == 2 && results4[L"outputAttr1"].size() == 5 &&
-		results4[L"outputAttr1"].at(0) == L"2" &&
-		results4[L"outputAttr1"].at(1) == L"28 with concat" &&
-		results4[L"outputAttr1"].at(2) == L"4" &&
-		results4[L"outputAttr1"].at(3) == L"5" &&
-		results4[L"outputAttr1"].at(4) == L"30") //28 + 2
+	state["inputAttr1"] = "C";
+	state["inputAttr2"] = "78";
+	state["outsideAttr1"] = "28";
+	map<string, vector<string> > results4 = knowledge.EvaluateTable(tableName, bIsGetAll);
+	if (results4.size() == 2 && results4["outputAttr1"].size() == 5 &&
+		results4["outputAttr1"].at(0) == "2" &&
+		results4["outputAttr1"].at(1) == "28 with concat" &&
+		results4["outputAttr1"].at(2) == "4" &&
+		results4["outputAttr1"].at(3) == "5" &&
+		results4["outputAttr1"].at(4) == "30") //28 + 2
 	{
-		Log(results4[L"outputAttr1"].at(0), thread_id);
-		Log(results4[L"outputAttr1"].at(1), thread_id);
-		Log(results4[L"outputAttr1"].at(2), thread_id);
-		Log(results4[L"outputAttr1"].at(3), thread_id);
-		Log(results4[L"outputAttr1"].at(4), thread_id);
+		Log(results4["outputAttr1"].at(0), thread_id);
+		Log(results4["outputAttr1"].at(1), thread_id);
+		Log(results4["outputAttr1"].at(2), thread_id);
+		Log(results4["outputAttr1"].at(3), thread_id);
+		Log(results4["outputAttr1"].at(4), thread_id);
 		res.SetResult(true, "", thread_id);
 	}
 	else
@@ -308,13 +295,13 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing evaluation (Javascript) with state parameter on testtable1 with inputAttr1 = 'TestParameterJS' and inputAttr2 = 'TestParameterJS'", thread_id);
-	state[L"inputAttr1"] = L"TestParameterJS";
-	state[L"inputAttr2"] = L"TestParameterJS";
-	wstring paramValue = L"PassedValue";
-	wstring origValue = paramValue;
-	vector<wstring> results9 = knowledge.EvaluateTableWithParam(tableName, (wstring)L"outputAttr1", paramValue);
-	if (results9.size() == 4 && results9.at(3) == L"eval ok" &&
-		paramValue == L"PassedValue modified")
+	state["inputAttr1"] = "TestParameterJS";
+	state["inputAttr2"] = "TestParameterJS";
+	string paramValue = "PassedValue";
+	string origValue = paramValue;
+	vector<string> results9 = knowledge.EvaluateTableWithParam(tableName, (string)"outputAttr1", paramValue);
+	if (results9.size() == 4 && results9.at(3) == "eval ok" &&
+		paramValue == "PassedValue modified")
 	{
 		Log("Javascript state parameter working", thread_id);
 		res.SetResult(true, "", thread_id);
@@ -326,12 +313,12 @@ int runTest(int thread_id)
 #ifndef NOPYTHON
 	res.Reset();
 	Log("testing evaluation (Python) with state parameter on testtable1 with inputAttr1 = 'TestParameterPY' and inputAttr2 = 'TestParameterPY'");
-	state[L"inputAttr1"] = L"TestParameterPY";
-	state[L"inputAttr2"] = L"TestParameterPY";
-	vector<wstring> results10 = knowledge.EvaluateTableWithParam(tableName, (wstring)L"outputAttr1", (wstring)L"PassedValue");
+	state["inputAttr1"] = "TestParameterPY";
+	state["inputAttr2"] = "TestParameterPY";
+	vector<string> results10 = knowledge.EvaluateTableWithParam(tableName, (string)"outputAttr1", (string)"PassedValue");
 	retParam = knowledge.GetEvalParameter();
-	if (results10.size() == 4 && results10.at(3) == L"eval ok" &&
-		retParam == L"PassedValue modified")
+	if (results10.size() == 4 && results10.at(3) == "eval ok" &&
+		retParam == "PassedValue modified")
 	{
 		Log("Python state parameter working");
 		res.SetResult(true, "");
@@ -344,22 +331,22 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing evaluation (Python) of testtable1 with inputAttr1 = 'C', inputAttr2 = 58, get all, outsideAttr1 = 28", thread_id);
-	state[L"inputAttr1"] = L"C";
-	state[L"inputAttr2"] = L"58";
-	state[L"outsideAttr1"] = L"28";
+	state["inputAttr1"] = "C";
+	state["inputAttr2"] = "58";
+	state["outsideAttr1"] = "28";
 	results4 = knowledge.EvaluateTable(tableName, true);
-	if (results4.size() == 2 && results4[L"outputAttr1"].size() == 5 &&
-		results4[L"outputAttr1"].at(0) == L"2" &&
-		results4[L"outputAttr1"].at(1) == L"28 with concat" &&
-		results4[L"outputAttr1"].at(2) == L"4" &&
-		results4[L"outputAttr1"].at(3) == L"5" &&
-		results4[L"outputAttr1"].at(4) == L"30") //28 + 2
+	if (results4.size() == 2 && results4["outputAttr1"].size() == 5 &&
+		results4["outputAttr1"].at(0) == "2" &&
+		results4["outputAttr1"].at(1) == "28 with concat" &&
+		results4["outputAttr1"].at(2) == "4" &&
+		results4["outputAttr1"].at(3) == "5" &&
+		results4["outputAttr1"].at(4) == "30") //28 + 2
 	{
-		Log(results4[L"outputAttr1"].at(0), thread_id);
-		Log(results4[L"outputAttr1"].at(1), thread_id);
-		Log(results4[L"outputAttr1"].at(2), thread_id);
-		Log(results4[L"outputAttr1"].at(3), thread_id);
-		Log(results4[L"outputAttr1"].at(4), thread_id);
+		Log(results4["outputAttr1"].at(0), thread_id);
+		Log(results4["outputAttr1"].at(1), thread_id);
+		Log(results4["outputAttr1"].at(2), thread_id);
+		Log(results4["outputAttr1"].at(3), thread_id);
+		Log(results4["outputAttr1"].at(4), thread_id);
 		res.SetResult(true, "");
 	}
 	else
@@ -369,20 +356,20 @@ int runTest(int thread_id)
 #endif
 
 	res.Reset();
-	state[L"inputAttr1"] = L"C";
-	state[L"inputAttr2"] = L"58";
-	state[L"outsideAttr1"] = L"28";
+	state["inputAttr1"] = "C";
+	state["inputAttr2"] = "58";
+	state["outsideAttr1"] = "28";
 	Log("testing table chaining", thread_id);
-	vector<wstring> result5 = knowledge.EvaluateTable(L"testtable2", L"out1", true);
+	vector<string> result5 = knowledge.EvaluateTable("testtable2", "out1", true);
 	if (result5.size() == 5 &&
-		result5.at(0) == L"2" &&
-		result5.at(1) == L"28 with concat" &&
-		result5.at(2) == L"4" &&
-		result5.at(3) == L"5" &&
+		result5.at(0) == "2" &&
+		result5.at(1) == "28 with concat" &&
+		result5.at(2) == "4" &&
+		result5.at(3) == "5" &&
 #ifndef NOPYTHON
-		result5.at(4) == L"30") //28 + 2
+		result5.at(4) == "30") //28 + 2
 #else
-		result5.at(4) == L"py(28 + 2)")
+		result5.at(4) == "py(28 + 2)")
 #endif
 	{
 		Log(result5.at(0), thread_id);
@@ -399,9 +386,9 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing input get()", thread_id);
-	state[L"someAttr"] = L"3";
-	vector<wstring> result6 = knowledge.EvaluateTable(L"testtable3", L"outputAttr1", true);
-	if (result6.size() == 1 && result6.at(0) == L"inputAttr2: 58 is greater than someAttr: 3")
+	state["someAttr"] = "3";
+	vector<string> result6 = knowledge.EvaluateTable("testtable3", "outputAttr1", true);
+	if (result6.size() == 1 && result6.at(0) == "inputAttr2: 58 is greater than someAttr: 3")
 	{
 		Log(result6.at(0), thread_id);
 		res.SetResult(true, "", thread_id);
@@ -413,10 +400,10 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing NULL conditions", thread_id);
-	state[L"inputAttr1"] = L"";
-	state[L"inputAttr2"] = L"";
-	vector<wstring> result7 = knowledge.EvaluateTable(L"testtable4", L"outputAttr1", true);
-	if (result7.size() == 4 && result7.at(2) == L"both attrs are NULL")
+	state["inputAttr1"] = "";
+	state["inputAttr2"] = "";
+	vector<string> result7 = knowledge.EvaluateTable("testtable4", "outputAttr1", true);
+	if (result7.size() == 4 && result7.at(2) == "both attrs are NULL")
 	{
 		Log(result7.at(0), thread_id);
 		Log(result7.at(1), thread_id);
@@ -429,10 +416,10 @@ int runTest(int thread_id)
 		res.SetResult(false, "Did not get proper eval result on NULL test", thread_id);
 	}
 
-	state[L"inputAttr1"] = L"blah";
-	state[L"c"] = L"";
-	result7 = knowledge.EvaluateTable(L"testtable4", L"outputAttr1", true);
-	if (result7.size() == 2 && result7.at(0) == L"inputAttr2 is NULL")
+	state["inputAttr1"] = "blah";
+	state["c"] = "";
+	result7 = knowledge.EvaluateTable("testtable4", "outputAttr1", true);
+	if (result7.size() == 2 && result7.at(0) == "inputAttr2 is NULL")
 	{
 		Log(result7.at(0), thread_id);
 		Log(result7.at(1), thread_id);
@@ -445,12 +432,12 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("testing exclusing evaluation", thread_id);
-	state[L"inputAttr1"] = L"A";
-	vector<wstring> result8 = knowledge.EvaluateTable(L"exclusion", L"outputAttr1", true);
-	if (result8.size() == 4 && result8.at(0) == L"not X or Y" &&
-		result8.at(1) == L"not X" &&
-		result8.at(2) == L"not Y" &&
-		result8.at(3) == L"fallout")
+	state["inputAttr1"] = "A";
+	vector<string> result8 = knowledge.EvaluateTable("exclusion", "outputAttr1", true);
+	if (result8.size() == 4 && result8.at(0) == "not X or Y" &&
+		result8.at(1) == "not X" &&
+		result8.at(2) == "not Y" &&
+		result8.at(3) == "fallout")
 	{
 		Log(result8.at(0), thread_id);
 		Log(result8.at(1), thread_id);
@@ -464,12 +451,12 @@ int runTest(int thread_id)
 	}
 
 	Log("allowing a match: Y", thread_id);
-	state[L"inputAttr1"] = L"Y";
-	result8 = knowledge.EvaluateTable(L"exclusion", L"outputAttr1", true);
-	if (result8.size() == 4 && result8.at(0) == L"is X or Y" &&
-		result8.at(1) == L"not X" &&
-		result8.at(2) == L"is Y" &&
-		result8.at(3) == L"fallout")
+	state["inputAttr1"] = "Y";
+	result8 = knowledge.EvaluateTable("exclusion", "outputAttr1", true);
+	if (result8.size() == 4 && result8.at(0) == "is X or Y" &&
+		result8.at(1) == "not X" &&
+		result8.at(2) == "is Y" &&
+		result8.at(3) == "fallout")
 	{
 		Log(result8.at(0), thread_id);
 		Log(result8.at(1), thread_id);
@@ -483,19 +470,19 @@ int runTest(int thread_id)
 	}
 
 	Log("testing translation of: A", thread_id);
-	wstring localeValue = knowledge.Localize(L"A", L"en-US");
-	wstring reverse = knowledge.DeLocalize(localeValue);
-	Log(localeValue + L":" + reverse, thread_id);
-	if (localeValue == L"A trans" && reverse == L"A")
+	string localeValue = knowledge.Localize("A", "en-US");
+	string reverse = knowledge.DeLocalize(localeValue);
+	Log(localeValue + ":" + reverse, thread_id);
+	if (localeValue == "A trans" && reverse == "A")
 		res.SetResult(true, "", thread_id);
 	else
 		res.SetResult(false, "translation failed", thread_id);
 
 	Log("testing reverse evaluation of ReverseTest table", thread_id);
-	state[L"OutColor"] = L"green";
-	map<wstring, vector<wstring> > result9 = knowledge.ReverseEvaluateTable(L"ReverseTest", true);
-	if (result9.size() == 2 && result9[L"Color1"].at(0) == L"blue" &&
-		result9[L"Color2"].at(0) == L"yellow")
+	state["OutColor"] = "green";
+	map<string, vector<string> > result9 = knowledge.ReverseEvaluateTable("ReverseTest", true);
+	if (result9.size() == 2 && result9["Color1"].at(0) == "blue" &&
+		result9["Color2"].at(0) == "yellow")
 	{
 		res.SetResult(true, "", thread_id);
 	}

@@ -25,8 +25,8 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 #include "Marshal.h"
 using namespace std;
 
-typedef wstring(__stdcall *VALUECB)(const wstring&, void*);
-typedef void(__stdcall *DEBUGCB)(const wstring&);
+typedef string(__stdcall *VALUECB)(const string&, void*);
+typedef void(__stdcall *DEBUGCB)(const string&);
 
 #pragma managed
 #using <mscorlib.dll>
@@ -39,8 +39,8 @@ using namespace System::Collections::Generic;
 using namespace System::Runtime::InteropServices;
 
 namespace EDSNET {
-	delegate void FireDebugMessageDelegate(const wstring&);
-	delegate wstring GetTheValueDelegate(const wstring&, void* context);
+	delegate void FireDebugMessageDelegate(const string&);
+	delegate string GetTheValueDelegate(const string&, void* context);
 
 	public delegate void DebugHandlerDelegate(String^ msg);
 	public delegate String^ InputValueGetterDelegate(String^ attrName, Object^ context);
@@ -164,8 +164,8 @@ namespace EDSNET {
 		IntPtr									GetEDSPtr() { return (IntPtr)m_KnowledgeBase; }
 
 	private:		
-		wstring									_getValue(const wstring& attrName, void* context);
-		void									_fireDebug(const wstring& msg);
+		string									_getValue(const string& attrName, void* context);
+		void									_fireDebug(const string& msg);
 
 		DebugHandlerDelegate^					m_debugger;
 		InputValueGetterDelegate^				m_getter;

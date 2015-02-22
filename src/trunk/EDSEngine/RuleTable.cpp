@@ -54,10 +54,10 @@ void CRuleTable::_init()
 	m_ThreadingEnabled = false;
 }
 
-void CRuleTable::CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inputAttrsTests,
-								vector<pair<wstring, vector<CRuleCell> > >& outputAttrsValues,
-								vector<wstring>& formulaInputs, CBimapper *stringMap,
-								const wstring& name, bool GetAll)
+void CRuleTable::CreateRuleTable(vector<pair<string, vector<CRuleCell> > >& inputAttrsTests,
+								vector<pair<string, vector<CRuleCell> > >& outputAttrsValues,
+								vector<string>& formulaInputs, CBimapper *stringMap,
+								const string& name, bool GetAll)
 {
 	_init();
 
@@ -90,32 +90,32 @@ void CRuleTable::SetThreadCount(size_t threads)
 #endif
 }
 
-map<wstring, vector<wstring> > CRuleTable::EvaluateTable(bool bGetAll, bool bForward, void* context)
+map<string, vector<string> > CRuleTable::EvaluateTable(bool bGetAll, bool bForward, void* context)
 {
-	map<wstring, vector<wstring> > retval;
-	vector<pair<wstring, vector<CRuleCell> > > *resultCollection;
+	map<string, vector<string> > retval;
+	vector<pair<string, vector<CRuleCell> > > *resultCollection;
 	if (bForward)
 		resultCollection = &m_OutputAttrsValues;
 	else
 		resultCollection = &m_InputAttrsTests;
 
 	//for all the outputs get the results
-	for (vector<pair<wstring, vector<CRuleCell> > >::iterator itOut = resultCollection->begin(); itOut != resultCollection->end(); itOut++)
+	for (vector<pair<string, vector<CRuleCell> > >::iterator itOut = resultCollection->begin(); itOut != resultCollection->end(); itOut++)
 	{
-		vector<wstring> result = EvaluateTable((*itOut).first, bGetAll, bForward, context);
+		vector<string> result = EvaluateTable((*itOut).first, bGetAll, bForward, context);
 		retval[(*itOut).first] = result;
 	}
 
 	return retval;
 }
 
-vector<wstring> CRuleTable::EvaluateTable(const wstring& outputAttr, bool bGetAll, bool bForward, void* context)
+vector<string> CRuleTable::EvaluateTable(const string& outputAttr, bool bGetAll, bool bForward, void* context)
 {
-	vector<wstring> retval;
+	vector<string> retval;
 	vector<CToken> values;
-	map<size_t, set<wstring> > solutions;
-	vector<pair<wstring, vector<CRuleCell> > > *inputCollection;
-	vector<pair<wstring, vector<CRuleCell> > > *outputCollection;
+	map<size_t, set<string> > solutions;
+	vector<pair<string, vector<CRuleCell> > > *inputCollection;
+	vector<pair<string, vector<CRuleCell> > > *outputCollection;
 	if (bForward)
 	{
 		inputCollection = &m_InputAttrsTests;
@@ -131,9 +131,9 @@ vector<wstring> CRuleTable::EvaluateTable(const wstring& outputAttr, bool bGetAl
 	if (inputCollection->size() > 0)
 	{
 		//get the current values of all input attrs
-		for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = inputCollection->begin(); it != inputCollection->end(); it++)
+		for (vector<pair<string, vector<CRuleCell> > >::iterator it = inputCollection->begin(); it != inputCollection->end(); it++)
 		{
-			wstring attrName = it->first;
+			string attrName = it->first;
 			CToken token;
 			token.Value = InputValueGetter(attrName, context);
 			token.ID = m_stringsMap->GetIDByString(token.Value);
@@ -174,13 +174,13 @@ vector<wstring> CRuleTable::EvaluateTable(const wstring& outputAttr, bool bGetAl
 				bHasPython = true;
 			if (outputCell.Operation & JAVASCRIPT)
 				bHasJavascript = true;
-			vector<wstring> cellOutputs = decoder.EvaluateOutputCell();
-			for (vector<wstring>::iterator itOutputs = cellOutputs.begin(); itOutputs != cellOutputs.end(); itOutputs++)
+			vector<string> cellOutputs = decoder.EvaluateOutputCell();
+			for (vector<string>::iterator itOutputs = cellOutputs.begin(); itOutputs != cellOutputs.end(); itOutputs++)
 			{
 				retval.push_back(*itOutputs);
 				if (m_DEBUGGING)
 				{
-					map<size_t, set<wstring> >::iterator itFind = solutions.find(result);
+					map<size_t, set<string> >::iterator itFind = solutions.find(result);
 					if (itFind != solutions.end())
 					{
 						itFind->second.insert(*itOutputs);
@@ -204,7 +204,7 @@ vector<wstring> CRuleTable::EvaluateTable(const wstring& outputAttr, bool bGetAl
 	return retval;
 }
 
-vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, void* context)
+vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<string, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, void* context)
 {
     //sweep down the table for all inputs and do test(s)
     vector<bool> colResultsDefault (m_Tests, false);
@@ -240,7 +240,7 @@ vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<wstring, vector<CRu
     return colResults;
 }
 
-bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell>>>* inputCollection, vector<CToken>& values, vector<bool>& colResults, void* context)
+bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<string, vector<CRuleCell>>>* inputCollection, vector<CToken>& values, vector<bool>& colResults, void* context)
 {
     bool bHaveSolution = true;
     for (size_t testIndex = startIndex; testIndex < endIndex; testIndex++)
@@ -265,58 +265,58 @@ bool CRuleTable::_runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex,
     return bHaveSolution;
 }
 
-void CRuleTable::DebugEval(const wstring& outputAttr, const vector<CToken>& inputValues, const map<size_t, set<wstring>>& solutions)
+void CRuleTable::DebugEval(const string& outputAttr, const vector<CToken>& inputValues, const map<size_t, set<string>>& solutions)
 {
-	wstring xmlBlob;
-	xmlBlob += L"<TableEval name=\"";
+	string xmlBlob;
+	xmlBlob += "<TableEval name=\"";
 	xmlBlob += this->m_Name;
-	xmlBlob += L"\" output=\"";
+	xmlBlob += "\" output=\"";
 	xmlBlob += outputAttr;
-	xmlBlob += L"\">";
+	xmlBlob += "\">";
 
 	if (m_InputAttrsTests.size() == inputValues.size())
 	{
-		xmlBlob += L"<Inputs>";
+		xmlBlob += "<Inputs>";
 		for (size_t i = 0; i < m_InputAttrsTests.size(); i++)
 		{
-			pair<wstring, vector<CRuleCell> > currentPair = m_InputAttrsTests[i];
-			wstring attr = currentPair.first;
-			xmlBlob += L"<Input name = \"";
+			pair<string, vector<CRuleCell> > currentPair = m_InputAttrsTests[i];
+			string attr = currentPair.first;
+			xmlBlob += "<Input name = \"";
 			xmlBlob += attr;
-			xmlBlob += L"\" value=\"";
+			xmlBlob += "\" value=\"";
 			xmlBlob += inputValues[i].Value;
-			xmlBlob += L"\"/>";
+			xmlBlob += "\"/>";
 		}
-		xmlBlob += L"</Inputs>";
+		xmlBlob += "</Inputs>";
 	} //else something is wrong
 
-	xmlBlob+= L"<Outputs>";
+	xmlBlob+= "<Outputs>";
 	for (auto it = solutions.begin(); it != solutions.end(); it++)
 	{
 		size_t index = (*it).first;
-		for (set<wstring>::iterator itOut = (*it).second.begin(); itOut != (*it).second.end(); itOut++)
+		for (set<string>::iterator itOut = (*it).second.begin(); itOut != (*it).second.end(); itOut++)
 		{
-			xmlBlob += L"<Output value=\"";
+			xmlBlob += "<Output value=\"";
 			xmlBlob += *itOut;
-			xmlBlob += L"\" index=\"";
-			xmlBlob += EDSUTIL::ToWString(EDSUTIL::stringify(index));
-			xmlBlob += L"\"/>";
+			xmlBlob += "\" index=\"";
+			xmlBlob += to_string(index);
+			xmlBlob += "\"/>";
 		}
 	}
-	xmlBlob+= L"</Outputs>";
-	xmlBlob+= L"</TableEval>";
+	xmlBlob+= "</Outputs>";
+	xmlBlob+= "</TableEval>";
 
 	DebugMessage = xmlBlob;
 }
 
-vector<wstring> CRuleTable::GetAllPossibleOutputs(const wstring& outputName)
+vector<string> CRuleTable::GetAllPossibleOutputs(const string& outputName)
 {
-	vector<wstring> retval;
+	vector<string> retval;
 	std::list<size_t> allValues;
 
-	for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = m_OutputAttrsValues.begin(); it != m_OutputAttrsValues.end(); it++)
+	for (vector<pair<string, vector<CRuleCell> > >::iterator it = m_OutputAttrsValues.begin(); it != m_OutputAttrsValues.end(); it++)
 	{
-		pair<wstring, vector<CRuleCell> > row = *it;
+		pair<string, vector<CRuleCell> > row = *it;
 
 		if (row.first == outputName)
 		{
@@ -340,11 +340,11 @@ vector<wstring> CRuleTable::GetAllPossibleOutputs(const wstring& outputName)
 	return retval;
 }
 
-vector<wstring> CRuleTable::GetAllInputAttrNames()
+vector<string> CRuleTable::GetAllInputAttrNames()
 {
-	vector<wstring> retval;
+	vector<string> retval;
 
-	for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = m_InputAttrsTests.begin(); it != m_InputAttrsTests.end(); it++)
+	for (vector<pair<string, vector<CRuleCell> > >::iterator it = m_InputAttrsTests.begin(); it != m_InputAttrsTests.end(); it++)
 	{
 		if ((*it).first.size() > 0)
 			retval.push_back((*it).first);
@@ -353,12 +353,12 @@ vector<wstring> CRuleTable::GetAllInputAttrNames()
 	return retval;
 }
 
-vector<wstring> CRuleTable::GetAllInputDependencies()
+vector<string> CRuleTable::GetAllInputDependencies()
 {
-	vector<wstring> retval;
+	vector<string> retval;
 
 	retval = GetAllInputAttrNames();
-	for (vector<wstring>::iterator it = m_FormulaInputs.begin(); it != m_FormulaInputs.end(); it++)
+	for (vector<string>::iterator it = m_FormulaInputs.begin(); it != m_FormulaInputs.end(); it++)
 	{
 		retval.push_back(*it);
 	}
@@ -366,11 +366,11 @@ vector<wstring> CRuleTable::GetAllInputDependencies()
 	return retval;
 }
 
-vector<wstring> CRuleTable::GetAllOutputAttrNames()
+vector<string> CRuleTable::GetAllOutputAttrNames()
 {
-	vector<wstring> retval;
+	vector<string> retval;
 
-	for (vector<pair<wstring, vector<CRuleCell> > >::iterator it = m_OutputAttrsValues.begin(); it != m_OutputAttrsValues.end(); it++)
+	for (vector<pair<string, vector<CRuleCell> > >::iterator it = m_OutputAttrsValues.begin(); it != m_OutputAttrsValues.end(); it++)
 	{
 		if ((*it).first.size() > 0)
 			retval.push_back((*it).first);

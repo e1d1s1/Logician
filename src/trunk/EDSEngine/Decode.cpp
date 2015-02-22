@@ -27,7 +27,7 @@ CDecode::~CDecode(void)
 {
 }
 
-CDecode::CDecode(CRuleCell& outputCell, function<wstring(const wstring&, void*)> inputAttrGetter, CBimapper* stringMap, void* context)
+CDecode::CDecode(CRuleCell& outputCell, function<string(const string&, void*)> inputAttrGetter, CBimapper* stringMap, void* context)
 {
 	m_tests = &outputCell.Values;
 	m_stringsMap = stringMap;
@@ -36,7 +36,7 @@ CDecode::CDecode(CRuleCell& outputCell, function<wstring(const wstring&, void*)>
 	m_context = context;
 }
 
-CDecode::CDecode(CToken& inputValue, CRuleCell& inputCell, function<wstring(const wstring&, void*)> inputAttrGetter, CBimapper* stringMap, void* context)
+CDecode::CDecode(CToken& inputValue, CRuleCell& inputCell, function<string(const string&, void*)> inputAttrGetter, CBimapper* stringMap, void* context)
 {
 	m_value = &inputValue;
 	m_tests = &inputCell.Values;
@@ -48,19 +48,19 @@ CDecode::CDecode(CToken& inputValue, CRuleCell& inputCell, function<wstring(cons
 	CheckForInputGets();
 }
 
-wstring CDecode::GetString(size_t lKey)
+string CDecode::GetString(size_t lKey)
 {
 	if (lKey > EMPTY_STRING)
 	{
-		wstring s = m_stringsMap->GetStringByID(lKey);
+		string s = m_stringsMap->GetStringByID(lKey);
 		if(s.length() > 0)
 			return s;
 		else
 		{
-			ReportError("string not found for index: " + stringify(lKey));
+			ReportError("string not found for index: " + to_string(lKey));
 		}
 	}
-	return L"";
+	return "";
 }
 
 bool CDecode::EvaluateInputCell()
@@ -109,15 +109,15 @@ bool CDecode::EvaluateInputCell()
 		//there are no "ORs" in these cases
 		else if (m_operator & LESS_THAN || m_operator & LESS_THAN_EQUAL || m_operator & GREATER_THAN || m_operator & GREATER_THAN_EQUAL)
 		{
-			wstring currentTest = GetString((*m_tests)[0]);
-			wstring currentValue = m_value->Value;
+			string currentTest = GetString((*m_tests)[0]);
+			string currentValue = m_value->Value;
 			bool bIsNum = false;
 
-			if (StringIsNumeric(currentTest) == true && StringIsNumeric(currentValue) == true)
+			if (EDSUTIL::StringIsNumeric(currentTest) == true && EDSUTIL::StringIsNumeric(currentValue) == true)
 			{
 				bIsNum = true;
 			}
-			wstring	testValue;
+			string	testValue;
 			double dCurrentValue = 0;
 			double dTestValue = 0;
 
@@ -126,15 +126,8 @@ bool CDecode::EvaluateInputCell()
 			{
 				try
 				{
-#ifdef _MSC_VER
-					dCurrentValue = _wtof(currentValue.c_str());
-					dTestValue = _wtof(testValue.c_str());
-#else
-					string strCurrent(currentValue.begin(), currentValue.end());
-					string strTest(testValue.begin(), testValue.end());
-					dCurrentValue = atof(strCurrent.c_str());
-					dTestValue = atof(strTest.c_str());
-#endif
+					dCurrentValue = atof(currentValue.c_str());
+					dTestValue = atof(testValue.c_str());
 				}
 				catch(...)
 				{
@@ -193,28 +186,18 @@ bool CDecode::EvaluateInputCell()
 		else if (m_operator & RANGE_INCLUSIVE || m_operator & RANGE_END_INCLUSIVE ||
 			m_operator & RANGE_START_INCLUSIVE ||m_operator & RANGE_NOT_INCLUSIVE)
 		{
-			wstring testString = GetString((*m_tests)[0]);
-			wstring currentValue = m_value->Value;
+			string testString = GetString((*m_tests)[0]);
+			string currentValue = m_value->Value;
 			double min = 0, max = 0, dCurrentValue = 0;
-			vector<wstring> parts = EDSUTIL::Split(testString.c_str(), L",");
+			vector<string> parts = Split(testString.c_str(), ",");
 
 			if (parts.size() == 2)
 			{
 				try
 				{
-#ifdef _MSC_VER
-					min = _wtof(parts[0].c_str());
-					max = _wtof(parts[1].c_str());
-					dCurrentValue = _wtof(currentValue.c_str());
-#else
-					string part0(parts[0].begin(), parts[0].end());
-					string part1(parts[1].begin(), parts[1].end());
-					min = atof(part0.c_str());
-					max = atof(part1.c_str());
-					string sCurVal(currentValue.begin(), currentValue.end());
-					dCurrentValue = atof(sCurVal.c_str());
-#endif
-
+					min = atof(parts[0].c_str());
+					max = atof(parts[1].c_str());
+					dCurrentValue = atof(currentValue.c_str());
 				}
 				catch(...)
 				{
@@ -261,9 +244,9 @@ bool CDecode::EvaluateInputCell()
 	return retval;
 }
 
-vector<wstring> CDecode::EvaluateOutputCell()
+vector<string> CDecode::EvaluateOutputCell()
 {
-	vector<wstring> retval;
+	vector<string> retval;
 
 	try
 	{
@@ -287,21 +270,21 @@ vector<wstring> CDecode::EvaluateOutputCell()
 	return retval;
 }
 
-wstring CDecode::ReplaceAGet(const wstring& s, bool bForceZero)
+string CDecode::ReplaceAGet(const string& s, bool bForceZero)
 {
-	wstring retval = L"";
+	string retval = "";
 	//find the get(xxx) substring.  attrName xxx is between ().
-	int iStartPos = s.find(L"get(", 0);
-	int iEndPos = s.find_first_of(L")", iStartPos);
+	int iStartPos = s.find("get(", 0);
+	int iEndPos = s.find_first_of(")", iStartPos);
 	if (iStartPos >= 0 && iEndPos > iStartPos)
 	{
-		wstring attrName(s.begin() + iStartPos + 4, s.begin() + iEndPos);
-		wstring getText = L"get(" + attrName + L")";
+		string attrName(s.begin() + iStartPos + 4, s.begin() + iEndPos);
+		string getText = "get(" + attrName + ")";
 		//get the value of the input attr
 		bool bFoundAttr = false;
 		if (m_inputAttrGetter != nullptr)
 		{
-			wstring value = m_inputAttrGetter(attrName, m_context);
+			string value = m_inputAttrGetter(attrName, m_context);
 			if (value.size() > 0)
 			{
 				bFoundAttr = true;
@@ -312,28 +295,28 @@ wstring CDecode::ReplaceAGet(const wstring& s, bool bForceZero)
 		if (!bFoundAttr)
 		{
 			if (bForceZero)
-				retval = EDSUTIL::FindAndReplace(s, getText, L"0");
+				retval = EDSUTIL::FindAndReplace(s, getText, "0");
 			else
-				retval = EDSUTIL::FindAndReplace(s, getText, L"");
+				retval = EDSUTIL::FindAndReplace(s, getText, "");
 		}
 	}
 
 	return retval;
 }
 
-wstring CDecode::ParseStringForGets(size_t lKey, bool bForceZero)
+string CDecode::ParseStringForGets(size_t lKey, bool bForceZero)
 {
-	wstring retval = L"";
+	string retval = "";
 
-	wstring fullString = GetString(lKey);
+	string fullString = GetString(lKey);
 	//replace with the actual value
-	if (StringContains(fullString, L"get("))
+	if (StringContains(fullString, "get("))
 	{
 		do
 		{
 			fullString = ReplaceAGet(fullString, bForceZero);
 			retval = fullString;
-		} while(StringContains(fullString, L"get("));
+		} while(StringContains(fullString, "get("));
 	}
 	else
 		retval = fullString;
@@ -347,7 +330,7 @@ void CDecode::CheckForInputGets()
 	for (size_t i = 0; i < m_tests->size(); i++)
 	{
 		//replace the GET with the actual value (pay a performance penalty here, but convienient)
-		wstring val = ParseStringForGets((*m_tests)[i], false);
+		string val = ParseStringForGets((*m_tests)[i], false);
 		(*m_tests)[i] = m_stringsMap->GetIDByString(val);
 	}
 }

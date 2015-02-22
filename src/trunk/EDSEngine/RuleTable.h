@@ -36,46 +36,46 @@ public:
 	CRuleTable(void);
 	~CRuleTable(void);
 
-	vector<wstring> EvaluateTable(const wstring& outputAttr, bool bGetAll, bool bForward, void* context = nullptr); //results come back as the full strings
-	map<wstring, vector<wstring> > EvaluateTable(bool bGetAll, bool bForward, void* context = nullptr);
+	vector<string> EvaluateTable(const string& outputAttr, bool bGetAll, bool bForward, void* context = nullptr); //results come back as the full strings
+	map<string, vector<string> > EvaluateTable(bool bGetAll, bool bForward, void* context = nullptr);
 	bool HasChain() {return bHasChain;}
 	bool HasJS() {return bHasJavascript;}
 	bool HasPython() {return bHasPython;}
 	bool IsGetAll() {return bGetAll;}
-	wstring GetTableName() {return m_Name;}
+	string GetTableName() {return m_Name;}
 
-	vector<wstring> GetAllOutputAttrNames();
-	vector<wstring> GetAllInputAttrNames();
-	vector<wstring> GetAllInputDependencies(); //input columns + formulas/gets
-	vector<wstring> GetAllPossibleOutputs(const wstring& outputName);
-	vector<pair<wstring, vector<CRuleCell> > > GetOutputAttrsValues() {return m_OutputAttrsValues;}
-	vector<pair<wstring, vector<CRuleCell> > > GetInputAttrsTests() {return m_InputAttrsTests;}
+	vector<string> GetAllOutputAttrNames();
+	vector<string> GetAllInputAttrNames();
+	vector<string> GetAllInputDependencies(); //input columns + formulas/gets
+	vector<string> GetAllPossibleOutputs(const string& outputName);
+	vector<pair<string, vector<CRuleCell> > > GetOutputAttrsValues() {return m_OutputAttrsValues;}
+	vector<pair<string, vector<CRuleCell> > > GetInputAttrsTests() {return m_InputAttrsTests;}
 
 	//ordered vector of (string)inputAttrName, (vector)inputAttrTest pairs, vector of outputAttrs
-	void CreateRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inputAttrsTests,
-		vector<pair<wstring, vector<CRuleCell> > >& outputAttrsValues,
-		vector<wstring>& formulaInputs, CBimapper *stringMap,
-		const wstring& name = L"default", bool GetAll = false);
-	CRuleTable(vector<pair<wstring, vector<CRuleCell> > >& inputAttrsTests,
-		vector<pair<wstring, vector<CRuleCell> > >& outputAttrsValues,
-		vector<wstring>& formulaInputs, CBimapper *stringMap,
-		const wstring& name = L"default", bool GetAll = false) { CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll); }
+	void CreateRuleTable(vector<pair<string, vector<CRuleCell> > >& inputAttrsTests,
+		vector<pair<string, vector<CRuleCell> > >& outputAttrsValues,
+		vector<string>& formulaInputs, CBimapper *stringMap,
+		const string& name = "default", bool GetAll = false);
+	CRuleTable(vector<pair<string, vector<CRuleCell> > >& inputAttrsTests,
+		vector<pair<string, vector<CRuleCell> > >& outputAttrsValues,
+		vector<string>& formulaInputs, CBimapper *stringMap,
+		const string& name = "default", bool GetAll = false) { CreateRuleTable(inputAttrsTests, outputAttrsValues, formulaInputs, stringMap, name, GetAll); }
 	void EnbleDebugging(bool enable) { m_DEBUGGING = enable; }
 	void SetThreadCount(size_t threads);
 
-	wstring DebugMessage;
-	function<wstring(const wstring&, void*)> InputValueGetter;
+	string DebugMessage;
+	function<string(const string&, void*)> InputValueGetter;
 
 private:
-	void DebugEval(const wstring& outputAttr, const vector<CToken>& inputValues, const map<size_t, set<wstring>>& solutions);
-    vector<bool> _runTests(bool bGetAll, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, void* context);
-    bool _runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<wstring, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, vector<bool>& colResults, void* context);
+	void DebugEval(const string& outputAttr, const vector<CToken>& inputValues, const map<size_t, set<string>>& solutions);
+    vector<bool> _runTests(bool bGetAll, vector<pair<string, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, void* context);
+    bool _runTestGroup(bool bGetAll, size_t startIndex, size_t endIndex, vector<pair<string, vector<CRuleCell> > >* inputCollection, vector<CToken>& values, vector<bool>& colResults, void* context);
 	void _init();
 
-	vector<pair<wstring, vector<CRuleCell> > > m_InputAttrsTests; //the test table, input rows
-	vector<wstring> m_FormulaInputs;
-	vector<pair<wstring, vector<CRuleCell> > > m_OutputAttrsValues; //output rows
-	wstring m_Name;
+	vector<pair<string, vector<CRuleCell> > > m_InputAttrsTests; //the test table, input rows
+	vector<string> m_FormulaInputs;
+	vector<pair<string, vector<CRuleCell> > > m_OutputAttrsValues; //output rows
+	string m_Name;
 	size_t m_Tests;
 	CBimapper *m_stringsMap;
 	bool bHasChain;
@@ -101,7 +101,7 @@ There could be multiple columns of indexes to represent multiple results, hence:
 
 Each "row" of attr is stored as a pair, the attrname is the key for the indexes, hence: pair<wsring, vector<size_t>>
 
-A full table is the assembly of all input rows + all output rows, hence: vector<pair<wstring, vector<size_t>>>
+A full table is the assembly of all input rows + all output rows, hence: vector<pair<string, vector<size_t>>>
 
 Test values are fed into the table for testing by index as well, so a true "column" is when all cells are true.
 An empty input cell is always true.  Missing/invalid inputs are 0.  Empty string id is always 1.  Explicit NULL input is 2.

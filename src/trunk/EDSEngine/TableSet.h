@@ -31,23 +31,23 @@ public:
 	CTableSet(void);
 	~CTableSet(void);
 
-	void AddTable(vector<pair<wstring, vector<CRuleCell> > > inputAttrsTests,
-		vector<pair<wstring, vector<CRuleCell> > > outputAttrsValues,
-		vector<wstring> formulaInputs, CBimapper *stringMap, wstring name = L"defualt", bool GetAll = false);
+	void AddTable(vector<pair<string, vector<CRuleCell> > > inputAttrsTests,
+		vector<pair<string, vector<CRuleCell> > > outputAttrsValues,
+		vector<string> formulaInputs, CBimapper *stringMap, string name = "defualt", bool GetAll = false);
 	void Initialize();
-	CRuleTable* GetTable(const wstring& tableName);
-	CRuleTable GetTableCopy(const wstring& tableName, bool *found);
-	vector<wstring> GetInputAttrs(const wstring& tableName);
-	vector<wstring> GetInputDependencies(const wstring& tableName);
-	vector<wstring> GetOutputAttrs(const wstring& tableName);
+	CRuleTable* GetTable(const string& tableName);
+	CRuleTable GetTableCopy(const string& tableName, bool *found);
+	vector<string> GetInputAttrs(const string& tableName);
+	vector<string> GetInputDependencies(const string& tableName);
+	vector<string> GetOutputAttrs(const string& tableName);
 	size_t Count();
 	void LoadTableInfo(CRuleTable *table);
 	void SetMaxThreads(size_t threads);
 private:
-	vector<wstring> ParseTablesAndChainsForInputs(const wstring& tableName);
-	map<wstring, CRuleTable> m_tables;
-	map<wstring, vector<wstring> > m_inputAttrsByTable;
-	map<wstring, vector<wstring> > m_inputDependenciesByTable;
-	map<wstring, vector<wstring> > m_outputAttrsByTable;
+	vector<string> ParseTablesAndChainsForInputs(const string& tableName);
+	map<string, CRuleTable> m_tables;
+	map<string, vector<string> > m_inputAttrsByTable;
+	map<string, vector<string> > m_inputDependenciesByTable;
+	map<string, vector<string> > m_outputAttrsByTable;
 	bool bInitialized;
 };

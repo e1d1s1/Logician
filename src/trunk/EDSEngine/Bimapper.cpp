@@ -27,7 +27,7 @@ CBimapper::~CBimapper(void)
 {
 }
 
-void CBimapper::AddString(size_t id, const wstring& s)
+void CBimapper::AddString(size_t id, const string& s)
 {
 	//dont assume the ids are lined up
 	if (id > maxID)
@@ -36,9 +36,9 @@ void CBimapper::AddString(size_t id, const wstring& s)
 	m_StringsToIndexMap[s] = id;
 }
 
-wstring CBimapper::GetStringByID(size_t id)
+string CBimapper::GetStringByID(size_t id)
 {
-	wstring retval;
+	string retval;
 
 	auto it = m_IndexToStringsMap.find(id);
 
@@ -49,7 +49,7 @@ wstring CBimapper::GetStringByID(size_t id)
 	return retval;
 }
 
-size_t CBimapper::GetIDByString(const wstring& s)
+size_t CBimapper::GetIDByString(const string& s)
 {
 	size_t retval = INVALID_STRING;
 

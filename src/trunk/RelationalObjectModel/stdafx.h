@@ -86,22 +86,11 @@ using namespace std;
 	typedef std::unordered_map<wstring, std::unordered_map<wstring, wstring> > MAPWSTRMAP;
 #endif
 	*/
-#define ATTRIBUTE_NODE L"Attribute"
-#define OBJECT_NODE L"Object"
-#define XSLT_TOP L"<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><xsl:output method=\"text\" omit-xml-declaration=\"yes\" encoding=\"UTF-8\"/>"
-#define XSLT_BOTTOM L"\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
+#define ATTRIBUTE_NODE "Attribute"
+#define OBJECT_NODE "Object"
+#define XSLT_TOP "<?xml version=\"1.0\"?><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><xsl:output method=\"text\" omit-xml-declaration=\"yes\" encoding=\"UTF-8\"/>"
+#define XSLT_BOTTOM "\"/></xsl:for-each></xsl:template></xsl:stylesheet>"
 inline void ReportROMError(std::string errorMsg)
-{	
-	std::cerr<<errorMsg.c_str();
-#ifdef WIN32
-	OutputDebugString(errorMsg.c_str());
-#endif
-}
-
-inline void ReportROMErrorW(std::wstring errorMsg)
 {
-	std::string err;
-	err.assign(errorMsg.begin(), errorMsg.end());
-	ReportROMError(err);
+	std::cerr << errorMsg << std::endl;
 }
-

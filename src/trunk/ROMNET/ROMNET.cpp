@@ -24,9 +24,9 @@ namespace ROMNET
 {
 	bool ROMNode::CreateROMNode(System::String^ id, ROMObjectFactoryDelegate^ factory, IntPtr ptr)
 	{
-		wstring wsID = MarshalString(id);	
+		string sID = MarshalString(id);	
 		if (ptr.ToPointer() == nullptr)
-			m_ROMNode = new ROM::ROMNode(wsID);
+			m_ROMNode = new ROM::ROMNode(sID);
 		else
 			m_ROMNode = (ROM::ROMNode*)ptr.ToPointer();
 
@@ -98,8 +98,8 @@ namespace ROMNET
 		array<ROMNode^>^ retval = gcnew array<ROMNode^>(0);
 		if (m_ROMNode)
 		{
-			wstring wsxpath = MarshalString(xpath);
-			vector<ROM::ROMNode*> vChildren = m_ROMNode->FindObjects(wsxpath);
+			string sxpath = MarshalString(xpath);
+			vector<ROM::ROMNode*> vChildren = m_ROMNode->FindObjects(sxpath);
 			retval = _getArrayFromVectorROM(vChildren);
 		}
 
@@ -120,8 +120,8 @@ namespace ROMNET
 		array<ROMNode^>^ retval = gcnew array<ROMNode^>(0);
 		if (m_ROMNode)
 		{
-			wstring wsID = MarshalString(id);
-			vector<ROM::ROMNode*> vChildren = m_ROMNode->FindAllObjectsByID(wsID, recurs);
+			string sID = MarshalString(id);
+			vector<ROM::ROMNode*> vChildren = m_ROMNode->FindAllObjectsByID(sID, recurs);
 			retval = _getArrayFromVectorROM(vChildren);
 		}
 		
@@ -133,7 +133,7 @@ namespace ROMNET
 		ROMNode^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			string sguid = MarshalStringA(guid);
+			string sguid = MarshalString(guid);
 			ROM::ROMNode* node = m_ROMNode->FindObjectByGUID(sguid);
 			if (node != nullptr)
 				retval = m_managedTreeObjects[gcnew String(sguid.c_str())];
@@ -295,9 +295,9 @@ namespace ROMNET
 		String^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsID = MarshalString(id);
-			wstring wsName = MarshalString(name);
-			wstring res = m_ROMNode->GetAttribute(wsID, wsName, immediate);
+			string sID = MarshalString(id);
+			string sName = MarshalString(name);
+			string res = m_ROMNode->GetAttribute(sID, sName, immediate);
 			retval = gcnew String(res.c_str());
 		}
 		return retval;
@@ -308,9 +308,9 @@ namespace ROMNET
 		bool retval = false;
 		if (m_ROMNode)
 		{
-			wstring wsID = MarshalString(id);
-			wstring wsName = MarshalString(name);
-			retval = m_ROMNode->GetAttributeExists(wsID, wsName);
+			string sID = MarshalString(id);
+			string sName = MarshalString(name);
+			retval = m_ROMNode->GetAttributeExists(sID, sName);
 		}
 		return retval;
 	}
@@ -320,10 +320,10 @@ namespace ROMNET
 		bool retval = false;
 		if (m_ROMNode)
 		{
-			wstring wsID = MarshalString(id);
-			wstring wsName = MarshalString(name);
-			wstring wsValue = MarshalString(value);
-			retval = m_ROMNode->SetAttribute(wsID, wsName, wsValue);
+			string sID = MarshalString(id);
+			string sName = MarshalString(name);
+			string sValue = MarshalString(value);
+			retval = m_ROMNode->SetAttribute(sID, sName, sValue);
 		}
 		return retval;
 	}
@@ -333,9 +333,9 @@ namespace ROMNET
 		bool retval = false;
 		if (m_ROMNode)
 		{
-			wstring wsID = MarshalString(id);
-			wstring wsName = MarshalString(name);
-			retval = m_ROMNode->RemoveAttribute(wsID, wsName);
+			string sID = MarshalString(id);
+			string sName = MarshalString(name);
+			retval = m_ROMNode->RemoveAttribute(sID, sName);
 		}
 		return retval;
 	}
@@ -345,9 +345,9 @@ namespace ROMNET
 		bool retval = false;
 		if (m_ROMNode)
 		{			
-			wstring wsName = MarshalString(name);
-			wstring wsValue = MarshalString(value);
-			retval = m_ROMNode->SetROMObjectValue(wsName, wsValue);
+			string sName = MarshalString(name);
+			string sValue = MarshalString(value);
+			retval = m_ROMNode->SetROMObjectValue(sName, sValue);
 		}
 		return retval;
 	}
@@ -357,8 +357,8 @@ namespace ROMNET
 		String^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsName = MarshalString(name);
-			wstring res = m_ROMNode->GetROMObjectValue(wsName);
+			string sName = MarshalString(name);
+			string res = m_ROMNode->GetROMObjectValue(sName);
 			retval = gcnew String(res.c_str());
 		}
 		return retval;
@@ -369,8 +369,8 @@ namespace ROMNET
 		bool retval = false;
 		if (m_ROMNode)
 		{
-			wstring wsName = MarshalString(name);
-			retval = m_ROMNode->RemoveROMObjectValue(wsName);
+			string sName = MarshalString(name);
+			retval = m_ROMNode->RemoveROMObjectValue(sName);
 		}
 		return retval;
 	}
@@ -380,7 +380,7 @@ namespace ROMNET
 		String^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring res = m_ROMNode->GetROMObjectID();
+			string res = m_ROMNode->GetROMObjectID();
 			retval = gcnew String(res.c_str());
 		}
 		return retval;
@@ -390,8 +390,8 @@ namespace ROMNET
 	{
 		if (m_ROMNode)
 		{
-			wstring wsID = MarshalString(id);
-			m_ROMNode->SetROMObjectID(wsID);
+			string sID = MarshalString(id);
+			m_ROMNode->SetROMObjectID(sID);
 		}
 	}
 
@@ -446,11 +446,11 @@ namespace ROMNET
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
-			wstring wsOutput = MarshalString(output);
+			string sTable = MarshalString(evalTable);
+			string sOutput = MarshalString(output);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<wstring> res = m_ROMNode->_evaluateTable(wsTable, wsOutput, bGetAll, ctx);
+			vector<string> res = m_ROMNode->_evaluateTable(sTable, sOutput, bGetAll, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -465,11 +465,11 @@ namespace ROMNET
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
-			wstring wsOutput = MarshalString(output);
+			string sTable = MarshalString(evalTable);
+			string sOutput = MarshalString(output);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<wstring> res = m_ROMNode->_evaluateTable(wsTable, wsOutput, ctx);
+			vector<string> res = m_ROMNode->_evaluateTable(sTable, sOutput, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -484,10 +484,10 @@ namespace ROMNET
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
+			string sTable = MarshalString(evalTable);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<wstring, vector<wstring> > res = m_ROMNode->_evaluateTable(wsTable, bGetAll, ctx);
+			map<string, vector<string> > res = m_ROMNode->_evaluateTable(sTable, bGetAll, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -502,10 +502,10 @@ namespace ROMNET
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
+			string sTable = MarshalString(evalTable);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<wstring, vector<wstring> > res = m_ROMNode->_evaluateTable(wsTable, ctx);
+			map<string, vector<string> > res = m_ROMNode->_evaluateTable(sTable, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -520,12 +520,12 @@ namespace ROMNET
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
-			wstring wsOutput = MarshalString(output);
-			wstring par = MarshalString(param);
+			string sTable = MarshalString(evalTable);
+			string sOutput = MarshalString(output);
+			string par = MarshalString(param);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<wstring> res = m_ROMNode->_evaluateTableWithParam(wsTable, wsOutput, bGetAll, par, ctx);
+			vector<string> res = m_ROMNode->_evaluateTableWithParam(sTable, sOutput, bGetAll, par, ctx);
 			
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -540,12 +540,12 @@ namespace ROMNET
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
-			wstring wsOutput = MarshalString(output);
-			wstring par = MarshalString(param);
+			string sTable = MarshalString(evalTable);
+			string sOutput = MarshalString(output);
+			string par = MarshalString(param);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<wstring> res = m_ROMNode->_evaluateTableWithParam(wsTable, wsOutput, par, ctx);
+			vector<string> res = m_ROMNode->_evaluateTableWithParam(sTable, sOutput, par, ctx);
 			
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -560,11 +560,11 @@ namespace ROMNET
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
-			wstring par = MarshalString(param);
+			string sTable = MarshalString(evalTable);
+			string par = MarshalString(param);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<wstring, vector<wstring> > res = m_ROMNode->_evaluateTableWithParam(wsTable, bGetAll, par, ctx);
+			map<string, vector<string> > res = m_ROMNode->_evaluateTableWithParam(sTable, bGetAll, par, ctx);
 			
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -579,11 +579,11 @@ namespace ROMNET
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
-			wstring par = MarshalString(param);
+			string sTable = MarshalString(evalTable);
+			string par = MarshalString(param);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<wstring, vector<wstring> > res = m_ROMNode->_evaluateTableWithParam(wsTable, par, ctx);
+			map<string, vector<string> > res = m_ROMNode->_evaluateTableWithParam(sTable, par, ctx);
 			
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free(); 
@@ -609,11 +609,11 @@ namespace ROMNET
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
-			wstring wsOutput = MarshalString(output);
+			string sTable = MarshalString(evalTable);
+			string sOutput = MarshalString(output);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<wstring> res = m_ROMNode->_reverseEvaluateTable(wsTable, wsOutput, bGetAll, ctx);
+			vector<string> res = m_ROMNode->_reverseEvaluateTable(sTable, sOutput, bGetAll, ctx);
 			retval = GetArrayFromVectorStrings(res);
 
 			if (ctx != nullptr)
@@ -627,11 +627,11 @@ namespace ROMNET
 		array<String^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
-			wstring wsOutput = MarshalString(output);
+			string sTable = MarshalString(evalTable);
+			string sOutput = MarshalString(output);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<wstring> res = m_ROMNode->_reverseEvaluateTable(wsTable, wsOutput, ctx);
+			vector<string> res = m_ROMNode->_reverseEvaluateTable(sTable, sOutput, ctx);
 			retval = GetArrayFromVectorStrings(res);
 
 			if (ctx != nullptr)
@@ -645,10 +645,10 @@ namespace ROMNET
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
+			string sTable = MarshalString(evalTable);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<wstring, vector<wstring> > res = m_ROMNode->_reverseEvaluateTable(wsTable, bGetAll, ctx);
+			map<string, vector<string> > res = m_ROMNode->_reverseEvaluateTable(sTable, bGetAll, ctx);
 			retval = GetDictionaryFromMapStrings(res);
 
 			if (ctx != nullptr)
@@ -662,10 +662,10 @@ namespace ROMNET
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsTable = MarshalString(evalTable);
+			string sTable = MarshalString(evalTable);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<wstring, vector<wstring> > res = m_ROMNode->_reverseEvaluateTable(wsTable, ctx);
+			map<string, vector<string> > res = m_ROMNode->_reverseEvaluateTable(sTable, ctx);
 			retval = GetDictionaryFromMapStrings(res);
 
 			if (ctx != nullptr)
@@ -680,7 +680,7 @@ namespace ROMNET
 		String^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring res = m_ROMNode->SaveXML(indented);
+			string res = m_ROMNode->SaveXML(indented);
 			retval = gcnew String(res.c_str());
 		}
 		return retval;
@@ -693,8 +693,8 @@ namespace ROMNET
 			factory = gcnew ROMObjectFactoryDelegate(&ROMNode::_managedFactory);
 		}
 		
-		wstring wsXMLFile = MarshalString(xmlFile);
-		ROM::ROMNode* node = ROM::ROMNode::LoadXML(wsXMLFile, nullptr);
+		string sXMLFile = MarshalString(xmlFile);
+		ROM::ROMNode* node = ROM::ROMNode::LoadXML(sXMLFile, nullptr);
 
 		return _loadNode(node, factory);
 	}
@@ -706,8 +706,8 @@ namespace ROMNET
 			factory = gcnew ROMObjectFactoryDelegate(&ROMNode::_managedFactory);
 		}
 
-		wstring wsXML = MarshalString(xmlStr);
-		ROM::ROMNode* node = ROM::ROMNode::LoadXMLFromString(wsXML, nullptr);
+		string sXML = MarshalString(xmlStr);
+		ROM::ROMNode* node = ROM::ROMNode::LoadXMLFromString(sXML, nullptr);
 
 		return _loadNode(node, factory);
 	}
@@ -745,9 +745,9 @@ namespace ROMNET
 		String^ retval = nullptr;
 		if (m_ROMNode)
 		{
-			wstring wsXPATH = MarshalString(xpath);
-			string sGuid = MarshalStringA(guid);
-			wstring res = m_ROMNode->EvaluateXPATH(wsXPATH, sGuid);
+			string sXPATH = MarshalString(xpath);
+			string sGuid = MarshalString(guid);
+			string res = m_ROMNode->EvaluateXPATH(sXPATH, sGuid);
 			retval = gcnew String(res.c_str());
 		}
 		return retval;
@@ -770,10 +770,10 @@ namespace ROMNET
 	{
 		if (m_ROMDictionary)
 		{
-			wstring wsDict = MarshalString(dictionaryTable);
+			string sDict = MarshalString(dictionaryTable);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
 
-			m_ROMDictionary->_loadDictionary(wsDict, ctx);
+			m_ROMDictionary->_loadDictionary(sDict, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -785,8 +785,8 @@ namespace ROMNET
 		ROMDictionaryAttribute^ retval = nullptr;
 		if (m_ROMDictionary)
 		{
-			wstring wsName = MarshalString(dictAttrName);
-			ROM::ROMDictionaryAttribute* attr = m_ROMDictionary->GetDictionaryAttr(wsName);
+			string sName = MarshalString(dictAttrName);
+			ROM::ROMDictionaryAttribute* attr = m_ROMDictionary->GetDictionaryAttr(sName);
 			if (attr)
 			{
 				retval = gcnew ROMDictionaryAttribute((IntPtr)attr);
@@ -800,8 +800,8 @@ namespace ROMNET
 		Dictionary<String^, ROMDictionaryAttribute^>^ retval = gcnew Dictionary<String^, ROMDictionaryAttribute^>();
 		if (m_ROMDictionary)
 		{
-			map<wstring, ROM::ROMDictionaryAttribute>* allAttrs = m_ROMDictionary->GetAllDictionaryAttrs();
-			for (map<wstring, ROM::ROMDictionaryAttribute>::iterator it = allAttrs->begin(); it != allAttrs->end(); it++)
+			map<string, ROM::ROMDictionaryAttribute>* allAttrs = m_ROMDictionary->GetAllDictionaryAttrs();
+			for (map<string, ROM::ROMDictionaryAttribute>::iterator it = allAttrs->begin(); it != allAttrs->end(); it++)
 			{
 				String^ key = gcnew String(it->first.c_str());
 				ROMDictionaryAttribute^ value = gcnew ROMDictionaryAttribute((IntPtr)(&(it->second)));
@@ -828,8 +828,8 @@ namespace ROMNET
 	{
 		if (m_LinearEngine)
 		{
-			wstring name = MarshalString(dictAttrName);
-			vector<wstring> vals = GetVectorFromArrayStrings(newValues);
+			string name = MarshalString(dictAttrName);
+			vector<string> vals = GetVectorFromArrayStrings(newValues);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
 
 			m_LinearEngine->_evaluateForAttribute(name, vals, bEvalDependents, ctx);
@@ -843,8 +843,8 @@ namespace ROMNET
 	{
 		if (m_LinearEngine)
 		{
-			wstring name = MarshalString(dictAttrName);
-			wstring val = MarshalString(newValue);
+			string name = MarshalString(dictAttrName);
+			string val = MarshalString(newValue);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
 
 			m_LinearEngine->_evaluateForAttribute(name, val, bEvalDependents, ctx);
@@ -889,13 +889,13 @@ namespace ROMNET
 		Dictionary<String^, array<String^>^>^ retval = nullptr;
 		if (m_LinearEngine)
 		{
-			map<wstring, vector<wstring> > res = m_LinearEngine->GetTriggers();
+			map<string, vector<string> > res = m_LinearEngine->GetTriggers();
 			retval = gcnew Dictionary<String^, array<String^>^>();
-			for (map<wstring, vector<wstring> >::iterator it = res.begin(); it != res.end(); it++)
+			for (map<string, vector<string> >::iterator it = res.begin(); it != res.end(); it++)
 			{
 				array<String^>^ attrs = gcnew array<String^>(it->second.size());
 				size_t i = 0;
-				for (vector<wstring>::iterator itAttr = it->second.begin(); itAttr != it->second.end(); itAttr++)
+				for (vector<string>::iterator itAttr = it->second.begin(); itAttr != it->second.end(); itAttr++)
 				{
 					attrs[i] = gcnew String((*itAttr).c_str());
 					i++;

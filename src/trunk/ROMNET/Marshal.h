@@ -23,6 +23,7 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include "ROMNode.h"
 using namespace std;
 
 #pragma managed
@@ -31,10 +32,9 @@ using namespace std;
 using namespace System; 
 using namespace System::Collections::Generic;
 
-string MarshalStringA ( String ^ s);
-wstring MarshalString ( String ^ s);
-stdext::hash_map<wstring, size_t> MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict);
+string MarshalString ( String ^ s);
+stdext::hash_map<string, size_t> MarshalDictionaryStringUInt (Dictionary<String^, size_t>^ dict);
 
-array<String^>^ GetArrayFromVectorStrings(const vector<wstring> &vect);
-vector<wstring> GetVectorFromArrayStrings(array<String^>^ arr);
-Dictionary<String^,	array<String^>^>^ GetDictionaryFromMapStrings(const map<wstring, vector<wstring> > &mp);
+array<String^>^ GetArrayFromVectorStrings(const vector<string> &vect);
+vector<string> GetVectorFromArrayStrings(array<String^>^ arr);
+Dictionary<String^,	array<String^>^>^ GetDictionaryFromMapStrings(const map<string, vector<string> > &mp);

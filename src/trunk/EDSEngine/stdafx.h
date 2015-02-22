@@ -57,18 +57,7 @@ const unsigned short INVALID_STRING = 0;
 const unsigned short EMPTY_STRING = 1;
 const unsigned short EXPLICIT_NULL_STRING = 2;
 
-inline void ReportErrorW(std::wstring errorMsg)
-{
-	std::wcerr<<errorMsg<<std::endl;
-}
-
 inline void ReportError(std::string errorMsg)
 {
-	std::wstring err;
-	err.assign(errorMsg.begin(), errorMsg.end());
-	ReportErrorW(err);
+	std::cerr << errorMsg << std::endl;
 }
-
-struct IManagedInterface //helper class to distinguish C++ pointers from managed interop
-{
-};

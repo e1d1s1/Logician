@@ -9,7 +9,7 @@
       <Value/>
     </Inputs>
     <Inputs>
-      <Attr>xpath(//Object[@id='ChildObject']/Attribute[@id='childAttr']/@value)</Attr>
+      <Attr>xpath(//Object[@id='DerivedObject']/Attribute[@id='childAttr']/@value)</Attr>
       <Value/>
       <Value/>
       <Value operation="1">some value of value</Value>
