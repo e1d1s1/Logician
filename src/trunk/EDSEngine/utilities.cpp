@@ -1,6 +1,6 @@
 /*
 This file is part of the EDSEngine Library.
-Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
+Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 
     EDSEngine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -125,106 +125,15 @@ wstring EDSUTIL::Widen(const string &s)
 }
 #endif
 
-//string EDSUTIL::ToASCIIString(const wstring& s)
-//{
-//	string retval(s.begin(), s.end());
-//	return retval;
-//}
-
-//string EDSUTIL::WStrToMBCStr(const wstring& wstr)
-//{
-//	string retval ="";
-//	for (size_t i = 0; i < wstr.length(); ++i)
-//	{
-//		unsigned short bytesToWrite;
-//		wchar_t ch = wstr[i];
-//
-//		if (ch < 0x80) bytesToWrite = 1;
-//		else if (ch < 0x800) bytesToWrite = 2;
-//		else if (ch < 0x10000) bytesToWrite = 3;
-//		else if (ch < 0x110000) bytesToWrite = 4;
-//		else bytesToWrite = 3, ch = 0xFFFD; // replacement character
-//
-//		char buf[4];
-//		char* target = &buf[bytesToWrite];
-//		switch (bytesToWrite)
-//		{
-//		case 4: *--target = ((ch | 0x80) & 0xBF); ch >>= 6;
-//		case 3: *--target = ((ch | 0x80) & 0xBF); ch >>= 6;
-//		case 2: *--target = ((ch | 0x80) & 0xBF); ch >>= 6;
-//		case 1: *--target = (char)(ch | firstByteMark[bytesToWrite]);
-//		}
-//		retval += std::string(buf, bytesToWrite);
-//	}
-//	return retval;
-//}
-//
-//wstring EDSUTIL::MBCStrToWStr(const string& mbStr)
-//{
-//	if (mbStr.size() == 0)
-//		return L"";
-//
-//	size_t requiredSize = mbstowcs(nullptr, mbStr.c_str(), 0) + 1;
-//	wchar_t *wStr = new wchar_t[requiredSize];
-//	mbstowcs(wStr, mbStr.c_str(), requiredSize);
-//	wstring retval = wStr;
-//	delete [] wStr;
-//	return retval;
-//}
-
-//vector<string> EDSUTIL::ToMBCStringVector(vector<wstring> vectWS)
-//{
-//	vector<string> retval;
-//	for (auto it = vectWS.begin(); it != vectWS.end(); it++)
-//	{
-//		retval.push_back(EDSUTIL::WStrToMBCStr(*it));
-//	}
-//	return retval;
-//}
-
-//this is only for integer and ascii conversion
-//wstring EDSUTIL::ToWString(const string& s)
-//{
-//	wstring retval;
-//	retval.assign(s.begin(), s.end());
-//	return retval;
-//}
-
-//#ifdef USE_LIBXML
-//wstring EDSUTIL::XMLStrToWStr(const xmlChar* mbStr)
-//{
-//	if (mbStr == nullptr)
-//		return L"";
-//
-//	std::wstring result;
-//	const xmlChar* source = mbStr;
-//	const xmlChar* sourceEnd = mbStr + strlen((const char*)mbStr);
-//	while (source < sourceEnd)
-//	{
-//		unsigned long ch = 0;
-//		int extraBytesToRead = trailingBytesForUTF8[*source];
-//		assert(source + extraBytesToRead < sourceEnd);
-//		switch (extraBytesToRead)
-//		{
-//		case 5: ch += *source++; ch <<= 6;
-//		case 4: ch += *source++; ch <<= 6;
-//		case 3: ch += *source++; ch <<= 6;
-//		case 2: ch += *source++; ch <<= 6;
-//		case 1: ch += *source++; ch <<= 6;
-//		case 0: ch += *source++;
-//		}
-//		ch -= offsetsFromUTF8[extraBytesToRead];
-//		// Make sure it fits in a 16-bit wchar_t
-//		if (ch > 0xFFFF)
-//			ch = 0xFFFD;
-//
-//		result += (wchar_t)ch;
-//	}
-//	return result;
-//}
-//
-//wstring EDSUTIL::XMLStrToWStr(xmlChar* mbStr)
-//{
-//	return XMLStrToWStr((const xmlChar*)mbStr);
-//}
-//#endif
+#ifdef USE_LIBXML
+string EDSUTIL::XMLStrToStr(xmlChar* mbStr)
+{
+	if (mbStr != nullptr)
+	{
+		string retval = (char*)mbStr;
+		xmlFree(mbStr);
+		return retval;
+	}
+	return "";
+}
+#endif

@@ -1,6 +1,6 @@
 /*
 This file is part of the Relational Object Model Library.
-Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
+Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 
     Relational Object Model is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,15 +29,14 @@ Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 #ifndef _MSC_VER
 #include <time.h>
 #endif
+#include "XMLWrapper.h"
 
 using namespace std;
 namespace ROMUTIL
 {
 	string FindAndReplace(const string& source, const string target, const string replacement);
 	bool StringContains(const string& source, const string& target);
-	//bool StringBeginsWith(const wstring& source, const wstring& target);
 	vector<string> Split(const string& text, const string& separators);
-	vector<wstring> Split(const wstring& text, const wstring& separators);
 	bool StringIsNumeric(const string& s);
 #ifdef WIN32
 	string Narrow(const wchar_t *s);
@@ -45,26 +44,11 @@ namespace ROMUTIL
 	string Narrow(const wstring &s);
 	wstring Widen(const string &s);
 #endif
-	//wstring TrimString(wstring s);
-	//string ToASCIIString(const wstring& s);
-	//wstring ToWString(const string& s);
-	//vector<string> NarrowVector(vector<wstring> vectWS);
-	//map<string, vector<string> > NarrowMapVector(map<wstring, vector<wstring> >);
-	//vector<string> ToASCIIStringVector(const vector<wstring>& vectWS);
-	//vector<wstring> ToWStringVector(const vector<string>& vStr);
-	//string stringify(double x);
-	//string stringify(long x);
 	string MakeGUID();
 	string encodeForXml(const string& sSrc);
-//#if USE_MSXML
-//	wstring BSTR_T_ToWString(void* bstr); //void* to avoid reference issues when headers included in WinRT project
-//#endif
-	//wstring Widen(const string& mbStr);
-	//string Narrow(const wstring& wstr);
-//#if USE_LIBXML
-//	wstring XMLStrToWStr(const unsigned char* mbStr);
-//	wstring XMLStrToWStr(unsigned char* mbStr);
-//#endif
+#if USE_LIBXML
+	string XMLStrToStr(xmlChar* mbStr);
+#endif
 
 }
 #endif

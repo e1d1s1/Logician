@@ -589,13 +589,19 @@
 	                }
                 }
 
-	            write_result("loading rules");
-	            //if (rootNode.LoadRulesFromString(rules))
-	            if (rootNode.LoadRules("test_project.xml"))
+                write_result("loading rules");
+                var rulesEngine = new KnowledgeBase("test_project.xml");  
+	            
+	            if (rulesEngine.IsOpen())
 	            {
+	                //deubg
+	                rulesEngine.DebugHandler = debugHandler;
+	                rulesEngine.InputValueGetter = function (attrName, obj) {
+	                    return obj.GetAttribute(attrName, false);
+	                };
+	                rootNode.SetKnowledgeBase(rulesEngine);
 		            write_result("...loaded");
-		            //deubg
-                    rootNode.SetTableDebugHandler(debugHandler);
+		                                
 		            write_result("Evaluating table testtable1");
 		            var res = rootNode.EvaluateTableForAttr("testtable1", "outputAttr1", true);
 		            for (var i = 0; i < res.length; i++)

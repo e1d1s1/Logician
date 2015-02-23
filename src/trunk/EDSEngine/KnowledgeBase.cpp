@@ -1,6 +1,6 @@
 /*
 This file is part of the EDSEngine Library.
-Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
+Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 
     EDSEngine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ using boost::asio::ip::tcp;
 
 #ifdef WIN32
 #include <direct.h>
+#include <comdef.h>
 #endif
 
 #ifdef USE_JAVASCRIPT
@@ -716,8 +717,7 @@ bool CKnowledgeBase::CreateKnowledgeBaseFromString(string xmlStr)
 #ifdef USE_LIBXML
 	xmlInitParser();
 	Document xmlDocument = nullptr;
-	string buff = strToMBCStr(xmlStr);
-	xmlDocument = xmlParseMemory(buff.c_str(), (int)buff.size());
+	xmlDocument = xmlParseMemory(xmlStr.c_str(), (int)xmlStr.size());
 	if (xmlDocument != nullptr)
 	{
 		retval = _parseXML(xmlDocument);
@@ -849,12 +849,12 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 	xmlChar* tablesXPath = (xmlChar*)"//Tables";
 	xmlXPathObjectPtr xpathTables = xmlXPathEvalExpression(tablesXPath, xpathCtx);
 	Node tablesNode = xpathTables->nodesetval->nodeTab[0];
-	string debug = EDSUTIL::XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debug"));
-	string debugTables = EDSUTIL::XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"debugtables"));
+	string debug = EDSUTIL::XMLStrToStr(xmlGetProp(tablesNode, (xmlChar*)"debug"));
+	string debugTables = EDSUTIL::XMLStrToStr(xmlGetProp(tablesNode, (xmlChar*)"debugtables"));
 	if (debug == "true")
 	{
 		m_DEBUGGING_MSGS = true;
-		string con = EDSUTIL::XMLStrToWStr(xmlGetProp(tablesNode, (xmlChar*)"connection"));
+		string con = EDSUTIL::XMLStrToStr(xmlGetProp(tablesNode, (xmlChar*)"connection"));
 		if (con.length() > 0)
 		{
 			m_DEBUGGING_CON = con;
@@ -883,8 +883,8 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 			NodeList inputList = xpathObjInputs->nodesetval;
 			NodeList outputList = xpathObjOutputs->nodesetval;
 
-			string name = EDSUTIL::XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"name"));
-			string sGetAll = EDSUTIL::XMLStrToWStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
+			string name = EDSUTIL::XMLStrToStr(xmlGetProp(TableNode, (xmlChar*)"name"));
+			string sGetAll = EDSUTIL::XMLStrToStr(xmlGetProp(TableNode, (xmlChar*)"getall"));
 			bool bGetAll = false;
 			if (sGetAll.length() > 0 && sGetAll[0] == L't')
 				bGetAll = true;
@@ -894,7 +894,7 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 			for (int j = 0; j < formulaInputNodes->nodeNr; j++)
 			{
 				Node formulaInputNode = formulaInputNodes->nodeTab[j];
-				FormulaInputs.push_back(EDSUTIL::XMLStrToWStr(xmlNodeGetContent(formulaInputNode)));
+				FormulaInputs.push_back(EDSUTIL::XMLStrToStr(xmlNodeGetContent(formulaInputNode)));
 			}
 
 			vector<pair<string, vector<CRuleCell> > > InputAttrsTests = _getTableRowFromXML(inputList, xmlDocument);
@@ -923,14 +923,14 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 			for (int i = 0; i < allTranslations->nodeNr; i++)
 			{
 				Node StringNode = allTranslations->nodeTab[i];
-				size_t id = atoull(EDSUTIL::ToASCIIString(EDSUTIL::XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)"id"))).c_str());
+				size_t id = atoull(EDSUTIL::XMLStrToStr(xmlGetProp(StringNode, (xmlChar*)"id")).c_str());
 				for (Attribute childAttr = StringNode->properties; childAttr != nullptr; childAttr = childAttr->next)
 				{
-                    string name = EDSUTIL::XMLStrToWStr(childAttr->name);
+                    string name = (char*)childAttr->name;
                     if (name != "id")
                     {
                         string langType = name;
-                        string langValue = EDSUTIL::XMLStrToWStr(xmlGetProp(StringNode, (xmlChar*)Narrow(name).c_str()));
+                        string langValue = EDSUTIL::XMLStrToStr(xmlGetProp(StringNode, (xmlChar*)name.c_str()));
                         pair<string, string> kvp;
                         kvp.first = langType;
                         kvp.second = langValue;
@@ -958,9 +958,9 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 	xmlXPathObjectPtr xpathJS = xmlXPathEvalExpression((xmlChar*)"//Javascript", xpathCtx);
 	xmlXPathObjectPtr xpathPY = xmlXPathEvalExpression((xmlChar*)"//Python", xpathCtx);
 	if (xpathJS != nullptr && xpathJS->nodesetval != nullptr && xpathJS->nodesetval->nodeNr == 1)
-		m_jsCode = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0])) + "\n";
+		m_jsCode = EDSUTIL::XMLStrToStr(xmlNodeGetContent(xpathJS->nodesetval->nodeTab[0])) + "\n";
 	if (xpathJS != nullptr && xpathJS->nodesetval != nullptr && xpathPY->nodesetval->nodeNr == 1)
-		m_pyCode = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0])) + "\n";
+		m_pyCode = EDSUTIL::XMLStrToStr(xmlNodeGetContent(xpathPY->nodesetval->nodeTab[0])) + "\n";
 
 	xmlXPathFreeObject(xpathJS);
 	xmlXPathFreeObject(xpathPY);
@@ -1192,21 +1192,21 @@ vector<pair<string, vector<CRuleCell> > > CKnowledgeBase::_getTableRowFromXML(No
 			{
 				Node attrNode = xmlXPathObjAttr->nodesetval->nodeTab[0];
 
-				string attrName = EDSUTIL::XMLStrToWStr(xmlNodeGetContent(attrNode));
+				string attrName = EDSUTIL::XMLStrToStr(xmlNodeGetContent(attrNode));
 				currentAttrRow.first = attrName;
 				if (values != nullptr)
 				{
 					for (int j = 0; j < values->nodeNr; j++)
 					{
 						Node currentValue = values->nodeTab[j];
-						string sIDs = EDSUTIL::XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"id"));
+						string sIDs = EDSUTIL::XMLStrToStr(xmlGetProp(currentValue, (xmlChar*)"id"));
 
 						CRuleCell cell;
 						if (sIDs.length() > 0)
 						{
-							vector<string> cellValues = Split(EDSUTIL::XMLStrToWStr(xmlNodeGetContent(currentValue)), "|");
+							vector<string> cellValues = EDSUTIL::Split(EDSUTIL::XMLStrToStr(xmlNodeGetContent(currentValue)), "|");
 							string sIDs(sIDs.begin(), sIDs.end()); //contains numerical so this ok
-							vector<string> ids = Split(sIDs, ",");
+							vector<string> ids = EDSUTIL::Split(sIDs, ",");
 							if (ids.size() != cellValues.size())
 								throw "Bad OR";
 
@@ -1219,7 +1219,7 @@ vector<pair<string, vector<CRuleCell> > > CKnowledgeBase::_getTableRowFromXML(No
 							}
 						}
 
-						string sOper = EDSUTIL::XMLStrToWStr(xmlGetProp(currentValue, (xmlChar*)"operation"));
+						string sOper = EDSUTIL::XMLStrToStr(xmlGetProp(currentValue, (xmlChar*)"operation"));
 						long lOper = 0;
 						if (sOper.length() > 0)
 						{

@@ -1,6 +1,6 @@
 /*
 This file is part of the Relational Object Model Library.
-Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
+Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 
     Relational Object Model is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -308,7 +308,7 @@ vector<ROMNode*> ROMNode::FindObjects(const string& xpath)
 #endif
 #ifdef USE_LIBXML
 	xmlXPathContextPtr xpathCtx = xmlXPathNewContext(m_xmlDoc);
-	xmlXPathObjectPtr xpathObjSearch = xmlXPathEvalExpression((xmlChar*)Narrow(xpath).c_str(), xpathCtx);
+	xmlXPathObjectPtr xpathObjSearch = xmlXPathEvalExpression((xmlChar*)xpath.c_str(), xpathCtx);
 	NodeList res = xpathObjSearch->nodesetval;
 	if (res != nullptr)
 	{
@@ -323,7 +323,7 @@ vector<ROMNode*> ROMNode::FindObjects(const string& xpath)
 	for (vector<Node>::iterator it = nodes.begin(); it != nodes.end(); it++)
 	{
 		Node objNode = (*it);
-		string guid = XMLStrToWStr(xmlGetProp(objNode, (xmlChar*)"guid"));
+		string guid = ROMUTIL::XMLStrToStr(xmlGetProp(objNode, (xmlChar*)"guid"));
 		if (guid.length() > 0)
 		{
 			ROMNode* node = FindObjectByGUID(guid);
@@ -711,8 +711,7 @@ void ROMNode::_createXMLDoc(bool bForceLoad, bool prettyprint)
 #endif
 #ifdef USE_LIBXML
 		m_xmlDoc = nullptr;
-		string buff = Narrow(genXML);
-		m_xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
+		m_xmlDoc = xmlParseMemory(genXML.c_str(), (int)genXML.size());
 #endif
 		_setAllUnchanged();
 	}
@@ -949,16 +948,15 @@ ROMNode* ROMNode::_loadXML(const string& xmlStr, bool isFile, ObjectFactory fact
 #ifdef USE_LIBXML
 	try
 	{
-		string buff = Narrow(xmlStr);
 		Document xmlDoc = nullptr;
 		
 		if (isFile)
 		{
-			xmlDoc = xmlParseFile(buff.c_str());
+			xmlDoc = xmlParseFile(xmlStr.c_str());
 		}
 		else
 		{
-			xmlDoc = xmlParseMemory(buff.c_str(), (int)buff.size());
+			xmlDoc = xmlParseMemory(xmlStr.c_str(), (int)xmlStr.size());
 		}
 		
 
@@ -1037,34 +1035,25 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 #endif
 
 #ifdef USE_LIBXML
-	string id = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)"id"));
-	string guid = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)"guid"));
-	if (parent == nullptr)
-	{
-		DestroyROMObject();
-		m_id = id;
-		m_guid = ToASCIIString(guid);
-		newNode = this;
-	}
-	else
-	{
-		newNode = new ROMNode(id);
-		newNode->m_guid = ToASCIIString(guid);
-	}
+	string id = ROMUTIL::XMLStrToStr(xmlGetProp(objectNode, (xmlChar*)"id"));
+	string guid = ROMUTIL::XMLStrToStr(xmlGetProp(objectNode, (xmlChar*)"guid"));
+	
+	newNode = factory(id);
+	newNode->m_guid = guid;
 
 	//set object values
 	for (Attribute objValue = objectNode->properties; objValue != nullptr; objValue = objValue->next)
 	{
-		string attrName = XMLStrToWStr(objValue->name);
+		string attrName = (const char*)objValue->name;
 		if (attrName != "id" && attrName != "guid")
 		{
-			string value = XMLStrToWStr(xmlGetProp(objectNode, (xmlChar*)Narrow(id).c_str()));
+			string value = ROMUTIL::XMLStrToStr(xmlGetProp(objectNode, (xmlChar*)id.c_str()));
 			newNode->SetROMObjectValue(id, value);
 		}
 	}
 
 	//set object attributes
-	xmlXPathContextPtr xpathCtx = xmlXPathNewContext(m_xmlDoc);
+	xmlXPathContextPtr xpathCtx = xmlXPathNewContext(objectNode->doc);
 	xmlChar* attrXPath = (xmlChar*)"Attribute";
 	xmlXPathObjectPtr xpathAttrs = xmlXPathEvalExpression(attrXPath, xpathCtx);
 	NodeList allAttrs = xpathAttrs->nodesetval;
@@ -1073,18 +1062,18 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 		for (int i = 0; i < allAttrs->nodeNr; i++)
 		{
 			Node attrNode = allAttrs->nodeTab[i];
-			string idAttr = XMLStrToWStr(xmlGetProp(attrNode, (xmlChar*)"id"));
+			string idAttr = ROMUTIL::XMLStrToStr(xmlGetProp(attrNode, (xmlChar*)"id"));
 			for (Attribute attr = attrNode->properties; attr != nullptr; attr = attr->next)
 			{
-				string name = XMLStrToWStr(attr->name);
+				string name = (const char*)attr->name;
 				if (name != "id")
 				{
-					string value = XMLStrToWStr(xmlGetProp(attrNode, (xmlChar*)Narrow(name).c_str()));
+					string value = ROMUTIL::XMLStrToStr(xmlGetProp(attrNode, (const xmlChar*)name.c_str()));
 					newNode->SetAttribute(idAttr, name, value);
 				}
 			}
 		}
-	}
+	}	
 
 	//children recursivley
 	xmlChar* objXPath = (xmlChar*)"Object";
@@ -1102,6 +1091,11 @@ ROMNode* ROMNode::_buildObject(Node objectNode, ObjectFactory factory)
 			}
 		}
 	}
+
+	xmlXPathFreeObject(xpathAttrs);
+	xmlXPathFreeObject(xpathObjects);
+	xmlXPathFreeContext(xpathCtx);
+	
 
 #endif
 #ifdef _DEBUG
@@ -1145,8 +1139,7 @@ string	ROMNode::EvaluateXPATH(const string& xpath, const string& guid)
 		xsltDoc.Release();
 #endif
 #ifdef USE_LIBXML
-		string buff = Narrow(xslt_text);
-		Document xsltDoc = xmlParseMemory(buff.c_str(), (int)buff.length());
+		Document xsltDoc = xmlParseMemory(xslt_text.c_str(), (int)xslt_text.length());
 
 		xsltStylesheetPtr xsl = xsltParseStylesheetDoc(xsltDoc);
 		Document result = xsltApplyStylesheet(xsl, m_xmlDoc, nullptr);
@@ -1154,7 +1147,7 @@ string	ROMNode::EvaluateXPATH(const string& xpath, const string& guid)
 		xmlChar *xmlbuff;
 		int buffersize = 0;
 		xsltSaveResultToString(&xmlbuff, &buffersize, result, xsl);
-		retval = XMLStrToWStr(xmlbuff);
+		retval = ROMUTIL::XMLStrToStr(xmlbuff);
 
 		xmlFreeDoc(xsltDoc);
 		xmlFreeDoc(result);
@@ -1238,11 +1231,10 @@ string ROMNode::_convertXMLDocToString(bool prettyprint, Document xmlDoc)
 		xmlChar *xmlbuff;
 		int buffersize = 0;
 		int format = 0;
-		if (indented)
+		if (prettyprint)
 			format = 1;
-		xmlDocDumpFormatMemory(m_xmlDoc, &xmlbuff, &buffersize, format);
-		retval = XMLStrToWStr(xmlbuff);
-		xmlFree(xmlbuff);
+		xmlDocDumpFormatMemory(xmlDoc, &xmlbuff, &buffersize, format);
+		retval = ROMUTIL::XMLStrToStr(xmlbuff);
 #endif
 	}
 	return retval;

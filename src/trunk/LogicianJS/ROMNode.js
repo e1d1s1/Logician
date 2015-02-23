@@ -654,7 +654,39 @@ ROMNode.prototype.Clone = function () {
     return newNode;
 }
 
-ROMNode.prototype.GetAttributeValue = function (id, name, immediate) {
+ROMNode.prototype._getSpecialAttribute = function (id) {
+    var retval = { bFound: false, value: "" };
+
+    try {
+        var xpathIndex = id.indexOf("xpath(");
+        if (xpathIndex >= 0) {
+            var cmdArg = id.substr(xpathIndex + 6, id.length - 7);
+            retval.value = this.EvaluateXPATH(cmdArg, this.m_guid);
+            retval.bFound = true;
+        }
+        else if (id == "CLASSID") {
+            retval.value = this.GetROMObjectID();
+            retval.bFound = true;
+        }
+    }
+    catch (err) {
+        ReportError(err);
+    }
+
+    return retval;
+}
+
+ROMNode.prototype._getAttributeInternalValue = function (id, name, immediate) {
+    var retSpecial = this._getSpecialAttribute(id);
+    var retval = retSpecial.value;
+
+    if (!retSpecial.bFound)
+        retval = this._getAttributeValue(id, name, immediate);
+
+    return retval;
+}
+
+ROMNode.prototype._getAttributeValue = function (id, name, immediate) {
     var retval = "";
     try {
         if (immediate === undefined)
@@ -669,7 +701,7 @@ ROMNode.prototype.GetAttributeValue = function (id, name, immediate) {
 
         if (!immediate && !bFound) {
             if (this.m_parent != null) {
-                retval = this.m_parent.GetAttributeValue(id, name, immediate);
+                retval = this.m_parent._getAttributeValue(id, name, immediate);
             }
         }
     }
@@ -679,17 +711,12 @@ ROMNode.prototype.GetAttributeValue = function (id, name, immediate) {
     return retval;
 }
 
+ROMNode.prototype.GetAttributeValue = function (id, name, immediate) {
+    return this._getAttributeInternalValue(id, name, immediate);
+}
+
 ROMNode.prototype.GetAttribute = function (id, immediate) {
-    var retval = "";
-    try {
-        if (immediate === undefined)
-            immediate = false;
-        retval = this.GetAttributeValue(id, "value", immediate);
-    }
-    catch (err) {
-        ReportError(err);
-    }
-    return retval;
+    return this.GetAttributeValue(id, "value", immediate);
 }
 
 ROMNode.prototype.GetAttributeExists = function (id, name) {
@@ -825,55 +852,8 @@ ROMNode.prototype.GetAllAttributes = function () {
 
 
 //rules
-ROMNode.prototype.LoadRules = function (knowledge_file) {
-    try {
-        this.m_KnowledgeBase = null;
-
-        if (this.m_parent == null) //only the root will have the reference to the rules
-        {
-            this.m_KnowledgeBase = new KnowledgeBase(knowledge_file);
-            if (this.m_KnowledgeBase != null) {
-                this.m_KnowledgeBase.InputValueGetter = function (attrName, obj) {
-                    return obj.GetATableInputValue(attrName);
-                };
-                return true;
-            }
-            else
-                return false;
-        }
-    }
-    catch (err) {
-        ReportError(err);
-    }
-    return false;
-}
-
-ROMNode.prototype.LoadRulesFromString = function (xml) {
-    try {
-        this.m_KnowledgeBase = null;
-
-        if (this.m_parent == null) //only the root will have the reference to the rules
-        {
-            this.m_KnowledgeBase = CreateKnowledgeBaseFromString(xml);
-            if (this.m_KnowledgeBase != null) {
-                this.m_KnowledgeBase.InputValueGetter = function (attrName, obj) {
-                    return obj.GetATableInputValue(attrName);
-                };
-                return true;
-            }
-            else
-                return false;
-        }
-    }
-    catch (err) {
-        ReportError(err);
-    }
-	return false;
-}
-
-ROMNode.prototype.SetTableDebugHandler = function (func) {
-    if (this.m_KnowledgeBase != null)
-        this.m_KnowledgeBase.DebugHandler = func;
+ROMNode.prototype.SetKnowledgeBase = function(objRules) {
+    this.m_KnowledgeBase = objRules;
 }
 
 ROMNode.prototype._getKnowledge = function () {
@@ -1053,27 +1033,6 @@ ROMNode.prototype.EvaluateXPATH = function (xpath, guid) {
                     delete xsltProcessor;
                 }
             }
-        }
-    }
-    catch (err) {
-        ReportError(err);
-    }
-    return retval;
-}
-
-ROMNode.prototype.GetATableInputValue = function (input) {
-    var retval = "";
-    try {
-        var xpathIndex = input.indexOf("xpath(");
-        if (xpathIndex >= 0) {
-            var cmdArg = input.substr(xpathIndex + 6, input.length - 7);
-            retval = this.EvaluateXPATH(cmdArg, this.m_guid);
-        }
-        else if (input == "CLASSID") {
-            retval = this.GetROMObjectID();
-        }
-        else {
-            retval = this.GetAttribute(input, false);
         }
     }
     catch (err) {
