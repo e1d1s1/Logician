@@ -319,7 +319,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Libxml|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\EDSEngine;..\libxml2-2.7.3.win32\include;..\libxslt-1.1.24.win32\include;..\iconv-1.9.2.win32\include;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\EDSEngine;..\libxml2-2.7.8.win32\include;..\libxslt-1.1.26.win32\include;..\iconv-1.9.2.win32\include;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_LIBXML;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -331,14 +331,14 @@
     </ClCompile>
     <Lib>
       <AdditionalDependencies>EDSEngine.lib;Rpcrt4.lib;iconv.lib;libxml2.lib;libexslt.lib;libxslt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\zlib-1.2.3.win32\lib;..\iconv-1.9.2.win32\lib;..\libxslt-1.1.24.win32\lib;..\EDSEngine\Debug Libxml;..\libxml2-2.7.3.win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\zlib-1.2.5.win32\lib;..\iconv-1.9.2.win32\lib;..\libxslt-1.1.26.win32\lib;..\EDSEngine\Debug Libxml;..\libxml2-2.7.8.win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>dwmapi.dll;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Libxml|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\EDSEngine;..\libxml2-2.7.3.win32\include;..\libxslt-1.1.24.win32\include;..\iconv-1.9.2.win32\include;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\EDSEngine;..\libxml2-2.7.8.win32\include;..\libxslt-1.1.26.win32\include;..\iconv-1.9.2.win32\include;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_LIBXML;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -349,38 +349,38 @@
     </ClCompile>
     <Lib>
       <AdditionalDependencies>EDSEngine.lib;Rpcrt4.lib;iconv.lib;libxml2.lib;libexslt.lib;libxslt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\EDSEngine\x64\Debug Libxml;..\zlib-1.2.3.win32\lib;..\iconv-1.9.2.win32\lib;..\libxslt-1.1.24.win32\lib;..\libxml2-2.7.3.win32\lib;$(BOOST_ROOT64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\x64\Debug Libxml;..\zlib-1.2.5.win32\lib;..\iconv-1.9.2.win32\lib;..\libxslt-1.1.26.win32\lib;..\libxml2-2.7.8.win32\lib;$(BOOST_ROOT64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>dwmapi.dll;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Libxml|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\EDSEngine;..\libxml2-2.7.3.win32\include;..\libxslt-1.1.24.win32\include;..\iconv-1.9.2.win32\include;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\EDSEngine;..\libxml2-2.7.8.win32\include;..\libxslt-1.1.26.win32\include;..\iconv-1.9.2.win32\include;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_LIBXML;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>EDSEngine.lib;Rpcrt4.lib;iconv.lib;libxml2.lib;libexslt.lib;libxslt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\zlib-1.2.3.win32\lib;..\iconv-1.9.2.win32\lib;..\libxslt-1.1.24.win32\lib;..\EDSEngine\Debug Libxml;..\libxml2-2.7.3.win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\zlib-1.2.5.win32\lib;..\iconv-1.9.2.win32\lib;..\libxslt-1.1.26.win32\lib;..\EDSEngine\Debug Libxml;..\libxml2-2.7.8.win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Libxml|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\EDSEngine;..\libxml2-2.7.3.win32\include;..\libxslt-1.1.24.win32\include;..\iconv-1.9.2.win32\include;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\EDSEngine;..\libxml2-2.7.8.win32\include;..\libxslt-1.1.26.win32\include;..\iconv-1.9.2.win32\include;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RELATIONALOBJECTMODEL_EXPORTS;USE_LIBXML;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>EDSEngine.lib;Rpcrt4.lib;iconv.lib;libxml2.lib;libexslt.lib;libxslt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\EDSEngine\x64\Debug Libxml;..\zlib-1.2.3.win32\lib;..\iconv-1.9.2.win32\lib;..\libxslt-1.1.24.win32\lib;..\libxml2-2.7.3.win32\lib;$(BOOST_ROOT64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\x64\Debug Libxml;..\zlib-1.2.5.win32\lib;..\iconv-1.9.2.win32\lib;..\libxslt-1.1.26.win32\lib;..\libxml2-2.7.8.win32\lib;$(BOOST_ROOT64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug MSXML|Win32'">

@@ -220,39 +220,6 @@ function MakeGUID() {
 	return null;
 }
 
-//flash support////////////////////////////
-var ActiveObjects = new Array(); //for flash access, guid keyed objects
-function GetObject(guid) {
-    if (guid in ActiveObjects)
-        return ActiveObjects[guid];
-    else
-        return null;
-}
-function DestroyKnowledgeBaseObject(guid) {
-    if (ActiveObjects != null && ActiveObjects[guid] != null)
-        delete ActiveObjects[guid];
-}
-function CleanKnowledgeBaseObjects() {
-    for (var guid in ActiveObjects) {
-        DestroyObject(guid)
-    }
-    if (ActiveObjects != null) 
-        delete ActiveObjects;
-    ActiveObjects = new Array();
-}
-function DictionaryToObjArray(dict) {
-	var objArray = new Array();
-	if (dict != null) for (var key in dict)
-	{
-		var obj = new Object();
-		obj.key = key;
-		obj.values = dict[key];
-		objArray.push(obj);
-	}
-	return objArray;
-}
-///////////////////////////////////////////
-
 //RuleCell/////////////////////////////////////////////////////////////
 function RuleCell()
 {
@@ -1323,13 +1290,6 @@ function TableSet()
 }
 
 
-
-
-
-
-
-
-
 //KnowledgeBase/////////////////////////////////////////////
 function loadXMLDoc(file)
 {
@@ -1371,33 +1331,6 @@ function loadXMLDocString(xmlStr)
         delete parser;
     }
     return xmlDoc;
-}
-
-function CreateKnowledgeBase(xmlPath) {
-	try
-	{	
-		if (xmlPath === undefined)
-			return false;
-		var retval = new KnowledgeBase(xmlPath);
-		ActiveObjects[retval.m_guid] = retval;	
-		return retval;
-	}
-	catch(error)
-	{
-		alert("ERROR Creating KnowledgeBase");
-	}
-	return null;
-}
-
-function CreateKnowledgeBaseFromString(xml) {
-    if (xml === undefined)
-        return false;
-
-    var retval = new KnowledgeBase();
-    xmlDoc = loadXMLDocString(xml);
-    retval._parseXML(xmlDoc);
-    ActiveObjects[retval.m_guid] = retval;
-    return retval;
 }
 
 function KnowledgeBase(xmlPath) {
@@ -2316,6 +2249,17 @@ function KnowledgeBase(xmlPath) {
             xmlDoc = loadXMLDoc(xmlPath);
             retval = this._parseXML(xmlDoc);  
             return retval;      
+        }
+
+        this.CreateKnowledgeBaseFromString = function(xmlStr)
+        {
+            var retval = false;
+            if (xmlStr === undefined)
+                return false;
+
+            xmlDoc = loadXMLDocString(xmlStr);
+            retval = this._parseXML(xmlDoc);
+            return retval;
         }
 
         this.CreateKnowledgeBase(xmlPath);

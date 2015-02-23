@@ -1,6 +1,6 @@
 /*
 This file is part of the Relational Object Model Library.
-Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
+Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 
     Relational Object Model is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ namespace ROM
 	{
 		_initializeEngine(context);
 		for (auto it = m_dict.begin(); it != m_dict.end(); it++)
-			m_ROMContext->SetAttribute(it->first, L"");
+			m_ROMContext->SetAttribute(it->first, "");
 		_loadDictionary(m_tableName, context);
 		_evaluateAll(context);
 	}
