@@ -243,18 +243,28 @@ MyFrame::~MyFrame()
 		delete m_engine;
 	if (m_rootNode)
 		delete m_rootNode;
+	if (m_rules)
+		delete m_rules;
 }
 
 void MyFrame::SetupApplication()
 {
 	m_rootNode = new ROMNode("HydraulicCylinder");
-	if (!m_rootNode->LoadRules("HydraulicCylinderRules.xml"))
+	m_rules = new EDS::CKnowledgeBase("HydraulicCylinderRules.xml");
+	m_rules->InputValueGetterPtr = [](const string& name, void* obj)
+	{
+		return ((ROMNode*)obj)->GetAttribute(name, false);
+	};
+
+	if (!m_rules->IsOpen())
 	{
 		wxMessageBox(_T("Error loading rule file"));
 		Close(true);
 	}
 
+	m_rootNode->SetKnowledgeBase(m_rules);
 	m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
+	//m_engine->InitializeEngine();
 	m_engine->EvaluateAll();
 
 	UpdateControls();
@@ -264,8 +274,8 @@ void MyFrame::UpdateControls()
 {
 	bLoadingItems = true;
 
-	map<wstring, ROMDictionaryAttribute> *allAttrs = m_engine->GetAllDictionaryAttrs();
-	for (map<wstring, ROMDictionaryAttribute>::iterator it = allAttrs->begin(); it != allAttrs->end(); it++)
+	map<string, ROMDictionaryAttribute> *allAttrs = m_engine->GetAllDictionaryAttrs();
+	for (map<string, ROMDictionaryAttribute>::iterator it = allAttrs->begin(); it != allAttrs->end(); it++)
 	{
 		if (it->second.ValueChanged)
 			SetControlUI(it->second);
@@ -280,10 +290,10 @@ void MyFrame::UpdateControls()
 
 void MyFrame::UpdateCatalog()
 {
-	vector<wstring> allChars = m_rootNode->EvaluateTable(L"CatalogNumber", L"Code", true);
-	wstring Catnum;
-	for (vector<wstring>::iterator it = allChars.begin(); it != allChars.end(); it++)
-		Catnum += *it;
+	vector<string> allChars = m_rootNode->EvaluateTable("CatalogNumber", "Code", true);
+	string Catnum;
+	for (const auto& it : allChars)
+		Catnum += it;
 
 	wxStaticText* catLabel = (wxStaticText*)this->FindWindowById(Catalog);
 	if (catLabel != NULL)
@@ -295,7 +305,7 @@ void MyFrame::SetControlUI(ROMDictionaryAttribute attr)
 	wxControl* ctrl = NULL;
 	wxStaticText* label = NULL;
 	ctrl = (wxControl*)this->FindWindowByName(attr.Name);
-	label = (wxStaticText*)this->FindWindowByName(L"lb" + attr.Name, panel);
+	label = (wxStaticText*)this->FindWindowByName("lb" + attr.Name, panel);
 	if (!label)
 	{
 		label = (wxStaticText*)this->FindWindowByLabel(attr.Description, panel);
@@ -310,7 +320,7 @@ void MyFrame::SetControlUI(ROMDictionaryAttribute attr)
 		{
 			combo->Freeze();
 			combo->Clear();
-			for (vector<wstring>::iterator it = attr.AvailableValues.begin(); it != attr.AvailableValues.end(); it++)
+			for (vector<string>::iterator it = attr.AvailableValues.begin(); it != attr.AvailableValues.end(); it++)
 				combo->AppendString(*it);
 			combo->SetSelection(combo->FindString(m_rootNode->GetAttribute(attr.Name)));
 			combo->Thaw();
@@ -365,7 +375,7 @@ void MyFrame::ComboEvaluate(wxCommandEvent& event)
 	if (bLoadingItems)
 		return;
 	wxComboBox* sender = (wxComboBox*)event.GetEventObject();
-	m_engine->EvaluateForAttribute(sender->GetName().wc_str(), sender->GetValue().wc_str());
+	m_engine->EvaluateForAttribute(sender->GetName().ToStdString(), sender->GetValue().ToStdString());
     UpdateControls();
 }
 
@@ -374,7 +384,7 @@ void MyFrame::TextChanged(wxCommandEvent& event)
 	if (bLoadingItems)
 		return;
 	wxTextCtrl* sender = (wxTextCtrl*)event.GetEventObject();
-	m_engine->EvaluateForAttribute(sender->GetName().wc_str(), sender->GetValue().wc_str());
+	m_engine->EvaluateForAttribute(sender->GetName().ToStdString(), sender->GetValue().ToStdString());
     UpdateControls();
 }
 
@@ -407,7 +417,7 @@ void MyFrame::OnOpen(wxCommandEvent& WXUNUSED(event))
 	if (openFileDialog.ShowModal() == wxID_CANCEL)
 		return;
 
-	wstring filepath = openFileDialog.GetPath().wc_str();
+	string filepath = openFileDialog.GetPath().ToStdString();
 
 	//wxFileInputStream input_stream(openFileDialog.GetPath());
 	//if (!input_stream.IsOk())
@@ -432,13 +442,18 @@ void MyFrame::OnOpen(wxCommandEvent& WXUNUSED(event))
 			delete m_engine;
 			m_engine = nullptr;
 		}
+		if (m_rootNode)
+		{
+			delete m_rootNode;
+			m_rootNode = nullptr;
+		}
 
-		ROMNode* newNode = ROMNode::LoadXML(filepath, true, nullptr);
+		ROMNode* newNode = ROMNode::LoadXML(filepath, nullptr);
 
 		if (newNode != nullptr)
 		{
-			newNode->Get();
 			m_rootNode = newNode;
+			m_rootNode->SetKnowledgeBase(m_rules);
 			m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
 			m_engine->EvaluateAll();
 
@@ -455,7 +470,7 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
         if (saveFileDialog.ShowModal() == wxID_CANCEL)
             return;
 
-        std::wofstream outFile;
+        std::ofstream outFile;
         outFile.open(saveFileDialog.GetPath().mbc_str(), std::ios::out | std::ios::binary);
 		//outFile.open(saveFileDialog.GetPath().c_str(), std::ios::out | std::ios::binary);
         if (!outFile.is_open())
@@ -464,7 +479,7 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
             return;
         }
 
-		wstring xml = m_rootNode->SaveXML(true);
+		string xml = m_rootNode->SaveXML(true);
 		outFile<<xml;
 		outFile.close();
 }

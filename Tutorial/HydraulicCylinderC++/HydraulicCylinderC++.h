@@ -72,6 +72,7 @@ private:
 #ifdef USEDEBUGGER
 	wxLogicianDebugCtrl *m_debugger;
 #endif
+	EDS::CKnowledgeBase *m_rules;
 	ROMNode *m_rootNode;
 	LinearEngine *m_engine;
 	bool bLoadingItems;
