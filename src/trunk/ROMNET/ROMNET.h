@@ -473,7 +473,7 @@ namespace ROMNET {
 			m_ROMDictionary = m_LinearEngine;
 		}
 		void InitializeEngine();
-		void ResetEngine() { m_LinearEngine->ResetEngine(); }
+		void ResetEngine();
 		virtual ~LinearEngine() {this->!LinearEngine();}
 		!LinearEngine() { if (m_LinearEngine) delete m_LinearEngine; m_LinearEngine = nullptr; m_ROMDictionary = nullptr; }
 

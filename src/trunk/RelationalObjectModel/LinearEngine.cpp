@@ -26,6 +26,7 @@ namespace ROM
 		InvalidateMode = NORMALINVALIDATE;
 		TBUATTR = "TBU_";
 		m_tableName = dictionaryTable;
+		m_initialized = false;
 	}
 
 	void LinearEngine::_initializeEngine(void* context)
@@ -70,6 +71,7 @@ namespace ROM
 			m_EvalInternal = false;
 			_orderDictionary();
 			m_vEvalListRecursChecker.clear();
+			m_initialized = true;
 		}
 	}
 
@@ -278,6 +280,9 @@ namespace ROM
 
 	void LinearEngine::_evaluateAll(void* context)
 	{
+		if (!m_initialized)
+			_initializeEngine(context);
+
 		m_EvalInternal = true;
 		_resetValueChanged();
 		for (vector<ROMDictionaryAttribute*>::iterator it = m_vEvalList.begin(); it != m_vEvalList.end(); it++)

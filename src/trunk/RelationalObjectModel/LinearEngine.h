@@ -34,7 +34,7 @@ namespace ROM
 	class LinearEngine : public ROMDictionary
 	{
 	public:
-		LinearEngine(){InvalidateMode = NORMALINVALIDATE;}
+		LinearEngine(){ InvalidateMode = NORMALINVALIDATE; m_initialized = false; }
 		LinearEngine(ROMNode* context, const string& dictionaryTable) : ROMDictionary(context) { CreateLinearEngine(dictionaryTable); }
 		void CreateLinearEngine(const string& dictionaryTable);
 		void InitializeEngine() { _initializeEngine(m_ROMContext); }
@@ -59,6 +59,7 @@ namespace ROM
 		void _evaluateForAttribute(const string& dictAttrName, const string& newValue, bool bEvalDependents, void* context);
 		void _evaluateAll(void* context);
 		void _initializeEngine(void* context);
+		void _resetEngine(void* context);
 
 	private:		
 		void _orderDictionary();
@@ -75,13 +76,13 @@ namespace ROM
 		vector<string> _parseOutPrefixes(int AttributeType, const vector<string>& values, vector<string>& valuesWithoutPrefixes); //remove the special character flags from the values
 		vector<string> _getSelectedValues(ROMDictionaryAttribute* attr);
 		void _resetValueChanged();		
-		void _resetEngine(void* context);
 
 		vector<ROMDictionaryAttribute*> m_vEvalList;
 		map<string, vector<string> > m_mapTriggers;
 		int m_CurrentRecursion;
 		vector<ROMDictionaryAttribute*> m_vEvalListRecursChecker;
 		bool m_EvalInternal;
+		bool m_initialized;
 
 		string INVISPREFIX;
 		string DEFAULTPREFIX;
