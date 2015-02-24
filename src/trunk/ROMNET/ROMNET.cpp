@@ -824,6 +824,19 @@ namespace ROMNET
 		}
 	}
 
+	void LinearEngine::ResetEngine()
+	{
+		if (m_LinearEngine)
+		{
+			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
+
+			m_LinearEngine->_resetEngine(ctx);
+
+			if (ctx != nullptr)
+				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
+		}
+	}
+
 	void LinearEngine::EvaluateForAttribute(String^ dictAttrName, array<String^>^ newValues, bool bEvalDependents)
 	{
 		if (m_LinearEngine)
