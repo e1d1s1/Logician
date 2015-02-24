@@ -2262,7 +2262,14 @@ function KnowledgeBase(xmlPath) {
             return retval;
         }
 
-        this.CreateKnowledgeBase(xmlPath);
+        if (xmlPath != undefined && xmlPath != null && xmlPath.length > 0)
+        {
+            if (xmlPath[0] == '<')
+                this.CreateKnowledgeBaseFromString(xmlPath);
+            else
+                this.CreateKnowledgeBase(xmlPath);
+        }
+        
         
         }
         catch (err) {
