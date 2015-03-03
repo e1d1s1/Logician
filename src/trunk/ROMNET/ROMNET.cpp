@@ -263,7 +263,7 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			ROM::ROMNode* node = m_ROMNode->Clone();
-			retval = ROMObjectFactory(gcnew String(node->GetROMObjectID().c_str()));
+			retval = ROMObjectFactory(gcnew String(ROMUTIL::Widen(node->GetROMObjectID()).c_str()));
 			
 			if (retval->m_ROMNode != nullptr)
 				delete retval->m_ROMNode;
@@ -274,7 +274,7 @@ namespace ROMNET
 			for each (ROM::ROMNode* obj in node->GetAllChildren(true))
 			{
 				String^ guid = gcnew String(obj->GetROMGUID().c_str());
-				ROMNode^ managedNode = ROMObjectFactory(gcnew String(obj->GetROMObjectID().c_str()));
+				ROMNode^ managedNode = ROMObjectFactory(gcnew String(ROMUTIL::Widen(obj->GetROMObjectID()).c_str()));
 				if (managedNode->m_ROMNode != nullptr)
 					delete managedNode->m_ROMNode;
 				managedNode->m_ROMNode = obj;
@@ -298,7 +298,7 @@ namespace ROMNET
 			string sID = MarshalString(id);
 			string sName = MarshalString(name);
 			string res = m_ROMNode->GetAttribute(sID, sName, immediate);
-			retval = gcnew String(res.c_str());
+			retval = gcnew String(ROMUTIL::Widen(res).c_str());
 		}
 		return retval;
 	}
@@ -359,7 +359,7 @@ namespace ROMNET
 		{
 			string sName = MarshalString(name);
 			string res = m_ROMNode->GetROMObjectValue(sName);
-			retval = gcnew String(res.c_str());
+			retval = gcnew String(ROMUTIL::Widen(res).c_str());
 		}
 		return retval;
 	}
@@ -381,7 +381,7 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			string res = m_ROMNode->GetROMObjectID();
-			retval = gcnew String(res.c_str());
+			retval = gcnew String(ROMUTIL::Widen(res).c_str());
 		}
 		return retval;
 	}
@@ -415,10 +415,10 @@ namespace ROMNET
 			for (auto it = attrs.begin(); it != attrs.end(); it++)
 			{
 				Dictionary<String^, String^>^ dictAttrs = gcnew Dictionary<String^, String^>();
-				String^ key = gcnew String(it->first.c_str());
+				String^ key = gcnew String(ROMUTIL::Widen(it->first).c_str());
 				for (auto itValues = it->second.begin(); itValues != it->second.end(); itValues++)
 				{
-					dictAttrs->Add(gcnew String(itValues->first.c_str()), gcnew String(itValues->second.c_str()));
+					dictAttrs->Add(gcnew String(ROMUTIL::Widen(itValues->first).c_str()), gcnew String(ROMUTIL::Widen(itValues->second).c_str()));
 				}
 				retval->Add(key, dictAttrs);
 			}
@@ -430,7 +430,7 @@ namespace ROMNET
 	EDSNET::EDSEngine^ ROMNode::_getManagedRules()
 	{
 		ROM::ROMNode* owner = nullptr;
-		EDS::CKnowledgeBase* rules = m_ROMNode->GetKnowledgeBase(owner);
+		EDS::IKnowledgeBase* rules = m_ROMNode->GetKnowledgeBase(owner);
 		if (rules != nullptr && owner != nullptr)
 		{
 			return m_managedTreeObjects[gcnew String(owner->GetROMGUID().c_str())]->m_KnowledgeBase;
@@ -681,7 +681,7 @@ namespace ROMNET
 		if (m_ROMNode)
 		{
 			string res = m_ROMNode->SaveXML(indented);
-			retval = gcnew String(res.c_str());
+			retval = gcnew String(ROMUTIL::Widen(res).c_str());
 		}
 		return retval;
 	}
@@ -748,7 +748,7 @@ namespace ROMNET
 			string sXPATH = MarshalString(xpath);
 			string sGuid = MarshalString(guid);
 			string res = m_ROMNode->EvaluateXPATH(sXPATH, sGuid);
-			retval = gcnew String(res.c_str());
+			retval = gcnew String(ROMUTIL::Widen(res).c_str());
 		}
 		return retval;
 	}
@@ -786,7 +786,7 @@ namespace ROMNET
 		if (m_ROMDictionary)
 		{
 			string sName = MarshalString(dictAttrName);
-			ROM::ROMDictionaryAttribute* attr = m_ROMDictionary->GetDictionaryAttr(sName);
+			ROM::IROMDictionaryAttribute* attr = m_ROMDictionary->GetDictionaryAttr(sName);
 			if (attr)
 			{
 				retval = gcnew ROMDictionaryAttribute((IntPtr)attr);
@@ -800,10 +800,10 @@ namespace ROMNET
 		Dictionary<String^, ROMDictionaryAttribute^>^ retval = gcnew Dictionary<String^, ROMDictionaryAttribute^>();
 		if (m_ROMDictionary)
 		{
-			map<string, ROM::ROMDictionaryAttribute>* allAttrs = m_ROMDictionary->GetAllDictionaryAttrs();
-			for (map<string, ROM::ROMDictionaryAttribute>::iterator it = allAttrs->begin(); it != allAttrs->end(); it++)
+			auto allAttrs = m_ROMDictionary->GetAllDictionaryAttrs();
+			for (auto it = allAttrs->begin(); it != allAttrs->end(); it++)
 			{
-				String^ key = gcnew String(it->first.c_str());
+				String^ key = gcnew String(ROMUTIL::Widen(it->first).c_str());
 				ROMDictionaryAttribute^ value = gcnew ROMDictionaryAttribute((IntPtr)(&(it->second)));
 				retval->Add(key, value);
 			}
@@ -885,10 +885,10 @@ namespace ROMNET
 		array<ROMDictionaryAttribute^>^ retval = nullptr;
 		if (m_LinearEngine)
 		{
-			vector<ROM::ROMDictionaryAttribute*> res = m_LinearEngine->GetEvalList();
+			vector<ROM::IROMDictionaryAttribute*> res = m_LinearEngine->GetEvalList();
 			retval = gcnew array<ROMDictionaryAttribute^>(res.size());
 			size_t i = 0;
-			for (vector<ROM::ROMDictionaryAttribute*>::iterator it = res.begin(); it != res.end(); it++)
+			for (vector<ROM::IROMDictionaryAttribute*>::iterator it = res.begin(); it != res.end(); it++)
 			{
 				retval[i] = gcnew ROMDictionaryAttribute((IntPtr)(*it));
 				i++;
@@ -910,10 +910,10 @@ namespace ROMNET
 				size_t i = 0;
 				for (vector<string>::iterator itAttr = it->second.begin(); itAttr != it->second.end(); itAttr++)
 				{
-					attrs[i] = gcnew String((*itAttr).c_str());
+					attrs[i] = gcnew String(ROMUTIL::Widen((*itAttr)).c_str());
 					i++;
 				}
-				retval->Add(gcnew String(it->first.c_str()), attrs);
+				retval->Add(gcnew String(ROMUTIL::Widen(it->first).c_str()), attrs);
 			}			
 		}
 		return retval;

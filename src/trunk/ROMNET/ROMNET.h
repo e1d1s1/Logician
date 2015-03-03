@@ -95,7 +95,7 @@ namespace ROMNET {
 			}
 			void set(EDSNET::EDSEngine^ rules)
 			{				
-				m_ROMNode->SetKnowledgeBase((EDS::CKnowledgeBase*)rules->GetEDSPtr().ToPointer());				
+				m_ROMNode->SetKnowledgeBase((EDS::IKnowledgeBase*)rules->GetEDSPtr().ToPointer());				
 				m_KnowledgeBase = rules;
 			}
 		}
@@ -213,13 +213,13 @@ namespace ROMNET {
 			virtual String^ get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return gcnew String(m_ROMDictionaryAttribute->Name.c_str());
+					return gcnew String(ROMUTIL::Widen(m_ROMDictionaryAttribute->GetName()).c_str());
 				else return "";
 			}
 			virtual void set(String^ value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->Name = MarshalString(value);
+					m_ROMDictionaryAttribute->SetName(MarshalString(value));
 			}
 		}
 		property String^ Description
@@ -227,13 +227,13 @@ namespace ROMNET {
 			virtual String^ get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return gcnew String(m_ROMDictionaryAttribute->Description.c_str());
+					return gcnew String(ROMUTIL::Widen(m_ROMDictionaryAttribute->GetDescription()).c_str());
 				else return "";
 			}
 			virtual void set(String^ value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->Description = MarshalString(value);
+					m_ROMDictionaryAttribute->SetDescription(MarshalString(value));
 			}
 		}
 		property String^ DefaultValue
@@ -241,13 +241,13 @@ namespace ROMNET {
 			virtual String^ get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return gcnew String(m_ROMDictionaryAttribute->DefaultValue.c_str());
+					return gcnew String(ROMUTIL::Widen(m_ROMDictionaryAttribute->GetDefaultValue()).c_str());
 				else return "";
 			}
 			virtual void set(String^ value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->DefaultValue = MarshalString(value);
+					m_ROMDictionaryAttribute->SetDefaultValue(MarshalString(value));
 			}
 		}
 		property String^ RuleTable
@@ -255,13 +255,13 @@ namespace ROMNET {
 			virtual String^ get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return gcnew String(m_ROMDictionaryAttribute->RuleTable.c_str());
+					return gcnew String(ROMUTIL::Widen(m_ROMDictionaryAttribute->GetRuleTable()).c_str());
 				else return "";
 			}
 			virtual void set(String^ value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->RuleTable = MarshalString(value);
+					m_ROMDictionaryAttribute->SetRuleTable(MarshalString(value));
 			}
 		}
 		property ATTRTYPE AttributeType
@@ -269,13 +269,13 @@ namespace ROMNET {
 			virtual ATTRTYPE get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return static_cast<ATTRTYPE>(m_ROMDictionaryAttribute->AttributeType);
+					return static_cast<ATTRTYPE>(m_ROMDictionaryAttribute->GetAttributeType());
 				else return ATTRTYPE::STATIC;
 			}
 			virtual void set(ATTRTYPE value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->AttributeType = static_cast<ROM::ATTRTYPE_E>(value);
+					m_ROMDictionaryAttribute->SetAttributeType(static_cast<ROM::ATTRTYPE_E>(value));
 			}
 		}
 		property int Index
@@ -283,13 +283,13 @@ namespace ROMNET {
 			virtual int get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return m_ROMDictionaryAttribute->Index;
+					return m_ROMDictionaryAttribute->GetIndex();
 				else return 0;
 			}
 			virtual void set(int value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->Index = value;
+					m_ROMDictionaryAttribute->SetIndex(value);
 			}
 		}
 		property bool ValueChanged
@@ -297,13 +297,13 @@ namespace ROMNET {
 			virtual bool get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return m_ROMDictionaryAttribute->ValueChanged;
+					return m_ROMDictionaryAttribute->GetValueChanged();
 				else return false;
 			}
 			virtual void set(bool value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->ValueChanged = value;
+					m_ROMDictionaryAttribute->SetValueChanged(value);
 			}
 		}
 		property bool ChangedByUser
@@ -311,13 +311,13 @@ namespace ROMNET {
 			virtual bool get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return m_ROMDictionaryAttribute->ChangedByUser;
+					return m_ROMDictionaryAttribute->GetChangedByUser();
 				else return false;
 			}
 			virtual void set(bool value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->ChangedByUser = value;
+					m_ROMDictionaryAttribute->SetChangedByUser(value);
 			}
 		}
 		property bool Valid
@@ -325,13 +325,13 @@ namespace ROMNET {
 			virtual bool get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return m_ROMDictionaryAttribute->Valid;
+					return m_ROMDictionaryAttribute->GetValid();
 				else return false;
 			}
 			virtual void set(bool value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->Valid = value;
+					m_ROMDictionaryAttribute->SetValid(value);
 			}
 		}
 		property bool Visible
@@ -339,13 +339,13 @@ namespace ROMNET {
 			virtual bool get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return m_ROMDictionaryAttribute->Visible;
+					return m_ROMDictionaryAttribute->GetVisible();
 				else return false;
 			}
 			virtual void set(bool value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->Visible = value;
+					m_ROMDictionaryAttribute->SetVisible(value);
 			}
 		}
 		property bool Enabled
@@ -353,13 +353,13 @@ namespace ROMNET {
 			virtual bool get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return m_ROMDictionaryAttribute->Enabled;
+					return m_ROMDictionaryAttribute->GetEnabled();
 				else return false;
 			}
 			virtual void set(bool value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->Enabled = value;
+					m_ROMDictionaryAttribute->SetEnabled(value);
 			}
 		}
 		property array<String^>^ PossibleValues
@@ -367,7 +367,7 @@ namespace ROMNET {
 			virtual array<String^>^ get()
 			{
 				if (m_ROMDictionaryAttribute)				
-					return GetArrayFromVectorStrings(m_ROMDictionaryAttribute->PossibleValues);			
+					return GetArrayFromVectorStrings(m_ROMDictionaryAttribute->GetPossibleValues());			
 				else return gcnew array<String^>(0);
 			}
 			virtual void set(array<String^>^ value)
@@ -377,10 +377,10 @@ namespace ROMNET {
 					vector<string> vals(value->Length);
 					for each (String^ val in value)
 					{
-						string wsVal = MarshalString(val);
-						vals.push_back(wsVal);
+						string narrowval = MarshalString(val);
+						vals.push_back(narrowval);
 					}
-					m_ROMDictionaryAttribute->PossibleValues = vals;
+					m_ROMDictionaryAttribute->SetPossibleValues(vals);
 				}
 
 			}
@@ -390,7 +390,7 @@ namespace ROMNET {
 			virtual array<String^>^ get()
 			{
 				if (m_ROMDictionaryAttribute)				
-					return GetArrayFromVectorStrings(m_ROMDictionaryAttribute->AvailableValues);	
+					return GetArrayFromVectorStrings(m_ROMDictionaryAttribute->GetAvailableValues());	
 				else return gcnew array<String^>(0);
 			}
 			virtual void set(array<String^>^ value)
@@ -400,10 +400,10 @@ namespace ROMNET {
 					vector<string> vals(value->Length);
 					for each (String^ val in value)
 					{
-						string wsVal = MarshalString(val);
-						vals.push_back(wsVal);
+						string narrowval = MarshalString(val);
+						vals.push_back(narrowval);
 					}
-					m_ROMDictionaryAttribute->AvailableValues = vals;
+					m_ROMDictionaryAttribute->SetAvailableValues(vals);
 				}
 			}
 		}
@@ -413,13 +413,13 @@ namespace ROMNET {
 			virtual String^ get()
 			{
 				if (m_ROMDictionaryAttribute)
-					return gcnew String(m_ROMDictionaryAttribute->Value.c_str());
+					return gcnew String(ROMUTIL::Widen(m_ROMDictionaryAttribute->GetValue()).c_str());
 				else return "";
 			}
 			virtual void set(String^ value)
 			{
 				if (m_ROMDictionaryAttribute)
-					m_ROMDictionaryAttribute->Value = MarshalString(value);
+					m_ROMDictionaryAttribute->SetValue(MarshalString(value));
 			}
 		}
 
@@ -427,7 +427,7 @@ namespace ROMNET {
 		ROMDictionaryAttribute(IntPtr ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr.ToPointer(); m_canDelete = false;}
 
 	private:
-		ROM::ROMDictionaryAttribute* m_ROMDictionaryAttribute;
+		ROM::IROMDictionaryAttribute* m_ROMDictionaryAttribute;
 		bool m_canDelete;
 	};
 

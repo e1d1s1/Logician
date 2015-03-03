@@ -93,8 +93,8 @@ CKnowledgeBase::CKnowledgeBase()
 	m_IsOpen = false;
 	mapBaseIDtoTranslations.clear();
 	iRecursingDepth = 0;
-	DebugHandlerPtr = nullptr;
-	InputValueGetterPtr = nullptr;
+	m_DebugHandlerPtr = nullptr;
+	m_InputValueGetterPtr = nullptr;
 #ifdef WIN32
 	HRESULT hr = CoInitialize(nullptr);
 #endif
@@ -213,7 +213,7 @@ vector<string> CKnowledgeBase::EvaluateTableWithParam(const string& tableName, c
 		iRecursingDepth++;
 
 		table.EnbleDebugging(_debugThisTable(tableName));
-		table.InputValueGetter = InputValueGetterPtr;
+		table.InputValueGetter = m_InputValueGetterPtr;
 
 		vector<string> results = table.EvaluateTable(outputAttr, bGetAll, true, context);
 		//check for existance of table chain
@@ -555,7 +555,7 @@ vector<string> CKnowledgeBase::ReverseEvaluateTable(const string& tableName, con
 		if (exists)
 		{
 			table.EnbleDebugging(_debugThisTable(tableName));
-			table.InputValueGetter = InputValueGetterPtr;
+			table.InputValueGetter = m_InputValueGetterPtr;
 			retval = table.EvaluateTable(inputAttr, bGetAll, false, context);
 		}
 	}
@@ -577,7 +577,7 @@ map<string, vector<string> > CKnowledgeBase::ReverseEvaluateTable(const string& 
 		if (!exists)
 			return retval;
 		table.EnbleDebugging(_debugThisTable(tableName));
-		table.InputValueGetter = InputValueGetterPtr;
+		table.InputValueGetter = m_InputValueGetterPtr;
 		vector<pair<string, vector<CRuleCell> > > outputCollection = table.GetInputAttrsTests();
 		//for all the outputs get the results
 		for (vector<pair<string, vector<CRuleCell> > >::iterator itOut = outputCollection.begin(); itOut != outputCollection.end(); itOut++)
@@ -609,9 +609,9 @@ void CKnowledgeBase::_sendToDebugServer(const string& msg)
 {
 	try
 	{
-		if (DebugHandlerPtr)
+		if (m_DebugHandlerPtr)
 		{
-			DebugHandlerPtr(msg);
+			m_DebugHandlerPtr(msg);
 		}
 
 		if (m_remoteDebugging)
@@ -638,7 +638,7 @@ void CKnowledgeBase::_sendToDebugServer(const string& msg)
 
 bool CKnowledgeBase::_debugThisTable(const string& tableName)
 {
-	if (m_DEBUGGING_MSGS && (m_remoteDebugging || DebugHandlerPtr != nullptr))
+	if (m_DEBUGGING_MSGS && (m_remoteDebugging || m_DebugHandlerPtr != nullptr))
 	{
 		if (m_DebugTables.size() > 0)
 		{
@@ -976,8 +976,8 @@ bool CKnowledgeBase::CreateKnowledgeBase(string knowledge_file)
 	bool retval = false;
 	m_IsOpen = false;
 	iRecursingDepth = 0;
-	DebugHandlerPtr = nullptr;
-	InputValueGetterPtr = nullptr;
+	m_DebugHandlerPtr = nullptr;
+	m_InputValueGetterPtr = nullptr;
 	m_DEBUGGING_MSGS = false;
 	m_remoteDebugging = false;
 	mapBaseIDtoTranslations.clear();

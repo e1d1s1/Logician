@@ -51,10 +51,10 @@ namespace EDSNET {
 		EDSEngine() { DebugDelegate = nullptr; InputGetterDelegate = nullptr; }
 		EDSEngine(String^ knowledge_file) {CreateKnowledgeBase(knowledge_file);}
 		EDSEngine(IntPtr ptr) { CreateKnowledgeBase(ptr); }
-		bool CreateKnowledgeBase(String^ knowledge_file);
-		bool CreateKnowledgeBase(IntPtr ptr);
-		bool EDSEngine::CreateKnowledgeBaseFromString(System::String^ rules);
-		~EDSEngine() 
+		virtual bool CreateKnowledgeBase(String^ knowledge_file);
+		virtual bool CreateKnowledgeBase(IntPtr ptr);
+		virtual bool EDSEngine::CreateKnowledgeBaseFromString(System::String^ rules);
+		virtual ~EDSEngine() 
 		{
 			if (m_gchInput.IsAllocated)			
 				m_gchInput.Free();
@@ -64,7 +64,7 @@ namespace EDSNET {
 		}		
 		!EDSEngine() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = NULL;}
 
-		property DebugHandlerDelegate^			DebugDelegate
+		virtual property DebugHandlerDelegate^			DebugDelegate
 		{
 			DebugHandlerDelegate^ get()
 			{
@@ -81,17 +81,17 @@ namespace EDSNET {
 						m_gchDebug = GCHandle::Alloc(fp);
 						IntPtr ip = Marshal::GetFunctionPointerForDelegate(fp);
 						DEBUGCB cb = static_cast<DEBUGCB>(ip.ToPointer());
-						m_KnowledgeBase->DebugHandlerPtr = cb;
+						m_KnowledgeBase->SetDebugHandler(cb);
 					}
 					else
 					{
-						m_KnowledgeBase->DebugHandlerPtr = nullptr;
+						m_KnowledgeBase->SetDebugHandler(nullptr);
 					}
 				}
 			}
 		}
 
-		property InputValueGetterDelegate^		InputGetterDelegate
+		virtual property InputValueGetterDelegate^		InputGetterDelegate
 		{
 			InputValueGetterDelegate^ get()
 			{
@@ -108,60 +108,60 @@ namespace EDSNET {
 						m_gchInput = GCHandle::Alloc(fp);
 						IntPtr ip = Marshal::GetFunctionPointerForDelegate(fp);
 						VALUECB cb = static_cast<VALUECB>(ip.ToPointer());
-						m_KnowledgeBase->InputValueGetterPtr = cb;
+						m_KnowledgeBase->SetInputValueGetter(cb);
 					}
 					else
 					{
-						m_KnowledgeBase->InputValueGetterPtr = nullptr;
+						m_KnowledgeBase->SetInputValueGetter(nullptr);
 					}
 				}
 			}
 		}
-		void									EnableRemoteDebugger(bool enable) { if (m_KnowledgeBase) m_KnowledgeBase->EnableRemoteDebugger(enable); }
+		virtual void									EnableRemoteDebugger(bool enable) { if (m_KnowledgeBase) m_KnowledgeBase->EnableRemoteDebugger(enable); }
 
-		size_t									TableCount();
-		bool									IsOpen();
-		bool									TableHasScript(String^ tableName);
-		bool									TableIsGetAll(String^ tableName);
+		virtual size_t									TableCount();
+		virtual bool									IsOpen();
+		virtual bool									TableHasScript(String^ tableName);
+		virtual bool									TableIsGetAll(String^ tableName);
 
-		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, bool bGetAll, String^% param, Object^ context);
-		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^% param, Object^ context) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, context); }
-		Dictionary<String^, array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^% param, Object^ context) { return EvaluateTableWithParam(tableName, TableIsGetAll(tableName), param, context); }
-		Dictionary<String^, array<String^>^>^	EvaluateTableWithParam(String^ tableName, bool bGetAll, String^% param, Object^ context);
-		array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr, Object^ context) { return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName), context); }
-		array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll, Object^ context);
-		Dictionary<String^, array<String^>^>^	EvaluateTable(String^ tableName, Object^ context) { return EvaluateTable(tableName, TableIsGetAll(tableName), context); }
-		Dictionary<String^, array<String^>^>^	EvaluateTable(String^ tableName, bool bGetAll, Object^ context);
-		String^									GetFirstTableResult(String^ tableName, String^ ouputAttr, Object^ context);
-		array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr, Object^ context) { return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName), context); }
-		array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll, Object^ context);
-		Dictionary<String^, array<String^>^>^	ReverseEvaluateTable(String^ tableName, Object^ context) { return ReverseEvaluateTable(tableName, TableIsGetAll(tableName), context); }
-		Dictionary<String^, array<String^>^>^	ReverseEvaluateTable(String^ tableName, bool bGetAll, Object^ context);
+		virtual array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, bool bGetAll, String^% param, Object^ context);
+		virtual array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^% param, Object^ context) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, context); }
+		virtual Dictionary<String^, array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^% param, Object^ context) { return EvaluateTableWithParam(tableName, TableIsGetAll(tableName), param, context); }
+		virtual Dictionary<String^, array<String^>^>^	EvaluateTableWithParam(String^ tableName, bool bGetAll, String^% param, Object^ context);
+		virtual array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr, Object^ context) { return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName), context); }
+		virtual array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll, Object^ context);
+		virtual Dictionary<String^, array<String^>^>^	EvaluateTable(String^ tableName, Object^ context) { return EvaluateTable(tableName, TableIsGetAll(tableName), context); }
+		virtual Dictionary<String^, array<String^>^>^	EvaluateTable(String^ tableName, bool bGetAll, Object^ context);
+		virtual String^									GetFirstTableResult(String^ tableName, String^ ouputAttr, Object^ context);
+		virtual array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr, Object^ context) { return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName), context); }
+		virtual array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll, Object^ context);
+		virtual Dictionary<String^, array<String^>^>^	ReverseEvaluateTable(String^ tableName, Object^ context) { return ReverseEvaluateTable(tableName, TableIsGetAll(tableName), context); }
+		virtual Dictionary<String^, array<String^>^>^	ReverseEvaluateTable(String^ tableName, bool bGetAll, Object^ context);
 
-		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, bool bGetAll, String^% param) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, nullptr); }
-		array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^% param) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, nullptr); }
-		Dictionary<String^, array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^% param) { return EvaluateTableWithParam(tableName, TableIsGetAll(tableName), param, nullptr); }
-		Dictionary<String^, array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^% param, bool bGetAll) { return EvaluateTableWithParam(tableName, bGetAll, param, nullptr); }
-		array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr) { return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName), nullptr); }
-		array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll) { return EvaluateTable(tableName, outputAttr, bGetAll, nullptr); }
-		Dictionary<String^, array<String^>^>^	EvaluateTable(String^ tableName) { return EvaluateTable(tableName, TableIsGetAll(tableName), nullptr); }
-		Dictionary<String^, array<String^>^>^	EvaluateTable(String^ tableName, bool bGetAll) { return EvaluateTable(tableName, bGetAll, nullptr); }
-		String^									GetFirstTableResult(String^ tableName, String^ ouputAttr) { return GetFirstTableResult(tableName, ouputAttr, nullptr); }
-		array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr) { return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName), nullptr); }
-		array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll) { return ReverseEvaluateTable(tableName, inputAttr, bGetAll, nullptr); }
-		Dictionary<String^, array<String^>^>^	ReverseEvaluateTable(String^ tableName) { return ReverseEvaluateTable(tableName, TableIsGetAll(tableName), nullptr); }
-		Dictionary<String^, array<String^>^>^	ReverseEvaluateTable(String^ tableName, bool bGetAll) { return ReverseEvaluateTable(tableName, bGetAll, nullptr); }
+		virtual array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, bool bGetAll, String^% param) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, nullptr); }
+		virtual array<String^>^							EvaluateTableWithParam(String^ tableName, String^ outputAttr, String^% param) { return EvaluateTableWithParam(tableName, outputAttr, TableIsGetAll(tableName), param, nullptr); }
+		virtual Dictionary<String^, array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^% param) { return EvaluateTableWithParam(tableName, TableIsGetAll(tableName), param, nullptr); }
+		virtual Dictionary<String^, array<String^>^>^	EvaluateTableWithParam(String^ tableName, String^% param, bool bGetAll) { return EvaluateTableWithParam(tableName, bGetAll, param, nullptr); }
+		virtual array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr) { return EvaluateTable(tableName, outputAttr, TableIsGetAll(tableName), nullptr); }
+		virtual array<String^>^							EvaluateTable(String^ tableName, String^ outputAttr, bool bGetAll) { return EvaluateTable(tableName, outputAttr, bGetAll, nullptr); }
+		virtual Dictionary<String^, array<String^>^>^	EvaluateTable(String^ tableName) { return EvaluateTable(tableName, TableIsGetAll(tableName), nullptr); }
+		virtual Dictionary<String^, array<String^>^>^	EvaluateTable(String^ tableName, bool bGetAll) { return EvaluateTable(tableName, bGetAll, nullptr); }
+		virtual String^									GetFirstTableResult(String^ tableName, String^ ouputAttr) { return GetFirstTableResult(tableName, ouputAttr, nullptr); }
+		virtual array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr) { return ReverseEvaluateTable(tableName, inputAttr, TableIsGetAll(tableName), nullptr); }
+		virtual array<String^>^							ReverseEvaluateTable(String^ tableName, String^ inputAttr, bool bGetAll) { return ReverseEvaluateTable(tableName, inputAttr, bGetAll, nullptr); }
+		virtual Dictionary<String^, array<String^>^>^	ReverseEvaluateTable(String^ tableName) { return ReverseEvaluateTable(tableName, TableIsGetAll(tableName), nullptr); }
+		virtual Dictionary<String^, array<String^>^>^	ReverseEvaluateTable(String^ tableName, bool bGetAll) { return ReverseEvaluateTable(tableName, bGetAll, nullptr); }
 
-		array<String^>^							GetInputAttrs(String^ tableName);
-		array<String^>^							GetInputDependencies(String^ tableName);
-		array<String^>^							GetOutputAttrs(String^ tableName);
-		array<String^>^							GetAllPossibleOutputs(String^ tableName, String^ outputName);
+		virtual array<String^>^							GetInputAttrs(String^ tableName);
+		virtual array<String^>^							GetInputDependencies(String^ tableName);
+		virtual array<String^>^							GetOutputAttrs(String^ tableName);
+		virtual array<String^>^							GetAllPossibleOutputs(String^ tableName, String^ outputName);
 
-		String^									Localize(String^ baseValue, String^ locale) {return Translate(baseValue, gcnew String(""), locale);}
-		String^									DeLocalize(String^ localeValue);
-		String^									Translate(String^ source, String^ sourceLocale, String^ destLocale);
+		virtual String^									Localize(String^ baseValue, String^ locale) { return Translate(baseValue, gcnew String(""), locale); }
+		virtual String^									DeLocalize(String^ localeValue);
+		virtual String^									Translate(String^ source, String^ sourceLocale, String^ destLocale);
 
-		IntPtr									GetEDSPtr() { return (IntPtr)m_KnowledgeBase; }
+		virtual IntPtr									GetEDSPtr() { return (IntPtr)m_KnowledgeBase; }
 
 	private:		
 		string									_getValue(const string& attrName, void* context);
@@ -169,7 +169,7 @@ namespace EDSNET {
 
 		DebugHandlerDelegate^					m_debugger;
 		InputValueGetterDelegate^				m_getter;
-		EDS::CKnowledgeBase						*m_KnowledgeBase;
+		EDS::IKnowledgeBase						*m_KnowledgeBase;
 		GCHandle								m_gchInput, m_gchDebug;
 	};
 }

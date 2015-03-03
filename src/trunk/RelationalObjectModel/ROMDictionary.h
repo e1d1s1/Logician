@@ -16,13 +16,14 @@ Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
     along with Relational Object Model.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <functional>
+#include <string>
+#include <map>
+#include <memory>
 
 #include "ROMNode.h"
 #include "ROMDictionaryAttribute.h"
 
 #pragma once
-
-using namespace std;
 
 namespace ROM
 {
@@ -33,25 +34,25 @@ namespace ROM
 		ROMDictionary(ROMNode* context) {CreateROMDictionary(context);}
 		ROMDictionary() {}
 		void CreateROMDictionary(ROMNode* context);
-		virtual ~ROMDictionary(void){}		
+		virtual ~ROMDictionary(void);
 		
-		virtual void LoadDictionary(const string& dictionaryTable) override { _loadDictionary(dictionaryTable, m_ROMContext); }
-		virtual ROMDictionaryAttribute* GetDictionaryAttr(const string& dictAttrName) override;
-		virtual map<string, ROMDictionaryAttribute>* GetAllDictionaryAttrs() override { return &m_dict; }
+		virtual void LoadDictionary(const std::string& dictionaryTable) override { _loadDictionary(dictionaryTable, m_ROMContext); }
+		virtual IROMDictionaryAttribute* GetDictionaryAttr(const string& dictAttrName) override;
+		virtual map<string, IROMDictionaryAttribute*>* GetAllDictionaryAttrs() override { return &m_dict; }
 
 #ifndef CLR //these internal methods are called by .NET to assist with passing of managed objects
 	private:
-		virtual void _loadDictionary(const string& dictionaryTable, void* context);
+		virtual void _loadDictionary(const std::string& dictionaryTable, void* context);
 #else
 	public:
-		virtual void _loadDictionary(const string& dictionaryTable, void* context) override;
+		virtual void _loadDictionary(const std::string& dictionaryTable, void* context) override;
 #endif
 		
 
 	private:
 		ROMNode *m_ROMContext;
 
-		map<string, ROMDictionaryAttribute> m_dict;
-		string m_tableName;
+		map<string, IROMDictionaryAttribute*> m_dict;
+		std::string m_tableName;
 	};
 }

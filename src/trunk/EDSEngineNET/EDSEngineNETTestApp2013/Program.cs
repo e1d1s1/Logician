@@ -104,7 +104,7 @@ namespace EDSEngineTestApp
             {
                 write_result(allOutputs[i]);
             }
-            if (allOutputs.Length == 9 &&
+            if (allOutputs.Length == 10 &&
                 allOutputs[0] == "1" &&
                 allOutputs[1] == "2" &&
                 allOutputs[2] == "get(outsideAttr1) with concat" &&
@@ -113,7 +113,8 @@ namespace EDSEngineTestApp
                 allOutputs[5] == "py(get(outsideAttr1) + 2)" &&
                 allOutputs[6] == "js(get(outsideAttr1) + 2)" &&
                 allOutputs[7] == "js(alterparameter())" &&
-		        allOutputs[8] == "py(alterparameter())")
+		        allOutputs[8] == "py(alterparameter())" &&
+                allOutputs[9] == "Threading")
             {
                 write_result("OK");
             }

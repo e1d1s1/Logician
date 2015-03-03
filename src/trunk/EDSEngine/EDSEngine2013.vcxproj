@@ -588,6 +588,7 @@
     <ClInclude Include="ashost.h" />
     <ClInclude Include="Bimapper.h" />
     <ClInclude Include="Decode.h" />
+    <ClInclude Include="IKnowledgeBase.h" />
     <ClInclude Include="KnowledgeBase.h" />
     <ClInclude Include="Numerics.h" />
     <ClInclude Include="RuleCell.h" />
