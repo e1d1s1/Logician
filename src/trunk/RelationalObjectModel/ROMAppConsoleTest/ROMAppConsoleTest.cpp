@@ -9,6 +9,7 @@
 #include <memory>
 #include "ROMNode.h"
 #include "LinearEngine.h"
+#include "KnowledgeBase.h"
 
 using namespace std;
 using namespace ROM;
@@ -252,20 +253,20 @@ int runTest(int thread_id)
     }
 
     Log("loading rules");
-	EDS::CKnowledgeBase* rules = new EDS::CKnowledgeBase();
+	unique_ptr<EDS::IKnowledgeBase> rules = std::make_unique<EDS::CKnowledgeBase>();
 	bool bLoaded = rules->CreateKnowledgeBase(path);
 	if (!bLoaded)
 		bLoaded = rules->CreateKnowledgeBase(filename);
 	if (bLoaded && rules->IsOpen())
     {		
-		rules->DebugHandlerPtr = DebugMessage;
-		rules->InputValueGetterPtr = [](const string& attrName, void* obj)
+		rules->SetDebugHandler(DebugMessage);
+		rules->SetInputValueGetter([](const string& attrName, void* obj)
 		{
 			return ((ROMNode*)obj)->GetAttribute(attrName, false);
-		};
+		});
 		rules->SetMaxThreads(4);
 
-		rootNode.SetKnowledgeBase(rules);
+		rootNode.SetKnowledgeBase(rules.get());
 
         Log("...loaded");
         Log("Evaluating table testtable1");
@@ -289,20 +290,20 @@ int runTest(int thread_id)
 		engine2.InitializeEngine();
 
         Log("Checking dictionary size");
-        map<string, ROMDictionaryAttribute>* attrs = engine2.GetAllDictionaryAttrs();
+        auto attrs = engine2.GetAllDictionaryAttrs();
         if (attrs->size() == 6)
             Log("size ok");
         else
             Log("FAILURE loading dictionary");
 
-        vector<ROMDictionaryAttribute*> order = engine2.GetEvalList();
+        auto order = engine2.GetEvalList();
         if (order.size() == 6 &&
-            order.at(0)->Name == "cDictAttr1" &&
-            order.at(1)->Name == "dDictAttr2" &&
-            order.at(2)->Name == "aDictAttr3" &&
-            order.at(3)->Name == "bDictAttr4" &&
-            order.at(4)->Name == "eDictAttr5" &&
-            order.at(5)->Name == "eDictAttr6")
+            order.at(0)->GetName() == "cDictAttr1" &&
+            order.at(1)->GetName() == "dDictAttr2" &&
+            order.at(2)->GetName() == "aDictAttr3" &&
+            order.at(3)->GetName() == "bDictAttr4" &&
+            order.at(4)->GetName() == "eDictAttr5" &&
+            order.at(5)->GetName() == "eDictAttr6")
             Log("Order OK");
         else
             Log("FAILURE to assess the evaluation order");
@@ -313,7 +314,7 @@ int runTest(int thread_id)
 		LinearEngine engineSubclass1(childNode, "ClassDictionary");
 		engineSubclass1.InitializeEngine();
 
-		map<string, ROMDictionaryAttribute>* attrs2 = engineSubclass1.GetAllDictionaryAttrs();
+		auto attrs2 = engineSubclass1.GetAllDictionaryAttrs();
 		if (attrs2->size() == 2)
 			Log("subclass dictionary ok");
 		else
@@ -324,7 +325,7 @@ int runTest(int thread_id)
 		LinearEngine engineSubclass2(childNode2, "ClassDictionary");
 		engineSubclass2.InitializeEngine();
 
-		map<string, ROMDictionaryAttribute>* attrs3 = engineSubclass2.GetAllDictionaryAttrs();
+		auto attrs3 = engineSubclass2.GetAllDictionaryAttrs();
 		if (attrs3->size() == 1)
 			Log("subclass dictionary ok");
 		else
@@ -341,23 +342,23 @@ int runTest(int thread_id)
 
         Log("Testing evaluation");
         engine2.EvaluateAll();
-        ROMDictionaryAttribute* attr1 = engine2.GetDictionaryAttr("cDictAttr1");
-        ROMDictionaryAttribute* attr2 = engine2.GetDictionaryAttr("dDictAttr2");
-        if (attr2->AvailableValues.size() == 0 && attr2->PossibleValues.size() == 3 &&
-            attr1->AvailableValues.size() == 4)
+        auto attr1 = engine2.GetDictionaryAttr("cDictAttr1");
+        auto attr2 = engine2.GetDictionaryAttr("dDictAttr2");
+        if (attr2->GetAvailableValues().size() == 0 && attr2->GetPossibleValues().size() == 3 &&
+            attr1->GetAvailableValues().size() == 4)
             Log("Default Eval OK");
         else
             Log("FAILURE to initially evaluate an attribute");
 
-        engine2.EvaluateForAttribute("cDictAttr1", attr1->AvailableValues[0]);
+		engine2.EvaluateForAttribute("cDictAttr1", attr1->GetAvailableValues()[0]);
         string val_pick1 = rootNode.GetAttribute("dDictAttr2");
         string val_bool1 = rootNode.GetAttribute("aDictAttr3");
         string val_multi1 = rootNode.GetAttribute("bDictAttr4");
         string edit1 = rootNode.GetAttribute("eDictAttr5");
-        engine2.EvaluateForAttribute("cDictAttr1", attr1->AvailableValues[1]);
+		engine2.EvaluateForAttribute("cDictAttr1", attr1->GetAvailableValues()[1]);
         string val_pick2 = rootNode.GetAttribute("dDictAttr2");
         string val_bool2 = rootNode.GetAttribute("aDictAttr3");
-        engine2.EvaluateForAttribute("cDictAttr1", attr1->AvailableValues[2]);
+		engine2.EvaluateForAttribute("cDictAttr1", attr1->GetAvailableValues()[2]);
         string val_bool3 = rootNode.GetAttribute("aDictAttr3");
         string val_multi3 = rootNode.GetAttribute("bDictAttr4");
         engine2.EvaluateForAttribute("eDictAttr5", "999");

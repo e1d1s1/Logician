@@ -31,7 +31,7 @@ namespace ROM
 
 	void LinearEngine::_initializeEngine(void* context)
 	{
-		EDS::CKnowledgeBase *knowledge = m_ROMContext->_getKnowledge();
+		EDS::IKnowledgeBase *knowledge = m_ROMContext->_getKnowledge();
 		if (knowledge)
 		{
 			INVISPREFIX = "^";
@@ -45,22 +45,22 @@ namespace ROM
 
 			//open each attr in dict, load its dependency info to create m_vEvalList, m_mapTriggers
 			//build an initial list that matches the dictionary order
-			for (map<string, ROMDictionaryAttribute>::iterator it = m_dict.begin(); it != m_dict.end(); it++)
+			for (auto it = m_dict.begin(); it != m_dict.end(); it++)
 			{
-				m_vEvalList.push_back(&it->second);
+				m_vEvalList.push_back(it->second);
 				//triggers
-				vector<string> deps = knowledge->GetInputDependencies(it->second.RuleTable);
+				vector<string> deps = knowledge->GetInputDependencies(it->second->GetRuleTable());
 				for (vector<string>::iterator itDeps = deps.begin(); itDeps != deps.end(); itDeps++)
 				{
 					if (m_mapTriggers.find(*itDeps) != m_mapTriggers.end())
 					{
-						if (find(m_mapTriggers[*itDeps].begin(), m_mapTriggers[*itDeps].end(), it->second.Name) == m_mapTriggers[*itDeps].end())
-							m_mapTriggers[*itDeps].push_back(it->second.Name);
+						if (find(m_mapTriggers[*itDeps].begin(), m_mapTriggers[*itDeps].end(), it->second->GetName()) == m_mapTriggers[*itDeps].end())
+							m_mapTriggers[*itDeps].push_back(it->second->GetName());
 					}
 					else if (m_dict.find(*itDeps) != m_dict.end())
 					{
 						vector<string> newVect;
-						newVect.push_back(it->second.Name);
+						newVect.push_back(it->second->GetName());
 						m_mapTriggers[*itDeps] = newVect;
 					}
 				}
@@ -93,7 +93,7 @@ namespace ROM
 			{
 				string dictAttrName = ROMUTIL::FindAndReplace(it->first, TBUATTR, "");
 				if (m_dict.find(dictAttrName) != m_dict.end())
-					m_dict[dictAttrName].ChangedByUser = true;
+					m_dict[dictAttrName]->SetChangedByUser(true);
 			}
 		}
 	}
@@ -102,18 +102,18 @@ namespace ROM
 	{
 		m_CurrentRecursion++;
 		//make a copy to see if the order has changed during recursion
-		vector<ROMDictionaryAttribute*> evalOrderCopy = m_vEvalList;
+		vector<IROMDictionaryAttribute*> evalOrderCopy = m_vEvalList;
 
 		//check for circular logic, outputs that are also inputs must go above the attrs that are dependent on them
-		for (map<string, vector<string> >::iterator it = m_mapTriggers.begin(); it != m_mapTriggers.end(); it++)
+		for (auto it = m_mapTriggers.begin(); it != m_mapTriggers.end(); it++)
 		{
-			for (vector<string>::iterator itDeps = it->second.begin(); itDeps != it->second.end(); itDeps++)
+			for (auto itDeps = it->second.begin(); itDeps != it->second.end(); itDeps++)
 			{
 				size_t lowestIndex = 0;
 				bool bFoundInputAttr = false;
 				for (lowestIndex = 0; lowestIndex < m_vEvalList.size(); lowestIndex++)
 				{
-					if (m_vEvalList[lowestIndex]->Name == it->first)
+					if (m_vEvalList[lowestIndex]->GetName() == it->first)
 					{
 						bFoundInputAttr = true;
 						break;
@@ -129,7 +129,7 @@ namespace ROM
 							size_t currentIndex = 0;
 							for (currentIndex = 0; currentIndex < m_vEvalList.size(); currentIndex++)
 							{
-								if (m_vEvalList[currentIndex]->Name == *itDeps2)
+								if (m_vEvalList[currentIndex]->GetName() == *itDeps2)
 									break;
 							}
 							if (currentIndex < lowestIndex)
@@ -140,7 +140,7 @@ namespace ROM
 					//make the current input index lower than lowest output
 					if (origIndex != lowestIndex)
 					{
-						ROMDictionaryAttribute* attr = m_vEvalList[origIndex];
+						auto attr = m_vEvalList[origIndex];
 						m_vEvalList.erase(m_vEvalList.begin() + origIndex);
 						m_vEvalList.insert(m_vEvalList.begin() + lowestIndex, attr);
 					}
@@ -194,38 +194,38 @@ namespace ROM
 			//resets other atts when setting this one
 			m_ROMContext->SetAttribute("currentattr", dictAttrName);
 			vector<string> attrsToReset = m_ROMContext->_evaluateTable((string)"reset", (string)"attr", context);
-			for (vector<string>::iterator it = attrsToReset.begin(); it != attrsToReset.end(); it++)
+			for (auto it = attrsToReset.begin(); it != attrsToReset.end(); it++)
 			{
 				m_ROMContext->SetAttribute(*it, "");
 				_removeTouchedByUser(*it);
-				if (m_dict[*it].AvailableValues.size() > 0)
-					m_dict[*it].Valid = false;
+				if (m_dict[*it]->GetAvailableValues().size() > 0)
+					m_dict[*it]->SetValid(false);
 			}
 
 			//resets an attr if it has not been touched by the user
 			attrsToReset = m_ROMContext->_evaluateTable((string)"reset_INCBU", (string)"attr", context);
-			for (vector<string>::iterator it = attrsToReset.begin(); it != attrsToReset.end(); it++)
+			for (auto it = attrsToReset.begin(); it != attrsToReset.end(); it++)
 			{
 				if (!_isTouchedByUser(*it))
 				{
 					m_ROMContext->SetAttribute(*it, "");
 					_removeTouchedByUser(*it);
-					if (m_dict[*it].AvailableValues.size() > 0)
-						m_dict[*it].Valid = false;
+					if (m_dict[*it]->GetAvailableValues().size() > 0)
+						m_dict[*it]->SetValid(false);
 				}
 			}
 		}
 
 
-		map<string, ROMDictionaryAttribute>::iterator itFind = m_dict.find(dictAttrName);
+		auto itFind = m_dict.find(dictAttrName);
 		if (itFind != m_dict.end())
 		{
-			m_dict[dictAttrName].ValueChanged = true;
+			m_dict[dictAttrName]->SetValueChanged(true);
 			bool bUserChanged = !m_EvalInternal;
 			if (bUserChanged)
 				_setTouchedByUser(dictAttrName);
 
-			switch (m_dict[dictAttrName].AttributeType)
+			switch (m_dict[dictAttrName]->GetAttributeType())
 			{
 			case SINGLESELECT:
 				_evalSingleSelect(dictAttrName, newValues[0], context);
@@ -255,9 +255,9 @@ namespace ROM
 
 	void LinearEngine::_resetValueChanged()
 	{
-		for (vector<ROMDictionaryAttribute*>::iterator it = m_vEvalList.begin(); it != m_vEvalList.end(); it++)
+		for (auto it = m_vEvalList.begin(); it != m_vEvalList.end(); it++)
 		{
-			(*it)->ValueChanged = false;
+			(*it)->SetValueChanged(false);
 		}
 	}
 
@@ -268,13 +268,13 @@ namespace ROM
 
 	void LinearEngine::_setTouchedByUser(const string& dictAttrName)
 	{
-		m_dict[dictAttrName].ChangedByUser = true;
+		m_dict[dictAttrName]->SetChangedByUser(true);
 		m_ROMContext->SetAttribute(TBUATTR + dictAttrName, "Y");
 	}
 
 	void LinearEngine::_removeTouchedByUser(const string& dictAttrName)
 	{
-		m_dict[dictAttrName].ChangedByUser = false;
+		m_dict[dictAttrName]->SetChangedByUser(false);
 		m_ROMContext->RemoveAttribute(TBUATTR + dictAttrName);
 	}
 
@@ -285,10 +285,10 @@ namespace ROM
 
 		m_EvalInternal = true;
 		_resetValueChanged();
-		for (vector<ROMDictionaryAttribute*>::iterator it = m_vEvalList.begin(); it != m_vEvalList.end(); it++)
+		for (auto it = m_vEvalList.begin(); it != m_vEvalList.end(); it++)
 		{
 			vector<string> selectedValues = _getSelectedValues(*it);
-			_evaluateForAttribute((*it)->Name, selectedValues, false, context);
+			_evaluateForAttribute((*it)->GetName(), selectedValues, false, context);
 		}
 		m_EvalInternal = false;
 	}
@@ -296,9 +296,9 @@ namespace ROM
 	bool LinearEngine::DictionaryIsValid()
 	{
 		bool retval = true;
-		for (vector<ROMDictionaryAttribute*>::iterator it = m_vEvalList.begin(); it != m_vEvalList.end(); it++)
+		for (auto it = m_vEvalList.begin(); it != m_vEvalList.end(); it++)
 		{
-			if (!(*it)->Valid)
+			if (!(*it)->GetValid())
 			{
 				retval = false;
 				break;
@@ -309,34 +309,34 @@ namespace ROM
 
 	void LinearEngine::_flagAttrInvalid(const string& dictAttrName)
 	{
-		m_dict[dictAttrName].ChangedByUser = false;
-		m_dict[dictAttrName].Valid = false;
+		m_dict[dictAttrName]->SetChangedByUser(false);
+		m_dict[dictAttrName]->SetValid(false);
 	}
 
 	void LinearEngine::_evalBoolean(const string& dictAttrName, const string& value, void* context)
 	{
 		string newValue = value;
-		vector<string> res = m_ROMContext->_evaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName, false, context);
+		vector<string> res = m_ROMContext->_evaluateTable(m_dict[dictAttrName]->GetRuleTable(), dictAttrName, false, context);
 		vector<string> availableValues;
 
 		vector<string> prefixes = _parseOutPrefixes(BOOLEANSELECT, res, availableValues);
-		m_dict[dictAttrName].AvailableValues = availableValues;
+		m_dict[dictAttrName]->SetAvailableValues(availableValues);
 
 		if (prefixes.size() > 0 && prefixes[0].length() > 0 && prefixes[0][0] == L'^')
-			m_dict[dictAttrName].Visible = false;
+			m_dict[dictAttrName]->SetVisible(false);
 		else
-			m_dict[dictAttrName].Visible = true;
+			m_dict[dictAttrName]->SetVisible(true);
 
 		string currentValue = m_ROMContext->GetAttribute(dictAttrName, true);
-		m_dict[dictAttrName].Valid = true;
-		m_dict[dictAttrName].Enabled = true;
+		m_dict[dictAttrName]->SetValid(true);
+		m_dict[dictAttrName]->SetEnabled(true);
 
 		//set a default
 		bool bOverrideDisabled = false;
 		if (currentValue.length() == 0)
 		{
-			if (m_dict[dictAttrName].DefaultValue.length() > 0)
-				currentValue = m_dict[dictAttrName].DefaultValue;
+			if (m_dict[dictAttrName]->GetDefaultValue().length() > 0)
+				currentValue = m_dict[dictAttrName]->GetDefaultValue();
 			else
 			{
 				currentValue = "N";
@@ -352,7 +352,7 @@ namespace ROM
 			{
 				m_ROMContext->SetAttribute(dictAttrName, "N");
 				_removeTouchedByUser(dictAttrName);
-				m_dict[dictAttrName].Enabled = false;
+				m_dict[dictAttrName]->SetEnabled(false);
 			}
 			else if (availableValues[0] == "YN") //allow Yes or No with a default of Y
 			{
@@ -369,7 +369,7 @@ namespace ROM
 			{
 				m_ROMContext->SetAttribute(dictAttrName, "Y");
 				_removeTouchedByUser(dictAttrName);
-				m_dict[dictAttrName].Enabled = false;
+				m_dict[dictAttrName]->SetEnabled(false);
 			}
 			else if (newValue.length() == 1) //Y or N
 			{
@@ -379,12 +379,12 @@ namespace ROM
 			{
 				m_ROMContext->SetAttribute(dictAttrName, "N");
 				_removeTouchedByUser(dictAttrName);
-				m_dict[dictAttrName].Enabled = false;
+				m_dict[dictAttrName]->SetEnabled(false);
 			}
 			else
 			{
 				if (currentValue == "N" && !bOverrideDisabled)
-					m_dict[dictAttrName].Enabled = false;
+					m_dict[dictAttrName]->SetEnabled(false);
 				m_ROMContext->SetAttribute(dictAttrName, currentValue);
 			}
 		}
@@ -396,34 +396,34 @@ namespace ROM
 		{
 			m_ROMContext->SetAttribute(dictAttrName, "N");
 			_removeTouchedByUser(dictAttrName);
-			m_dict[dictAttrName].Enabled = false;
+			m_dict[dictAttrName]->SetEnabled(false);
 		}
 		else
 		{
 			if (currentValue == "N" && !bOverrideDisabled)
-				m_dict[dictAttrName].Enabled = false;
+				m_dict[dictAttrName]->SetEnabled(false);
 			m_ROMContext->SetAttribute(dictAttrName, currentValue);
 		}
 
-		m_dict[dictAttrName].Value = m_ROMContext->GetAttribute(dictAttrName, true);
+		m_dict[dictAttrName]->SetValue(m_ROMContext->GetAttribute(dictAttrName, true));
 	}
 
 	void LinearEngine::_evalEdit(const string& dictAttrName, const string& value, void* context)
 	{
 		string newValue = value;
-		vector<string> res = m_ROMContext->_evaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName, context);
+		vector<string> res = m_ROMContext->_evaluateTable(m_dict[dictAttrName]->GetRuleTable(), dictAttrName, context);
 		vector<string> availableValues;
 
 		vector<string> prefixes = _parseOutPrefixes(EDIT, res, availableValues);
 
-		m_dict[dictAttrName].AvailableValues = availableValues;
-		m_dict[dictAttrName].Enabled = true;
-		m_dict[dictAttrName].Valid = true;
+		m_dict[dictAttrName]->SetAvailableValues(availableValues);
+		m_dict[dictAttrName]->SetEnabled(true);
+		m_dict[dictAttrName]->SetValid(true);
 		//if no rules table defined, allow any value
-		if (m_dict[dictAttrName].RuleTable.size() == 0)
+		if (m_dict[dictAttrName]->GetRuleTable().size() == 0)
 		{
 			m_ROMContext->SetAttribute(dictAttrName, newValue);
-			m_dict[dictAttrName].Value = newValue;
+			m_dict[dictAttrName]->SetValue(newValue);
 			return;
 		}
 
@@ -437,18 +437,18 @@ namespace ROM
 		//set the dictionary default on load
 		if (newValue.length() == 0)
 		{
-			if (m_dict[dictAttrName].DefaultValue.length() > 0)
-				newValue = m_dict[dictAttrName].DefaultValue;
+			if (m_dict[dictAttrName]->GetDefaultValue().length() > 0)
+				newValue = m_dict[dictAttrName]->GetDefaultValue();
 		}
 
 		if (availableValues.size() == 1)
 		{
 			if (ROMUTIL::StringContains(prefixes[0], DISABLEPREFIX))
 			{
-				m_dict[dictAttrName].Enabled = false;
+				m_dict[dictAttrName]->SetEnabled(false);
 				_removeTouchedByUser(dictAttrName);
 				m_ROMContext->SetAttribute(dictAttrName, availableValues[0]);
-				m_dict[dictAttrName].Value = availableValues[0];
+				m_dict[dictAttrName]->SetValue(availableValues[0]);
 				return;
 			}
 			else if (ROMUTIL::StringContains(prefixes[0], DEFAULTPREFIX) && 
@@ -461,10 +461,10 @@ namespace ROM
 					newValue = defaultValue;
 					_removeTouchedByUser(dictAttrName);
 				}
-				m_dict[dictAttrName].Enabled = true;
+				m_dict[dictAttrName]->SetEnabled(true);
 			}
 			else
-				m_dict[dictAttrName].Enabled = true;
+				m_dict[dictAttrName]->SetEnabled(true);
 
 			//check table result for range
 			if (availableValues[0][0] == L'[')
@@ -524,12 +524,12 @@ namespace ROM
 			{
 				m_ROMContext->SetAttribute(dictAttrName, "");
 				_removeTouchedByUser(dictAttrName);
-				m_dict[dictAttrName].Enabled = false;
+				m_dict[dictAttrName]->SetEnabled(false);
 			}
 			else if (availableValues[0].length() == 2 && availableValues[0] == "YY") //user must enter something
 			{
 				m_ROMContext->SetAttribute(dictAttrName, newValue);
-				m_dict[dictAttrName].Valid = newValue.length() > 0;
+				m_dict[dictAttrName]->SetValid(newValue.length() > 0);
 			}
 			else
 			{
@@ -541,7 +541,7 @@ namespace ROM
 		{
 			m_ROMContext->SetAttribute(dictAttrName, newValue);
 			_removeTouchedByUser(dictAttrName);
-			m_dict[dictAttrName].Enabled = false;
+			m_dict[dictAttrName]->SetEnabled(false);
 		}
 		else if (availableValues.size() == 1 && availableValues[0].length() > 0)
 		{
@@ -563,24 +563,24 @@ namespace ROM
 		}
 
 		if (prefixes.size() > 0 && ROMUTIL::StringContains(prefixes[0], INVISPREFIX))
-			m_dict[dictAttrName].Visible = false;
+			m_dict[dictAttrName]->SetVisible(false);
 		else
-			m_dict[dictAttrName].Visible = true;
+			m_dict[dictAttrName]->SetVisible(true);
 
-		m_dict[dictAttrName].Value = m_ROMContext->GetAttribute(dictAttrName, true);
+		m_dict[dictAttrName]->SetValue(m_ROMContext->GetAttribute(dictAttrName, true));
 	}
 
 	void LinearEngine::_evalMultiSelect(const string& dictAttrName, const vector<string>& values, void* context)
 	{
 		vector<string> newValues = values;
 		//multi-select lists, checkbox lists
-		vector<string> res = m_ROMContext->_evaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName, context);
+		vector<string> res = m_ROMContext->_evaluateTable(m_dict[dictAttrName]->GetRuleTable(), dictAttrName, context);
 		vector<string> availableValues;
-		m_dict[dictAttrName].Enabled = true;
-		m_dict[dictAttrName].Valid = true;
+		m_dict[dictAttrName]->SetEnabled(true);
+		m_dict[dictAttrName]->SetValid(true);
 
 		vector<string> prefixes = _parseOutPrefixes(MULTISELECT, res, availableValues);
-		m_dict[dictAttrName].AvailableValues = availableValues;
+		m_dict[dictAttrName]->SetAvailableValues(availableValues);
 
 		string currentValue = m_ROMContext->GetAttribute(dictAttrName, true);
 		vector<string> currentValues = ROMUTIL::Split(currentValue, "|");
@@ -602,9 +602,9 @@ namespace ROM
 		//set the dictionary default on load
 		if (newValues.size() == 0)
 		{
-			if (m_dict[dictAttrName].DefaultValue.length() > 0)
+			if (m_dict[dictAttrName]->GetDefaultValue().length() > 0)
 			{
-				newValues.push_back(m_dict[dictAttrName].DefaultValue);
+				newValues.push_back(m_dict[dictAttrName]->GetDefaultValue());
 				_removeTouchedByUser(dictAttrName);
 			}
 		}
@@ -634,7 +634,7 @@ namespace ROM
 		}
 		else if (availableValues.size() == 0)
 		{
-			m_dict[dictAttrName].Enabled = false;
+			m_dict[dictAttrName]->SetEnabled(false);
 		}
 
 		if (selectedValues.size() == 0 && currentValues.size() > 0) //compare the new values to what is really available
@@ -672,31 +672,31 @@ namespace ROM
 			}
 		}
 
-		m_dict[dictAttrName].Value = m_ROMContext->GetAttribute(dictAttrName, true);
+		m_dict[dictAttrName]->SetValue(m_ROMContext->GetAttribute(dictAttrName, true));
 	}
 
 	//drop down list, radio button groups, etc
 	void LinearEngine::_evalSingleSelect(const string& dictAttrName, const string& value, void* context)
 	{
 		string newValue = value;
-		vector<string> res = m_ROMContext->_evaluateTable(m_dict[dictAttrName].RuleTable, dictAttrName, context);
+		vector<string> res = m_ROMContext->_evaluateTable(m_dict[dictAttrName]->GetRuleTable(), dictAttrName, context);
 		vector<string> availableValues;
-		m_dict[dictAttrName].Enabled = true;
-		m_dict[dictAttrName].Valid = true;
+		m_dict[dictAttrName]->SetEnabled(true);
+		m_dict[dictAttrName]->SetValid(true);
 
 		//if no rules table defined, allow any value
-		if (m_dict[dictAttrName].RuleTable.size() == 0)
+		if (m_dict[dictAttrName]->GetRuleTable().size() == 0)
 		{
 			m_ROMContext->SetAttribute(dictAttrName, newValue);
-			m_dict[dictAttrName].Value = newValue;
+			m_dict[dictAttrName]->SetValue(newValue);
 			availableValues.push_back(newValue);
-			m_dict[dictAttrName].AvailableValues = availableValues;
+			m_dict[dictAttrName]->SetAvailableValues(availableValues);
 			return;
 		}
 
 		//the list of results is what is available for selection in the control
 		vector<string> prefixes = _parseOutPrefixes(SINGLESELECT, res, availableValues);
-		m_dict[dictAttrName].AvailableValues = availableValues;
+		m_dict[dictAttrName]->SetAvailableValues(availableValues);
 		bool bFound = find(availableValues.begin(), availableValues.end(), newValue) != availableValues.end();
 
 		string currentValue = m_ROMContext->GetAttribute(dictAttrName, true);
@@ -705,9 +705,9 @@ namespace ROM
 		//set the dictionary default on load
 		if (newValue.length() == 0)
 		{
-			if (m_dict[dictAttrName].DefaultValue.length() > 0)
+			if (m_dict[dictAttrName]->GetDefaultValue().length() > 0)
 			{
-				newValue = m_dict[dictAttrName].DefaultValue;
+				newValue = m_dict[dictAttrName]->GetDefaultValue();
 			}
 		}
 
@@ -738,13 +738,13 @@ namespace ROM
 		}
 		else if (availableValues.size() == 0)
 		{
-			m_dict[dictAttrName].Enabled = false;
+			m_dict[dictAttrName]->SetEnabled(false);
 		}
 
 		if (prefixes.size() > 0 && prefixes[0].length() > 0 && ROMUTIL::StringContains(prefixes[0], INVISPREFIX))
-			m_dict[dictAttrName].Visible = false;
+			m_dict[dictAttrName]->SetVisible(false);
 		else
-			m_dict[dictAttrName].Visible = true;
+			m_dict[dictAttrName]->SetVisible(true);
 
 		if (newValue.length() > 0 && bFound)
 		{
@@ -761,8 +761,8 @@ namespace ROM
 		}
 		else
 		{
-			if (m_dict[dictAttrName].Enabled == true)
-				m_dict[dictAttrName].Valid = false;
+			if (m_dict[dictAttrName]->GetEnabled() == true)
+				m_dict[dictAttrName]->SetValid(false);
 			if (setTheValue)
 				m_ROMContext->SetAttribute(dictAttrName, "");
 			else
@@ -776,7 +776,7 @@ namespace ROM
 			_removeTouchedByUser(dictAttrName);
 		}
 
-		m_dict[dictAttrName].Value = m_ROMContext->GetAttribute(dictAttrName, true);
+		m_dict[dictAttrName]->SetValue(m_ROMContext->GetAttribute(dictAttrName, true));
 	}
 
 	vector<string> LinearEngine::_parseOutPrefixes(int AttributeType, const vector<string>& origValues, vector<string> &valuesWithoutPrefixes)
@@ -823,24 +823,24 @@ namespace ROM
 		if (m_mapTriggers.find(dictAttrName) != m_mapTriggers.end())
 		{
 			vector<string> attrsToEval = m_mapTriggers[dictAttrName];
-			for (vector<string>::iterator it = attrsToEval.begin(); it != attrsToEval.end(); it++)
+			for (auto it = attrsToEval.begin(); it != attrsToEval.end(); it++)
 			{
-				map<string, ROMDictionaryAttribute>::iterator itFind = m_dict.find(*it);
+				auto itFind = m_dict.find(*it);
 				if (itFind != m_dict.end())
 				{
-					vector<string> selectedValues = _getSelectedValues(&itFind->second);
-					bool bWasChangedByUser = itFind->second.ChangedByUser;
+					vector<string> selectedValues = _getSelectedValues(itFind->second);
+					bool bWasChangedByUser = itFind->second->GetChangedByUser();
 					_evaluateForAttribute(*it, selectedValues, true, context);
 					m_EvalInternal = true;
 					if (bWasChangedByUser)
 					{
 						bool bValuesRemainSame = true;
-						vector<string> newSelectedValues = _getSelectedValues(&itFind->second);
+						vector<string> newSelectedValues = _getSelectedValues(itFind->second);
 						if (newSelectedValues.size() != selectedValues.size())
 							bValuesRemainSame = false;
 						else for (size_t i = 0; i < selectedValues.size(); i++)
 						{
-							vector<string>::iterator itFind = find(newSelectedValues.begin(), newSelectedValues.end(), selectedValues[i]);
+							auto itFind = find(newSelectedValues.begin(), newSelectedValues.end(), selectedValues[i]);
 							if (itFind == newSelectedValues.end())
 							{
 								bValuesRemainSame = false;
@@ -848,7 +848,7 @@ namespace ROM
 							}
 						}
 
-						itFind->second.ChangedByUser = bValuesRemainSame;
+						itFind->second->SetChangedByUser(bValuesRemainSame);
 					}
 				}
 			}
@@ -856,12 +856,12 @@ namespace ROM
 		m_EvalInternal = false;
 	}
 
-	vector<string> LinearEngine::_getSelectedValues(ROMDictionaryAttribute* attr)
+	vector<string> LinearEngine::_getSelectedValues(IROMDictionaryAttribute* attr)
 	{
 		vector<string> retval;
-		string currentValue = m_ROMContext->GetAttribute(attr->Name, true);
+		string currentValue = m_ROMContext->GetAttribute(attr->GetName(), true);
 
-		switch (attr->AttributeType)
+		switch (attr->GetAttributeType())
 		{
 		case SINGLESELECT:
 			retval.push_back(currentValue);

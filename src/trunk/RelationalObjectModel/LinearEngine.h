@@ -43,7 +43,7 @@ namespace ROM
 		void EvaluateForAttribute(const string& dictAttrName, vector<string>& newValues, bool bEvalDependents = true) { _evaluateForAttribute(dictAttrName, newValues, bEvalDependents, m_ROMContext); }
 		void EvaluateForAttribute(const string& dictAttrName, const string& newValue, bool bEvalDependents = true) { _evaluateForAttribute(dictAttrName, newValue, bEvalDependents, m_ROMContext); }
 		void EvaluateAll() { _evaluateAll(m_ROMContext); }
-		vector<ROMDictionaryAttribute*> GetEvalList() {return m_vEvalList;}
+		vector<IROMDictionaryAttribute*> GetEvalList() { return m_vEvalList; }
 		map<string, vector<string> > GetTriggers() {return m_mapTriggers;}
 		bool DictionaryIsValid();
 
@@ -74,13 +74,13 @@ namespace ROM
 		void _removeTouchedByUser(const string& dictAttrName);
 		void _loadTrackingAttrs();
 		vector<string> _parseOutPrefixes(int AttributeType, const vector<string>& values, vector<string>& valuesWithoutPrefixes); //remove the special character flags from the values
-		vector<string> _getSelectedValues(ROMDictionaryAttribute* attr);
+		vector<string> _getSelectedValues(IROMDictionaryAttribute* attr);
 		void _resetValueChanged();		
 
-		vector<ROMDictionaryAttribute*> m_vEvalList;
+		vector<IROMDictionaryAttribute*> m_vEvalList;
 		map<string, vector<string> > m_mapTriggers;
 		int m_CurrentRecursion;
-		vector<ROMDictionaryAttribute*> m_vEvalListRecursChecker;
+		vector<IROMDictionaryAttribute*> m_vEvalListRecursChecker;
 		bool m_EvalInternal;
 		bool m_initialized;
 

@@ -19,9 +19,18 @@ Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 #include "utilities.h"
 #include "ROMDictionary.h"
 #include <algorithm>
+#include <memory>
 
 using namespace ROM;
 using namespace ROMUTIL;
+
+ROMDictionary::~ROMDictionary(void)
+{
+	for (auto kvp : m_dict)
+	{
+		delete kvp.second;
+	}
+}
 
 void ROMDictionary::CreateROMDictionary(ROMNode* context)
 {
@@ -46,12 +55,12 @@ void ROMDictionary::_loadDictionary(const string& dictionaryTable, void* context
 
 	for (size_t i = 0; i < allNames.size(); i++)
 	{
-		ROMDictionaryAttribute dictAttr;
-		dictAttr.Name = allNames[i];
-		dictAttr.Index = i;
-		if (res["DefaultValue"].size() > 0 && res["DefaultValue"][i] != "~") dictAttr.DefaultValue = res["DefaultValue"][i];
-		if (res["Description"].size() > 0 && res["Description"][i] != "~") dictAttr.Description = res["Description"][i];
-		if (res["RuleTable"].size() > 0 && res["RuleTable"][i] != "~") dictAttr.RuleTable = res["RuleTable"][i];
+		IROMDictionaryAttribute* dictAttr = new ROMDictionaryAttribute();
+		dictAttr->SetName(allNames[i]);
+		dictAttr->SetIndex(i);
+		if (res["DefaultValue"].size() > 0 && res["DefaultValue"][i] != "~") dictAttr->SetDefaultValue(res["DefaultValue"][i]);
+		if (res["Description"].size() > 0 && res["Description"][i] != "~") dictAttr->SetDescription(res["Description"][i]);
+		if (res["RuleTable"].size() > 0 && res["RuleTable"][i] != "~") dictAttr->SetRuleTable(res["RuleTable"][i]);
 
 		string strAttrType;
 		if (res["AttributeType"].size() > 0  && res["AttributeType"][i] != "~") strAttrType = res["AttributeType"][i];
@@ -59,50 +68,50 @@ void ROMDictionary::_loadDictionary(const string& dictionaryTable, void* context
 
 		if (strAttrType.length() == 0 || strAttrType == "SINGLESELECT")
 		{
-			dictAttr.AttributeType = SINGLESELECT;
+			dictAttr->SetAttributeType(SINGLESELECT);
 		}
 		else if (strAttrType == "MULTISELECT")
 		{
-			dictAttr.AttributeType = MULTISELECT;
+			dictAttr->SetAttributeType(MULTISELECT);
 		}
 		else if (strAttrType == "BOOLEAN")
 		{
-			dictAttr.AttributeType = BOOLEANSELECT;
+			dictAttr->SetAttributeType(BOOLEANSELECT);
 		}
 		else if (strAttrType == "EDIT")
 		{
-			dictAttr.AttributeType = EDIT;
+			dictAttr->SetAttributeType(EDIT);
 		}
 		else if (strAttrType == "STATIC")
 		{
-			dictAttr.AttributeType = STATIC;
+			dictAttr->SetAttributeType(STATIC);
 		}
 
 		//on load, just set default values and possibilities
 		//only set a default if there is no rules table and no current value
-		string value = m_ROMContext->GetAttribute(dictAttr.Name);
-		if (((value.length() == 0 && dictAttr.RuleTable.length() == 0) || dictAttr.AttributeType == STATIC) && dictAttr.DefaultValue.length() > 0 && dictAttr.DefaultValue != "~")
+		string value = m_ROMContext->GetAttribute(dictAttr->GetName());
+		if (((value.length() == 0 && dictAttr->GetRuleTable().length() == 0) || dictAttr->GetAttributeType() == STATIC) && dictAttr->GetDefaultValue().length() > 0 && dictAttr->GetDefaultValue() != "~")
 		{
-			if (dictAttr.AttributeType == BOOLEANSELECT)
-				m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue.substr(0, 1));
+			if (dictAttr->GetAttributeType() == BOOLEANSELECT)
+				m_ROMContext->SetAttribute(dictAttr->GetName(), dictAttr->GetDefaultValue().substr(0, 1));
 			else
-				m_ROMContext->SetAttribute(dictAttr.Name, dictAttr.DefaultValue);
+				m_ROMContext->SetAttribute(dictAttr->GetName(), dictAttr->GetDefaultValue());
 		}
 
-		if (dictAttr.RuleTable.length() > 0)
-			dictAttr.PossibleValues = m_ROMContext->_getPossibleValues(dictAttr.RuleTable, dictAttr.Name);
+		if (dictAttr->GetRuleTable().length() > 0)
+			dictAttr->SetPossibleValues(m_ROMContext->_getPossibleValues(dictAttr->GetRuleTable(), dictAttr->GetName()));
 
-		m_dict[dictAttr.Name] = dictAttr;
+		m_dict[dictAttr->GetName()] = dictAttr;
 	}
 }
 
-ROMDictionaryAttribute* ROMDictionary::GetDictionaryAttr(const string& dictAttrName)
+IROMDictionaryAttribute* ROMDictionary::GetDictionaryAttr(const string& dictAttrName)
 {
-	ROMDictionaryAttribute* retval = nullptr;
+	IROMDictionaryAttribute* retval = nullptr;
 
-	map<string, ROMDictionaryAttribute>::iterator itFind = m_dict.find(dictAttrName);
+	auto itFind = m_dict.find(dictAttrName);
 	if (itFind != m_dict.end())
-		retval = &m_dict[dictAttrName];
+		retval = m_dict[dictAttrName];
 
 	return retval;
 }

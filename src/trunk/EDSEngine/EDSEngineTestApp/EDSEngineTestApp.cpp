@@ -9,6 +9,7 @@
 #include <map>
 #include <limits>
 #include <thread>
+#include <memory>
 #include "../KnowledgeBase.h"
 
 
@@ -83,14 +84,14 @@ int runTest(int thread_id)
 	Log("Loading Test project", thread_id);
 	//load up some sample table
 	#ifndef __GNUC__
-	EDS::CKnowledgeBase knowledge("..\\EDSEngineTestApp\\test_project.gz");
-	if (!knowledge.IsOpen())
-		knowledge.CreateKnowledgeBase("test_project.gz");
+	std::unique_ptr<IKnowledgeBase> knowledge = std::make_unique<CKnowledgeBase>("..\\EDSEngineTestApp\\test_project.gz");
+	if (!knowledge->IsOpen())
+		knowledge->CreateKnowledgeBase("test_project.gz");
 	#else
 	EDS::CKnowledgeBase knowledge("../../test_project.gz");
 	#endif
 
-	if (!knowledge.IsOpen())
+	if (!knowledge->IsOpen())
 	{
 		Log("Could not open rules file", thread_id);
 		pause();
@@ -98,11 +99,10 @@ int runTest(int thread_id)
 	}
 
 	//debugging
-	knowledge.DebugHandlerPtr = DebugMessage;
+	knowledge->SetDebugHandler(DebugMessage);
 	//decisionlogic connection
-	knowledge.EnableRemoteDebugger(false);
-
-	knowledge.InputValueGetterPtr = [&](const string& attrName, void* ctx)
+	knowledge->EnableRemoteDebugger(false);
+	knowledge->SetInputValueGetter([&](const string& attrName, void* ctx)
 	{
 		string retval;
 		auto it = state.find(attrName);
@@ -111,9 +111,9 @@ int runTest(int thread_id)
 			retval = it->second;
 		}
 		return retval;
-	};
+	});
 
-	string s = to_string(knowledge.TableCount());
+	string s = to_string(knowledge->TableCount());
 	Log("# of Tables loaded: " + s, thread_id);
 	if (s == "14")
 	{
@@ -128,7 +128,7 @@ int runTest(int thread_id)
 	string tableName = "testtable1";
 	res.Reset();
 	Log("Loading attr output names for testtable1", thread_id);
-	vector<string> allOutputNames = knowledge.GetOutputAttrs(tableName);
+	vector<string> allOutputNames = knowledge->GetOutputAttrs(tableName);
 	for (size_t i = 0; i < allOutputNames.size(); i++)
 	{
 		Log(allOutputNames[i], thread_id);
@@ -144,7 +144,7 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("Loading attr input names for testtable1", thread_id);
-	vector<string> allInputNames = knowledge.GetInputAttrs(tableName);
+	vector<string> allInputNames = knowledge->GetInputAttrs(tableName);
 	for (size_t i = 0; i < allInputNames.size(); i++)
 	{
 		Log(allInputNames[i], thread_id);
@@ -160,7 +160,7 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("Loading dependency names for testtable1", thread_id);
-	vector<string> allDepNames = knowledge.GetInputDependencies(tableName);
+	vector<string> allDepNames = knowledge->GetInputDependencies(tableName);
 	for (size_t i = 0; i < allDepNames.size(); i++)
 	{
 		Log(allDepNames[i], thread_id);
@@ -178,7 +178,7 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("Getting all possible output values for outputAttr1", thread_id);
-	vector<string> allOutputs = knowledge.GetAllPossibleOutputs(tableName, "outputAttr1");
+	vector<string> allOutputs = knowledge->GetAllPossibleOutputs(tableName, "outputAttr1");
 	for (size_t i = 0; i < allOutputs.size(); i++)
 	{
 		Log(allOutputs[i], thread_id);
@@ -204,7 +204,7 @@ int runTest(int thread_id)
 
 	res.Reset();
 	Log("Checking the table type...", thread_id);
-	bool bIsGetAll = knowledge.TableIsGetAll(tableName);
+	bool bIsGetAll = knowledge->TableIsGetAll(tableName);
 	if (bIsGetAll)
 		res.SetResult(true, "testtable1 is of type: GetAll", thread_id);
 	else
@@ -214,7 +214,7 @@ int runTest(int thread_id)
 	res.Reset();
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', get first only", thread_id);
 	state["inputAttr1"] = "C";
-	map<string, vector<string> > results2 = knowledge.EvaluateTable(tableName, false);
+	map<string, vector<string> > results2 = knowledge->EvaluateTable(tableName, false);
 	if (results2.size() == 2 && results2["outputAttr1"].size() == 1 &&
 		results2["outputAttr1"].at(0) == "2")
 	{
@@ -230,7 +230,7 @@ int runTest(int thread_id)
 	res.Reset();
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', get all", thread_id);
 	state["inputAttr1"] = "C";
-	map<string, vector<string> > results = knowledge.EvaluateTable(tableName, bIsGetAll);
+	map<string, vector<string> > results = knowledge->EvaluateTable(tableName, bIsGetAll);
 	if (results.size() == 2 && results["outputAttr1"].size() == 3 &&
 		results["outputAttr1"].at(0) == "2" &&
 		results["outputAttr1"].at(1) == "4" &&
@@ -250,7 +250,7 @@ int runTest(int thread_id)
 	Log("testing evaluation of testtable1 with inputAttr1 = 'C', inputAttr2 = 10, get all", thread_id);
 	state["inputAttr1"] = "C";
 	state["inputAttr2"] = "10";
-	map<string, vector<string> > results3 = knowledge.EvaluateTable(tableName, bIsGetAll);
+	map<string, vector<string> > results3 = knowledge->EvaluateTable(tableName, bIsGetAll);
 	if (results3.size() == 2 && results3["outputAttr1"].size() == 4 &&
 		results3["outputAttr1"].at(0) == "2" &&
 		results3["outputAttr1"].at(1) == " with concat" && //empty becuase we never fed it outsideAttr1
@@ -273,7 +273,7 @@ int runTest(int thread_id)
 	state["inputAttr1"] = "C";
 	state["inputAttr2"] = "78";
 	state["outsideAttr1"] = "28";
-	map<string, vector<string> > results4 = knowledge.EvaluateTable(tableName, bIsGetAll);
+	map<string, vector<string> > results4 = knowledge->EvaluateTable(tableName, bIsGetAll);
 	if (results4.size() == 2 && results4["outputAttr1"].size() == 5 &&
 		results4["outputAttr1"].at(0) == "2" &&
 		results4["outputAttr1"].at(1) == "28 with concat" &&
@@ -299,7 +299,7 @@ int runTest(int thread_id)
 	state["inputAttr2"] = "TestParameterJS";
 	string paramValue = "PassedValue";
 	string origValue = paramValue;
-	vector<string> results9 = knowledge.EvaluateTableWithParam(tableName, (string)"outputAttr1", paramValue);
+	vector<string> results9 = knowledge->EvaluateTableWithParam(tableName, (string)"outputAttr1", paramValue);
 	if (results9.size() == 4 && results9.at(3) == "eval ok" &&
 		paramValue == "PassedValue modified")
 	{
@@ -315,8 +315,8 @@ int runTest(int thread_id)
 	Log("testing evaluation (Python) with state parameter on testtable1 with inputAttr1 = 'TestParameterPY' and inputAttr2 = 'TestParameterPY'");
 	state["inputAttr1"] = "TestParameterPY";
 	state["inputAttr2"] = "TestParameterPY";
-	vector<string> results10 = knowledge.EvaluateTableWithParam(tableName, (string)"outputAttr1", (string)"PassedValue");
-	retParam = knowledge.GetEvalParameter();
+	vector<string> results10 = knowledge->EvaluateTableWithParam(tableName, (string)"outputAttr1", (string)"PassedValue");
+	retParam = knowledge->GetEvalParameter();
 	if (results10.size() == 4 && results10.at(3) == "eval ok" &&
 		retParam == "PassedValue modified")
 	{
@@ -334,7 +334,7 @@ int runTest(int thread_id)
 	state["inputAttr1"] = "C";
 	state["inputAttr2"] = "58";
 	state["outsideAttr1"] = "28";
-	results4 = knowledge.EvaluateTable(tableName, true);
+	results4 = knowledge->EvaluateTable(tableName, true);
 	if (results4.size() == 2 && results4["outputAttr1"].size() == 5 &&
 		results4["outputAttr1"].at(0) == "2" &&
 		results4["outputAttr1"].at(1) == "28 with concat" &&
@@ -360,7 +360,7 @@ int runTest(int thread_id)
 	state["inputAttr2"] = "58";
 	state["outsideAttr1"] = "28";
 	Log("testing table chaining", thread_id);
-	vector<string> result5 = knowledge.EvaluateTable("testtable2", "out1", true);
+	vector<string> result5 = knowledge->EvaluateTable("testtable2", "out1", true);
 	if (result5.size() == 5 &&
 		result5.at(0) == "2" &&
 		result5.at(1) == "28 with concat" &&
@@ -387,7 +387,7 @@ int runTest(int thread_id)
 	res.Reset();
 	Log("testing input get()", thread_id);
 	state["someAttr"] = "3";
-	vector<string> result6 = knowledge.EvaluateTable("testtable3", "outputAttr1", true);
+	vector<string> result6 = knowledge->EvaluateTable("testtable3", "outputAttr1", true);
 	if (result6.size() == 1 && result6.at(0) == "inputAttr2: 58 is greater than someAttr: 3")
 	{
 		Log(result6.at(0), thread_id);
@@ -402,7 +402,7 @@ int runTest(int thread_id)
 	Log("testing NULL conditions", thread_id);
 	state["inputAttr1"] = "";
 	state["inputAttr2"] = "";
-	vector<string> result7 = knowledge.EvaluateTable("testtable4", "outputAttr1", true);
+	vector<string> result7 = knowledge->EvaluateTable("testtable4", "outputAttr1", true);
 	if (result7.size() == 4 && result7.at(2) == "both attrs are NULL")
 	{
 		Log(result7.at(0), thread_id);
@@ -418,7 +418,7 @@ int runTest(int thread_id)
 
 	state["inputAttr1"] = "blah";
 	state["c"] = "";
-	result7 = knowledge.EvaluateTable("testtable4", "outputAttr1", true);
+	result7 = knowledge->EvaluateTable("testtable4", "outputAttr1", true);
 	if (result7.size() == 2 && result7.at(0) == "inputAttr2 is NULL")
 	{
 		Log(result7.at(0), thread_id);
@@ -433,7 +433,7 @@ int runTest(int thread_id)
 	res.Reset();
 	Log("testing exclusing evaluation", thread_id);
 	state["inputAttr1"] = "A";
-	vector<string> result8 = knowledge.EvaluateTable("exclusion", "outputAttr1", true);
+	vector<string> result8 = knowledge->EvaluateTable("exclusion", "outputAttr1", true);
 	if (result8.size() == 4 && result8.at(0) == "not X or Y" &&
 		result8.at(1) == "not X" &&
 		result8.at(2) == "not Y" &&
@@ -452,7 +452,7 @@ int runTest(int thread_id)
 
 	Log("allowing a match: Y", thread_id);
 	state["inputAttr1"] = "Y";
-	result8 = knowledge.EvaluateTable("exclusion", "outputAttr1", true);
+	result8 = knowledge->EvaluateTable("exclusion", "outputAttr1", true);
 	if (result8.size() == 4 && result8.at(0) == "is X or Y" &&
 		result8.at(1) == "not X" &&
 		result8.at(2) == "is Y" &&
@@ -470,8 +470,8 @@ int runTest(int thread_id)
 	}
 
 	Log("testing translation of: A", thread_id);
-	string localeValue = knowledge.Localize("A", "en-US");
-	string reverse = knowledge.DeLocalize(localeValue);
+	string localeValue = knowledge->Localize("A", "en-US");
+	string reverse = knowledge->DeLocalize(localeValue);
 	Log(localeValue + ":" + reverse, thread_id);
 	if (localeValue == "A trans" && reverse == "A")
 		res.SetResult(true, "", thread_id);
@@ -480,7 +480,7 @@ int runTest(int thread_id)
 
 	Log("testing reverse evaluation of ReverseTest table", thread_id);
 	state["OutColor"] = "green";
-	map<string, vector<string> > result9 = knowledge.ReverseEvaluateTable("ReverseTest", true);
+	map<string, vector<string> > result9 = knowledge->ReverseEvaluateTable("ReverseTest", true);
 	if (result9.size() == 2 && result9["Color1"].at(0) == "blue" &&
 		result9["Color2"].at(0) == "yellow")
 	{

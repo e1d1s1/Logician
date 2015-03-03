@@ -23,7 +23,7 @@ Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 #include <functional>
 #include <unordered_map>
 #include "ROMInterfaces.h"
-#include "KnowledgeBase.h"
+#include "IKnowledgeBase.h"
 #include "utilities.h"
 
 using namespace std;
@@ -94,9 +94,9 @@ namespace ROM
 		vector<string>		ReverseEvaluateTable(const string& evalTable, const string& inputAttr) { return _reverseEvaluateTable(evalTable, inputAttr, this); }
 		map<string, vector<string> > ReverseEvaluateTable(const string& evalTable, bool bGetAll) { return _reverseEvaluateTable(evalTable, bGetAll, this); }
 		map<string, vector<string> > ReverseEvaluateTable(const string& evalTable) { return _reverseEvaluateTable(evalTable, this); }
-		EDS::CKnowledgeBase* GetKnowledgeBase() { ROMNode* owner = nullptr; return _getKnowledge(owner); }
-		EDS::CKnowledgeBase* GetKnowledgeBase(ROMNode*& owner) { return _getKnowledge(owner); }
-		void				SetKnowledgeBase(EDS::CKnowledgeBase* rules) { m_KnowledgeBase = rules; }
+		EDS::IKnowledgeBase* GetKnowledgeBase() { ROMNode* owner = nullptr; return _getKnowledge(owner); }
+		EDS::IKnowledgeBase* GetKnowledgeBase(ROMNode*& owner) { return _getKnowledge(owner); }
+		void				SetKnowledgeBase(EDS::IKnowledgeBase* rules) { m_KnowledgeBase = rules; }
 
 
 		//IO
@@ -142,8 +142,8 @@ namespace ROM
 		static ROMNode*			_buildObject(Node objectNode, ObjectFactory factory);
 		void					_createXMLDoc(bool bForceLoad, bool prettyprint);
 		static string			_convertXMLDocToString(bool prettyprint, Document xmlDoc);
-		EDS::CKnowledgeBase*	_getKnowledge(ROMNode*& owner);
-		EDS::CKnowledgeBase*	_getKnowledge() { ROMNode* owner = nullptr; return _getKnowledge(owner); }
+		EDS::IKnowledgeBase*	_getKnowledge(ROMNode*& owner);
+		EDS::IKnowledgeBase*	_getKnowledge() { ROMNode* owner = nullptr; return _getKnowledge(owner); }
 		ROMNode*				_getActiveContext();
 		void					_init(ObjectFactory factory = nullptr);
 		static ROMNode*			_loadXML(const string& xmlStr, bool isFile, ObjectFactory factory);
@@ -163,6 +163,6 @@ namespace ROM
 		unordered_map<string, std::unordered_map<string, string> > m_attrs;
 		unordered_map<string, string> m_nodeValues;
 
-		EDS::CKnowledgeBase*	m_KnowledgeBase;
+		EDS::IKnowledgeBase* m_KnowledgeBase;
 	};
 }

@@ -526,7 +526,7 @@ bool ROMNode::RemoveROMObjectValue(const string& name)
 vector<string> ROMNode::_evaluateTable(const string& evalTable, const string& output, bool bGetAll, void* context)
 {
 	vector<string> retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->EvaluateTable(evalTable, output, bGetAll, context);
@@ -537,7 +537,7 @@ vector<string> ROMNode::_evaluateTable(const string& evalTable, const string& ou
 vector<string> ROMNode::_evaluateTable(const string& evalTable, const string& output, void* context)
 {
 	vector<string> retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->EvaluateTable(evalTable, output, context);
@@ -548,7 +548,7 @@ vector<string> ROMNode::_evaluateTable(const string& evalTable, const string& ou
 map<string, vector<string> > ROMNode::_evaluateTable(const string& evalTable, bool bGetAll, void* context)
 {
 	map<string, vector<string> > retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->EvaluateTable(evalTable, bGetAll, context);
@@ -559,7 +559,7 @@ map<string, vector<string> > ROMNode::_evaluateTable(const string& evalTable, bo
 map<string, vector<string> > ROMNode::_evaluateTable(const string& evalTable, void* context)
 {
 	map<string, vector<string> > retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->EvaluateTable(evalTable, context);
@@ -570,7 +570,7 @@ map<string, vector<string> > ROMNode::_evaluateTable(const string& evalTable, vo
 map<string, vector<string> > ROMNode::_evaluateTableWithParam(const string& evalTable, bool bGetAll, string& param, void* context)
 {
 	map<string, vector<string> > retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->EvaluateTableWithParam(evalTable, bGetAll, param, context);
@@ -581,7 +581,7 @@ map<string, vector<string> > ROMNode::_evaluateTableWithParam(const string& eval
 map<string, vector<string> > ROMNode::_evaluateTableWithParam(const string& evalTable, string& param, void* context)
 {
 	map<string, vector<string> > retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->EvaluateTableWithParam(evalTable, param, context);
@@ -592,7 +592,7 @@ map<string, vector<string> > ROMNode::_evaluateTableWithParam(const string& eval
 vector<string> ROMNode::_evaluateTableWithParam(const string& evalTable, const string& output, bool bGetAll, string& param, void* context)
 {
 	vector<string> retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->EvaluateTableWithParam(evalTable, output, bGetAll, param, context);
@@ -603,7 +603,7 @@ vector<string> ROMNode::_evaluateTableWithParam(const string& evalTable, const s
 vector<string> ROMNode::_evaluateTableWithParam(const string& evalTable, const string& output, string& param, void* context)
 {
 	vector<string> retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->EvaluateTableWithParam(evalTable, output, param, context);
@@ -623,7 +623,7 @@ string ROMNode::_getFirstTableResult(const string& tableName, const string& outp
 vector<string> ROMNode::_reverseEvaluateTable(const string& evalTable, const string& inputAttr, bool bGetAll, void* context)
 {
 	vector<string> retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->ReverseEvaluateTable(evalTable, inputAttr, bGetAll, context);
@@ -634,7 +634,7 @@ vector<string> ROMNode::_reverseEvaluateTable(const string& evalTable, const str
 vector<string> ROMNode::_reverseEvaluateTable(const string& evalTable, const string& inputAttr, void* context)
 {
 	vector<string> retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->ReverseEvaluateTable(evalTable, inputAttr, context);
@@ -645,7 +645,7 @@ vector<string> ROMNode::_reverseEvaluateTable(const string& evalTable, const str
 map<string, vector<string> > ROMNode::_reverseEvaluateTable(const string& evalTable, bool bGetAll, void* context)
 {
 	map<string, vector<string> > retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->ReverseEvaluateTable(evalTable, bGetAll, context);
@@ -656,7 +656,7 @@ map<string, vector<string> > ROMNode::_reverseEvaluateTable(const string& evalTa
 map<string, vector<string> > ROMNode::_reverseEvaluateTable(const string& evalTable, void* context)
 {
 	map<string, vector<string> > retval;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		retval = knowledge->ReverseEvaluateTable(evalTable, context);
@@ -667,7 +667,7 @@ map<string, vector<string> > ROMNode::_reverseEvaluateTable(const string& evalTa
 vector<string> ROMNode::_getPossibleValues(const string& evalTable, const string& outputName)
 {
 	vector<string> outputs;
-	EDS::CKnowledgeBase *knowledge = _getKnowledge();
+	EDS::IKnowledgeBase *knowledge = _getKnowledge();
 	if (knowledge)
 	{
 		outputs = knowledge->GetAllPossibleOutputs(evalTable, outputName);
@@ -680,7 +680,7 @@ string ROMNode::_getSpecialAttribute(const string& input, bool* bFound)
 	string retval;
 	*bFound = false;
 	//parse out any XPATH Queries here and return values
-	if (EDSUTIL::StringContains(input, "xpath("))
+	if (ROMUTIL::StringContains(input, "xpath("))
 	{
 		string cmdArg(input.begin() + 6, input.end() - 1);
 		//for sibling/child xpath axes to work, eval from root and identify current context by the Object's guid
@@ -1240,10 +1240,10 @@ string ROMNode::_convertXMLDocToString(bool prettyprint, Document xmlDoc)
 	return retval;
 }
 
-EDS::CKnowledgeBase* ROMNode::_getKnowledge(ROMNode*& owner)
+EDS::IKnowledgeBase* ROMNode::_getKnowledge(ROMNode*& owner)
 {
 	owner = nullptr;
-	EDS::CKnowledgeBase *knowledge = nullptr;
+	EDS::IKnowledgeBase *knowledge = nullptr;
 	ROMNode* current = this;
 	if (current->m_KnowledgeBase != nullptr)
 	{
