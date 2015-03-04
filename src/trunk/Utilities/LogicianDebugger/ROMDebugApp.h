@@ -11,6 +11,8 @@
 #include "LinearEngine.h"
 #include "KnowledgeBase.h"
 
+#include <memory>
+
 using namespace std;
 using namespace ROM;
 
@@ -63,6 +65,7 @@ private:
 	bool bLoadingItems;
 	wxPanel *panel;
 	wxLogicianDebugCtrl *debug;
+	std::unique_ptr<ROMNode> node;
 
     // any class wishing to process wxWidgets events must use this macro
     DECLARE_EVENT_TABLE()

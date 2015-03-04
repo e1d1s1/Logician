@@ -27,7 +27,7 @@ enum
 	CLEAR = 200
 };
 
-void UpdateDebug(wstring msg);
+void UpdateDebug(string msg);
 void* ptEDSDebugCtrlObject;
 
 class wxEDSDebugCtrl : public wxPanel
@@ -40,7 +40,7 @@ public:
     wxEDSDebugCtrl() { Init(); }
 	virtual ~wxEDSDebugCtrl() {}
 
-	wxEDSDebugCtrl(EDS::CKnowledgeBase* knowledge, wxWindow* parent, wxWindowID id,
+	wxEDSDebugCtrl(EDS::IKnowledgeBase* knowledge, wxWindow* parent, wxWindowID id,
         const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize):
 	wxPanel(parent, id, pos, size)
@@ -51,7 +51,7 @@ public:
     }
 
     // Creation
-	bool Create(EDS::CKnowledgeBase* knowledge, wxWindow* parent, wxWindowID id,
+	bool Create(EDS::IKnowledgeBase* knowledge, wxWindow* parent, wxWindowID id,
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxDefaultSize)
 	{
@@ -70,7 +70,7 @@ public:
 		m_txtTable = new wxTextCtrl(m_panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(150, 25));
 		m_rbDebugMode = new wxRadioBox(m_panel, wxID_ANY, _("Debug Mode"), wxDefaultPosition, wxSize(200, 50),
 			2, choicesView);
-		wxButton *btnClear = new wxButton(m_panel, CLEAR, L"Clear");
+		wxButton *btnClear = new wxButton(m_panel, CLEAR, "Clear");
 		sizerRow->Add(m_rbDebugMode);
 		sizerRow->Add(m_txtTable, 2, wxCENTER);
 		sizerRow->Add(btnClear, 0, wxCENTER);
@@ -99,23 +99,23 @@ public:
 		event.Skip();
 	}
 
-	void Update(wstring msg)
+	void Update(string msg)
 	{
 		if (m_rbDebugMode->GetSelection() == 0)			
 		{
 			m_txtLog->AppendText(msg);
-			m_txtLog->AppendText(L"\n");
+			m_txtLog->AppendText("\n");
 		}
 		else
 		{
 			size_t start = 17; //sizeof("<TableEval name=\"");
-			size_t end = msg.find(L"\"", start);
-			wstring tableName = msg.substr(start, end - start);
-			wstring filter = m_txtTable->GetValue();
+			size_t end = msg.find("\"", start);
+			string tableName = msg.substr(start, end - start);
+			string filter = m_txtTable->GetValue();
 			if (filter.find(tableName) != string::npos)
 			{
 				m_txtLog->AppendText(msg);
-				m_txtLog->AppendText(L"\n");
+				m_txtLog->AppendText("\n");
 			}
 		}
 	}
@@ -133,7 +133,7 @@ private:
 	wxSize		defaultSize;
 };
 
-void UpdateDebug(wstring msg)
+void UpdateDebug(string msg)
 {
 	wxEDSDebugCtrl *mySelf = (wxEDSDebugCtrl*)ptEDSDebugCtrlObject;
 	if (mySelf)

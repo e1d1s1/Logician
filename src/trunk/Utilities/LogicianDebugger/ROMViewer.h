@@ -96,11 +96,11 @@ public:
 		
 
 		wxBoxSizer *attrSizer = new wxBoxSizer(wxHORIZONTAL);
-		wxButton *buttonGet = new wxButton(right, GET, L"Get Attribute");
-		wxButton *buttonSet = new wxButton(right, SET, L"Set Attribute");
-		m_txtName = new wxTextCtrl(right, wxID_ANY, L"name");
-		m_txtValue = new wxTextCtrl(right, wxID_ANY, L"value");
-		m_checkImmediate = new wxCheckBox(right, wxID_ANY, L"Immediate");
+		wxButton *buttonGet = new wxButton(right, GET, "Get Attribute");
+		wxButton *buttonSet = new wxButton(right, SET, "Set Attribute");
+		m_txtName = new wxTextCtrl(right, wxID_ANY, "name");
+		m_txtValue = new wxTextCtrl(right, wxID_ANY, "value");
+		m_checkImmediate = new wxCheckBox(right, wxID_ANY, "Immediate");
 		attrSizer->Add(buttonGet);
 		attrSizer->Add(buttonSet);
 		attrSizer->Add(m_txtName, 2, wxEXPAND|wxSHRINK);
@@ -109,17 +109,17 @@ public:
 		rightSizer->Add(attrSizer, 0, wxTOP|wxLEFT);
 
 		wxBoxSizer *quereySizer = new wxBoxSizer(wxHORIZONTAL);
-		wxButton *buttonQuery = new wxButton(right, QUERY, L"XPATH Query");
-		m_txtQuery = new wxTextCtrl(right, wxID_ANY, L"//Attribute[@id='attr1']/@value");
-		m_checkQueryValue = new wxCheckBox(right, wxID_ANY, L"Query is for object(s)");
+		wxButton *buttonQuery = new wxButton(right, QUERY, "XPATH Query");
+		m_txtQuery = new wxTextCtrl(right, wxID_ANY, "//Attribute[@id='attr1']/@value");
+		m_checkQueryValue = new wxCheckBox(right, wxID_ANY, "Query is for object(s)");
 		quereySizer->Add(buttonQuery, 2);
 		quereySizer->Add(m_txtQuery, 6, wxEXPAND|wxSHRINK);
 		quereySizer->Add(m_checkQueryValue, 0, wxCENTER);
 		rightSizer->Add(quereySizer, 0);
 
 		wxBoxSizer *refreshSizer = new wxBoxSizer(wxHORIZONTAL);
-		wxButton *btnRefresh = new wxButton(right, REFRESH, L"Refresh");
-		wxString choicesView[2] = {_("Attribute"), _("XML")};
+		wxButton *btnRefresh = new wxButton(right, REFRESH, "Refresh");
+		wxString choicesView[2] = {_("Attribute"), _("XM")};
 		m_rbMode = new wxRadioBox(right, RBMODE, _("View Mode"), wxDefaultPosition, wxSize(150, 50),
 			2, choicesView);
 		refreshSizer->Add(btnRefresh, 0);
@@ -239,39 +239,39 @@ public:
 		bLoading = false;
 	}
 
-	void FillGrid(StringTable<wstring> table)
+	void FillGrid(StringTable<string> table)
 	{
 		//grow or shrink the grid to match
-		while (m_grid->GetNumberCols() < table.Columns<wstring>())
+		while (m_grid->GetNumberCols() < table.Columns<string>())
 		{
 			m_grid->AppendCols(1);
 		}
-		while (m_grid->GetNumberCols() > table.Columns<wstring>())
+		while (m_grid->GetNumberCols() > table.Columns<string>())
 		{
 			m_grid->DeleteCols(m_grid->GetNumberCols() - 1, 1);
 		}
 
-		while (m_grid->GetNumberRows() < table.Rows<wstring>())
+		while (m_grid->GetNumberRows() < table.Rows<string>())
 		{
 			m_grid->AppendRows(1);
 		}
-		while (m_grid->GetNumberRows() > table.Rows<wstring>())
+		while (m_grid->GetNumberRows() > table.Rows<string>())
 		{
 			m_grid->DeleteRows(m_grid->GetNumberRows() - 1, 1);
 		}
 
-		for (size_t i = 0; i < table.Columns<wstring>(); i++)
+		for (size_t i = 0; i < table.Columns<string>(); i++)
 		{
-			wstring headerText = L"attr";
+			string headerText = "attr";
 			if (i > 1)
-				headerText = L"sub-value";
+				headerText = "sub-value";
 			else if (i == 1)
-				headerText = L"value";
+				headerText = "value";
 				
 			m_grid->SetColLabelValue(i, headerText);
-			for (size_t j = 0; j < table.Rows<wstring>(); j++)
+			for (size_t j = 0; j < table.Rows<string>(); j++)
 			{
-				m_grid->SetCellValue(j, i, table.GetItem<wstring>(j, i));
+				m_grid->SetCellValue(j, i, table.GetItem<string>(j, i));
 			}
 		}
 	}
@@ -289,44 +289,44 @@ public:
 			if (data != NULL)
 			{
 				//build the table
-				StringTable<wstring> table;
+				StringTable<string> table;
 				ROMNode* node = data->GetNode();
 				if (node != NULL)
 				{
-					FASTMAP_MAPS allAttrs = node->GetAllAttributes();
+					auto allAttrs = node->GetAllAttributes();
 					size_t rowIndex = 0;
-					for (FASTMAP_MAPS::iterator itAttrs = allAttrs.begin(); itAttrs != allAttrs.end(); itAttrs++)
+					for (auto itAttrs = allAttrs.begin(); itAttrs != allAttrs.end(); itAttrs++)
 					{
 						size_t colIndex = 0;
-						wstring attrName = itAttrs->first;
-						FASTMAP attrValuePairs = itAttrs->second;
-						if (table.Columns<wstring>() <= colIndex)
+						string attrName = itAttrs->first;
+						auto attrValuePairs = itAttrs->second;
+						if (table.Columns<string>() <= colIndex)
 						{
 							table.InsertColumn(attrName, colIndex);
 						}
-						table.AddRow<wstring>();
-						table.SetItem<wstring>(rowIndex, colIndex, attrName);
+						table.AddRow<string>();
+						table.SetItem<string>(rowIndex, colIndex, attrName);
 						colIndex++;
-						if (table.Columns<wstring>() <= colIndex)
+						if (table.Columns<string>() <= colIndex)
 						{
-							table.InsertColumn<wstring>(L"value", colIndex);
+							table.InsertColumn<string>("value", colIndex);
 						}
-						table.SetItem<wstring>(rowIndex, colIndex, attrValuePairs[L"value"]);
+						table.SetItem<string>(rowIndex, colIndex, attrValuePairs["value"]);
 
-						for (FASTMAP::iterator itAttrValuePair = attrValuePairs.begin(); itAttrValuePair != attrValuePairs.end(); itAttrValuePair++)
+						for (auto itAttrValuePair = attrValuePairs.begin(); itAttrValuePair != attrValuePairs.end(); itAttrValuePair++)
 						{							
-							wstring valueName = itAttrValuePair->first;
-							wstring cellText;
-							if (valueName != L"value")
+							string valueName = itAttrValuePair->first;
+							string cellText;
+							if (valueName != "value")
 							{
 								colIndex++;
-								cellText = valueName + L": ";							
+								cellText = valueName + ": ";							
 								cellText += itAttrValuePair->second;
-								if (table.Columns<wstring>() <= colIndex)
+								if (table.Columns<string>() <= colIndex)
 								{
-									table.InsertColumn<wstring>(L"sub-value", colIndex);
+									table.InsertColumn<string>("sub-value", colIndex);
 								}
-								table.SetItem<wstring>(rowIndex, colIndex, cellText);
+								table.SetItem<string>(rowIndex, colIndex, cellText);
 							}
 						}
 						rowIndex++;
@@ -345,7 +345,7 @@ public:
 		{
 			ROMData* data = (ROMData*)m_tree->GetItemData(item);
 			ROMNode* node = data->GetNode();
-			wstring xml = node->SaveXML(true);
+			string xml = node->SaveXML(true);
 			m_text->WriteText(xml);
 		}
 	}	
@@ -391,7 +391,7 @@ public:
 
 	void OnGetAttribute(wxCommandEvent& event)
 	{
-		wstring attrName = m_txtName->GetValue();
+		string attrName = m_txtName->GetValue();
 		if (attrName.length() > 0)
 		{
 			wxTreeItemId item = m_tree->GetSelection();
@@ -401,15 +401,15 @@ public:
 				ROMNode *node = data->GetNode();
 				if (node)
 				{
-					wstring subAttrName = L"value";
-					size_t index = attrName.find(L":");
+					string subAttrName = "value";
+					size_t index = attrName.find(":");
 					if (index != string::npos)
 					{
 						subAttrName = attrName.substr(index + 1);
 						attrName = attrName.substr(0, index);
 					}
 					bool immediate = m_checkImmediate->GetValue();
-					wstring value = node->GetAttribute(attrName, subAttrName, immediate);
+					string value = node->GetAttribute(attrName, subAttrName, immediate);
 					m_txtValue->SetValue(value);
 				}
 			}
@@ -418,8 +418,8 @@ public:
 
 	void OnSetAttribute(wxCommandEvent& event)
 	{
-		wstring attrName = m_txtName->GetValue();
-		wstring attrValue = m_txtValue->GetValue();
+		string attrName = m_txtName->GetValue();
+		string attrValue = m_txtValue->GetValue();
 		if (attrName.length() > 0)
 		{
 			wxTreeItemId item = m_tree->GetSelection();
@@ -429,8 +429,8 @@ public:
 				ROMNode *node = data->GetNode();
 				if (node)
 				{
-					wstring subAttrName = L"value";
-					size_t index = attrName.find(L":");
+					string subAttrName = "value";
+					size_t index = attrName.find(":");
 					if (index != string::npos)
 					{
 						subAttrName = attrName.substr(index + 1);
@@ -452,7 +452,7 @@ public:
 
 	void OnQuery(wxCommandEvent& event)
 	{
-		wstring query = m_txtQuery->GetValue();
+		string query = m_txtQuery->GetValue();
 		if (query.length() > 0)
 		{
 			wxTreeItemId item = m_tree->GetSelection();
@@ -467,11 +467,11 @@ public:
 						if (m_checkQueryValue->GetValue()) //rule table input type attr query
 						{
 							vector<ROMNode*> results = node->FindObjects(query);						
-							wchar_t buff[32] = L"";
-							swprintf(buff, 32, L"%d", results.size());
-							wstring msg = buff;
-							msg += L" Objects Found";
-							wxMessageBox(msg, L"XPATH Result"); 
+							char buff[32] = "";
+							printf(buff, 32, "%d", results.size());
+							string msg = buff;
+							msg += " Objects Found";
+							wxMessageBox(msg, "XPATH Result"); 
 
 							//highlight the objects in the tree
 							for (vector<ROMNode*>::iterator it = results.begin(); it != results.end(); it++)
@@ -480,20 +480,20 @@ public:
 								if (item.IsOk())
 								{
 									m_tree->SelectItem(item);
-									m_tree->SetItemTextColour(item, wxColor(L"red"));
+									m_tree->SetItemTextColour(item, wxColor("red"));
 								}
 							}
 						}
 						else
 						{
-							wstring msg = L"value: ";
+							string msg = "value: ";
 							msg += node->EvaluateXPATH(query);
-							wxMessageBox(msg, L"XPATH Result"); 
+							wxMessageBox(msg, "XPATH Result"); 
 						}
 					}
 					catch(...)
 					{
-						wxMessageBox(L"Query error", L"Error");
+						wxMessageBox("Query error", "Error");
 					}
 				}
 			}

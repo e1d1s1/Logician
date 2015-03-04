@@ -72,6 +72,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\ROMNET\x64\Release\ROMNET.dll</HintPath>
     </Reference>
+	<Reference Include="EDSEngineNET.dll" Condition="'$(Platform)'=='x86'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\EDSEngineNET\Release\EDSEngineNET.dll</HintPath>
+    </Reference>
+    <Reference Include="EDSEngineNET.dll" Condition="'$(Platform)'=='x64'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\EDSEngineNET\x64\Release\EDSEngineNET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
