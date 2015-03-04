@@ -32,9 +32,8 @@ namespace LogicianDebuggerTestApp2012
         {
             try
             {
-                XDocument doc = XDocument.Load("config.xml");
-                ROMNode node = new ROMNode();
-                if (!node.LoadXML(doc.ToString()))
+                ROMNode node = ROMNode.LoadXML("config.xml", null);
+                if (node == null)
                     return;
 
                 ROMNode childNode = new ROMNode("Child1");

@@ -29,7 +29,7 @@ namespace LogicianDebuggerWPF
         public ROMNode ROM
         {
             get { return _rom; }
-            set { _rom = value; _rom.DebugDelegate = Update; }
+            set { _rom = value; }
         }
 
         public EDSDebug()

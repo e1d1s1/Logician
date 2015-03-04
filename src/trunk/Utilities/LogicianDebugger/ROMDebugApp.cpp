@@ -13,6 +13,7 @@
 #include <windows.h>
 #endif
 
+#include <memory>
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 // the event tables connect the wxWidgets events with the functions (event
@@ -87,22 +88,10 @@ MyFrame::MyFrame(const wxString& title)
     CreateStatusBar(2);
     SetStatusText(_T("ROMViewer C++ Test App"));
 #endif // wxUSE_STATUSBAR
-	ROMNode* node = new ROMNode();
-	wxFileInputStream input_stream(L"config.xml");
-	if (!input_stream.IsOk())
-    {
-        return;
-    }
 
-	wxTextInputStream text(input_stream, wxT("\x09"), wxConvUTF8 );
-	wxString docXML;
-	while (input_stream.IsOk() && !input_stream.Eof())
-	{
-		wxString line = text.ReadLine();
-		docXML+=line;
-	}
-	if (!node->LoadXML(docXML.wc_str()))
-		return;
+	auto rawptr = ROMNode::LoadXML("config.xml", nullptr);
+	node = std::unique_ptr<ROMNode>(rawptr);
+		
 
 	ROMNode *childNode = new ROMNode("Child1");
 	childNode->SetAttribute("attr1", "A child attr");
@@ -119,7 +108,7 @@ MyFrame::MyFrame(const wxString& title)
 	panel = new wxPanel(this, wxID_ANY);
 	wxBoxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
 
-	debug = new wxLogicianDebugCtrl(node, panel, VIEWER, wxDefaultPosition,
+	debug = new wxLogicianDebugCtrl(node.get(), panel, VIEWER, wxDefaultPosition,
 		wxSize(640, 480));
 
 	sizerTop->Add(debug, 1, wxEXPAND|wxSHRINK);
