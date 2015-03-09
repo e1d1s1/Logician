@@ -13,6 +13,7 @@
     <script type="text/javascript">        
         var m_rootNode = null;
         var m_engine = null;
+        var m_rules = null;
         var bLoadingItems = false;
 
         function ReportError(err) {
@@ -32,12 +33,19 @@
         function SetupApplication() {
             try {
                 m_rootNode = new ROMNode("HydraulicCylinder");
-                if (!m_rootNode.LoadRules("HydraulicCylinderRules.xml")) {
+                m_rules = new KnowledgeBase("HydraulicCylinderRules.xml");
+                if (!m_rules.IsOpen()) {
                     alert("Error loading rules file");
                     return;
                 }
 
-                m_rootNode.SetTableDebugHandler(DebugCallback);
+                m_rules.DebugHandler = DebugCallback;
+                m_rules.InputValueGetter = function (attrName, obj) {
+                    return obj.GetAttribute(attrName, false);
+                };
+
+                m_rootNode.SetKnowledgeBase(m_rules);
+
                 m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
                 m_engine.EvaluateAll();
 
@@ -177,13 +185,13 @@
         }
         
         function LoadConfig() {
-            if (m_rootNode.LoadXML(document.forms['xmlform']['txtXML'].value))
+            var newroot = ROMNode.LoadXML(document.forms['xmlform']['txtXML'].value, null);
+            if (newroot != null)
             {
-                if (m_engine != null)
-                {
-                    delete m_engine;
-                    m_engine = null;
-                }
+                m_rootNode = newroot;
+
+                m_rootNode.SetKnowledgeBase(m_rules);
+
                 m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
                 m_engine.EvaluateAll();
                 

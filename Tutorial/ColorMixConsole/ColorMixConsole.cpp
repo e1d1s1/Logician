@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 {
 	cout<<"Loading the rules file ColorRules.xml...";
 	m_TableEvaluator.CreateKnowledgeBase("ColorRules.xml");
-	m_TableEvaluator.InputValueGetterPtr = [](const string& attrName, void* context)
+	m_TableEvaluator.SetInputValueGetter([](const string& attrName, void* context)
 	{
 		string retval;
 		if (mAppData.find(attrName) != end(mAppData))
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 			retval = mAppData[attrName];
 		}
 		return retval;
-	};
+	});
 	cout<<"done\n";
 
 	cout<<"Enter red or blue for first paint color:";

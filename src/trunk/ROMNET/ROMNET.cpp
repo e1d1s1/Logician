@@ -804,7 +804,7 @@ namespace ROMNET
 			for (auto it = allAttrs->begin(); it != allAttrs->end(); it++)
 			{
 				String^ key = gcnew String(ROMUTIL::Widen(it->first).c_str());
-				ROMDictionaryAttribute^ value = gcnew ROMDictionaryAttribute((IntPtr)(&(it->second)));
+				ROMDictionaryAttribute^ value = gcnew ROMDictionaryAttribute((IntPtr)(it->second));
 				retval->Add(key, value);
 			}
 		}

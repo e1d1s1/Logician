@@ -424,7 +424,7 @@ namespace ROMNET {
 		}
 
 	public protected:
-		ROMDictionaryAttribute(IntPtr ptr) {m_ROMDictionaryAttribute = (ROM::ROMDictionaryAttribute*)ptr.ToPointer(); m_canDelete = false;}
+		ROMDictionaryAttribute(IntPtr ptr) {m_ROMDictionaryAttribute = (ROM::IROMDictionaryAttribute*)ptr.ToPointer(); m_canDelete = false;}
 
 	private:
 		ROM::IROMDictionaryAttribute* m_ROMDictionaryAttribute;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009-2013 Eric D. Schmidt, DigiRule Solutions LLC
+Copyright (C) 2009-2014 Eric D. Schmidt, DigiRule Solutions LLC
 
     The JavaScript code in this page is free software: you can
     redistribute it and/or modify it under the terms of the GNU
@@ -137,7 +137,7 @@ if (val.indexOf(parm.charAt(i),0) == -1) return false;
 return true;
 }
 
-function isNumber(parm) {return isValid(parm,numb);}
+function isNumber(parm) { return !isNaN(parseFloat(parm)) && isFinite(parm); }
 function isLower(parm) {return isValid(parm,lwr);}
 function isUpper(parm) {return isValid(parm,upr);}
 function isAlpha(parm) {return isValid(parm,lwr+upr);}
@@ -220,39 +220,6 @@ function MakeGUID() {
 	return null;
 }
 
-//flash support////////////////////////////
-var ActiveObjects = new Array(); //for flash access, guid keyed objects
-function GetObject(guid) {
-    if (guid in ActiveObjects)
-        return ActiveObjects[guid];
-    else
-        return null;
-}
-function DestroyKnowledgeBaseObject(guid) {
-    if (ActiveObjects != null && ActiveObjects[guid] != null)
-        delete ActiveObjects[guid];
-}
-function CleanKnowledgeBaseObjects() {
-    for (var guid in ActiveObjects) {
-        DestroyObject(guid)
-    }
-    if (ActiveObjects != null) 
-        delete ActiveObjects;
-    ActiveObjects = new Array();
-}
-function DictionaryToObjArray(dict) {
-	var objArray = new Array();
-	if (dict != null) for (var key in dict)
-	{
-		var obj = new Object();
-		obj.key = key;
-		obj.values = dict[key];
-		objArray.push(obj);
-	}
-	return objArray;
-}
-///////////////////////////////////////////
-
 //RuleCell/////////////////////////////////////////////////////////////
 function RuleCell()
 {
@@ -265,8 +232,8 @@ function Bimapper()
 {
     try
     {
-        this.m_IndexToStringsMap = new Array();
-        this.m_StringsToIndexMap = new Array();
+        this.m_IndexToStringsMap = {};
+        this.m_StringsToIndexMap = {};
         this.maxID = 0;    
 
         Bimapper.prototype.AddString = function(id, s)
@@ -752,7 +719,7 @@ function RuleTable()
 
         this.EvaluateTable = function(bGetAll, bForward, context)
         {
-            var retval = new Array();
+            var retval = {};
             try
             {
                 var resultCollection = null;
@@ -1323,13 +1290,6 @@ function TableSet()
 }
 
 
-
-
-
-
-
-
-
 //KnowledgeBase/////////////////////////////////////////////
 function loadXMLDoc(file)
 {
@@ -1371,33 +1331,6 @@ function loadXMLDocString(xmlStr)
         delete parser;
     }
     return xmlDoc;
-}
-
-function CreateKnowledgeBase(xmlPath) {
-	try
-	{	
-		if (xmlPath === undefined)
-			return false;
-		var retval = new KnowledgeBase(xmlPath);
-		ActiveObjects[retval.m_guid] = retval;	
-		return retval;
-	}
-	catch(error)
-	{
-		alert("ERROR Creating KnowledgeBase");
-	}
-	return null;
-}
-
-function CreateKnowledgeBaseFromString(xml) {
-    if (xml === undefined)
-        return false;
-
-    var retval = new KnowledgeBase();
-    xmlDoc = loadXMLDocString(xml);
-    retval._parseXML(xmlDoc);
-    ActiveObjects[retval.m_guid] = retval;
-    return retval;
 }
 
 function KnowledgeBase(xmlPath) {
@@ -2318,7 +2251,25 @@ function KnowledgeBase(xmlPath) {
             return retval;      
         }
 
-        this.CreateKnowledgeBase(xmlPath);
+        this.CreateKnowledgeBaseFromString = function(xmlStr)
+        {
+            var retval = false;
+            if (xmlStr === undefined)
+                return false;
+
+            xmlDoc = loadXMLDocString(xmlStr);
+            retval = this._parseXML(xmlDoc);
+            return retval;
+        }
+
+        if (xmlPath != undefined && xmlPath != null && xmlPath.length > 0)
+        {
+            if (xmlPath[0] == '<')
+                this.CreateKnowledgeBaseFromString(xmlPath);
+            else
+                this.CreateKnowledgeBase(xmlPath);
+        }
+        
         
         }
         catch (err) {

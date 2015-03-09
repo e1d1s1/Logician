@@ -1229,7 +1229,14 @@ ROMNode.prototype.SaveXML = function (prettyprint) {
 }
 	
 ROMNode.LoadXML = function (xmlStr, factory) {
-	var retval = null;
+    var retval = null;
+
+    if (factory == undefined || factory == null) {
+        factory = function (id) {
+            return new ROMNode(id);
+        };
+    }
+
     try {
         var xmlDoc = null;
         var rootNode = null;
@@ -1570,11 +1577,6 @@ ROMDictionary.prototype.GetAllDictionaryAttrs = function () {
         ReportError(err);
     }
     return null;
-}
-
-ROMDictionary.prototype.SetTableDebugHandler = function (func) {
-    if (this.m_context != null && this.m_context.m_KnowledgeBase != null)
-        this.m_context.m_KnowledgeBase.DebugHandler = func;
 }
 
 // LinearEngine class////////////////////////////////////////////////////////////////
@@ -2401,11 +2403,6 @@ LinearEngine.prototype.GetSelectedValues = function (attr) {
     }
 
     return retval;
-}
-
-LinearEngine.prototype.SetTableDebugHandler = function (func) {
-    if (this.m_context != null && this.m_context.m_KnowledgeBase != null)
-        this.m_context.m_KnowledgeBase.DebugHandler = func;
 }
 
 LinearEngine.prototype.ResetEngine = function()
