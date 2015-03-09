@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using ROMNET;
+using EDSNET;
 using System.IO;
 
 namespace HydraulicCylinder
@@ -15,6 +16,7 @@ namespace HydraulicCylinder
     public partial class Form1 : Form
     {
         private ROMNode m_rootNode;
+        private EDSEngine m_rules = null;
         private LinearEngine m_engine = null;
         private bool bLoadingItems = false;
         private DebugForm debugger = null;
@@ -28,13 +30,22 @@ namespace HydraulicCylinder
         private void SetupApplication()
         {
             string rulesPath = "HydraulicCylinderRules.xml";
+            m_rules = new EDSEngine(rulesPath);
+
             m_rootNode = new ROMNode("HydraulicCylinder");
-            if (!m_rootNode.LoadRules(rulesPath))
+
+            if (!m_rules.IsOpen())
             {
                 MessageBox.Show("Error loading rules file");
                 Close();
             }
 
+            m_rules.InputGetterDelegate = delegate(string name, object obj)
+            {
+                return ((ROMNode)obj).GetAttribute(name, false);
+            };
+
+            m_rootNode.Rules = m_rules;
             m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
             m_engine.EvaluateAll();
 
@@ -157,21 +168,22 @@ namespace HydraulicCylinder
             if (dialog.ShowDialog() == DialogResult.Cancel)
                 return;
 
-            string contents = null;
-            using (StreamReader reader = new StreamReader(dialog.FileName))
-            {
-                while (!reader.EndOfStream)
-                {
-                    contents = reader.ReadToEnd();
-                }
-            }
+            //string contents = null;
+            //using (StreamReader reader = new StreamReader(dialog.FileName))
+            //{
+            //    while (!reader.EndOfStream)
+            //    {
+            //        contents = reader.ReadToEnd();
+            //    }
+            //}
 
             //reload
-            if (!string.IsNullOrEmpty(contents))
+            if (!string.IsNullOrEmpty(dialog.FileName))
             {
-                var newNode = ROMNode.LoadXML(contents, null);
+                var newNode = ROMNode.LoadXML(dialog.FileName, null);
                 if (newNode != null)
                 {
+                    newNode.Rules = m_rules;
                     m_rootNode = newNode;
                     m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
                     m_engine.EvaluateAll();

@@ -8,6 +8,7 @@
 // event tables and other macros for wxWidgets
 // ----------------------------------------------------------------------------
 #include "HydraulicCylinderC++.h"
+#include "KnowledgeBase.h"
 #include <map>
 #include <iostream>
 #include <fstream>
@@ -251,10 +252,10 @@ void MyFrame::SetupApplication()
 {
 	m_rootNode = new ROMNode("HydraulicCylinder");
 	m_rules = new EDS::CKnowledgeBase("HydraulicCylinderRules.xml");
-	m_rules->InputValueGetterPtr = [](const string& name, void* obj)
+	m_rules->SetInputValueGetter([](const string& name, void* obj)
 	{
 		return ((ROMNode*)obj)->GetAttribute(name, false);
-	};
+	});
 
 	if (!m_rules->IsOpen())
 	{
@@ -274,10 +275,10 @@ void MyFrame::UpdateControls()
 {
 	bLoadingItems = true;
 
-	map<string, ROMDictionaryAttribute> *allAttrs = m_engine->GetAllDictionaryAttrs();
-	for (map<string, ROMDictionaryAttribute>::iterator it = allAttrs->begin(); it != allAttrs->end(); it++)
+	auto allAttrs = m_engine->GetAllDictionaryAttrs();
+	for (auto it = allAttrs->begin(); it != allAttrs->end(); it++)
 	{
-		if (it->second.ValueChanged)
+		if (it->second->GetValueChanged())
 			SetControlUI(it->second);
 	}
 	bLoadingItems = false;
@@ -300,15 +301,15 @@ void MyFrame::UpdateCatalog()
 		catLabel->SetLabel(Catnum);
 }
 
-void MyFrame::SetControlUI(ROMDictionaryAttribute attr)
+void MyFrame::SetControlUI(IROMDictionaryAttribute* attr)
 {
 	wxControl* ctrl = NULL;
 	wxStaticText* label = NULL;
-	ctrl = (wxControl*)this->FindWindowByName(attr.Name);
-	label = (wxStaticText*)this->FindWindowByName("lb" + attr.Name, panel);
+	ctrl = (wxControl*)this->FindWindowByName(attr->GetName());
+	label = (wxStaticText*)this->FindWindowByName("lb" + attr->GetName(), panel);
 	if (!label)
 	{
-		label = (wxStaticText*)this->FindWindowByLabel(attr.Description, panel);
+		label = (wxStaticText*)this->FindWindowByLabel(attr->GetDescription(), panel);
 	}
 
 	if (ctrl)
@@ -320,20 +321,21 @@ void MyFrame::SetControlUI(ROMDictionaryAttribute attr)
 		{
 			combo->Freeze();
 			combo->Clear();
-			for (vector<string>::iterator it = attr.AvailableValues.begin(); it != attr.AvailableValues.end(); it++)
+			auto available = attr->GetAvailableValues();
+			for (auto it = available.begin(); it != available.end(); it++)
 				combo->AppendString(*it);
-			combo->SetSelection(combo->FindString(m_rootNode->GetAttribute(attr.Name)));
+			combo->SetSelection(combo->FindString(m_rootNode->GetAttribute(attr->GetName())));
 			combo->Thaw();
 		}
 		else if (staticText && staticText->GetId() != LabelCtrl)
 		{
-			staticText->SetLabel(m_rootNode->GetAttribute(attr.Name));
+			staticText->SetLabel(m_rootNode->GetAttribute(attr->GetName()));
 		}
 		else if (edit)
 		{
-			edit->SetValue(m_rootNode->GetAttribute(attr.Name));
+			edit->SetValue(m_rootNode->GetAttribute(attr->GetName()));
 		}
-		ctrl->Enable(attr.Enabled);
+		ctrl->Enable(attr->GetEnabled());
 		//#ifdef WIN32
 		//wstring msg = attr.Name;
 		//if (attr.Enabled)
@@ -346,17 +348,17 @@ void MyFrame::SetControlUI(ROMDictionaryAttribute attr)
 
 		if (label != NULL && label->GetId() == LabelCtrl)
 		{
-			label->SetLabel(attr.Description);
+			label->SetLabel(attr->GetDescription());
 			wxFont font;
-			if (attr.ChangedByUser == true)
+			if (attr->GetChangedByUser() == true)
 				font.SetWeight(wxFONTWEIGHT_BOLD);
 			else
 				font.SetWeight(wxFONTWEIGHT_NORMAL);
 
 
-			if (attr.Valid == true)
+			if (attr->GetValid() == true)
 			{
-				if (attr.Enabled)
+				if (attr->GetEnabled())
 					label->SetForegroundColour(wxColor(L"BLACK"));
 				else
 					label->SetForegroundColour(wxColor(L"DIM GREY"));

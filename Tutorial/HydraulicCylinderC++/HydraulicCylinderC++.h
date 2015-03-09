@@ -67,12 +67,12 @@ private:
 	void SetupApplication();
 	void UpdateControls();
 	void UpdateCatalog();
-	void SetControlUI(ROMDictionaryAttribute attr);
+	void SetControlUI(IROMDictionaryAttribute* attr);
 
 #ifdef USEDEBUGGER
 	wxLogicianDebugCtrl *m_debugger;
 #endif
-	EDS::CKnowledgeBase *m_rules;
+	EDS::IKnowledgeBase *m_rules;
 	ROMNode *m_rootNode;
 	LinearEngine *m_engine;
 	bool bLoadingItems;
