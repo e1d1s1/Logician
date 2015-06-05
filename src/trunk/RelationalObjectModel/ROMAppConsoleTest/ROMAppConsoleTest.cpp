@@ -7,9 +7,9 @@
 #include <vector>
 #include <thread>
 #include <memory>
-#include "ROMNode.h"
-#include "LinearEngine.h"
-#include "KnowledgeBase.h"
+#include <RelationalObjectModel/ROMNode.h>
+#include <RelationalObjectModel/LinearEngine.h>
+#include <EDSEngine/KnowledgeBase.h>
 
 using namespace std;
 using namespace ROM;
