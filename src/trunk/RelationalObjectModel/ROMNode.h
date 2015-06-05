@@ -23,7 +23,7 @@ Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 #include <functional>
 #include <unordered_map>
 #include "ROMInterfaces.h"
-#include "IKnowledgeBase.h"
+#include <EDSEngine/IKnowledgeBase.h>
 #include "utilities.h"
 
 using namespace std;

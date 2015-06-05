@@ -312,13 +312,14 @@ int runTest(int thread_id)
 	}
 #ifndef NOPYTHON
 	res.Reset();
-	Log("testing evaluation (Python) with state parameter on testtable1 with inputAttr1 = 'TestParameterPY' and inputAttr2 = 'TestParameterPY'");
+	Log("testing evaluation (Python) with state parameter on testtable1 with inputAttr1 = 'TestParameterPY' and inputAttr2 = 'TestParameterPY'", thread_id);
 	state["inputAttr1"] = "TestParameterPY";
 	state["inputAttr2"] = "TestParameterPY";
-	vector<string> results10 = knowledge->EvaluateTableWithParam(tableName, (string)"outputAttr1", (string)"PassedValue");
-	retParam = knowledge->GetEvalParameter();
+	string paramValue = "PassedValue";
+	string origValue = paramValue;
+	vector<string> results10 = knowledge->EvaluateTableWithParam(tableName, (string)"outputAttr1", paramValue);
 	if (results10.size() == 4 && results10.at(3) == "eval ok" &&
-		retParam == "PassedValue modified")
+		paramValue == "PassedValue modified")
 	{
 		Log("Python state parameter working");
 		res.SetResult(true, "");

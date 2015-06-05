@@ -707,7 +707,7 @@ void ROMNode::_createXMLDoc(bool bForceLoad, bool prettyprint)
 		if (m_xmlDoc != nullptr)
 			m_xmlDoc.Release();
 		m_xmlDoc = _createMSXMLDoc();
-		VARIANT_BOOL res = m_xmlDoc->loadXML(ROMUTIL::Widen(genXML).c_str()); //-1 is true
+		m_xmlDoc->loadXML(ROMUTIL::Widen(genXML).c_str()); //-1 is true
 #endif
 #ifdef USE_LIBXML
 		m_xmlDoc = nullptr;

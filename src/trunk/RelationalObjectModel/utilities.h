@@ -29,7 +29,7 @@ Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 #ifndef _MSC_VER
 #include <time.h>
 #endif
-#include "XMLWrapper.h"
+#include <EDSEngine\XMLWrapper.h>
 
 using namespace std;
 namespace ROMUTIL
