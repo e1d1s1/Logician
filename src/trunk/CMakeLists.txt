@@ -90,28 +90,29 @@ endif()
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	
 	if (NOT NOINTEGRATEDDEBUGGING)
-		find_package(Boost REQUIRED COMPONENTS system zlib iostreams)
+		find_package(Boost REQUIRED COMPONENTS system zlib iostreams filesystem)
 	else()
-		find_package(Boost REQUIRED COMPONENTS zlib iostreams )
+		find_package(Boost REQUIRED COMPONENTS zlib iostreams filesystem)
 		add_definitions("/DDISABLE_DECISIONLOGIC_INTEGRATION")
 	endif()
 	
 else()
 
 	if (NOT NOINTEGRATEDDEBUGGING)
-		find_package(Boost REQUIRED COMPONENTS system zlib iostreams)
+		find_package(Boost REQUIRED COMPONENTS system zlib iostreams filesystem)
 	else()
-		find_package(Boost REQUIRED COMPONENTS system iostreams)
+		find_package(Boost REQUIRED COMPONENTS zlib iostreams filesystem)
 		add_definitions("-DDISABLE_DECISIONLOGIC_INTEGRATION")
 	endif()
 	
 	find_package(mozjs185 REQUIRED)		
+	find_package(LibXslt REQUIRED)
 endif()
 
 find_package(iconv REQUIRED)
-find_package(LibXml2 REQUIRED)
-find_package(LibXslt REQUIRED)
-find_package(wxWidgets COMPONENTS core base REQUIRED)
+find_package(libxml2 REQUIRED)
+
+find_package(wxWidgets COMPONENTS core base adv net stc scintilla REQUIRED)
 
 add_definitions( -DBOOST_ALL_NO_LIB )
 add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
@@ -121,6 +122,8 @@ include_directories (
                       "${Boost_INCLUDE_DIRS}"
                       ${TOOLCHAIN_INCLUDE_DIRECTORIES}
                     )
+					
+link_directories(${LIBXML2_LIBRARIES})
 					
 #
 # Move on to building the libraries now.
