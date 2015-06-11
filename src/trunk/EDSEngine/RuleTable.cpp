@@ -22,9 +22,9 @@ Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 #include <algorithm>
 #include <list>
 #include <string>
-#ifndef CLR
+//#ifndef CLR
 #include <thread>
-#endif
+//#endif
 #include <memory>
 #include "utilities.h"
 
@@ -82,12 +82,12 @@ void CRuleTable::CreateRuleTable(vector<pair<string, vector<CRuleCell> > >& inpu
 void CRuleTable::SetThreadCount(size_t threads)
 {
 	m_Threads = threads;
-#ifndef CLR
+//#ifndef CLR
 	if (m_Threads > 1)
 		m_ThreadingEnabled = m_Tests >= THREAD_THRESHOLD;
-#else
-	m_ThreadingEnabled = false;
-#endif
+//#else
+//	m_ThreadingEnabled = false;
+//#endif
 }
 
 map<string, vector<string> > CRuleTable::EvaluateTable(bool bGetAll, bool bForward, void* context)
@@ -210,7 +210,7 @@ vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<string, vector<CRul
     vector<bool> colResultsDefault (m_Tests, false);
     vector<bool> colResults = colResultsDefault;
 
-#ifndef CLR
+//#ifndef CLR
 	if (m_ThreadingEnabled && bGetAll)
     {
         size_t testsPerThread = m_Tests/m_Threads;
@@ -229,10 +229,13 @@ vector<bool> CRuleTable::_runTests(bool bGetAll, vector<pair<string, vector<CRul
         for (size_t i = 0; i < m_Threads; i++)
         {
             threads[i].join();
+#ifdef _DEBUG
+			std::cout<<"Spawning eval thread"<<std::endl;
+#endif
         }
     }
     else
-#endif
+//#endif
     {
         _runTestGroup(bGetAll, 0, m_Tests, inputCollection, values, colResults, context);
     }

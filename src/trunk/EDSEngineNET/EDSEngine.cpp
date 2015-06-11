@@ -59,6 +59,14 @@ namespace EDSNET
 			return false;
 	}
 
+	void EDSEngine::SetMaxThreads(size_t threads)
+	{
+		if (m_KnowledgeBase)
+		{
+			m_KnowledgeBase->SetMaxThreads(threads);
+		}
+	}
+
 	size_t EDSEngine::TableCount()
 	{
 		if (m_KnowledgeBase)

@@ -63,6 +63,7 @@ namespace EDSNET {
 			this->!EDSEngine();
 		}		
 		!EDSEngine() {if (m_KnowledgeBase) delete m_KnowledgeBase; m_KnowledgeBase = NULL;}
+		virtual void SetMaxThreads(size_t threads);
 
 		virtual property DebugHandlerDelegate^			DebugDelegate
 		{

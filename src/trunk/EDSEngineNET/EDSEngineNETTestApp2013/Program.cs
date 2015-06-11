@@ -25,7 +25,9 @@ namespace EDSEngineTestApp
             }
                
             if (knowledge.IsOpen() == true)            
-                write_result("OK: File opened");                  
+                write_result("OK: File opened");
+
+            knowledge.SetMaxThreads(2);
 
             knowledge.DebugDelegate = write_debug;
             knowledge.EnableRemoteDebugger(false);
