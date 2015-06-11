@@ -88,7 +88,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\RelationalObjectModel;..\EDSEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RelationalObjectModel;..\EDSEngine;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;USE_MSXML;CLR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -97,7 +97,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>EDSEngine.lib;RelationalObjectModel.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\EDSEngine\Debug MSXML CLR;..\RelationalObjectModel\Debug MSXML CLR;$(BOOST_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\Debug MSXML;..\RelationalObjectModel\Debug MSXML CLR;$(BOOST_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
       <TargetMachine>MachineX86</TargetMachine>
@@ -106,7 +106,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\RelationalObjectModel;..\EDSEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RelationalObjectModel;..\EDSEngine;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;USE_MSXML;CLR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -115,14 +115,14 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>EDSEngine.lib;RelationalObjectModel.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\EDSEngine\x64\Debug MSXML CLR;..\RelationalObjectModel\x64\Debug MSXML CLR;$(BOOST_ROOT64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\x64\Debug MSXML;..\RelationalObjectModel\x64\Debug MSXML CLR;$(BOOST_ROOT64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\RelationalObjectModel;..\EDSEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RelationalObjectModel;..\EDSEngine;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;USE_MSXML;CLR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -131,14 +131,14 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>EDSEngine.lib;RelationalObjectModel.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\EDSEngine\Release MSXML CLR;..\RelationalObjectModel\Release MSXML CLR;$(BOOST_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\Release MSXML;..\RelationalObjectModel\Release MSXML CLR;$(BOOST_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\RelationalObjectModel;..\EDSEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RelationalObjectModel;..\EDSEngine;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;USE_MSXML;CLR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -147,7 +147,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>EDSEngine.lib;RelationalObjectModel.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\EDSEngine\x64\Release MSXML CLR;..\RelationalObjectModel\x64\Release MSXML CLR;$(BOOST_ROOT64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\EDSEngine\x64\Release MSXML;..\RelationalObjectModel\x64\Release MSXML CLR;$(BOOST_ROOT64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>

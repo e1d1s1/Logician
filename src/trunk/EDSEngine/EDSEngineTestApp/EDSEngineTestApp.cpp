@@ -100,6 +100,10 @@ int runTest(int thread_id)
 
 	//debugging
 	knowledge->SetDebugHandler(DebugMessage);
+
+	//multithreaded solver
+	knowledge->SetMaxThreads(2);
+
 	//decisionlogic connection
 	knowledge->EnableRemoteDebugger(false);
 	knowledge->SetInputValueGetter([&](const string& attrName, void* ctx)
@@ -228,13 +232,14 @@ int runTest(int thread_id)
 
 
 	res.Reset();
-	Log("testing evaluation of testtable1 with inputAttr1 = 'C', get all", thread_id);
+	Log("testing evaluation of testtable1 threading with inputAttr1 = 'C', get all", thread_id);
 	state["inputAttr1"] = "C";
+	state["inputAttr2"] = "ForceThreading";
 	map<string, vector<string> > results = knowledge->EvaluateTable(tableName, bIsGetAll);
-	if (results.size() == 2 && results["outputAttr1"].size() == 3 &&
-		results["outputAttr1"].at(0) == "2" &&
-		results["outputAttr1"].at(1) == "4" &&
-		results["outputAttr1"].at(2) == "5")
+	if (results.size() == 2 && results["outputAttr1"].size() == 25 &&
+		results["outputAttr1"].at(4) == "Threading" &&
+		results["outputAttr1"].at(5) == "Threading" &&
+		results["outputAttr1"].at(6) == "Threading")
 	{
 		Log(results["outputAttr1"].at(0), thread_id);
 		Log(results["outputAttr1"].at(1), thread_id);
