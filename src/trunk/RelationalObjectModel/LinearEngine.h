@@ -51,10 +51,11 @@ namespace ROM
 		//behavioral properties
 		int InvalidateMode;
 
+#ifdef WIN32
 		struct DispatchHelper;
-
 	protected:
 		friend DispatchHelper;
+#endif
 	
 	private:
 		//these internal methods are called by .NET to assist with passing of managed objects
