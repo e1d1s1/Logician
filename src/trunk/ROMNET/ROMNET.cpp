@@ -20,6 +20,37 @@ Copyright (C) 2009-2015 Eric D. Schmidt, DigiRule Solutions LLC
 #include "stdafx.h"
 #include "ROMNET.h"
 
+struct ROM::LinearEngine::DispatchHelper
+{
+	static void _evaluateForAttribute(ROM::LinearEngine* p, const string& dictAttrName, vector<string>& newValues, bool bEvalDependents, void* context) { p->_evaluateForAttribute(dictAttrName, newValues, bEvalDependents, context); }
+	static void _evaluateForAttribute(ROM::LinearEngine* p, const string& dictAttrName, const string& newValue, bool bEvalDependents, void* context) { p->_evaluateForAttribute(dictAttrName, newValue, bEvalDependents, context); }
+	static void _evaluateAll(ROM::LinearEngine* p, void* context) { p->_evaluateAll(context); }
+	static void _initializeEngine(ROM::LinearEngine* p, void* context) { p->_initializeEngine(context); }
+	static void _resetEngine(ROM::LinearEngine* p, void* context) { p->_resetEngine(context); }
+};
+
+struct ROM::ROMNode::DispatchHelper
+{
+	static vector<string>		_evaluateTable(ROM::ROMNode* p, const string& evalTable, const string& output, bool bGetAll, void* context) { return p->_evaluateTable(evalTable, output, bGetAll, context); }
+	static vector<string>		_evaluateTable(ROM::ROMNode* p, const string& evalTable, const string& output, void* context) { return p->_evaluateTable(evalTable, output, context); }
+	static map<string, vector<string> > _evaluateTable(ROM::ROMNode* p, const string& evalTable, bool bGetAll, void* context) { return p->_evaluateTable(evalTable, bGetAll, context); } 
+	static map<string, vector<string> > _evaluateTable(ROM::ROMNode* p, const string& evalTable, void* context) { return p->_evaluateTable(evalTable, context); }
+	static vector<string>		_evaluateTableWithParam(ROM::ROMNode* p, const string& evalTable, const string& output, bool bGetAll, string& param, void* context) { return p->_evaluateTableWithParam(evalTable, output, bGetAll, param, context); }
+	static vector<string>		_evaluateTableWithParam(ROM::ROMNode* p, const string& evalTable, const string& output, string& param, void* context) { return p->_evaluateTableWithParam(evalTable, output, param, context); }
+	static map<string, vector<string> > _evaluateTableWithParam(ROM::ROMNode* p, const string& evalTable, bool bGetAll, string& param, void* context) { return p->_evaluateTableWithParam(evalTable, bGetAll, param, context); }
+	static map<string, vector<string> > _evaluateTableWithParam(ROM::ROMNode* p, const string& evalTable, string& param, void* context) { return p->_evaluateTableWithParam(evalTable, param, context); }
+	static string				_getFirstTableResult(ROM::ROMNode* p, const string& tableName, const string& output, void* context) { return p->_getFirstTableResult(tableName, output, context); }
+	static vector<string>		_reverseEvaluateTable(ROM::ROMNode* p, const string& evalTable, const string& inputAttr, bool bGetAll, void* context) { return p->_reverseEvaluateTable(evalTable, inputAttr, bGetAll, context); }
+	static vector<string>		_reverseEvaluateTable(ROM::ROMNode* p, const string& evalTable, const string& inputAttr, void* context) { return  p->_reverseEvaluateTable(evalTable, inputAttr, context); }
+	static map<string, vector<string> > _reverseEvaluateTable(ROM::ROMNode* p, const string& evalTable, bool bGetAll, void* context) { return p->_reverseEvaluateTable(evalTable, bGetAll, context); }
+	static map<string, vector<string> > _reverseEvaluateTable(ROM::ROMNode* p, const string& evalTable, void* context) { return p->_reverseEvaluateTable(evalTable, context); }
+};
+
+struct ROM::IDictionaryInterface::DispatchHelper
+{
+	static void _loadDictionary(ROM::IDictionaryInterface* p, const std::string& dictionaryTable, void* context) { p->_loadDictionary(dictionaryTable, context); }
+};
+
 namespace ROMNET
 {
 	bool ROMNode::CreateROMNode(System::String^ id, ROMObjectFactoryDelegate^ factory, IntPtr ptr)
@@ -450,7 +481,7 @@ namespace ROMNET
 			string sOutput = MarshalString(output);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<string> res = m_ROMNode->_evaluateTable(sTable, sOutput, bGetAll, ctx);
+			vector<string> res = ROM::ROMNode::DispatchHelper::_evaluateTable(m_ROMNode, sTable, sOutput, bGetAll, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -469,7 +500,7 @@ namespace ROMNET
 			string sOutput = MarshalString(output);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<string> res = m_ROMNode->_evaluateTable(sTable, sOutput, ctx);
+			vector<string> res = ROM::ROMNode::DispatchHelper::_evaluateTable(m_ROMNode, sTable, sOutput, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -487,7 +518,7 @@ namespace ROMNET
 			string sTable = MarshalString(evalTable);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<string, vector<string> > res = m_ROMNode->_evaluateTable(sTable, bGetAll, ctx);
+			map<string, vector<string> > res = ROM::ROMNode::DispatchHelper::_evaluateTable(m_ROMNode, sTable, bGetAll, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -505,7 +536,7 @@ namespace ROMNET
 			string sTable = MarshalString(evalTable);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<string, vector<string> > res = m_ROMNode->_evaluateTable(sTable, ctx);
+			map<string, vector<string> > res = ROM::ROMNode::DispatchHelper::_evaluateTable(m_ROMNode, sTable, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -525,7 +556,7 @@ namespace ROMNET
 			string par = MarshalString(param);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<string> res = m_ROMNode->_evaluateTableWithParam(sTable, sOutput, bGetAll, par, ctx);
+			vector<string> res = ROM::ROMNode::DispatchHelper::_evaluateTableWithParam(m_ROMNode, sTable, sOutput, bGetAll, par, ctx);
 			
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -545,7 +576,7 @@ namespace ROMNET
 			string par = MarshalString(param);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<string> res = m_ROMNode->_evaluateTableWithParam(sTable, sOutput, par, ctx);
+			vector<string> res = ROM::ROMNode::DispatchHelper::_evaluateTableWithParam(m_ROMNode, sTable, sOutput, par, ctx);
 			
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -564,7 +595,7 @@ namespace ROMNET
 			string par = MarshalString(param);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<string, vector<string> > res = m_ROMNode->_evaluateTableWithParam(sTable, bGetAll, par, ctx);
+			map<string, vector<string> > res = ROM::ROMNode::DispatchHelper::_evaluateTableWithParam(m_ROMNode, sTable, bGetAll, par, ctx);
 			
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -583,7 +614,7 @@ namespace ROMNET
 			string par = MarshalString(param);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<string, vector<string> > res = m_ROMNode->_evaluateTableWithParam(sTable, par, ctx);
+			map<string, vector<string> > res = ROM::ROMNode::DispatchHelper::_evaluateTableWithParam(m_ROMNode, sTable, par, ctx);
 			
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free(); 
@@ -613,7 +644,7 @@ namespace ROMNET
 			string sOutput = MarshalString(output);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<string> res = m_ROMNode->_reverseEvaluateTable(sTable, sOutput, bGetAll, ctx);
+			vector<string> res = ROM::ROMNode::DispatchHelper::_reverseEvaluateTable(m_ROMNode, sTable, sOutput, bGetAll, ctx);
 			retval = GetArrayFromVectorStrings(res);
 
 			if (ctx != nullptr)
@@ -631,7 +662,7 @@ namespace ROMNET
 			string sOutput = MarshalString(output);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			vector<string> res = m_ROMNode->_reverseEvaluateTable(sTable, sOutput, ctx);
+			vector<string> res = ROM::ROMNode::DispatchHelper::_reverseEvaluateTable(m_ROMNode, sTable, sOutput, ctx);
 			retval = GetArrayFromVectorStrings(res);
 
 			if (ctx != nullptr)
@@ -648,7 +679,7 @@ namespace ROMNET
 			string sTable = MarshalString(evalTable);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<string, vector<string> > res = m_ROMNode->_reverseEvaluateTable(sTable, bGetAll, ctx);
+			map<string, vector<string> > res = ROM::ROMNode::DispatchHelper::_reverseEvaluateTable(m_ROMNode, sTable, bGetAll, ctx);
 			retval = GetDictionaryFromMapStrings(res);
 
 			if (ctx != nullptr)
@@ -665,7 +696,7 @@ namespace ROMNET
 			string sTable = MarshalString(evalTable);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(context)).ToPointer();
 
-			map<string, vector<string> > res = m_ROMNode->_reverseEvaluateTable(sTable, ctx);
+			map<string, vector<string> > res = ROM::ROMNode::DispatchHelper::_reverseEvaluateTable(m_ROMNode, sTable, ctx);
 			retval = GetDictionaryFromMapStrings(res);
 
 			if (ctx != nullptr)
@@ -773,7 +804,7 @@ namespace ROMNET
 			string sDict = MarshalString(dictionaryTable);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
 
-			m_ROMDictionary->_loadDictionary(sDict, ctx);
+			ROM::IDictionaryInterface::DispatchHelper::_loadDictionary(m_ROMDictionary, sDict, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -817,7 +848,7 @@ namespace ROMNET
 		{
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
 
-			m_LinearEngine->_initializeEngine(ctx);
+			ROM::LinearEngine::DispatchHelper::_initializeEngine(m_LinearEngine, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -830,7 +861,7 @@ namespace ROMNET
 		{
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
 
-			m_LinearEngine->_resetEngine(ctx);
+			ROM::LinearEngine::DispatchHelper::_resetEngine(m_LinearEngine, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -845,7 +876,7 @@ namespace ROMNET
 			vector<string> vals = GetVectorFromArrayStrings(newValues);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
 
-			m_LinearEngine->_evaluateForAttribute(name, vals, bEvalDependents, ctx);
+			ROM::LinearEngine::DispatchHelper::_evaluateForAttribute(m_LinearEngine, name, vals, bEvalDependents, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -860,7 +891,7 @@ namespace ROMNET
 			string val = MarshalString(newValue);
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
 
-			m_LinearEngine->_evaluateForAttribute(name, val, bEvalDependents, ctx);
+			ROM::LinearEngine::DispatchHelper::_evaluateForAttribute(m_LinearEngine, name, val, bEvalDependents, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();
@@ -873,7 +904,7 @@ namespace ROMNET
 		{
 			void* ctx = GCHandle::ToIntPtr(GCHandle::Alloc(m_ROMContext)).ToPointer();
 
-			m_LinearEngine->_evaluateAll(ctx);
+			ROM::LinearEngine::DispatchHelper::_evaluateAll(m_LinearEngine, ctx);
 
 			if (ctx != nullptr)
 				GCHandle::FromIntPtr(IntPtr(ctx)).Free();

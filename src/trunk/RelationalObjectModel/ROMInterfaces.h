@@ -65,8 +65,12 @@ namespace ROM
 		virtual IROMDictionaryAttribute* GetDictionaryAttr(const std::string& dictAttrName) = 0;
 		virtual std::map<std::string, IROMDictionaryAttribute*>* GetAllDictionaryAttrs() = 0;
 
-#ifdef CLR //these internal methods are called by .NET to assist with passing of managed objects
+		struct DispatchHelper;
+	protected:
+		friend DispatchHelper;
+
+	private:
+		//these internal methods are called by .NET to assist with passing of managed objects
 		virtual void _loadDictionary(const std::string& dictionaryTable, void* context) = 0;
-#endif
 	};
 }
