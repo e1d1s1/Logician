@@ -33,6 +33,7 @@ namespace ROM
 
 	class LinearEngine : public ROMDictionary
 	{
+	friend struct DispatchHelper;
 	public:
 		LinearEngine(){ InvalidateMode = NORMALINVALIDATE; m_initialized = false; }
 		LinearEngine(ROMNode* context, const string& dictionaryTable) : ROMDictionary(context) { CreateLinearEngine(dictionaryTable); }
@@ -50,18 +51,19 @@ namespace ROM
 		//behavioral properties
 		int InvalidateMode;
 
-#ifndef CLR //these internal methods are called by .NET to assist with passing of managed objects
+		struct DispatchHelper;
+
+	protected:
+		friend DispatchHelper;
+	
 	private:
-#else
-	public:
-#endif
+		//these internal methods are called by .NET to assist with passing of managed objects
 		void _evaluateForAttribute(const string& dictAttrName, vector<string>& newValues, bool bEvalDependents, void* context);
 		void _evaluateForAttribute(const string& dictAttrName, const string& newValue, bool bEvalDependents, void* context);
 		void _evaluateAll(void* context);
 		void _initializeEngine(void* context);
 		void _resetEngine(void* context);
-
-	private:		
+	
 		void _orderDictionary();
 		void _evalSingleSelect(const string& dictAttrName, const string& newValue, void* context);
 		void _evalMultiSelect(const string& dictAttrName, const vector<string>& newValues, void* context);
@@ -88,5 +90,5 @@ namespace ROM
 		string DEFAULTPREFIX;
 		string DISABLEPREFIX;
 		string TBUATTR;
-	};	
+	};
 }

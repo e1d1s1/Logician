@@ -107,12 +107,13 @@ namespace ROM
 		//XPATH
 		string				EvaluateXPATH(const string& xpath, const string& guid);
 		string				EvaluateXPATH(const string& xpath) { return EvaluateXPATH(xpath, m_guid); }
+
+		struct DispatchHelper;
+	protected:		
+		friend DispatchHelper;
 				
-#ifndef CLR //these internal methods are called by .NET to assist with passing of managed objects
 	private:
-#else
-	public:
-#endif
+		//these internal methods are called by .NET to assist with passing of managed objects
 		vector<string>		_evaluateTable(const string& evalTable, const string& output, bool bGetAll, void* context);
 		vector<string>		_evaluateTable(const string& evalTable, const string& output, void* context);
 		map<string, vector<string> > _evaluateTable(const string& evalTable, bool bGetAll, void* context);
@@ -127,7 +128,6 @@ namespace ROM
 		map<string, vector<string> > _reverseEvaluateTable(const string& evalTable, bool bGetAll, void* context);
 		map<string, vector<string> > _reverseEvaluateTable(const string& evalTable, void* context);
 
-	private:
 		string					_getAttributeInternal(const string& id, const string& name, bool immediate);
 		string					_getAttribute(const string& id, const string& name, bool immediate);
 		string					_getSpecialAttribute(const string& input, bool* bFound);
