@@ -40,9 +40,11 @@ namespace ROM
 		virtual IROMDictionaryAttribute* GetDictionaryAttr(const string& dictAttrName) override;
 		virtual map<string, IROMDictionaryAttribute*>* GetAllDictionaryAttrs() override { return &m_dict; }
 
+#ifdef WIN32
 		struct DispatchHelper;
 	protected:
 		friend DispatchHelper;
+#endif
 
 	private:
 		//these internal methods are called by .NET to assist with passing of managed objects

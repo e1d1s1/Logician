@@ -108,9 +108,11 @@ namespace ROM
 		string				EvaluateXPATH(const string& xpath, const string& guid);
 		string				EvaluateXPATH(const string& xpath) { return EvaluateXPATH(xpath, m_guid); }
 
+#ifdef WIN32
 		struct DispatchHelper;
 	protected:		
 		friend DispatchHelper;
+#endif
 				
 	private:
 		//these internal methods are called by .NET to assist with passing of managed objects
