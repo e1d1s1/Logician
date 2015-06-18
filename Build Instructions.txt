@@ -15,7 +15,7 @@ All platforms:
 - libxml2 v2.7.8+ (GCC builds)
 - libxslt v1.1.26+ (GCC builds)
 - Python 2.6+ (optional compile-time switch, disabled in default windows build configuration)
-- Mozilla Spidermonkey Javascript engine 1.85 (optional compile-time switch).  Windows builds the integrated Windows Scripting or Chakra, depending on what is available on the host.
+- Mozilla Spidermonkey Javascript engine 1.85 (libmozjs185-1.0 optional compile-time switch).  Windows builds the integrated Windows Scripting or Chakra, depending on what is available on the host.
 Windows:
 - MSXML v6.0 (preferred build in lieu of libxml, libxslt, and iconv)
 
@@ -65,7 +65,7 @@ Visual Studio 2013 project files are included.  Configurations for both MSXML an
 Get prebuilt Boost binaries from: http://boost.teeks99.com/ or SourceForge.
 
 Linux: (Ubuntu 9.10+, 12.04 recommended, or Mint 14+)
-All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu/Mint has been tested.  A makefile and QT Creator project files are provided.  The current builds link against libxml 2.7.8, libxslt 1.1.26, libboost 1.49, and wxWidgets 2.8.12.
+All of the prerequisites are available on Ubuntu as packages easily downloaded and installed through the package distribution service.  Most other Debian based system should be the same, although only Ubuntu/Mint has been tested.  A makefile and QT Creator project files are provided.
 
 Apple OSX:
 Coming soon...should work since all the same *nix tools are available.  Need to test.

@@ -253,12 +253,12 @@ int runTest(int thread_id)
     }
 
     Log("loading rules");
-	unique_ptr<EDS::IKnowledgeBase> rules = std::make_unique<EDS::CKnowledgeBase>();
+	unique_ptr<EDS::IKnowledgeBase> rules(new EDS::CKnowledgeBase());
 	bool bLoaded = rules->CreateKnowledgeBase(path);
 	if (!bLoaded)
 		bLoaded = rules->CreateKnowledgeBase(filename);
 	if (bLoaded && rules->IsOpen())
-    {		
+    {
 		rules->SetDebugHandler(DebugMessage);
 		rules->SetInputValueGetter([](const string& attrName, void* obj)
 		{

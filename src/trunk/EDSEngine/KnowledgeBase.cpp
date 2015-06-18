@@ -56,7 +56,7 @@ using boost::asio::ip::tcp;
 		#endif
 	#else
 		#define USE_SPIDERMONKEY
-		#include <jsapi.h> //Mozilla SpiderMonkey
+		#include <js/jsapi.h> //Mozilla SpiderMonkey
 		static JSClass global_class = {
 			"global", JSCLASS_GLOBAL_FLAGS,
 			JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
@@ -386,13 +386,13 @@ vector<string> CKnowledgeBase::EvaluateTableWithParam(const string& tableName, c
 							{
 								JSString* jstr = JS_ValueToString(cx, rval);
 								const char* s = (const char*)JS_EncodeString(cx, jstr);
-								val = Widen(s);
+								val = s;
 							}
 							if (stateval != 0 && ok2)
 							{
 								JSString* jstr = JS_ValueToString(cx, stateval);
 								const char* s = (const char*)JS_EncodeString(cx, jstr);
-								param = Widen(s);
+								param = s;
 							}
 
 							// Cleanup.
