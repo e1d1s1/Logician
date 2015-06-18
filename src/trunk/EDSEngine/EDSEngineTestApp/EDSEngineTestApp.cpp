@@ -84,19 +84,15 @@ int runTest(int thread_id)
 	Log("Loading Test project", thread_id);
 	//load up some sample table
 	#ifndef __GNUC__
-	std::unique_ptr<IKnowledgeBase> knowledge = std::make_unique<CKnowledgeBase>("..\\EDSEngineTestApp\\test_project.gz");
-	if (!knowledge->IsOpen())
-		knowledge->CreateKnowledgeBase("test_project.gz");
+	string path = "..\\EDSEngineTestApp\\test_project.gz";
 	#else
-	EDS::CKnowledgeBase knowledge("../../test_project.gz");
+	string path = "../../test_project.gz";
 	#endif
 
+	std::unique_ptr<IKnowledgeBase> knowledge(new CKnowledgeBase(path));
+
 	if (!knowledge->IsOpen())
-	{
-		Log("Could not open rules file", thread_id);
-		pause();
-		return 0;
-	}
+		knowledge->CreateKnowledgeBase("test_project.gz");
 
 	//debugging
 	knowledge->SetDebugHandler(DebugMessage);

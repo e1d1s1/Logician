@@ -90,28 +90,33 @@ endif()
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	
 	if (NOT NOINTEGRATEDDEBUGGING)
-		find_package(Boost REQUIRED COMPONENTS system zlib iostreams filesystem)
+		find_package(Boost REQUIRED COMPONENTS system iostreams filesystem)
 	else()
-		find_package(Boost REQUIRED COMPONENTS zlib iostreams filesystem)
+		find_package(Boost REQUIRED COMPONENTS iostreams filesystem)
 		add_definitions("/DDISABLE_DECISIONLOGIC_INTEGRATION")
 	endif()
 	
 else()
 
 	if (NOT NOINTEGRATEDDEBUGGING)
-		find_package(Boost REQUIRED COMPONENTS system zlib iostreams filesystem)
+		find_package(Boost REQUIRED COMPONENTS system iostreams filesystem)
 	else()
-		find_package(Boost REQUIRED COMPONENTS zlib iostreams filesystem)
+		find_package(Boost REQUIRED COMPONENTS iostreams filesystem)
 		add_definitions("-DDISABLE_DECISIONLOGIC_INTEGRATION")
 	endif()
 	
-	find_package(mozjs185 REQUIRED)		
+	find_package(mozjs REQUIRED)		
 	find_package(LibXslt REQUIRED)
+	find_package(Threads REQUIRED)
+	find_package(ZLIB REQUIRED)
 endif()
 
 find_package(iconv REQUIRED)
-find_package(libxml2 REQUIRED)
+find_package(LibXml2 REQUIRED)
+include_directories(${LIBXML2_INCLUDE_DIR})
 
+set (TOOLKIT_VERSION_NEED "3.0")
+set (wxWidgets_CONFIG_OPTIONS --version=${TOOLKIT_VERSION_NEED})
 find_package(wxWidgets COMPONENTS core base adv net stc scintilla REQUIRED)
 
 add_definitions( -DBOOST_ALL_NO_LIB )
@@ -119,8 +124,9 @@ add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
 
 
 include_directories (
-                      "${Boost_INCLUDE_DIRS}"
+                      ${Boost_INCLUDE_DIRS}
                       ${TOOLCHAIN_INCLUDE_DIRECTORIES}
+		      ${PROJECT_SRC_DIR}
                     )
 					
 link_directories(${LIBXML2_LIBRARIES})

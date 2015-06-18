@@ -50,6 +50,7 @@
     <File Name="stdafx.h"/>
     <File Name="utilities.h"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-std=c++11" C_Options="" Assembler="">
@@ -141,5 +142,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
 </CodeLite_Project>
