@@ -32,14 +32,15 @@ include_directories(./)
 
 	
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-
-    add_definitions("/DWIN32 /D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS /DUSE_MSXML /DUSE_JAVASCRIPT /DUSE_WINDOWS_SCRIPTING")
+    message("Setting up a Windows build")
+    add_definitions("-DWIN32 -D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DUSE_MSXML -DUSE_JAVASCRIPT -DUSE_WINDOWS_SCRIPTING")
 
     set(CMAKE_C_FLAGS "/W4 /EHsc")
     set(CMAKE_CXX_FLAGS "/W4 /EHsc")
 	
 else()
-
+    message("Setting up a *nix build")
+    add_definitions(-DUSE_JAVASCRIPT -DUSE_LIBXML -DPOSIX)
     #
     # Avoid needing to set LD_LIBRARY_PATH (or install to /usr/lib).
     # This tells our binaries to look into the same base directory for
@@ -93,7 +94,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		find_package(Boost REQUIRED COMPONENTS system iostreams filesystem)
 	else()
 		find_package(Boost REQUIRED COMPONENTS iostreams filesystem)
-		add_definitions("/DDISABLE_DECISIONLOGIC_INTEGRATION")
+		add_definitions("-DDISABLE_DECISIONLOGIC_INTEGRATION")
 	endif()
 	
 else()
@@ -117,7 +118,7 @@ include_directories(${LIBXML2_INCLUDE_DIR})
 
 set (TOOLKIT_VERSION_NEED "3.0")
 set (wxWidgets_CONFIG_OPTIONS --version=${TOOLKIT_VERSION_NEED})
-find_package(wxWidgets COMPONENTS core base adv net stc scintilla REQUIRED)
+find_package(wxWidgets REQUIRED COMPONENTS core base adv net stc)
 
 add_definitions( -DBOOST_ALL_NO_LIB )
 add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
