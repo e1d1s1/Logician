@@ -92,7 +92,10 @@ int runTest(int thread_id)
 	std::unique_ptr<IKnowledgeBase> knowledge(new CKnowledgeBase(path));
 
 	if (!knowledge->IsOpen())
+	{
+		Log("Loading rules from working dir", thread_id);
 		knowledge->CreateKnowledgeBase("test_project.gz");
+	}
 
 	//debugging
 	knowledge->SetDebugHandler(DebugMessage);
@@ -243,6 +246,7 @@ int runTest(int thread_id)
 	}
 	else
 	{
+        Log(results["outputAttr1"].at(0), thread_id);
 		res.SetResult(false, "Did not get proper eval result", thread_id);
 	}
 

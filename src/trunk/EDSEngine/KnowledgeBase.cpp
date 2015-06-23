@@ -848,6 +848,7 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 
 	xmlChar* tablesXPath = (xmlChar*)"//Tables";
 	xmlXPathObjectPtr xpathTables = xmlXPathEvalExpression(tablesXPath, xpathCtx);
+
 	Node tablesNode = xpathTables->nodesetval->nodeTab[0];
 	string debug = EDSUTIL::XMLStrToStr(xmlGetProp(tablesNode, (xmlChar*)"debug"));
 	string debugTables = EDSUTIL::XMLStrToStr(xmlGetProp(tablesNode, (xmlChar*)"debugtables"));
@@ -865,6 +866,7 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 	}
 	else
 		m_DEBUGGING_MSGS = false;
+
 
 	xmlChar* tableXPath = (xmlChar*)"//Tables/Table";
 	xmlXPathObjectPtr xpathTable = xmlXPathEvalExpression(tableXPath, xpathCtx);
@@ -899,6 +901,7 @@ bool CKnowledgeBase::_parseXML(Document xmlDocument)
 
 			vector<pair<string, vector<CRuleCell> > > InputAttrsTests = _getTableRowFromXML(inputList, xmlDocument);
 			vector<pair<string, vector<CRuleCell> > > OutputAttrsValues = _getTableRowFromXML(outputList, xmlDocument);
+
 
 			m_TableSet.AddTable(InputAttrsTests, OutputAttrsValues, FormulaInputs, &m_stringsMap, name, bGetAll);
 			FormulaInputs.clear();
@@ -1000,6 +1003,8 @@ bool CKnowledgeBase::CreateKnowledgeBase(string knowledge_file)
 		pos = sFileName.find_last_of(".");
 		sExtension = sFileName.substr(pos + 1);
 
+		unzippedFileName = sFileName;
+
 #ifndef DISABLE_ZIP
 		if (sExtension == "gz")
 		{
@@ -1013,10 +1018,10 @@ bool CKnowledgeBase::CreateKnowledgeBase(string knowledge_file)
 #else
             if (pcPath == nullptr)
                 pcPath = _PATH_TMP;
-#endif
-#else
+#endif //P_tmpdir
+#else //POSIX
 			pcPath = getenv("TEMP");
-#endif
+#endif //POSIX
 			unzippedFileName = pcPath;
 
 			file_name = knowledge_file.substr(knowledge_file.find_last_of(pathSep) + 1);
@@ -1032,16 +1037,16 @@ bool CKnowledgeBase::CreateKnowledgeBase(string knowledge_file)
 				unzippedFileName += pathSep;
 				unzippedFileName += file_name;
 				ofstream outfile(unzippedFileName.c_str(), std::ofstream::out);
-				boost::iostreams::copy(in, outfile);
+				if (outfile.is_open())
+				{
+                    boost::iostreams::copy(in, outfile);
+                    outfile.close();
+				}
 				file.close();
-				outfile.close();
 			}
 		}
-		else
-#endif
-		{
-			unzippedFileName = sFileName;
-		}
+#endif //DISABLE_ZIP
+
 
 
 		//parse the table from xml
@@ -1080,8 +1085,10 @@ bool CKnowledgeBase::CreateKnowledgeBase(string knowledge_file)
 		#ifdef USE_LIBXML
 			xmlInitParser();
 			Document xmlDocument = nullptr;
+
 			std::string strBuff(unzippedFileName.begin(), unzippedFileName.end());
 			xmlDocument = xmlParseFile(strBuff.c_str());
+
 			if (xmlDocument != nullptr)
 			{
 				retval = _parseXML(xmlDocument);
@@ -1141,7 +1148,6 @@ vector<pair<string, vector<CRuleCell> > > CKnowledgeBase::_getTableRowFromXML(No
 					{
 						sIDs = VariantToMBCStr(idNode->nodeValue);
 						vector<string> cellValues = EDSUTIL::Split(EDSUTIL::Narrow(currentValue->Gettext()), "|");
-						string sIDs(sIDs.begin(), sIDs.end()); //contains numerical so this ok
 						vector<string> ids = EDSUTIL::Split(sIDs, ",");
 						if (ids.size() != cellValues.size())
 							throw "Bad OR";
@@ -1205,15 +1211,14 @@ vector<pair<string, vector<CRuleCell> > > CKnowledgeBase::_getTableRowFromXML(No
 						if (sIDs.length() > 0)
 						{
 							vector<string> cellValues = EDSUTIL::Split(EDSUTIL::XMLStrToStr(xmlNodeGetContent(currentValue)), "|");
-							string sIDs(sIDs.begin(), sIDs.end()); //contains numerical so this ok
 							vector<string> ids = EDSUTIL::Split(sIDs, ",");
 							if (ids.size() != cellValues.size())
 								throw "Bad OR";
 
-							for (size_t i = 0; i < ids.size(); i++)
+							for (auto idCnt = 0; idCnt < ids.size(); idCnt++)
 							{
-								size_t id = atoull(ids[i].c_str());
-								string value = cellValues[i];
+								size_t id = atoull(ids[idCnt].c_str());
+								string value = cellValues[idCnt];
 								m_stringsMap.AddString(id, value);
 								cell.Values.push_back(id);
 							}
@@ -1223,7 +1228,6 @@ vector<pair<string, vector<CRuleCell> > > CKnowledgeBase::_getTableRowFromXML(No
 						long lOper = 0;
 						if (sOper.length() > 0)
 						{
-							string sOper(sOper.begin(), sOper.end());
 							lOper = atoull(sOper.c_str());
 						}
 						cell.Operation = lOper;

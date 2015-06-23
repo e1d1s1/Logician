@@ -5,9 +5,9 @@
       <Attr>inputAttr1</Attr>
       <Value operation="1">OR:Test1</Value>
       <Value operation="1">C</Value>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Value operation="1">C</Value>
+      <Value operation="1">C</Value>
+      <Value operation="1">C</Value>
       <Value/>
       <Value/>
       <Value operation="1">TestParameterJS</Value>
