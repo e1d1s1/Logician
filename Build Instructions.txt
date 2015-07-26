@@ -5,7 +5,7 @@ Logician relies upon open source and freely available cross-platform tools, so y
 CMake tips:
 On Windows, you may need to specify to CMake the directory in which you install/copy the libxml2, libxslt and iconv libraries used by the DecisionLogic compiler, and optionally the rules engine.  If you extract the provided "WindowsBuildTools" to the trunk directory, your CMake arguments may look like:
 
-cmake -DLIBXML2_INCLUDE_DIR=C:\Users\Eric\Documents\Development\Logician\src\trunk\libxml2-2.7.8.win32\include -DLIBXML2_LIBRARIES=C:\Users\Eric\Documents\Development\Logician\src\trunk\libxml2-2.7.8.win32\lib -DICONV_INCLUDE_DIR=C:\Users\Eric\Documents\Development\Logician\src\trunk\iconv-1.9.2.win32\include ..
+cmake -DLIBXML2_INCLUDE_DIR=C:\Users\Eric\Documents\Development\Logician\src\trunk\libxml2-2.7.8.win32\include -DLIBXML2_LIBRARIES=C:\Users\Eric\Documents\Development\Logician\src\trunk\libxml2-2.7.8.win32\lib\libxml2_a.lib -DICONV_INCLUDE_DIR=C:\Users\Eric\Documents\Development\Logician\src\trunk\iconv-1.9.2.win32\include -DICONV_LIBRARIES=C:\Users\Eric\Documents\Development\Logician\src\trunk\iconv-1.9.2.win32\lib\iconv_a.lib ..
 
 Prerequisites:
 Rules Engine: EDSEngine
