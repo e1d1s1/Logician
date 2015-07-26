@@ -51,6 +51,6 @@ endif()
 target_link_libraries(DecisionLogic	${wxWidgets_LIBRARIES}
 					${Boost_LIBRARIES}
 					${CMAKE_THREAD_LIBS_INIT}
-					${LIBXML2_LIBRARIES}
-					${ZLIB_LIBRARIES})
+					${ICONV_LIBRARIES}
+					${LIBXML2_LIBRARIES})
 						
