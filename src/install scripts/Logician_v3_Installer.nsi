@@ -9,10 +9,10 @@
 !include x64.nsh
 
 ; The name of the installer
-Name "Logician Suite (Dev)"
+Name "Logician Suite 3.0.0"
 
 ; The file to write
-OutFile "Logician_Setup.exe"
+OutFile "Logician_300_Setup.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Logician
@@ -35,7 +35,6 @@ UninstPage uninstConfirm
 UninstPage instfiles
 
 ;--------------------------------
-
 
 
 ; The stuff to install
@@ -69,40 +68,40 @@ SectionEnd
 
 Section "Logician Suite"
 	; Set output path to the installation directory.
+		
 	SetOutPath $INSTDIR\VC12
-	File "..\trunk\VC12\EDSEngine.lib"
-	File "..\trunk\VC12\EDSEngineNET.dll"
-	File "..\trunk\VC12\RelationalObjectModel.lib"
-	File "..\trunk\VC12\ROMNET.dll"
-	File "..\trunk\VC12\LogicianDebuggerWPF.dll"
-	File "..\trunk\VC12\WPFToolkit.dll"
+	File "..\tags\v3.0.0\VC12\EDSEngine.lib"
+	File "..\tags\v3.0.0\VC12\EDSEngineNET.dll"
+	File "..\tags\v3.0.0\VC12\RelationalObjectModel.lib"
+	File "..\tags\v3.0.0\VC12\ROMNET.dll"
+	File "..\tags\v3.0.0\VC12\LogicianDebuggerWPF.dll"
+	File "..\tags\v3.0.0\VC12\WPFToolkit.dll"
 	SetOutPath $INSTDIR\VC12\x64
-	File "..\trunk\VC12\x64\EDSEngine.lib"
-	File "..\trunk\VC12\x64\EDSEngineNET.dll"
-	File "..\trunk\VC12\x64\RelationalObjectModel.lib"
-	File "..\trunk\VC12\x64\ROMNET.dll"
-	File "..\trunk\VC12\x64\LogicianDebuggerWPF.dll"
-	File "..\trunk\VC12\x64\WPFToolkit.dll"
+	File "..\tags\v3.0.0\VC12\x64\EDSEngine.lib"
+	File "..\tags\v3.0.0\VC12\x64\EDSEngineNET.dll"
+	File "..\tags\v3.0.0\VC12\x64\RelationalObjectModel.lib"
+	File "..\tags\v3.0.0\VC12\x64\ROMNET.dll"
+	File "..\tags\v3.0.0\VC12\x64\LogicianDebuggerWPF.dll"
+	File "..\tags\v3.0.0\VC12\x64\WPFToolkit.dll"
 
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\DecisionLogic
 	; Put file there
-	File "..\trunk\VC12\DecisionLogic.exe"
-	File "..\trunk\DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
-	File "..\trunk\DecisionLogic\vc_mswu\Figure1.png"
-	File "..\trunk\DecisionLogic\vc_mswu\Figure2.png"
-	File "..\trunk\DecisionLogic\vc_mswu\Figure3.png"
-	File "..\trunk\DecisionLogic\vc_mswu\Figure4.png"
-	File "..\trunk\DecisionLogic\vc_mswu\Figure5.png"
-	File "..\trunk\DecisionLogic\vc_mswu\Figure6.png"
+	File "..\tags\v3.0.0\VC12\DecisionLogic.exe"
+	File "..\tags\v3.0.0\DecisionLogic\vc_mswu\DecisionLogicHelp.htm"
+	File "..\tags\v3.0.0\DecisionLogic\vc_mswu\Figure1.png"
+	File "..\tags\v3.0.0\DecisionLogic\vc_mswu\Figure2.png"
+	File "..\tags\v3.0.0\DecisionLogic\vc_mswu\Figure3.png"
+	File "..\tags\v3.0.0\DecisionLogic\vc_mswu\Figure4.png"
+	File "..\tags\v3.0.0\DecisionLogic\vc_mswu\Figure5.png"
+	File "..\tags\v3.0.0\DecisionLogic\vc_mswu\Figure6.png"
 	
 	SetOutPath $INSTDIR
-	File "..\trunk\LogicianJS\KnowledgeBase.js"
-	File "..\trunk\LogicianJS\ROMNode.js"
-	;File "..\trunk\LogicianJS\Flash\LogicianFlash\bin\LogicianFlash.swc"
+	File "..\tags\v3.0.0\LogicianJS\KnowledgeBase.js"
+	File "..\tags\v3.0.0\LogicianJS\ROMNode.js"
 	
 	SetOutPath $INSTDIR\ajaxslt
-	File "..\trunk\LogicianJS\ajaxslt\*.*"	
+	File "..\tags\v3.0.0\LogicianJS\ajaxslt\*.*"	
 	
 	SetOutPath $INSTDIR
 	; Write the installation path into the registry
@@ -126,6 +125,7 @@ SectionEnd
 Section "Start Menu Shortcuts"
 	CreateDirectory "$SMPROGRAMS\DecisionLogic"
 	CreateShortCut "$SMPROGRAMS\DecisionLogic\Uninstall.lnk" "$INSTDIR\uninstall_logician_libraries.exe" "" "$INSTDIR\DecisionLogic\uninstall_logician_libraries.exe" 0
+	SetOutPath $INSTDIR\DecisionLogic
 	CreateShortCut "$SMPROGRAMS\DecisionLogic\DecisionLogic.lnk" "$INSTDIR\DecisionLogic\DecisionLogic.exe" "" "$INSTDIR\DecisionLogic\DecisionLogic.exe" 0
 SectionEnd
 
@@ -143,21 +143,9 @@ Section "un.LogicianSuite"
 	DeleteRegKey HKCR DecisionLogicProject
 
 	; Remove files and uninstaller
-	Delete $INSTDIR\DecisionLogic\*.*
-	Delete $INSTDIR\VC12\x64\EDSEngineWinRT\*.*
-	Delete $INSTDIR\VC12\x64\ROMWinRT\*.*
+	Delete $INSTDIR\DecisionLogic\*.*	
 	Delete $INSTDIR\VC12\x64\*.*
-	Delete $INSTDIR\VC12\EDSEngineWinRT\*.*
-	Delete $INSTDIR\VC12\ROMWinRT\*.*
-	Delete $INSTDIR\VC11\x64\EDSEngineWinRT\*.*
-	Delete $INSTDIR\VC11\x64\ROMWinRT\*.*
-	Delete $INSTDIR\VC11\x64\*.*
-	Delete $INSTDIR\VC11\EDSEngineWinRT\*.*
-	Delete $INSTDIR\VC11\ROMWinRT\*.*
 	Delete $INSTDIR\VC12\*.*
-	Delete $INSTDIR\VC11\*.*
-	Delete $INSTDIR\VC10\*.*
-	Delete $INSTDIR\VC9\*.*
 	Delete $INSTDIR\ajaxslt\*.*
 	Delete $INSTDIR\*.*
 	Delete $INSTDIR\uninstall_logician_libraries.exe
@@ -168,15 +156,38 @@ Section "un.LogicianSuite"
 	; Remove directories used
 	RMDir "$SMPROGRAMS\DecisionLogic"
 	RMDir "$INSTDIR\DecisionLogic"
-	RMDir "$INSTDIR\VC9"
-	RMDir "$INSTDIR\VC10"
-	RMDir "$INSTDIR\VC12\x64\EDSEngineWinRT"
-	RMDir "$INSTDIR\VC12\x64\ROMWinRT"
 	RMDir "$INSTDIR\VC12\x64"
-	RMDir "$INSTDIR\VC12\EDSEngineWinRT"
-	RMDir "$INSTDIR\VC12\ROMWinRT"
-	RMDir "$INSTDIR\VC11"
+	RMDir "$INSTDIR\VC12"
 	RMDir "$INSTDIR\ajaxslt"
 	RMDir "$INSTDIR"
 
 SectionEnd
+
+Function .onInit
+ 
+  ReadRegStr $R0 HKLM \
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\Logician" \
+  "UninstallString"
+  StrCmp $R0 "" done
+ 
+  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+  "Logician is already installed. $\n$\nClick `OK` to remove the \
+  previous version or `Cancel` to cancel this upgrade." \
+  IDOK uninst
+  Abort
+ 
+;Run the uninstaller
+uninst:
+  ClearErrors
+  ExecWait '$R0 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+ 
+  IfErrors no_remove_uninstaller done
+    ;You can either use Delete /REBOOTOK in the uninstaller or add some code
+    ;here to remove the uninstaller. Use a registry key to check
+    ;whether the user has chosen to uninstall. If you are using an uninstaller
+    ;components page, make sure all sections are uninstalled.
+  no_remove_uninstaller:
+ 
+done:
+ 
+FunctionEnd
