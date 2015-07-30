@@ -1,3 +1,10 @@
+3.0.0 - 7/29/2015
+Lots of changes to support inheritance patterns in the ROMNode and LinearEngine libraries.
+All string handling in std::string, UTF8.
+Upgraded EDSEngine C++ library with a multi-threaded table solver (C++)
+WinRT libraries removed. You can call the native C++ libs from RT, so there is really no benefit to that interface, especially since a C# and Javascript port are already available.
+A CMake build script is now available for both Linux and Windows.
+
 2.1.1 - 12/16/2014 
 Bug #19 - Fixed concurrency issue when multiple threads evaluate the same table.  Also fixed a typo in a previous fix to the ROM GetRoot function.
 
