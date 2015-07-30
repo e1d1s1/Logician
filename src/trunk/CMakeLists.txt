@@ -77,6 +77,9 @@ endif()
 # care to check).
 #
 
+set (TOOLKIT_VERSION_NEED "3.0")
+set (wxWidgets_CONFIG_OPTIONS --version=${TOOLKIT_VERSION_NEED})
+
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
@@ -89,7 +92,8 @@ endif()
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	
+	find_package(wxWidgets REQUIRED COMPONENTS core base adv net stc scintilla)
+
 	if (NOT NOINTEGRATEDDEBUGGING)
 		find_package(Boost REQUIRED COMPONENTS system iostreams filesystem zlib)
 	else()
@@ -98,6 +102,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	endif()
 
 else()
+    find_package(wxWidgets REQUIRED COMPONENTS core base adv net stc)
 
 	if (NOT NOINTEGRATEDDEBUGGING)
 		find_package(Boost REQUIRED COMPONENTS system iostreams filesystem)
@@ -109,16 +114,13 @@ else()
 	find_package(mozjs REQUIRED)		
 	find_package(LibXslt REQUIRED)
 	find_package(Threads REQUIRED)	
+    find_package(ZLIB REQUIRED)
 endif()
 
-#find_package(ZLIB REQUIRED)
+
 find_package(iconv REQUIRED)
 find_package(LibXml2 REQUIRED)
 include_directories(${LIBXML2_INCLUDE_DIR})
-
-set (TOOLKIT_VERSION_NEED "3.0")
-set (wxWidgets_CONFIG_OPTIONS --version=${TOOLKIT_VERSION_NEED})
-find_package(wxWidgets REQUIRED COMPONENTS core base adv net stc scintilla)
 
 add_definitions( -DBOOST_ALL_NO_LIB )
 add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})

@@ -46,11 +46,17 @@ add_executable(DecisionLogic ${SOURCE_FILES} ${HEADER_FILES})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	set_target_properties(DecisionLogic PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
-endif()
-
-target_link_libraries(DecisionLogic	${wxWidgets_LIBRARIES}
+    target_link_libraries(DecisionLogic	${wxWidgets_LIBRARIES}
 					${Boost_LIBRARIES}
 					${CMAKE_THREAD_LIBS_INIT}
 					${ICONV_LIBRARIES}
 					${LIBXML2_LIBRARIES})
+else()
+    target_link_libraries(DecisionLogic	${wxWidgets_LIBRARIES}
+					${Boost_LIBRARIES}
+					${CMAKE_THREAD_LIBS_INIT}
+					${ICONV_LIBRARIES}
+					${LIBXML2_LIBRARIES}
+                    ${ZLIB_LIBRARIES})
+endif()
 						
