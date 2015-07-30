@@ -1,19 +1,19 @@
 EDSEngine
 EDSEngine is the decision table evaluator of the Logician suite.  It can be used independently of the other libraries.  ROMNET::EDSEngine is the managed .NET wrapper for the C++ engine, and there is a javascript implementation as well in the Knowledgebase.js file.
 
-All of the language ports of the EDSEngine library have a similar interface.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
+All of the language ports of the EDSEngine library have a similar interface.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or string types.  Only the string types are listed explicitly in this document for brevity's sake.
 
 Constructors
 The constructor for EDSEngine simply requires a path string to the souce rules xml or zipped xml file.  Zipped xml files are not supported in javascript.  You should use server side file compression in that case anyways.
 
 	C++:
-		CKonweldegeBase(wstring knowledge_file);
+		CKonweldegeBase(string knowledge_file);
 		//optional 2-step C++
 		CKonweldegeBase();
-		bool CreateKnowledgeBase(wstring knowledge_file);
+		bool CreateKnowledgeBase(string knowledge_file);
 		
 		//optional load from xml string
-		bool CreateKnowledgeBaseFromString(wstring xmlStr);
+		bool CreateKnowledgeBaseFromString(string xmlStr);
 	C#:
 		EDSEngine(string knowledge_file);
 		//optional 2-step C#:
@@ -54,7 +54,7 @@ TableHasScript: returns true if the passed rule table name contains any output c
 		
 TableIsGetAll: returns true if the passed rule table name has been specified by the author as a "get-all" table type, false otherwise.
 	C++:
-		bool TableIsGetAll(wstring tableName)
+		bool TableIsGetAll(string tableName)
 	C#:
 		bool TableIsGetAll(string tableName)
 	Javascript:
@@ -63,7 +63,7 @@ TableIsGetAll: returns true if the passed rule table name has been specified by 
 Table Properties
 GetInputAttrs: returns a collection of input column names for a given table.
 	C++:
-		vector<wstring> GetInputAttrs(wstring tableName)
+		vector<string> GetInputAttrs(string tableName)
 	C#:
 		string[] GetInputAttrs(string tableName)
 	Javascript:
@@ -71,7 +71,7 @@ GetInputAttrs: returns a collection of input column names for a given table.
 		
 GetInputDependencies: Returns a collection of input columns names necessary to solve any output in the given table, including those in any externally related tables with attributes the current table's input names may be dependent upon.  This is the complete "state" that the solver must be aware of to correctly solve the current table.
 	C++:
-		vector<wstring> GetInputDependencies(wstring tableName)
+		vector<string> GetInputDependencies(string tableName)
 	C#:
 		string[] GetInputDependencies(string tableName)
 	Javascript:
@@ -79,7 +79,7 @@ GetInputDependencies: Returns a collection of input columns names necessary to s
 
 GetOutputAttrs: Returns a collection of output column names for a given table.
 	C++:
-		vector<wstring> GetOutputAttrs(wstring tableName)
+		vector<string> GetOutputAttrs(string tableName)
 	C#:
 		string[] GetOutputAttrs(string tableName)
 	Javascript:
@@ -87,7 +87,7 @@ GetOutputAttrs: Returns a collection of output column names for a given table.
 
 GetAllPossibleOutputs: For a given output column in a given table, returns all distinct possible solutions.
 	C++:
-		vector<wstring> GetOutputAttrs(wstring tableName, wstring outputName)
+		vector<string> GetOutputAttrs(string tableName, string outputName)
 	C#:
 		string[] GetOutputAttrs(string tableName, string outputName)
 	Javascript:
@@ -96,7 +96,7 @@ GetAllPossibleOutputs: For a given output column in a given table, returns all d
 Table Inputs
 InputValueGetterPtr: Function pointer or delegate to call in order for rules engine to obtain input column values.
 	C++:
-		std::function<wstring(const wstring& attrName, void* context)>
+		std::function<string(const string& attrName, void* context)>
 	C#
 		delegate String^ InputValueGetterDelegate(String^ attrName, Object^ context)
 	Javascript:
@@ -107,7 +107,7 @@ EvaluateTable: A number of overrides exist in C++/C# for your convienience.  The
 
 	Return an associative collection (map) of table results with output name as the key and a collection of solutions as the value.
 	C++:
-		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, void* context = nullptr)
+		map<string, vector<string> > EvaluateTable(string tableName, void* context = nullptr)
 	C#:
 		Dictionary<string, string[]> EvaluateTable(string tableName, object context)
 	Javascript:
@@ -115,7 +115,7 @@ EvaluateTable: A number of overrides exist in C++/C# for your convienience.  The
 		
 	Return an associative collection (map) of table results with output name as the key and a collection of solutions as the value, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	C++:
-		map<wstring, vector<wstring> > EvaluateTable(wstring tableName, bool bGetAll, void* context = nullptr)
+		map<string, vector<string> > EvaluateTable(string tableName, bool bGetAll, void* context = nullptr)
 	C#:
 		Dictionary<string, string[]> EvaluateTable(string tableName, bool bGetAll, object context)
 	Javascript:
@@ -123,7 +123,7 @@ EvaluateTable: A number of overrides exist in C++/C# for your convienience.  The
 
 	Return a collection of solutions for a given output column in a table.
 	C++:
-		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, void* context = nullptr)
+		vector<string> EvaluateTable(string tableName, string outputAttr, void* context = nullptr)
 	C#:
 		string[] EvaluateTable(string tableName, string outputAttr, object context)
 	Javascript:
@@ -131,7 +131,7 @@ EvaluateTable: A number of overrides exist in C++/C# for your convienience.  The
 		
 	Return a collection of solutions for a given output column in a table, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	C++:
-		vector<wstring> EvaluateTable(wstring tableName, wstring outputAttr, bool bGetAll, void* context = nullptr)
+		vector<string> EvaluateTable(string tableName, string outputAttr, bool bGetAll, void* context = nullptr)
 	C#:
 		string[] EvaluateTable(string tableName, string outputAttr, bool bGetAll, object context)
 	Javascript:
@@ -141,7 +141,7 @@ EvaluateTableWithParam:	Similar to EvaluateTable, but an additional string param
 
 	Return an associative collection (map) of table results with output name as the key and a collection of solutions as the value.
 	C++:
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, wstring param, void* context = nullptr)
+		map<string, vector<string> > EvaluateTableWithParam(string tableName, string param, void* context = nullptr)
 	C#:
 		Dictionary<string, string[]> EvaluateTableWithParam(string tableName, string param, object context)
 	Javascript:
@@ -149,7 +149,7 @@ EvaluateTableWithParam:	Similar to EvaluateTable, but an additional string param
 		
 	Return a collection of solutions for a given output column in a table, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.  The parameter is returned by reference to C++ and .NET callers.  An object aggregates the paramanter and return value for Javascript callers.
 	C++:
-		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, wstring param, void* context = nullptr)
+		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, string param, void* context = nullptr)
 	C#:
 		string[] EvaluateTableWithParam(string tableName, string outputAttr, string param, object context)
 	Javascript:
@@ -157,7 +157,7 @@ EvaluateTableWithParam:	Similar to EvaluateTable, but an additional string param
 		
 	Return an associative collection (map) of table results with output name as the key and a collection of solutions as the value, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.  Internally, this is the call all the other overrides are wrapped to.  The parameter is returned by reference to C++ and .NET callers.  An object aggregates the paramanter and return value for Javascript callers.
 	C++:
-		map<wstring, vector<wstring> > EvaluateTableWithParam(wstring tableName, bool bGetAll, wstring param, void* context = nullptr)
+		map<string, vector<string> > EvaluateTableWithParam(string tableName, bool bGetAll, string param, void* context = nullptr)
 	C#:
 		Dictionary<string, string[]> EvaluateTableWithParam(string tableName, bool bGetAll, string param, object context)
 	Javascript:
@@ -165,7 +165,7 @@ EvaluateTableWithParam:	Similar to EvaluateTable, but an additional string param
 		
 	Return a collection of solutions for a given output column in a table, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	C++:
-		vector<wstring> EvaluateTableWithParam(wstring tableName, wstring outputAttr, bool bGetAll, wstring param, void* context = nullptr)
+		vector<string> EvaluateTableWithParam(string tableName, string outputAttr, bool bGetAll, string param, void* context = nullptr)
 	C#:
 		string[] EvaluateTableWithParam(string tableName, string outputAttr, bool bGetAll, string param, object context)
 	Javascript:
@@ -175,7 +175,7 @@ ReverseEvaluateTable: Performs a table solve but switches all output columns to 
 
 	Return an associative collection (map) of table results with output (reversed input) name as the key and a collection of solutions as the value.
 	C++:
-		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName, void* context = nullptr)
+		map<string, vector<string> > ReverseEvaluateTable(string tableName, void* context = nullptr)
 	C#:
 		Dictionary<string, string[]> ReverseEvaluateTable(string tableName, object context)
 	Javascript:
@@ -183,7 +183,7 @@ ReverseEvaluateTable: Performs a table solve but switches all output columns to 
 
 	Return an associative collection (map) of table results with output (reversed input) name as the key and a collection of solutions as the value, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	C++:
-		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring tableName, bool bGetAll, void* context = nullptr)
+		map<string, vector<string> > ReverseEvaluateTable(string tableName, bool bGetAll, void* context = nullptr)
 	C#:
 		Dictionary<string, string[]> ReverseEvaluateTable(string tableName, bool bGetAll, object context)
 	Javascript:
@@ -191,7 +191,7 @@ ReverseEvaluateTable: Performs a table solve but switches all output columns to 
 
 	Return a collection of solutions for a given output (reversed input) column in a table.
 	C++:
-		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr, void* context = nullptr)
+		vector<string> ReverseEvaluateTable(string tableName, string inputAttr, void* context = nullptr)
 	C#:
 		string[] ReverseEvaluateTable(string tableName, string inputAttr, object context)
 	Javascript:
@@ -200,7 +200,7 @@ ReverseEvaluateTable: Performs a table solve but switches all output columns to 
 	Return a collection of solutions for a given output column in a table, and allows the coder to override the "get-one" or "get-all" behavior of the evaluation.  When the parameter is omitted the format specified by the table author is used.
 	Return a collection of solutions for a given output (reversed input) column in a table.
 	C++:
-		vector<wstring> ReverseEvaluateTable(wstring tableName, wstring inputAttr, bool bGetAll, void* context = nullptr)
+		vector<string> ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll, void* context = nullptr)
 	C#:
 		string[] ReverseEvaluateTable(string tableName, string inputAttr, bool bGetAll, object context)
 	Javascript:
@@ -211,7 +211,7 @@ The translation functions make use of any string translations you may have defin
 
 Localize: Converts some "nuetral" text to a particular translation.  The "locale" is defined as the column header in the translation spreadsheet within the table project.  It doesn't necessarily have to be an ISO locale like "en-US", although that would be a logical useage.  Internally, this function calls the Translate function.
 	C++:
-		wstring Localize(wstring baseValue, wstring locale)
+		string Localize(string baseValue, string locale)
 	C#:
 		string Localize(string baseValue, string locale)
 	Javascript:
@@ -219,7 +219,7 @@ Localize: Converts some "nuetral" text to a particular translation.  The "locale
 		
 DeLocalize: Converts some translated text back into the "nuetral" value.
 	C++:
-		wstring DeLocalize(wstring localeValue)
+		string DeLocalize(string localeValue)
 	C#:
 		string DeLocalize(string localeValue)
 	Javascript:
@@ -227,7 +227,7 @@ DeLocalize: Converts some translated text back into the "nuetral" value.
 		
 Translaate: Converts translated text from one locale to another.  If the sourceLocale is not specified, it is assumed that the passed text is of the "nuetral" language.
 	C++:
-		wstring Translaate(wstring source, wstring sourceLocale, wstring destLocale)
+		string Translaate(string source, string sourceLocale, string destLocale)
 	C#:
 		string Translaate(string source, string sourceLocale, string destLocale)
 	Javascript:
@@ -238,7 +238,7 @@ WIth debugging enabled in the compiled rules xml file, there are a couple of way
 
 DebugHandlerPtr: Function pointer to output table evaluation/value states as they occur and error messages.
 	C++:
-		function<void(const wstring&)>
+		function<void(const string&)>
 	C#:
 		delegate void DebugHandlerDelegate(String^ msg)
 	Javascript:
@@ -249,16 +249,16 @@ EnableRemoteDebugger: In C++ and C# attempts to connect and post to a TCP connec
 
 Relational Object Model
 Relational Object Model is a lightweight rules engine and application state model based on the EDSEngine libraries.  It has a tree-like XML structure, and supports XPATH queries.  The basic state and quuery engine are part of the main ROMNode class/prototype.  LinearEngine and the inheritied ROMDictionary provide the functionality for a basic rules engine.
-All of the language ports of the Relational Object Model library have a similar interface.  The main class names are slightly alterted to prevent confusion when inheriting the unmanaged C++ libraries in the managed C++ CLI/C# libraries.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or wstring types.  Only the wstring types are listed explicitly in this document for brevity's sake.
+All of the language ports of the Relational Object Model library have a similar interface.  The main class names are slightly alterted to prevent confusion when inheriting the unmanaged C++ libraries in the managed C++ CLI/C# libraries.  In some cases the language constraints of Javascript prevent function overrides in the same manner as C++/C#, however the functionality is mostly duplicated.  Please note the C++ interface will accept both STL string or string types.  Only the string types are listed explicitly in this document for brevity's sake.
 
 Constructors
 The constructor for Relational Object Model simply requires a path string to the souce rules xml or zipped xml file.  Zipped xml files are not supported in javascript (you should be compressing static files on your web server using gzip or deflate anyways).
 
 	C++:
-		ROMNode(wstring id);
+		ROMNode(string id);
 		//optional 2-step C++
 		ROMNode();
-		bool CreateROMNode(wstring id);
+		bool CreateROMNode(string id);
 	C#:
 		ROMNode(string id);
 		//optional 2-step C#:
@@ -295,7 +295,7 @@ GetAllChildren - Obtains a collection of all the (immedidate) child nodes in the
 		
 FindObjects - Obtain a colleciton of all the child nodes in the tree mathcing an XPath evaluation at this context.
 	C++:
-		vector<ROMNode*> FindObjects(wstring xpath);
+		vector<ROMNode*> FindObjects(string xpath);
 	C#:
 		array<ROMNode> FindObjects(string xpath);
 	Javascript:
@@ -303,7 +303,7 @@ FindObjects - Obtain a colleciton of all the child nodes in the tree mathcing an
 		
 FindAllObjectsOfID - Obtain a colleciton of all the child nodes in the tree of this object context that have the passed id.  Can be done recursively over all child objects.
 	C++:
-		vector<ROMNode*> FindAllObjectsOfID(wstring id, bool recurs);
+		vector<ROMNode*> FindAllObjectsOfID(string id, bool recurs);
 	C#:
 		array<ROMNode> FindAllObjectsOfID(string id, bool recurs);
 	Javascript:
@@ -311,7 +311,7 @@ FindAllObjectsOfID - Obtain a colleciton of all the child nodes in the tree of t
 		
 FindObjectByGUID - Obtains a child node with the give guid.  Will search over all tree nodes regardless of current context.
 	C++:
-		ROMNode* FindObjectByGUID(wstring guid);
+		ROMNode* FindObjectByGUID(string guid);
 	C#:
 		ROMNode FindObjectByGUID(string guid);
 	Javascript:
@@ -392,15 +392,15 @@ DestroyROMObject - Clears and recursivley destroys all child nodes and resets al
 Attribute functions
 GetAttribute - Obtain an attribute value by name.  Name value pairs are generally stored in an xml like node of <Attribute id="SomeID" value="SomeValue/>.  Overriding methods allow you to store additional "sub-values" like <Attribute id="SomeID" value="SomeValue" someOtherValueName="blah"/>.  Passing an immediate parameter as "false" will allow the library to search parent nodes for the attribute if it is not found in the current context.
 	C++:
-		wstring GetAttribute(wstring id, bool immedidate);
+		string GetAttribute(string id, bool immedidate);
 	C#:
-		string GetAttribute(wstring id, bool immedidate);
+		string GetAttribute(string id, bool immedidate);
 	Javascript:
 		string GetAttribute(id, immedidate);
 	
 	//overload to get a sub-value
 	C++:
-		wstring GetAttribute(string id, wstring name, bool immedidate);
+		string GetAttribute(string id, string name, bool immedidate);
 	C#:
 		string GetAttribute(string id, string name, bool immedidate);
 	Javascript:
@@ -408,7 +408,7 @@ GetAttribute - Obtain an attribute value by name.  Name value pairs are generall
 
 GetAttributeExists - Obtain whether or not an attribute of the passed id exists in the current context.  Can optionally search for a particular sub_value as well if needed.
 	C++:
-		bool GetAttributeExists(wstring id);
+		bool GetAttributeExists(string id);
 	C#:
 		bool GetAttributeExists(string id);
 	Javascript:
@@ -416,7 +416,7 @@ GetAttributeExists - Obtain whether or not an attribute of the passed id exists 
 		
 	//overload to get a sub-value
 	C++:
-		bool GetAttributeExists(wstring id, wstring name);
+		bool GetAttributeExists(string id, string name);
 	C#:
 		bool GetAttributeExists(string id, string name);
 	Javascript:
@@ -424,7 +424,7 @@ GetAttributeExists - Obtain whether or not an attribute of the passed id exists 
 		
 SetAttribute - sets an attribute on the current context to the passed value.  Overrides allow you set set sub-values.
 	C++:
-		bool SetAttribute(wstring id, wstring value);
+		bool SetAttribute(string id, string value);
 	C#:
 		bool SetAttribute(string id, string value);
 	Javascript:
@@ -432,7 +432,7 @@ SetAttribute - sets an attribute on the current context to the passed value.  Ov
 		
 	//overload to set sub-value.  You can have sub-values without a main "value", but it might foul up results returned by GetAttributeExists.
 	C++:
-		bool SetAttribute(wstring id, wstring name, wstring value);
+		bool SetAttribute(string id, string name, string value);
 	C#:
 		bool SetAttribute(string id, string name, string value);
 	Javascript:
@@ -440,7 +440,7 @@ SetAttribute - sets an attribute on the current context to the passed value.  Ov
 		
 RemoveAttribute - removes an attribute and value from the current context.  Overrides allow to you to remove only a sub-value.
 	C++:
-		bool RemoveAttribute(wstring id);
+		bool RemoveAttribute(string id);
 	C#:
 		bool RemoveAttribute(string id);
 	Javascript:
@@ -448,7 +448,7 @@ RemoveAttribute - removes an attribute and value from the current context.  Over
 	
 	//overload to remove sub-value
 	C++:
-		bool RemoveAttribute(wstring id, wstring name);
+		bool RemoveAttribute(string id, string name);
 	C#:
 		bool RemoveAttribute(string id, string name);
 	Javascript:
@@ -456,7 +456,7 @@ RemoveAttribute - removes an attribute and value from the current context.  Over
 		
 SetROMObjectValue - Sets an object node attr-value pair.  Object nodes themselves can be assigned values independent of any child attributes or their values.  In XML, it would look like <Object id="someName" guid="some guid string" yourAttrName="some value".
 	C++:
-		bool SetROMObjectValue(wstring name, wstring value);
+		bool SetROMObjectValue(string name, string value);
 	C#:
 		bool SetROMObjectValue(string name, string value);
 	Javascript:
@@ -464,7 +464,7 @@ SetROMObjectValue - Sets an object node attr-value pair.  Object nodes themselve
 		
 GetROMObjectValue - Retrieves an object node attr-value pair as described above. 
 	C++:
-		wstring GetROMObjectValue(wstring name);
+		string GetROMObjectValue(string name);
 	C#:
 		string GetROMObjectValue(string name);
 	Javascript:
@@ -472,15 +472,15 @@ GetROMObjectValue - Retrieves an object node attr-value pair as described above.
 
 RemoveROMObjectValue - Remvoes an object node attr-value pair from the node.  Returns true on success.
 	C++:
-		bool RemoveROMObjectValue(wstring name);
+		bool RemoveROMObjectValue(string name);
 	C#:
 		bool RemoveROMObjectValue(string name);
 	Javascript:
 		boolean RemoveROMObjectValue(name);
 		
 GetAllAttributes - Returns the collection of all attributes and values for the current object.
-	C++: //check the typedef of FASTMAP_MAPS for your system in the header.  Basically the fastest versions of map<wstring, map<wstring, wstring> > avaailable.
-		FASTMAP_MAPS GetAllAttributes(wstring name);
+	C++: //check the typedef of FASTMAP_MAPS for your system in the header.  Basically the fastest versions of map<string, map<string, string> > avaailable.
+		FASTMAP_MAPS GetAllAttributes(string name);
 	C#:
 		Dictionary<string, Dictionary<string, string> > GetAllAttributes(string name);
 	Javascript:
@@ -489,7 +489,7 @@ GetAllAttributes - Returns the collection of all attributes and values for the c
 EDSEngine Rules Integration
 LoadRules - Loads a rules xml file.  Returns true if successful.
 	C++: 
-		bool LoadRules(wstring name); //supports xml compressed in a zip file
+		bool LoadRules(string name); //supports xml compressed in a zip file
 	C#:
 		bool LoadRules(string name); //supports xml compressed in a zip file
 	Javascript:
@@ -497,7 +497,7 @@ LoadRules - Loads a rules xml file.  Returns true if successful.
 		
 LoadRulesFromString - Loadss rules xml data from a string .  Returns true if successful.
 	C++: 
-		bool LoadRulesFromString(wstring xmlStr);
+		bool LoadRulesFromString(string xmlStr);
 	C#:
 		bool LoadRulesFromString(string xmlStr);
 	Javascript:
@@ -505,75 +505,83 @@ LoadRulesFromString - Loadss rules xml data from a string .  Returns true if suc
 
 EvaluateTable (EvaluateTableForAttr) - Evaluates a rules table by name for the given output against the values stored in the current object context.  Returns a collection of string reuslts.
 	C++:
-		vector<wstring> EvaluateTable(wstring name, wstring output);
+		vector<string> EvaluateTable(const string& tableName, const string& outputAttr);
 	C#:
-		array<string> EvaluateTable(string name, string output);
+		array<string> EvaluateTable(string tableName, string outputAttr);
 	Javascript:
-		array EvaluateTableForAttr(name, output);
+		array EvaluateTableForAttr(tableName, outputAttr);
 		
 	//overloads to force evaluation type as "get-one" or "get-all"
 	C++:
-		vector<wstring> EvaluateTable(wstring name, wstring output, bool bGetAll);
+		vector<string> EvaluateTable(const string& tableName, const string& outputAttr, bool bGetAll);
 	C#:
-		array<string> EvaluateTable(string name, string output, bool bGetAll);
+		array<string> EvaluateTable(string tableName, string outputAttr, bool bGetAll);
 	Javascript:
-		array EvaluateTableForAttr(name, output, bGetAll);
+		array EvaluateTableForAttr(tableName, outputAttr, bGetAll);
 		
 	//overloads to evaluate a table for every output.  Resulting collections will be keyed by output name.
 	C++:
-		map<wstring, vector<wstring> > EvaluateTable(wstring name);
+		map<string, vector<string> > EvaluateTable(const string& tableName);
 	C#:
-		Dictionary< string, array<string> > EvaluateTable(string name);
+		Dictionary< string, array<string> > EvaluateTable(string tableName);
 	Javascript:
-		array EvaluateTable(name);
+		array EvaluateTable(tableName);
 
 	//overloads to force evaluation type as "get-one" or "get-all"
 	C++:
-		map<wstring, vector<wstring> > EvaluateTable(wstring name, bool bGetAll);
+		map<string, vector<string> > EvaluateTable(const string& tableName, bool bGetAll);
 	C#:
-		Dictionary< string, array<string> > EvaluateTable(string name, bool bGetAll);
+		Dictionary< string, array<string> > EvaluateTable(string tableName, bool bGetAll);
 	Javascript:
-		array EvaluateTable(name, bGetAll);
+		array EvaluateTable(tableName, bGetAll);
+		
+GetFirstTableResult - Similar to Evaluate table, but only returns the first result as a single string
+	C++:
+		string GetFirstTableResult(const string& tableName, const string& outputAttr) ;
+	C#:
+		string GetFirstTableResult(string tableName, string outputAttr);
+	Javascipt:
+		string GetFirstTableResult(string tableName, string outputAttr);
 
 ReverseEvaluateTable (ReverseEvaluateTableForAttr) - Evaluates a table in reverse by name for the given input against again the values stored in the current object context.  Returns a collection of string reuslts.  The outputs are treated as inputs and the output as inputs.  No table chaining or scripting is supported in the output, and all tests are direct string compares.  See the EDSEngine documentation for further details.
 
 	C++:
-		vector<wstring> ReverseEvaluateTable(wstring name, wstring output);
+		vector<string> ReverseEvaluateTable(const string& tableName, const string& outputAttr);
 	C#:
-		array<string> ReverseEvaluateTable(string name, string output);
+		array<string> ReverseEvaluateTable(string tableName, string outputAttr);
 	Javascript:
-		array ReverseEvaluateTableForAttr(name, output);
+		array ReverseEvaluateTableForAttr(tableName, outputAttr);
 		
 	//overloads to force evaluation type as "get-one" or "get-all"
 	C++:
-		vector<wstring> ReverseEvaluateTable(wstring name, wstring output, bool bGetAll);
+		vector<string> ReverseEvaluateTable(const string& tableName, const string& outputAttr, bool bGetAll);
 	C#:
-		array<string> ReverseEvaluateTable(string name, string output, bool bGetAll);
+		array<string> ReverseEvaluateTable(string tableName, string outputAttr, bool bGetAll);
 	Javascript:
-		array ReverseEvaluateTableForAttr(name, output, bGetAll);
+		array ReverseEvaluateTableForAttr(tableName, outputAttr, bGetAll);
 		
 	//overloads to evaluate a table for every output.  Resulting collections will be keyed by output name.
 	C++:
-		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring name);
+		map<string, vector<string> > ReverseEvaluateTable(const string& tableName);
 	C#:
-		Dictionary< string, array<string> > ReverseEvaluateTable(string name);
+		Dictionary< string, array<string> > ReverseEvaluateTable(string tableName);
 	Javascript:
-		array ReverseEvaluateTable(name);
+		array ReverseEvaluateTable(tableName);
 
 	//overloads to force evaluation type as "get-one" or "get-all"
 	C++:
-		map<wstring, vector<wstring> > ReverseEvaluateTable(wstring name, bool bGetAll);
+		map<string, vector<string> > ReverseEvaluateTable(const string& tableName, bool bGetAll);
 	C#:
-		Dictionary< string, array<string> > ReverseEvaluateTable(string name, bool bGetAll);
+		Dictionary< string, array<string> > ReverseEvaluateTable(string tableName, bool bGetAll);
 	Javascript:
-		array ReverseEvaluateTable(name, bGetAll);
+		array ReverseEvaluateTable(tableName, bGetAll);
 
 XPATH
 You can perform querys on any object context node as if it was a node in an xml document.
 
 EvaluateXPATH - Performs XPath query, returns result as string.  An XPath query can be a rule table input using the syntax: xpath("your xpath query")
 	C++:
-		wstring EvaluateXPATH(wstring xpath);
+		string EvaluateXPATH(string xpath);
 	C#:
 		string EvaluateXPATH(string xpath);
 	Javascript:
@@ -581,7 +589,7 @@ EvaluateXPATH - Performs XPath query, returns result as string.  An XPath query 
 		
 	//passing a guid will find the node in the current tree with a matching guid and run the query from that context.  Typically not used but available for convienience.
 	C++:
-		wstring EvaluateXPATH(wstring xpath, wstring guid);
+		string EvaluateXPATH(string xpath, string guid);
 	C#:
 		string EvaluateXPATH(string xpath, string guid);
 	Javascript:
@@ -591,7 +599,7 @@ The internal data is not actually stored as XML at all times.  For performance s
 
 SaveXML - Updates and saves the current state to XML.  The indented paramater can apply indetation formatting to the result.
 	C++:
-		wstring SaveXML(bool indented); //indentation only currently works when compiled against the libxml library
+		string SaveXML(bool indented); //indentation only currently works when compiled against the libxml library
 	C#:
 		string SaveXML(bool indented);
 	Javascript:
@@ -599,7 +607,7 @@ SaveXML - Updates and saves the current state to XML.  The indented paramater ca
 
 LoadXML - Sets the current object state to the previously saved XML.  Returns true if successful.
 	C++:
-		bool SaveXML(wstring xmlStr);
+		bool SaveXML(string xmlStr);
 	C#:
 		bool SaveXML(string xmlStr);
 	Javascript:
@@ -609,14 +617,17 @@ Table Debugging
 EDSEngine table debugging is available and triggered slightly differently on the different implementations.
 SetTableDebugHandler - Pushes debugging messages out thorugh a function pointer. 
 	C++:
-		void SetTableDebugHandler(function<void(const wstring&)> debugger); //pass pointer to function or functional object
+		void SetDebugHandler(function<void(const string&)> debugger); //pass pointer to function or functional object
 	Javascript
-		SetTableDebugHandler(func) //pass reference to function
+		DebugHandler //function pointer is a property of the object
 
 DebugHandlerDelegate (property) - The .NET implementation can push messages out to a function delegate.
 
 EnableRemoteDebugger: In C++ and C# attempts to connect and post to a TCP connection specified in the compiled rules all debugging output strings.
 	EnableRemoteDebugger(bool enable)
+	
+SetMaxThreads: In the C++ library allows for multithreaded table solving.
+	SetMaxThreads(size_t threads)
 		
 LinearEngine
 LinearEngine provides a linear, deterministic rules engine based on ROMNode and EDSEngine.  Some methods inherit from the ROMDictionay class/prototype, which handles some of the organizational data.
@@ -624,10 +635,10 @@ LinearEngine provides a linear, deterministic rules engine based on ROMNode and 
 Constructors
 The constructor for LinearEngine simply requires a path string to the souce rules xml or zipped xml file.  Zipped xml files are not supported in javascript.
 	C++:
-		LinearEngine(ROMNode context, wstring dictionaryTable);
+		LinearEngine(ROMNode context, string dictionaryTable);
 		//optional 2-step C++
 		LinearEngine();
-		bool CreateLinearEngine(ROMNode context, wstring dictionaryTable);
+		bool CreateLinearEngine(ROMNode context, string dictionaryTable);
 	C#:
 		LinearEngine(ROMNode context, string dictionaryTable);
 		//optional 2-step C#:
@@ -642,7 +653,7 @@ Behavioral Properties
 		- NORMAL (default).  When a dependent attribute is invalid, the system will attempt to either clear the invalid value and/or set it to a new value
 		- FLAG.  When a dependent attribute is invalid, the system will NOT attempt to either clear the invalid value and/or set it to a new value. It will only mark the attribute as Invalid.
 			
-LoadDictionary - Loads a group of attribues and sets some defualt values based on the evaluation of a "dictionary" rules table.  
+InitializeEngine - Loads a group of attribues and sets some defualt values based on the evaluation of a "dictionary" rules table.  
 Required table outputs:
 	Name: Name of an attribute
 	Description: Description (usually for GUI) of the attribute
@@ -671,7 +682,7 @@ Optional related tables: Reset, Reset_INCBU
 	The Reset_INCBU table is similar to the Reset table, except that it will only operate on attributes that have not been changed by the user.
 
 	C++:
-		void LoadDictionary(wstring dictionaryTable);
+		void LoadDictionary(string dictionaryTable);
 	C#:
 		void LoadDictionary(string dictionaryTable);
 	Javascript:
@@ -679,7 +690,7 @@ Optional related tables: Reset, Reset_INCBU
 		
 	GetDictionaryAttr - Obtains some properties of a given dictionary attribute.
 	C++:
-		ROMDictionaryAttribute* GetDictionaryAttr(wstring dictAttrName);
+		ROMDictionaryAttribute* GetDictionaryAttr(string dictAttrName);
 	C#:
 		ROMDictionaryAttribute GetDictionaryAttr(string dictAttrName);
 	Javascript:
@@ -687,7 +698,7 @@ Optional related tables: Reset, Reset_INCBU
 		
 	GetAllDictionaryAttrs - Obtains a collection of all the attributes in the current dictionary as ROMDictionaryAttribute objects
 	C++:
-		map<wstring, ROMDictionaryAttribute*> GetAllDictionaryAttrs(wstring dictAttrName);
+		map<string, ROMDictionaryAttribute*> GetAllDictionaryAttrs(string dictAttrName);
 	C#:
 		Dictionary<string, ROMDictionaryAttribute> GetAllDictionaryAttrs(string dictAttrName);
 	Javascript:
@@ -695,7 +706,7 @@ Optional related tables: Reset, Reset_INCBU
 	
 	EvaluateForAttribute - Performs an evaluation of the current attribute given a new value, and optioanlly reevaluates any dependent attributes.	
 	C++:
-		void EvaluateForAttribute(wstring dictAttrName, wstring newValue);
+		void EvaluateForAttribute(string dictAttrName, string newValue);
 	C#:
 		void EvaluateForAttribute(string dictAttrName, string newVaule);
 	Javascript:
@@ -703,7 +714,7 @@ Optional related tables: Reset, Reset_INCBU
 	
 	//explicitly specifiy whether to reevaluate any dependents
 	C++:
-		void EvaluateForAttribute(wstring dictAttrName, wstring newValue, bool bEvalDependents);
+		void EvaluateForAttribute(string dictAttrName, string newValue, bool bEvalDependents);
 	C#:
 		void EvaluateForAttribute(string dictAttrName, string newVaule, bool bEvalDependents);
 	Javascript:
@@ -711,7 +722,7 @@ Optional related tables: Reset, Reset_INCBU
 		
 	//multiple value set
 	C++:
-		void EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues);
+		void EvaluateForAttribute(string dictAttrName, vector<string> newValues);
 	C#:
 		void EvaluateForAttribute(string dictAttrName, array<string> newValues);
 	Javascript:
@@ -719,7 +730,7 @@ Optional related tables: Reset, Reset_INCBU
 	
 	//explicitly specifiy whether to reevaluate any dependents on a multiple value set
 	C++:
-		void EvaluateForAttribute(wstring dictAttrName, vector<wstring> newValues, bool bEvalDependents);
+		void EvaluateForAttribute(string dictAttrName, vector<string> newValues, bool bEvalDependents);
 	C#:
 		void EvaluateForAttribute(string dictAttrName, array<string> newValues, bool bEvalDependents);
 	Javascript:
@@ -751,7 +762,7 @@ Optional related tables: Reset, Reset_INCBU
 	
 	GetTriggers - Returns collection of dependents as a collection indexed by trigger name
 	C++:
-		map<wstring, vector<wstring> > GetTriggers();
+		map<string, vector<string> > GetTriggers();
 	C#:
 		Dictionary<string, array<string> > GetTriggers();
 	Javascript:
