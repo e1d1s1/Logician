@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <DecisionLogicProject connection="localhost:11000">
   <DataSet debug="0">
-    <DataSetName>AdditionalCat.xml</DataSetName>
-    <RelativePath>CatalogRules/</RelativePath>
-  </DataSet>
-  <DataSet debug="0">
-    <DataSetName>AdditionalOption.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="0">
     <DataSetName>BoreDiameter.xml</DataSetName>
     <RelativePath></RelativePath>
   </DataSet>
   <DataSet debug="0">
-    <DataSetName>BoreRodCat.xml</DataSetName>
+    <DataSetName>BoreCat.xml</DataSetName>
     <RelativePath>CatalogRules/</RelativePath>
   </DataSet>
   <DataSet debug="0">
@@ -25,7 +17,7 @@
     <RelativePath></RelativePath>
   </DataSet>
   <DataSet debug="0">
-    <DataSetName>CushionCat.xml</DataSetName>
+    <DataSetName>CushionHeadCat.xml</DataSetName>
     <RelativePath>CatalogRules/</RelativePath>
   </DataSet>
   <DataSet debug="0">
@@ -33,7 +25,7 @@
     <RelativePath></RelativePath>
   </DataSet>
   <DataSet debug="0">
-    <DataSetName>CylinderCat.xml</DataSetName>
+    <DataSetName>PistonCat.xml</DataSetName>
     <RelativePath>CatalogRules/</RelativePath>
   </DataSet>
   <DataSet debug="0">
@@ -53,22 +45,6 @@
     <RelativePath></RelativePath>
   </DataSet>
   <DataSet debug="0">
-    <DataSetName>ExtraCat.xml</DataSetName>
-    <RelativePath>CatalogRules/</RelativePath>
-  </DataSet>
-  <DataSet debug="0">
-    <DataSetName>ExtraRodProtection.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="0">
-    <DataSetName>ExtraRodProtectionFraction.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="0">
-    <DataSetName>ExtraRodProtectionWhole.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="0">
     <DataSetName>GlobalORs.xml</DataSetName>
     <RelativePath></RelativePath>
   </DataSet>
@@ -80,16 +56,8 @@
     <DataSetName>MountingCat.xml</DataSetName>
     <RelativePath>CatalogRules/</RelativePath>
   </DataSet>
-  <DataSet debug="1">
-    <DataSetName>MountingStyle.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
   <DataSet debug="0">
-    <DataSetName>OptionCap.xml</DataSetName>
-    <RelativePath></RelativePath>
-  </DataSet>
-  <DataSet debug="0">
-    <DataSetName>OptionHead.xml</DataSetName>
+    <DataSetName>MountingType.xml</DataSetName>
     <RelativePath></RelativePath>
   </DataSet>
   <DataSet debug="0">
@@ -97,7 +65,7 @@
     <RelativePath></RelativePath>
   </DataSet>
   <DataSet debug="0">
-    <DataSetName>PortLocationCat.xml</DataSetName>
+    <DataSetName>PortLocationHeadCat.xml</DataSetName>
     <RelativePath>CatalogRules/</RelativePath>
   </DataSet>
   <DataSet debug="0">
@@ -133,11 +101,43 @@
     <RelativePath>CatalogRules/</RelativePath>
   </DataSet>
   <DataSet debug="0">
-    <DataSetName>SealingSystem.xml</DataSetName>
+    <DataSetName>PistonSeals.xml</DataSetName>
     <RelativePath></RelativePath>
   </DataSet>
   <DataSet debug="1">
     <DataSetName>StrokeFractionCat.xml</DataSetName>
+    <RelativePath>CatalogRules/</RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>CylinderSeriesCat.xml</DataSetName>
+    <RelativePath>CatalogRules/</RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>RodSizeCat.xml</DataSetName>
+    <RelativePath>CatalogRules/</RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>PistonType.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>SealingSystem.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>PortLocationCapCat.xml</DataSetName>
+    <RelativePath>CatalogRules/</RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>CushionCat.xml</DataSetName>
+    <RelativePath>CatalogRules/</RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>Cushion.xml</DataSetName>
+    <RelativePath></RelativePath>
+  </DataSet>
+  <DataSet debug="0">
+    <DataSetName>CushionCapCat.xml</DataSetName>
     <RelativePath>CatalogRules/</RelativePath>
   </DataSet>
   <Compiler>
@@ -193,217 +193,167 @@ from xml import *</Python>
   </Compiler>
   <Tokens>
     <Token id="1"></Token>
-    <Token id="100">0</Token>
-    <Token id="197">0.0625</Token>
-    <Token id="198">0.125</Token>
-    <Token id="199">0.1875</Token>
-    <Token id="200">0.25</Token>
-    <Token id="201">0.3125</Token>
-    <Token id="202">0.375</Token>
-    <Token id="203">0.4375</Token>
-    <Token id="204">0.5</Token>
-    <Token id="205">0.5625</Token>
-    <Token id="206">0.625</Token>
-    <Token id="207">0.6875</Token>
-    <Token id="208">0.75</Token>
-    <Token id="209">0.8125</Token>
-    <Token id="210">0.875</Token>
-    <Token id="211">0.9375</Token>
-    <Token id="163">01</Token>
-    <Token id="164">09</Token>
-    <Token id="6">1</Token>
-    <Token id="45">1-3/4</Token>
-    <Token id="44">1-3/8</Token>
-    <Token id="40">10</Token>
-    <Token id="165">11</Token>
-    <Token id="41">12</Token>
-    <Token id="42">14</Token>
-    <Token id="166">15</Token>
-    <Token id="43">16</Token>
-    <Token id="7">2</Token>
-    <Token id="46">2-1/2</Token>
-    <Token id="94">2000 psi Hydraulic</Token>
-    <Token id="167">24</Token>
-    <Token id="168">25</Token>
-    <Token id="95">250 psi Pneumatic</Token>
-    <Token id="8">3</Token>
-    <Token id="47">3-1/2</Token>
-    <Token id="93">3000 psi Hydraulic</Token>
-    <Token id="169">33</Token>
-    <Token id="170">34</Token>
-    <Token id="9">4</Token>
-    <Token id="171">41</Token>
-    <Token id="36">5</Token>
-    <Token id="48">5-1/2</Token>
-    <Token id="37">6</Token>
-    <Token id="38">7</Token>
-    <Token id="39">8</Token>
-    <Token id="49">9</Token>
-    <Token id="180">@1</Token>
-    <Token id="182">@1-3/4</Token>
-    <Token id="181">@1-3/8</Token>
-    <Token id="183">@2</Token>
-    <Token id="184">@2-1/2</Token>
-    <Token id="185">@3</Token>
-    <Token id="186">@3-1/2</Token>
-    <Token id="187">@4</Token>
-    <Token id="188">@5-1/2</Token>
-    <Token id="10">A</Token>
-    <Token id="98">AM</Token>
-    <Token id="142">Additional Options</Token>
-    <Token id="123">AdditionalOption</Token>
-    <Token id="33">Air Bleed</Token>
-    <Token id="11">B</Token>
-    <Token id="178">BSPP (British Parallel Thread)</Token>
-    <Token id="131">Bore (inches)</Token>
-    <Token id="111">BoreDiameter</Token>
-    <Token id="12">C</Token>
-    <Token id="154">Cap Clevis</Token>
-    <Token id="156">Cap Rectangular</Token>
-    <Token id="215">Classic (Chevron/C.I. Rings)</Token>
-    <Token id="138">Cushion Cap</Token>
-    <Token id="137">Cushion Head</Token>
-    <Token id="119">CushionCap</Token>
-    <Token id="118">CushionHead</Token>
-    <Token id="172">Custom</Token>
-    <Token id="139">Cylinder Stroke (1 - 99 15/16)</Token>
-    <Token id="109">CylinderSeries</Token>
-    <Token id="120">CylinderStroke</Token>
-    <Token id="122">CylinderStrokeFraction</Token>
-    <Token id="141">CylinderStrokeFraction (Hidden)</Token>
-    <Token id="121">CylinderStrokeWhole</Token>
-    <Token id="140">CylinderStrokeWhole (Hidden)</Token>
-    <Token id="13">D</Token>
-    <Token id="50">DE</Token>
-    <Token id="51">DH</Token>
-    <Token id="159">Double Rod Side Lug</Token>
-    <Token id="161">Double Rod, Intermediate Trunnion</Token>
-    <Token id="162">Double Rod, No Mount</Token>
-    <Token id="160">Double Rod, Rectangular</Token>
-    <Token id="14">E</Token>
-    <Token id="150">EDIT</Token>
-    <Token id="195">Extended Int. Male UN Thd.</Token>
-    <Token id="194">Extended Small Male UN Thd.</Token>
-    <Token id="32">Extra Rod Protection</Token>
-    <Token id="143">Extra Rod Protection (up to 9 inches)</Token>
-    <Token id="124">ExtraRodProtection</Token>
-    <Token id="126">ExtraRodProtectionFraction</Token>
-    <Token id="145">ExtraRodProtectionFraction (Hidden)</Token>
-    <Token id="125">ExtraRodProtectionWhole</Token>
-    <Token id="144">ExtraRodProtectionWhole (Hidden)</Token>
-    <Token id="15">F</Token>
-    <Token id="52">FH</Token>
-    <Token id="53">FL</Token>
-    <Token id="54">FM</Token>
-    <Token id="16">G</Token>
-    <Token id="34">Gland Drain</Token>
-    <Token id="193">Grooved End</Token>
-    <Token id="17">H</Token>
-    <Token id="55">HL</Token>
-    <Token id="56">HM</Token>
-    <Token id="57">HP</Token>
-    <Token id="153">Head Rectangular</Token>
-    <Token id="214">High Temperature</Token>
-    <Token id="192">Int. Male UN Thread</Token>
-    <Token id="157">Intermediate Trunnion</Token>
-    <Token id="18">J</Token>
-    <Token id="19">K</Token>
-    <Token id="58">KM</Token>
-    <Token id="59">KP</Token>
-    <Token id="60">KV</Token>
-    <Token id="20">L</Token>
-    <Token id="61">LP</Token>
-    <Token id="62">LU</Token>
-    <Token id="63">LW</Token>
-    <Token id="213">Low Friction</Token>
-    <Token id="21">M</Token>
-    <Token id="97">MM</Token>
-    <Token id="64">MU</Token>
-    <Token id="65">MV</Token>
-    <Token id="66">MZ</Token>
-    <Token id="196">Male Thread</Token>
-    <Token id="129">Mill Cylinder Series</Token>
-    <Token id="130">Mounting Style</Token>
-    <Token id="110">MountingStyle</Token>
-    <Token id="22">N</Token>
-    <Token id="69">N1</Token>
-    <Token id="173">NPTF</Token>
+    <Token id="57">0</Token>
+    <Token id="132">0.0625</Token>
+    <Token id="133">0.125</Token>
+    <Token id="134">0.1875</Token>
+    <Token id="135">0.25</Token>
+    <Token id="136">0.3125</Token>
+    <Token id="137">0.375</Token>
+    <Token id="138">0.4375</Token>
+    <Token id="139">0.5</Token>
+    <Token id="140">0.5625</Token>
+    <Token id="141">0.625</Token>
+    <Token id="142">0.6875</Token>
+    <Token id="143">0.75</Token>
+    <Token id="144">0.8125</Token>
+    <Token id="145">0.875</Token>
+    <Token id="146">0.9375</Token>
+    <Token id="17">02</Token>
+    <Token id="18">03</Token>
+    <Token id="19">04</Token>
+    <Token id="20">05</Token>
+    <Token id="21">06</Token>
+    <Token id="22">07</Token>
+    <Token id="23">08</Token>
+    <Token id="41">1</Token>
+    <Token id="116">1-3/4</Token>
+    <Token id="114">1-3/8</Token>
+    <Token id="13">10</Token>
+    <Token id="14">12</Token>
+    <Token id="15">14</Token>
+    <Token id="16">16</Token>
+    <Token id="6">2</Token>
+    <Token id="44">2 piece Steel</Token>
+    <Token id="118">2-1/2</Token>
+    <Token id="55">200 psi Pneumatic</Token>
+    <Token id="54">2000 psi Hydraulic</Token>
+    <Token id="7">3</Token>
+    <Token id="120">3-1/2</Token>
+    <Token id="53">3000 psi Hydraulic</Token>
+    <Token id="8">4</Token>
+    <Token id="124">4-1/4</Token>
+    <Token id="9">5</Token>
+    <Token id="122">5-3/4</Token>
+    <Token id="10">6</Token>
+    <Token id="11">7</Token>
+    <Token id="12">8</Token>
+    <Token id="125">9</Token>
+    <Token id="113">@1</Token>
+    <Token id="117">@1-3/4</Token>
+    <Token id="115">@1-3/8</Token>
+    <Token id="119">@2</Token>
+    <Token id="121">@2-1/2</Token>
+    <Token id="123">@3</Token>
+    <Token id="147">A</Token>
+    <Token id="148">B</Token>
+    <Token id="104">BM</Token>
+    <Token id="98">Base Mount</Token>
+    <Token id="155">Bi-directional with energizer</Token>
+    <Token id="78">Bore (inches)</Token>
+    <Token id="62">BoreDiameter</Token>
+    <Token id="164">Both Ends</Token>
+    <Token id="46">Bronze Clad Steel</Token>
+    <Token id="50">C</Token>
+    <Token id="151">Chevron</Token>
+    <Token id="70">Cushion</Token>
+    <Token id="86">Cushion Cap</Token>
+    <Token id="85">Cushion Head</Token>
+    <Token id="72">CushionCap</Token>
+    <Token id="71">CushionHead</Token>
+    <Token id="87">Cylinder Stroke (1 - 99 15/16)</Token>
+    <Token id="60">CylinderSeries</Token>
+    <Token id="73">CylinderStroke</Token>
+    <Token id="75">CylinderStrokeFraction</Token>
+    <Token id="89">CylinderStrokeFraction (Hidden)</Token>
+    <Token id="74">CylinderStrokeWhole</Token>
+    <Token id="88">CylinderStrokeWhole (Hidden)</Token>
+    <Token id="149">D</Token>
+    <Token id="45">Ductile Cast Iron</Token>
+    <Token id="43">Ductile Iron or Steel</Token>
+    <Token id="150">E</Token>
+    <Token id="92">EDIT</Token>
+    <Token id="112">F</Token>
+    <Token id="103">FC</Token>
+    <Token id="105">FF</Token>
+    <Token id="97">Female Clevis</Token>
+    <Token id="162">Front End</Token>
+    <Token id="99">Front Flange</Token>
+    <Token id="111">J</Token>
+    <Token id="158">MA02</Token>
+    <Token id="101">MC</Token>
+    <Token id="159">MH01</Token>
+    <Token id="160">MH31</Token>
+    <Token id="95">Male Clevis</Token>
+    <Token id="76">Mill Cylinder Series</Token>
+    <Token id="77">Mounting Type</Token>
+    <Token id="61">MountingType</Token>
+    <Token id="165">N</Token>
+    <Token id="107">NPT pipe thread</Token>
     <Token id="2">NULL</Token>
-    <Token id="67">NV</Token>
-    <Token id="68">NW</Token>
-    <Token id="158">No Mount</Token>
-    <Token id="5">None</Token>
-    <Token id="212">Normal</Token>
-    <Token id="147">Option Cap</Token>
-    <Token id="146">Option Head</Token>
-    <Token id="128">OptionCap</Token>
-    <Token id="127">OptionHead</Token>
-    <Token id="179">Oversize BSPP</Token>
-    <Token id="174">Oversize NPTF</Token>
-    <Token id="176">Oversize SAE/UN O-Ring</Token>
-    <Token id="23">P</Token>
-    <Token id="191">Plain - No Attachment</Token>
-    <Token id="136">Port Cap</Token>
-    <Token id="135">Port Head</Token>
-    <Token id="117">PortLocationCap</Token>
-    <Token id="116">PortLocationHead</Token>
-    <Token id="115">Ports</Token>
-    <Token id="35">Proximity Sensor</Token>
-    <Token id="24">R</Token>
-    <Token id="72">R1</Token>
-    <Token id="73">R4</Token>
-    <Token id="70">RW</Token>
-    <Token id="71">RZ</Token>
-    <Token id="132">Rod (inches)</Token>
-    <Token id="133">Rod End Types</Token>
-    <Token id="112">RodDiameter</Token>
-    <Token id="113">RodEndTypes</Token>
-    <Token id="25">S</Token>
-    <Token id="74">S1</Token>
-    <Token id="75">S4</Token>
-    <Token id="76">S6</Token>
-    <Token id="177">SAE 4-Bolt Flange</Token>
-    <Token id="175">SAE/UN Straight Thread O-Ring</Token>
-    <Token id="149">SINGLESELECT</Token>
-    <Token id="151">STATIC</Token>
-    <Token id="134">Sealing System</Token>
-    <Token id="114">SealingSystem</Token>
-    <Token id="189">Short Female UN Thread</Token>
-    <Token id="152">Side Lug (Foot)</Token>
-    <Token id="190">Small Male UN Thread</Token>
-    <Token id="155">Spherical Bearing</Token>
-    <Token id="26">T</Token>
-    <Token id="77">T4</Token>
-    <Token id="78">T7</Token>
-    <Token id="27">U</Token>
-    <Token id="79">U7</Token>
-    <Token id="80">U8</Token>
-    <Token id="28">V</Token>
-    <Token id="29">W</Token>
-    <Token id="96">WM</Token>
-    <Token id="103">We should handle the next 2 in our js code and avoid them, but leaving here just in case</Token>
-    <Token id="31">X</Token>
-    <Token id="81">XX</Token>
-    <Token id="30">Y</Token>
-    <Token id="99">YY</Token>
-    <Token id="106">eval(AdditionalCat, Code)</Token>
-    <Token id="84">eval(BoreRodCat, Code)</Token>
-    <Token id="89">eval(CushionCat, Code)</Token>
-    <Token id="82">eval(CylinderCat, Code)</Token>
-    <Token id="92">eval(ExtraCat, Code)</Token>
-    <Token id="83">eval(MountingCat, Code)</Token>
-    <Token id="88">eval(PortLocationCat, Code)</Token>
-    <Token id="87">eval(PortStyleCat, Code)</Token>
-    <Token id="85">eval(RodEndCat, Code)</Token>
-    <Token id="105">eval(RodFractionCat, Code)</Token>
-    <Token id="86">eval(SealingCat, Code)</Token>
-    <Token id="91">eval(StrokeFractionCat, Code)</Token>
-    <Token id="90">get(CylinderStrokeWhole)</Token>
-    <Token id="104">get(ExtraRodProtectionWhole)</Token>
-    <Token id="101">js(getFractionalPart("get(CylinderStroke)"))</Token>
-    <Token id="107">js(getFractionalPart("get(ExtraRodProtection)"))</Token>
-    <Token id="102">js(getIntegerPart("get(CylinderStroke)"))</Token>
-    <Token id="108">js(getIntegerPart("get(ExtraRodProtection)"))</Token>
-    <Token id="148">~</Token>
+    <Token id="40">None</Token>
+    <Token id="47">Other</Token>
+    <Token id="110">P</Token>
+    <Token id="153">PTFE (Teflon)</Token>
+    <Token id="82">Piston Seals</Token>
+    <Token id="81">Piston Type</Token>
+    <Token id="66">PistonSeals</Token>
+    <Token id="65">PistonType</Token>
+    <Token id="152">Polypack style</Token>
+    <Token id="84">Port Cap</Token>
+    <Token id="83">Port Head</Token>
+    <Token id="69">PortLocationCap</Token>
+    <Token id="68">PortLocationHead</Token>
+    <Token id="67">Ports</Token>
+    <Token id="49">R</Token>
+    <Token id="102">RF</Token>
+    <Token id="163">Read End</Token>
+    <Token id="96">Rear Flange</Token>
+    <Token id="79">Rod (inches)</Token>
+    <Token id="80">Rod End Types</Token>
+    <Token id="63">RodDiameter</Token>
+    <Token id="64">RodEndTypes</Token>
+    <Token id="51">S</Token>
+    <Token id="109">SAE 4-Bolt Flange</Token>
+    <Token id="108">SAE “0” Ring Boss</Token>
+    <Token id="130">SF</Token>
+    <Token id="91">SINGLESELECT</Token>
+    <Token id="129">SM</Token>
+    <Token id="131">SS</Token>
+    <Token id="93">STATIC</Token>
+    <Token id="128">Special</Token>
+    <Token id="127">Standard Female</Token>
+    <Token id="126">Standard Male</Token>
+    <Token id="156">T</Token>
+    <Token id="100">TN</Token>
+    <Token id="94">Trunnion</Token>
+    <Token id="157">U</Token>
+    <Token id="154">U-cup</Token>
+    <Token id="48">W</Token>
+    <Token id="52">X</Token>
+    <Token id="24">XX</Token>
+    <Token id="56">YY</Token>
+    <Token id="27">eval(BoreCat, Code)</Token>
+    <Token id="37">eval(CushionCapCat, Code)</Token>
+    <Token id="35">eval(CushionCat, Code)</Token>
+    <Token id="36">eval(CushionHeadCat, Code)</Token>
+    <Token id="25">eval(CylinderSeriesCat, Code)</Token>
+    <Token id="26">eval(MountingCat, Code)</Token>
+    <Token id="30">eval(PistonCat, Code)</Token>
+    <Token id="34">eval(PortLocationCapCat, Code)</Token>
+    <Token id="33">eval(PortLocationHeadCat, Code)</Token>
+    <Token id="32">eval(PortStyleCat, Code)</Token>
+    <Token id="29">eval(RodEndCat, Code)</Token>
+    <Token id="28">eval(RodSizeCat, Code)</Token>
+    <Token id="31">eval(SealingCat, Code)</Token>
+    <Token id="39">eval(StrokeFractionCat, Code)</Token>
+    <Token id="166">get(CushionCap)</Token>
+    <Token id="42">get(CushionHead)</Token>
+    <Token id="38">get(CylinderStrokeWhole)</Token>
+    <Token id="161">get(PortLocationCap)</Token>
+    <Token id="106">get(PortLocationHead)</Token>
+    <Token id="58">js(getFractionalPart("get(CylinderStroke)"))</Token>
+    <Token id="59">js(getIntegerPart("get(CylinderStroke)"))</Token>
+    <Token id="90">~</Token>
   </Tokens>
 </DecisionLogicProject>

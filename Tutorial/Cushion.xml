@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="ExtraRodProtection" getall="true">
+  <Table name="Cushion" getall="true">
     <Inputs>
-      <Attr>AdditionalOption</Attr>
-      <Value operation="1">Extra Rod Protection</Value>
+      <Attr/>
+      <Value/>
       <Value/>
       <Value/>
       <Value/>
@@ -15,11 +15,11 @@
       <Value/>
     </Inputs>
     <Outputs>
-      <Attr>ExtraRodProtection</Attr>
-      <Value operation="1">YY</Value>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Attr>Cushion</Attr>
+      <Value operation="1">Front End</Value>
+      <Value operation="1">Read End</Value>
+      <Value operation="1">Both Ends</Value>
+      <Value operation="1">None</Value>
       <Value/>
       <Value/>
       <Value/>

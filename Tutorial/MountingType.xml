@@ -1,7 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="MountingCat" getall="false">
+  <Table name="MountingType" getall="true">
     <Inputs>
+      <Attr/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
       <Attr>MountingType</Attr>
       <Value operation="1">Trunnion</Value>
       <Value operation="1">Male Clevis</Value>
@@ -16,16 +39,7 @@
       <Value/>
       <Value/>
       <Value/>
-    </Inputs>
-    <Outputs>
-      <Attr>Code</Attr>
-      <Value operation="1">TN</Value>
-      <Value operation="1">MC</Value>
-      <Value operation="1">RF</Value>
-      <Value operation="1">FC</Value>
-      <Value operation="1">BM</Value>
-      <Value operation="1">FF</Value>
-      <Value operation="1">XX</Value>
+      <Value/>
       <Value/>
       <Value/>
       <Value/>
@@ -34,6 +48,13 @@
       <Value/>
     </Outputs>
     <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>

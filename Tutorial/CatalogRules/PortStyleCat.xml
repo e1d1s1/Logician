@@ -3,35 +3,23 @@
   <Table name="PortStyleCat" getall="false">
     <Inputs>
       <Attr>Ports</Attr>
-      <Value operation="1">NPTF</Value>
-      <Value operation="1">Oversize NPTF</Value>
-      <Value operation="1">SAE/UN Straight Thread O-Ring</Value>
-      <Value operation="1">Oversize SAE/UN O-Ring</Value>
+      <Value operation="1">NPT pipe thread</Value>
+      <Value operation="1">SAE “0” Ring Boss</Value>
       <Value operation="1">SAE 4-Bolt Flange</Value>
-      <Value operation="1">BSPP (British Parallel Thread)</Value>
-      <Value operation="1">Oversize BSPP</Value>
       <Value/>
       <Value/>
       <Value/>
     </Inputs>
     <Outputs>
       <Attr>Code</Attr>
-      <Value operation="1">1</Value>
-      <Value operation="1">2</Value>
-      <Value operation="1">3</Value>
-      <Value operation="1">4</Value>
-      <Value operation="1">6</Value>
-      <Value operation="1">7</Value>
-      <Value operation="1">8</Value>
+      <Value operation="1">P</Value>
+      <Value operation="1">J</Value>
+      <Value operation="1">F</Value>
       <Value operation="1">X</Value>
       <Value/>
       <Value/>
     </Outputs>
     <Status>
-      <RuleStatus enabled="true"/>
-      <RuleStatus enabled="true"/>
-      <RuleStatus enabled="true"/>
-      <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>

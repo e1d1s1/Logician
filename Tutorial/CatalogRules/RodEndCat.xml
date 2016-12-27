@@ -3,28 +3,28 @@
   <Table name="RodEndCat" getall="false">
     <Inputs>
       <Attr>RodEndTypes</Attr>
-      <Value operation="1">Short Female UN Thread</Value>
-      <Value operation="1">Small Male UN Thread</Value>
-      <Value operation="1">Plain - No Attachment</Value>
-      <Value operation="1">Int. Male UN Thread</Value>
-      <Value operation="1">Grooved End</Value>
-      <Value operation="1">Extended Small Male UN Thd.</Value>
-      <Value operation="1">Extended Int. Male UN Thd.</Value>
-      <Value operation="1">Male Thread</Value>
+      <Value operation="1">Standard Male</Value>
+      <Value operation="1">Standard Female</Value>
+      <Value operation="1">Special</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
       <Value/>
       <Value/>
     </Inputs>
     <Outputs>
       <Attr>Code</Attr>
-      <Value operation="1">2</Value>
-      <Value operation="1">5</Value>
-      <Value operation="1">6</Value>
-      <Value operation="1">9</Value>
-      <Value operation="1">G</Value>
-      <Value operation="1">K</Value>
-      <Value operation="1">M</Value>
-      <Value operation="1">R</Value>
-      <Value operation="1">X</Value>
+      <Value operation="1">SM</Value>
+      <Value operation="1">SF</Value>
+      <Value operation="1">SS</Value>
+      <Value operation="1">XX</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
       <Value/>
     </Outputs>
     <Status>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="ExtraRodProtectionFraction" getall="true">
+  <Table name="PistonType" getall="true">
     <Inputs>
-      <Attr>ExtraRodProtection</Attr>
-      <Value operation="16">0</Value>
+      <Attr/>
+      <Value/>
       <Value/>
       <Value/>
       <Value/>
@@ -15,19 +15,18 @@
       <Value/>
     </Inputs>
     <Outputs>
-      <Attr>ExtraRodProtectionFraction</Attr>
-      <Value operation="10241">js(getFractionalPart("get(ExtraRodProtection)"))</Value>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Attr>PistonType</Attr>
+      <Value operation="1">Ductile Iron or Steel</Value>
+      <Value operation="1">2 piece Steel</Value>
+      <Value operation="1">Ductile Cast Iron</Value>
+      <Value operation="1">Bronze Clad Steel</Value>
+      <Value operation="1">Other</Value>
       <Value/>
       <Value/>
       <Value/>
       <Value/>
       <Value/>
     </Outputs>
-    <FormulaInput>ExtraRodProtection</FormulaInput>
     <Status>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>

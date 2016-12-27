@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="SealingSystem" getall="true">
+  <Table name="PistonSeals" getall="true">
     <Inputs>
       <Attr/>
       <Value/>
@@ -15,13 +15,13 @@
       <Value/>
     </Inputs>
     <Outputs>
-      <Attr>SealingSystem</Attr>
-      <Value operation="1">Normal</Value>
-      <Value operation="1">Low Friction</Value>
-      <Value operation="1">High Temperature</Value>
-      <Value operation="1">Classic (Chevron/C.I. Rings)</Value>
-      <Value/>
-      <Value/>
+      <Attr>PistonSeals</Attr>
+      <Value operation="1">Chevron</Value>
+      <Value operation="1">Polypack style</Value>
+      <Value operation="1">PTFE (Teflon)</Value>
+      <Value operation="1">U-cup</Value>
+      <Value operation="1">Bi-directional with energizer</Value>
+      <Value operation="1">Other</Value>
       <Value/>
       <Value/>
       <Value/>

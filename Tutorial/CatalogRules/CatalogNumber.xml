@@ -24,20 +24,28 @@
       <Value/>
       <Value/>
       <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
     </Inputs>
     <Outputs>
       <Attr>Code</Attr>
-      <Value operation="4096">eval(CylinderCat, Code)</Value>
+      <Value operation="4096">eval(CylinderSeriesCat, Code)</Value>
       <Value operation="4096">eval(MountingCat, Code)</Value>
-      <Value operation="4096">eval(BoreRodCat, Code)</Value>
+      <Value operation="4096">eval(BoreCat, Code)</Value>
+      <Value operation="4096">eval(RodSizeCat, Code)</Value>
       <Value operation="4096">eval(RodEndCat, Code)</Value>
+      <Value operation="4096">eval(PistonCat, Code)</Value>
       <Value operation="4096">eval(SealingCat, Code)</Value>
       <Value operation="4096">eval(PortStyleCat, Code)</Value>
-      <Value operation="4096">eval(PortLocationCat, Code)</Value>
+      <Value operation="4096">eval(PortLocationHeadCat, Code)</Value>
+      <Value operation="4096">eval(PortLocationCapCat, Code)</Value>
       <Value operation="4096">eval(CushionCat, Code)</Value>
+      <Value operation="4096">eval(CushionHeadCat, Code)</Value>
+      <Value operation="4096">eval(CushionCapCat, Code)</Value>
       <Value operation="2049">get(CylinderStrokeWhole)</Value>
       <Value operation="4096">eval(StrokeFractionCat, Code)</Value>
-      <Value operation="4096">eval(ExtraCat, Code)</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -51,6 +59,10 @@
     </Outputs>
     <FormulaInput>CylinderStrokeWhole</FormulaInput>
     <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>

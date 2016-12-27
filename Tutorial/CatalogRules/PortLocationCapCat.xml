@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="ExtraRodProtectionWhole" getall="true">
+  <Table name="PortLocationCapCat" getall="true">
     <Inputs>
-      <Attr>ExtraRodProtection</Attr>
-      <Value operation="16">0</Value>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Attr>PortLocationCap</Attr>
+      <Value operation="1">5</Value>
+      <Value operation="1">6</Value>
+      <Value operation="1">7</Value>
+      <Value operation="1">8</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -15,19 +15,19 @@
       <Value/>
     </Inputs>
     <Outputs>
-      <Attr>ExtraRodProtectionWhole</Attr>
-      <Value operation="10241">js(getIntegerPart("get(ExtraRodProtection)"))</Value>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Attr>Code</Attr>
+      <Value operation="2049">get(PortLocationCap)</Value>
+      <Value operation="2049">get(PortLocationCap)</Value>
+      <Value operation="2049">get(PortLocationCap)</Value>
+      <Value operation="2049">get(PortLocationCap)</Value>
+      <Value operation="1">X</Value>
       <Value/>
       <Value/>
       <Value/>
       <Value/>
       <Value/>
     </Outputs>
-    <FormulaInput>ExtraRodProtection</FormulaInput>
+    <FormulaInput>PortLocationCap</FormulaInput>
     <Status>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>

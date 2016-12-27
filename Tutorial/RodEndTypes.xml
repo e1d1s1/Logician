@@ -16,14 +16,14 @@
     </Inputs>
     <Outputs>
       <Attr>RodEndTypes</Attr>
-      <Value operation="1">Short Female UN Thread</Value>
-      <Value operation="1">Small Male UN Thread</Value>
-      <Value operation="1">Plain - No Attachment</Value>
-      <Value operation="1">Int. Male UN Thread</Value>
-      <Value operation="1">Grooved End</Value>
-      <Value operation="1">Extended Small Male UN Thd.</Value>
-      <Value operation="1">Extended Int. Male UN Thd.</Value>
-      <Value operation="1">Male Thread</Value>
+      <Value operation="1">Standard Male</Value>
+      <Value operation="1">Standard Female</Value>
+      <Value operation="1">Special</Value>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
+      <Value/>
       <Value/>
       <Value/>
     </Outputs>

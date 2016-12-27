@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+  <Table name="CushionHeadCat" getall="false">
+    <Inputs>
+      <Attr>CushionHead</Attr>
+      <Value operation="1">1</Value>
+      <Value operation="1">2</Value>
+      <Value operation="1">3</Value>
+      <Value operation="1">4</Value>
+      <Value/>
+      <Value/>
+    </Inputs>
+    <Outputs>
+      <Attr>Code</Attr>
+      <Value operation="2049">get(CushionHead)</Value>
+      <Value operation="2049">get(CushionHead)</Value>
+      <Value operation="2049">get(CushionHead)</Value>
+      <Value operation="2049">get(CushionHead)</Value>
+      <Value/>
+      <Value/>
+    </Outputs>
+    <FormulaInput>CushionHead</FormulaInput>
+    <Status>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+      <RuleStatus enabled="true"/>
+    </Status>
+  </Table>
+</Tables>

@@ -11,13 +11,13 @@ Title:       Logician: A Table-based Rules Engine In C++/.NET/JavaScript using X
 Author:      Eric D. Schmidt
 Email:       ericdschmidt@digirulesolutions.com
 Member ID:   1152733
-Language:    C++, JavaScript, C#/.NET/WinRT
+Language:    C++, JavaScript, C#/.NET
 Platform:    Windows, Mac, Linux, Web, Mobile
 Technology:  XML, Business Rules & Automation
 Level:       Intermediate
 Description: Overview of a cross-platform spreadsheet-based rules enigne 
              with algorithms implemented in C++ and JavaScript, and wrappers 
-             to C#/.NET/WInRT and Mobile Platforms(via PhoneGap)
+             to C#/.NET
 Section      General Programming
 SubSection   Algorithms & Recipes
 License:     GPL
@@ -200,7 +200,7 @@ When using the ROM component, decision tables are evaluated against a particular
 </p>
 <h2>Tutorial</h2>
 <p>
-In this tutorial we will demonstrate how to model a real world product configurator in both a JavaScript-enabled webpage and a C# WinForms application using the Logician tools (A C++ and Android example is also available).  For this demonstration, we will attempt to model the properties and catalog number generation for a commercially available "Heavy-Duty Imperial Mill Type" Hydraulic Cylider (technical specification PDF with source code)</a>.  Given the formula for the generation of a product catalog number, a simple graphical layout, or group of selections can be defined.  The names of each control will match the "attribute" names we use in the decision tables. 
+In this tutorial we will demonstrate how to model a real world product configurator in both a JavaScript-enabled webpage and a C# WinForms application using the Logician tools (A C++ and Android example is also available).  For this demonstration, we will attempt to model the properties and catalog number generation for a commercially available "Heavy-Duty Imperial Mill Type" Hydraulic Cylider (technical specification PDF with source code).  Given the formula for the generation of a product catalog number, a simple graphical layout, or group of selections can be defined.  The names of each control will match the "attribute" names we use in the decision tables. 
 </p>
 <p>
 Before any rule evaluation can take place, you have to substantiate an instance of the Relational Object Modeler.  You can pass the path to the rules xml file we will create also to load them in the second step, and finally set up the built-in rules engine implementation and apply the rules:
@@ -224,7 +224,7 @@ SINGLESELECT - for controls such as combo-boxes/drop-downs, radio buttons, etc
 <img src="Figure1.png" alt="Dictionary Table"/>
 
 <p>
-The first input is "CylinderSeries".  Being the first parameter of the cylinder configuration, it has no inputs parameters so all the "input" columns can be removed from the table.  From the product documentation we can see that there are 3 possibilities: 3000 psi Hydraulic, 2000 psi Hydraulic, and 250 psi Pneumatic.  We can list them out in 3 separate output cells in a "get all" table, or put all 3 in a single output cell separated by a "|" as described earlier.  In this case, it’s just a matter of your personal style.  Here we will do the latter: 
+The first input is "CylinderSeries".  Being the first parameter of the cylinder configuration, it has no inputs parameters so all the "input" columns can be removed from the table.  From the product documentation we can see that there are 3 possibilities: 3000 psi Hydraulic, 2000 psi Hydraulic, and 200 psi Pneumatic.  We can list them out in 3 separate output cells in a "get all" table, or put all 3 in a single output cell separated by a "|" as described earlier.  In this case, it’s just a matter of your personal style.  Here we will do the latter: 
 </p>
 Figure 2<br />
 <img src="Figure2.png" alt="CylinderSeries rules"/>

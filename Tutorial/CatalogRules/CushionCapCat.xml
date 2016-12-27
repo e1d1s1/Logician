@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="OptionCap" getall="true">
+  <Table name="CushionCapCat" getall="false">
     <Inputs>
-      <Attr>AdditionalOption</Attr>
-      <Value operation="1">OR:LocationNeeded</Value>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Attr>CushionCap</Attr>
+      <Value operation="1">5</Value>
+      <Value operation="1">6</Value>
+      <Value operation="1">7</Value>
+      <Value operation="1">8</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -15,11 +15,11 @@
       <Value/>
     </Inputs>
     <Outputs>
-      <Attr>OptionCap</Attr>
-      <Value operation="1">None|1|2|3|4</Value>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Attr>Code</Attr>
+      <Value operation="2049">get(CushionCap)</Value>
+      <Value operation="2049">get(CushionCap)</Value>
+      <Value operation="2049">get(CushionCap)</Value>
+      <Value operation="2049">get(CushionCap)</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -27,6 +27,7 @@
       <Value/>
       <Value/>
     </Outputs>
+    <FormulaInput>CushionCap</FormulaInput>
     <Status>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>

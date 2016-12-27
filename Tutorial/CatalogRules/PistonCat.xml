@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="OptionHead" getall="true">
+  <Table name="PistonCat" getall="false">
     <Inputs>
-      <Attr>AdditionalOption</Attr>
-      <Value operation="1">OR:LocationNeeded</Value>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Attr>PistonType</Attr>
+      <Value operation="1">Ductile Iron or Steel</Value>
+      <Value operation="1">2 piece Steel</Value>
+      <Value operation="1">Ductile Cast Iron</Value>
+      <Value operation="1">Bronze Clad Steel</Value>
+      <Value operation="1">Other</Value>
       <Value/>
       <Value/>
       <Value/>
@@ -15,12 +15,12 @@
       <Value/>
     </Inputs>
     <Outputs>
-      <Attr>OptionHead</Attr>
-      <Value operation="1">None|1|2|3|4</Value>
-      <Value/>
-      <Value/>
-      <Value/>
-      <Value/>
+      <Attr>Code</Attr>
+      <Value operation="1">W</Value>
+      <Value operation="1">R</Value>
+      <Value operation="1">C</Value>
+      <Value operation="1">S</Value>
+      <Value operation="1">X</Value>
       <Value/>
       <Value/>
       <Value/>

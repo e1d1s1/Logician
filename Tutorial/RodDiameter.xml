@@ -15,6 +15,7 @@
       <Value operation="1">14</Value>
       <Value operation="1">16</Value>
       <Value/>
+      <Value/>
     </Inputs>
     <Outputs>
       <Attr>RodDiameter</Attr>
@@ -23,15 +24,17 @@
       <Value operation="1">@1-3/4|2|2-1/2</Value>
       <Value operation="1">@2|2-1/2|3-1/2</Value>
       <Value operation="1">@2-1/2|3|4</Value>
-      <Value operation="1">@3|3-1/2|5</Value>
-      <Value operation="1">@3-1/2|4|5-1/2</Value>
-      <Value operation="1">@4|5|5-1/2|7</Value>
-      <Value operation="1">@5-1/2|7|8</Value>
-      <Value operation="1">7|9</Value>
-      <Value operation="1">9|10</Value>
+      <Value operation="1">@2-1/2|3-1/2|5</Value>
+      <Value operation="1">@2-1/2|3|4|5-3/4</Value>
+      <Value operation="1">@3|3-1/2|5|5-3/4|7</Value>
+      <Value operation="1">@3|4-1/4|5-3/4|8</Value>
+      <Value operation="1">3-1/2|5-3/4|7|9</Value>
+      <Value operation="1">3-1/2|5-3/4|7|8|10</Value>
+      <Value/>
       <Value/>
     </Outputs>
     <Status>
+      <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>
       <RuleStatus enabled="true"/>

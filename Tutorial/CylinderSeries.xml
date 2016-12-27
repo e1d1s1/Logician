@@ -16,7 +16,7 @@
     </Inputs>
     <Outputs>
       <Attr>CylinderSeries</Attr>
-      <Value operation="1">3000 psi Hydraulic|2000 psi Hydraulic|250 psi Pneumatic</Value>
+      <Value operation="1">3000 psi Hydraulic|2000 psi Hydraulic|200 psi Pneumatic</Value>
       <Value/>
       <Value/>
       <Value/>
