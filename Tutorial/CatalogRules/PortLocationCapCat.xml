@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tables>
-  <Table name="PortLocationCapCat" getall="true">
+  <Table name="PortLocationCapCat" getall="false">
     <Inputs>
       <Attr>PortLocationCap</Attr>
       <Value operation="1">5</Value>

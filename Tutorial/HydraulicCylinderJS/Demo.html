@@ -13,7 +13,6 @@
     <script type="text/javascript">        
         var m_rootNode = null;
         var m_engine = null;
-        var m_rules = null;
         var bLoadingItems = false;
 
         function ReportError(err) {
@@ -33,20 +32,15 @@
         function SetupApplication() {
             try {
                 m_rootNode = new ROMNode("HydraulicCylinder");
-                m_rules = new KnowledgeBase("HydraulicCylinderRules.xml");
-                if (!m_rules.IsOpen()) {
+                if (!m_rootNode.LoadRules("HydraulicCylinderRules.xml"))
+                {
                     alert("Error loading rules file");
                     return;
                 }
-
-                m_rules.DebugHandler = DebugCallback;
-                m_rules.InputValueGetter = function (attrName, obj) {
-                    return obj.GetAttribute(attrName, false);
-                };
-
-                m_rootNode.SetKnowledgeBase(m_rules);
+                
 
                 m_engine = new LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
+                m_engine.SetTableDebugHandler(DebugCallback);
                 m_engine.EvaluateAll();
 
                 UpdateControls();
@@ -217,10 +211,10 @@
                 &nbsp;</td>
         </tr>
         <tr>
-            <td id="lbMountingStyle">
-                lbMountingStyle</td>
+            <td id="lbMountingType">
+                lbMountingType</td>
             <td>
-                <select id="MountingStyle" onchange="comboEvaluate(this)">
+                <select id="MountingType" onchange="comboEvaluate(this)">
                     <option></option>
                 </select></td>
             <td>
@@ -257,10 +251,20 @@
                 &nbsp;</td>
         </tr>
         <tr>
-            <td id="lbSealingSystem">
-                lbSealingSystem</td>
+            <td id="lbPistonType">
+                lbPistonType</td>
             <td>
-                <select id="SealingSystem" onchange="comboEvaluate(this)">
+                <select id="PistonType" onchange="comboEvaluate(this)">
+                    <option></option>
+                </select></td>
+            <td>
+                &nbsp;</td>
+        </tr>
+        <tr>
+            <td id="lbPistonSeals">
+                lbPistonSeals</td>
+            <td>
+                <select id="PistonSeals" onchange="comboEvaluate(this)">
                     <option></option>
                 </select></td>
             <td>
@@ -278,7 +282,7 @@
         </tr>
         <tr>
 			<td>
-                &nbsp;</td>
+                Port Locations</td>
             <td id="lbPortLocationHead">
                 lbPortLocationHead</td>
             <td id="lbPortLocationCap">
@@ -297,8 +301,18 @@
                 </select></td>            
         </tr>
         <tr>
+            <td id="lbCushion">
+                lbCushion</td>
+            <td>
+                <select id="Cushion" onchange="comboEvaluate(this)">
+                    <option></option>
+                </select></td>
+            <td>
+                &nbsp;</td>
+        </tr>
+        <tr>
 			<td>
-                Port Location</td>
+                Cushion Locations</td>
             <td id="lbCushionHead">
                 lbCushionHead</td>
             <td id="lbCushionCap">
@@ -306,7 +320,7 @@
         </tr>
         <tr>
 			<td>
-                Cushion Locations</td>
+                </td>
             <td>
                 <select id="CushionHead" onchange="comboEvaluate(this)">
                     <option></option>
@@ -325,55 +339,7 @@
             <td>
                 &nbsp;</td>
         </tr>
-        <tr>
-            <td id="lbAdditionalOption">
-                lbAdditionalOption</td>
-            <td>
-                <select id="AdditionalOption" onchange="comboEvaluate(this)">
-                    <option></option>
-                </select></td>
-            <td>
-                &nbsp;</td>
-        </tr>
-        <tr>
-			<td>
-                &nbsp;</td>
-            <td id="lbExtraRodProtection">
-                lbExtraRodProtection</td>
-            <td>
-                Position</td>            
-        </tr>
-        <tr>
-			<td>
-                &nbsp;</td>
-            <td>
-                <input id="ExtraRodProtection" onfocus="txtBeginEdit(this)" onblur="txtTextChanged(this)"/>
-            </td>
-            <td>
-				<table>
-					<tr>
-						<td id="lbOptionHead">
-							lbOptionHead
-						</td>
-						<td id="lbOptionCap">
-							lbOptionCap
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<select id="OptionHead" onchange="comboEvaluate(this)">
-								<option></option>
-							</select>
-						</td>
-						<td>
-							<select id="OptionCap" onchange="comboEvaluate(this)">
-								<option></option>
-							</select>
-						</td>
-					</tr>
-				</table>
-            </td>            
-        </tr>
+        
         <tr>
 			<td>
                 &nbsp;</td>

@@ -2,7 +2,7 @@
 <Tables>
   <Table name="SealingCat" getall="false">
     <Inputs>
-      <Attr>SealingSystem</Attr>
+      <Attr>PistonSeals</Attr>
       <Value operation="1">Chevron</Value>
       <Value operation="1">Polypack style</Value>
       <Value operation="1">PTFE (Teflon)</Value>
