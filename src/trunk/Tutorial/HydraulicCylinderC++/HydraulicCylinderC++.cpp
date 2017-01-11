@@ -8,7 +8,7 @@
 // event tables and other macros for wxWidgets
 // ----------------------------------------------------------------------------
 #include "HydraulicCylinderC++.h"
-#include "KnowledgeBase.h"
+#include "EDSEngine/KnowledgeBase.h"
 #include <map>
 #include <iostream>
 #include <fstream>
@@ -113,10 +113,10 @@ MyFrame::MyFrame(const wxString& title)
 		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("CylinderSeries"));
 	sizerGrid->Add(comboCylinderSeries);
 
-	wxStaticText *stMountingStyle = new wxStaticText(panel, LabelCtrl, _T("lbMountingStyle"));
+	wxStaticText *stMountingStyle = new wxStaticText(panel, LabelCtrl, _T("lbMountingType"));
 	sizerGrid->Add(stMountingStyle);
 	wxComboBox *comboMountingStyle = new wxComboBox(panel, ComboCtrl, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("MountingStyle"));
+		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("MountingType"));
 	sizerGrid->Add(comboMountingStyle);
 
 	wxGridSizer *sizeBoreRod = new wxGridSizer(2);
@@ -139,10 +139,16 @@ MyFrame::MyFrame(const wxString& title)
 		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("RodEndTypes"));
 	sizerGrid->Add(comboRodEndTypes);
 
-	wxStaticText *stSealingSystem = new wxStaticText(panel, LabelCtrl, _T("lbSealingSystem"));
+    wxStaticText *stPistonTypes = new wxStaticText(panel, LabelCtrl, _T("lbPistonType"));
+	sizerGrid->Add(stPistonTypes);
+	wxComboBox *comboPistonTypes = new wxComboBox(panel, ComboCtrl, wxEmptyString, wxDefaultPosition,
+		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("PistonType"));
+	sizerGrid->Add(comboPistonTypes);
+
+	wxStaticText *stSealingSystem = new wxStaticText(panel, LabelCtrl, _T("lbPistonSeals"));
 	sizerGrid->Add(stSealingSystem);
 	wxComboBox *comboSealingSystem = new wxComboBox(panel, ComboCtrl, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("SealingSystem"));
+		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("PistonSeals"));
 	sizerGrid->Add(comboSealingSystem);
 
 	wxStaticText *stPorts = new wxStaticText(panel, LabelCtrl, _T("lbPorts"));
@@ -165,6 +171,12 @@ MyFrame::MyFrame(const wxString& title)
 	sizerGrid->AddSpacer(0);
 	sizerGrid->Add(sizerPort);
 
+    wxStaticText *stCushion = new wxStaticText(panel, LabelCtrl, _T("lbCushion"));
+	sizerGrid->Add(stCushion);
+	wxComboBox *comboCushion = new wxComboBox(panel, ComboCtrl, wxEmptyString, wxDefaultPosition,
+		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("Cushion"));
+	sizerGrid->Add(comboCushion);
+
 	wxGridSizer *sizerCushion = new wxGridSizer(2);
 	wxStaticText *stCushionLocationHead = new wxStaticText(panel, LabelCtrl, _T("lbCushionHead"));
 	wxStaticText *stCushionLocationCap = new wxStaticText(panel, LabelCtrl, _T("lbCushionCap"));
@@ -184,36 +196,6 @@ MyFrame::MyFrame(const wxString& title)
 	wxTextCtrl *editCylinderStroke = new wxTextCtrl(panel, EditCtrl, wxEmptyString, wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("CylinderStroke"));
 	sizerGrid->Add(editCylinderStroke);
-
-	wxStaticText *stAdditionalOption = new wxStaticText(panel, LabelCtrl, _T("lbAdditionalOption"));
-	sizerGrid->Add(stAdditionalOption);
-	wxComboBox *comboAdditionalOption = new wxComboBox(panel, ComboCtrl, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("AdditionalOption"));
-	sizerGrid->Add(comboAdditionalOption);
-
-	sizerGrid->AddStretchSpacer();
-	wxGridSizer *sizerOptions = new wxGridSizer(2);
-	wxStaticText *stExtraRodProtection = new wxStaticText(panel, LabelCtrl, _T("lbExtraRodProtection"));
-	wxTextCtrl *editExtraRodProtection = new wxTextCtrl(panel, EditCtrl, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, 0, wxDefaultValidator, _T("ExtraRodProtection"));
-	wxStaticText *stPosition = new wxStaticText(panel, wxID_ANY, _T("Position"));
-	sizerOptions->Add(stExtraRodProtection);
-	sizerOptions->Add(stPosition);
-	sizerOptions->Add(editExtraRodProtection);
-
-	wxGridSizer *sizerPosition = new wxGridSizer(2);
-	wxStaticText *stOptionHead= new wxStaticText(panel, LabelCtrl, _T("lbOptionHead"));
-	wxStaticText *stOptionCap = new wxStaticText(panel, LabelCtrl, _T("lbOptionCap"));
-	wxComboBox *comboOptionHead = new wxComboBox(panel, ComboCtrl, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("OptionHead"));
-	wxComboBox *comboOptionCap = new wxComboBox(panel, ComboCtrl, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("OptionCap"));
-	sizerPosition->Add(stOptionHead);
-	sizerPosition->Add(stOptionCap);
-	sizerPosition->Add(comboOptionHead);
-	sizerPosition->Add(comboOptionCap);
-	sizerOptions->Add(sizerPosition);
-	sizerGrid->Add(sizerOptions);
 
 	wxStaticText *stCatnumLabel= new wxStaticText(panel, wxID_ANY, _T("Catalog#:"));
 	wxStaticText *stCatnum= new wxStaticText(panel, Catalog, _T("XXXXXXXX"));

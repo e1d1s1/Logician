@@ -7,8 +7,8 @@
 // headers
 // ----------------------------------------------------------------------------
 //#define USEDEBUGGER 1 //use this to demonstrate integrated application debugging
-#include "ROMNode.h"
-#include "LinearEngine.h"
+#include "RelationalObjectModel/ROMNode.h"
+#include "RelationalObjectModel/LinearEngine.h"
 
 #ifdef USEDEBUGGER
 #include "LogicianDebugCtrl.h"

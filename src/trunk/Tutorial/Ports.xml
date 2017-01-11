@@ -17,7 +17,7 @@
     <Outputs>
       <Attr>Ports</Attr>
       <Value operation="1">NPT pipe thread</Value>
-      <Value operation="1">SAE “0” Ring Boss</Value>
+      <Value operation="1">SAE 0 Ring Boss</Value>
       <Value operation="1">SAE 4-Bolt Flange</Value>
       <Value/>
       <Value/>

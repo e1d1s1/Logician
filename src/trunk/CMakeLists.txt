@@ -134,6 +134,10 @@ include_directories (
 					
 link_directories(${LIBXML2_LIBRARIES})
 					
+include_directories (                      
+                      .
+                    )
+
 #
 # Move on to building the libraries now.
 #
@@ -141,3 +145,4 @@ link_directories(${LIBXML2_LIBRARIES})
 add_subdirectory(EDSEngine)
 add_subdirectory(RelationalObjectModel)
 add_subdirectory(DecisionLogic)
+add_subdirectory(Tutorial)
