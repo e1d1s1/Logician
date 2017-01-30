@@ -200,13 +200,13 @@ When using the ROM component, decision tables are evaluated against a particular
 </p>
 <h2>Tutorial</h2>
 <p>
-In this tutorial we will demonstrate how to model a real world product configurator in both a JavaScript-enabled webpage and a C# WinForms application using the Logician tools (A C++ and Android example is also available).  For this demonstration, we will attempt to model the properties and catalog number generation for a commercially available "Heavy-Duty Imperial Mill Type" Hydraulic Cylider (technical specification PDF with source code).  Given the formula for the generation of a product catalog number, a simple graphical layout, or group of selections can be defined.  The names of each control will match the "attribute" names we use in the decision tables. 
+In this tutorial we will demonstrate how to model a real world product configurator in both a JavaScript-enabled webpage and a C# WinForms application using the Logician tools (A C++ and Android example is also available).  For this demonstration, we will attempt to model the properties and catalog number generation for a commercially available "Heavy-Duty Mill Type" Hydraulic Cylinder (technical specification PDF with source code).  Given the formula for the generation of a product catalog number, a simple graphical layout, or group of selections can be defined.  The names of each control will match the "attribute" names we use in the decision tables. 
 </p>
 <p>
 Before any rule evaluation can take place, you have to substantiate an instance of the Relational Object Modeler.  You can pass the path to the rules xml file we will create also to load them in the second step, and finally set up the built-in rules engine implementation and apply the rules:
 </p>
 <pre>
-//C# port, Javascript is exactly the same without the namepsaces
+//C# port, JavaScript is exactly the same without the namespaces
 ROMNET.ROMNode m_rootNode = new ROMNode("HydraulicCylinder");
 m_rootNode.LoadRules("HydraulicCylinderRules.xml");
 ROMNET.LinearEngine m_engine = new ROMNET.LinearEngine(m_rootNode, "HydraulicCylinderDictionary");
@@ -266,7 +266,7 @@ Figure 4<br />
 One of the great advantages of using these packages on the web is you can effectively eliminate server callbacks to run business logic and perform page updates.  You have the ability to offload a lot of the application logic and CPU cycles onto the user's browser.  With all of these components working in concert, you have Logician, a powerful, flexible, and open source rules engine application framework. 
 </p>
 <p>
-Download the sample application code in C#, C++, JavaScript, and the Android SDK (via <a href="http://www.phonegap.com">PhoneGap</a> JavaScript wrapping) along with the rule table samples to get a better understanding of the application logic.  Visit our project webpage at <a href="http://logician.sourceforge.net">http://logician.sourceforge.net</a>
+Download the sample application code in C#, C++ and JavaScript along with the rule table samples to get a better understanding of the application logic.  Visit the project webpage at <a href="http://logician.sourceforge.net">http://logician.sourceforge.net</a>
 </p>
 </body>
 </html>
