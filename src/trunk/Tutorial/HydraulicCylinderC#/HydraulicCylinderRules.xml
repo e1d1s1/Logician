@@ -501,7 +501,7 @@
     <Inputs>
       <Attr>Ports</Attr>
       <Value id="123" operation="1">NPT pipe thread</Value>
-      <Value id="124" operation="1">SAE “0” Ring Boss</Value>
+      <Value id="124" operation="1">SAE 0 Ring Boss</Value>
       <Value id="125" operation="1">SAE 4-Bolt Flange</Value>
       <Value/>
     </Inputs>
@@ -523,7 +523,7 @@
     <Outputs>
       <Attr>Ports</Attr>
       <Value id="123" operation="1">NPT pipe thread</Value>
-      <Value id="124" operation="1">SAE “0” Ring Boss</Value>
+      <Value id="124" operation="1">SAE 0 Ring Boss</Value>
       <Value id="125" operation="1">SAE 4-Bolt Flange</Value>
     </Outputs>
   </Table>
