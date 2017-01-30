@@ -58,22 +58,19 @@ FAQ
 Q1: What are the benefits of the FOSS License Exception?
 A: The FOSS License Exception permits use of the GPL-licensed Client Libraries with software applications licensed under certain other FOSS licenses without causing the entire derivative work to be subject to the GPL.
 
-Q2: Does the FOSS License Exception apply to all DigiRule Solutions software products, including the DecisionLogic rules editor?
-A: No. The FOSS License Exception does not apply to DigiRule Solutions’s DecisionLogic rules editor or any DigiRule Solutions software other than the GPL-licensed EDSEngine and Relational Object Modeler Client Libraries.
-
-Q3: Can an open source software project combine and distribute any of DigiRule Solutions’s GPL-licensed EDSEngine software with other open source software under the FOSS License Exception? Does this include the DecisionLogic Rules Editor?
+Q2: Can an open source software project combine and distribute any of DigiRule Solutions’s GPL-licensed EDSEngine software with other open source software under the FOSS License Exception? Does this include the DecisionLogic Rules Editor?
 A: Open source software projects and other developers are free to use and distribute GPL-licensed EDSEngine or Relational Object Modeler software with other open source software as long as they comply with the terms of the GPL.  Open source software projects and other developers can also use and distribute open source applications with the GPL-licensed Client Libraries under the terms of the FOSS License Exception without causing the entire derivative work to be subject to the GPL.
 
 The FOSS License Exception only applies to software licensed under the FOSS licenses listed in the section above titled “FOSS License List”, and only with respect to use and distribution of DigiRule Solutions’s EDSEngine Client Libraries.
 
 The FOSS License Exception does not apply to the DecisionLogic rules editor.
       
-Q4: Can commercial OEMs, ISVs or VARs combine and distribute commercial products with DigiRule Solutions’s GPL-licensed Client Libraries under the FOSS License Exception?
+Q3: Can commercial OEMs, ISVs or VARs combine and distribute commercial products with DigiRule Solutions’s GPL-licensed Client Libraries under the FOSS License Exception?
 A: Distributors of commercial products that combine GPL-licensed Client Libraries with commercially licensed software (i.e., software not licensed under a FOSS license) must comply with the terms of the GPL. This includes use and distribution of the GPL-licensed DecisionLogic Rules Editor and Client Libraries. The FOSS License Exception does not apply with respect to products licensed under any license other than the FOSS licenses listed in the section above titled “FOSS License List.” 
       
-Q5: What should a developer of a Derivative Work do if it wants to distribute the Derivative Work under the GPL?
+Q4: What should a developer of a Derivative Work do if it wants to distribute the Derivative Work under the GPL?
 A: A developer may choose to distribute a copy of a Derivative Work exclusively under the terms of the GPL at any time by removing the FOSS License Exception notice from that copy of the Program and including appropriate GPL notices. 
       
-Q6: If I have more questions, or would like to add another FOSS license to the approved list, who should I contact?
+Q5: If I have more questions, or would like to add another FOSS license to the approved list, who should I contact?
 A: For more information, please contact a DigiRule Solutions representative. 
 

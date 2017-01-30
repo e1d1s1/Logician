@@ -1,3 +1,7 @@
+1/29/2017
+Updated tutorial and licensing information (removed commercial license, all Free and Open Source Software). 
+Cleaned up the builds and moved to GIT repository for primary source code control.
+
 3.0.0 - 7/29/2015
 Lots of changes to support inheritance patterns in the ROMNode and LinearEngine libraries.
 All string handling in std::string, UTF8.
