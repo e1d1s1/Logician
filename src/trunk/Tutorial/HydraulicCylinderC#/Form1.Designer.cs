@@ -29,15 +29,10 @@
         private void InitializeComponent()
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
-            this.lbPortLocationCap = new System.Windows.Forms.Label();
-            this.lbPortLocationHead = new System.Windows.Forms.Label();
-            this.PortLocationHead = new System.Windows.Forms.ComboBox();
-            this.PortLocationCap = new System.Windows.Forms.ComboBox();
-            this.lbMountingStyle = new System.Windows.Forms.Label();
+            this.lbMountingType = new System.Windows.Forms.Label();
             this.CylinderSeries = new System.Windows.Forms.ComboBox();
             this.lbCylinderSeries = new System.Windows.Forms.Label();
-            this.MountingStyle = new System.Windows.Forms.ComboBox();
+            this.MountingType = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.lbRodDiameter = new System.Windows.Forms.Label();
             this.BoreDiameter = new System.Windows.Forms.ComboBox();
@@ -45,30 +40,26 @@
             this.lbBoreDiameter = new System.Windows.Forms.Label();
             this.lbRodEndTypes = new System.Windows.Forms.Label();
             this.RodEndTypes = new System.Windows.Forms.ComboBox();
-            this.lbSealingSystem = new System.Windows.Forms.Label();
-            this.SealingSystem = new System.Windows.Forms.ComboBox();
+            this.lbPistonSeals = new System.Windows.Forms.Label();
+            this.PistonSeals = new System.Windows.Forms.ComboBox();
+            this.lbPistonType = new System.Windows.Forms.Label();
+            this.PistonType = new System.Windows.Forms.ComboBox();
             this.lbPorts = new System.Windows.Forms.Label();
-            this.lbPortLocation = new System.Windows.Forms.Label();
             this.Ports = new System.Windows.Forms.ComboBox();
-            this.lbCushionLocations = new System.Windows.Forms.Label();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.lbCushionCap = new System.Windows.Forms.Label();
+            this.PortLocationCap = new System.Windows.Forms.ComboBox();
+            this.lbPortLocationHead = new System.Windows.Forms.Label();
+            this.lbPortLocationCap = new System.Windows.Forms.Label();
+            this.PortLocationHead = new System.Windows.Forms.ComboBox();
+            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
+            this.CushionCap = new System.Windows.Forms.ComboBox();
             this.lbCushionHead = new System.Windows.Forms.Label();
             this.CushionHead = new System.Windows.Forms.ComboBox();
-            this.CushionCap = new System.Windows.Forms.ComboBox();
+            this.lbCushionCap = new System.Windows.Forms.Label();
+            this.lbPortLocation = new System.Windows.Forms.Label();
+            this.lbCushionLocations = new System.Windows.Forms.Label();
             this.lbCylinderStroke = new System.Windows.Forms.Label();
             this.CylinderStroke = new System.Windows.Forms.TextBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.ExtraRodProtection = new System.Windows.Forms.TextBox();
-            this.lbExtraRodProtection = new System.Windows.Forms.Label();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.lbOptionCap = new System.Windows.Forms.Label();
-            this.lbOptionHead = new System.Windows.Forms.Label();
-            this.OptionHead = new System.Windows.Forms.ComboBox();
-            this.OptionCap = new System.Windows.Forms.ComboBox();
-            this.lbPosition = new System.Windows.Forms.Label();
-            this.lbAdditionalOption = new System.Windows.Forms.Label();
-            this.AdditionalOption = new System.Windows.Forms.ComboBox();
             this.lbCatalog = new System.Windows.Forms.Label();
             this.Catalog = new System.Windows.Forms.Label();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
@@ -88,11 +79,9 @@
             this.showDeubuggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showDebuggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
-            this.tableLayoutPanel8.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
-            this.tableLayoutPanel5.SuspendLayout();
+            this.tableLayoutPanel8.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             this.tableLayoutPanel7.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -103,118 +92,62 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30.17032F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 69.82968F));
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel8, 1, 6);
-            this.tableLayoutPanel1.Controls.Add(this.lbMountingStyle, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lbMountingType, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.CylinderSeries, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.lbCylinderSeries, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.MountingStyle, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.MountingType, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.lbRodEndTypes, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.RodEndTypes, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.lbSealingSystem, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.SealingSystem, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.lbPorts, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.lbPortLocation, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.Ports, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.lbCushionLocations, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.lbPistonSeals, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.PistonSeals, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.lbPistonType, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.PistonType, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lbPorts, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.Ports, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel3, 1, 7);
-            this.tableLayoutPanel1.Controls.Add(this.lbCylinderStroke, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.CylinderStroke, 1, 8);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel4, 1, 10);
-            this.tableLayoutPanel1.Controls.Add(this.lbAdditionalOption, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.AdditionalOption, 1, 9);
-            this.tableLayoutPanel1.Controls.Add(this.lbCatalog, 0, 11);
-            this.tableLayoutPanel1.Controls.Add(this.Catalog, 1, 11);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel8, 1, 8);
+            this.tableLayoutPanel1.Controls.Add(this.lbPortLocation, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.lbCushionLocations, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.lbCylinderStroke, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.CylinderStroke, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.lbCatalog, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.Catalog, 1, 10);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 24);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 12;
+            this.tableLayoutPanel1.RowCount = 11;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 59F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 53F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 59F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 57F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(470, 455);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(542, 392);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // tableLayoutPanel8
+            // lbMountingType
             // 
-            this.tableLayoutPanel8.ColumnCount = 2;
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.67802F));
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.32198F));
-            this.tableLayoutPanel8.Controls.Add(this.lbPortLocationCap, 1, 0);
-            this.tableLayoutPanel8.Controls.Add(this.lbPortLocationHead, 0, 0);
-            this.tableLayoutPanel8.Controls.Add(this.PortLocationHead, 0, 1);
-            this.tableLayoutPanel8.Controls.Add(this.PortLocationCap, 1, 1);
-            this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel8.Location = new System.Drawing.Point(144, 197);
-            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
-            this.tableLayoutPanel8.RowCount = 2;
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(323, 47);
-            this.tableLayoutPanel8.TabIndex = 25;
-            // 
-            // lbPortLocationCap
-            // 
-            this.lbPortLocationCap.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lbPortLocationCap.AutoSize = true;
-            this.lbPortLocationCap.Location = new System.Drawing.Point(157, 5);
-            this.lbPortLocationCap.Name = "lbPortLocationCap";
-            this.lbPortLocationCap.Size = new System.Drawing.Size(26, 13);
-            this.lbPortLocationCap.TabIndex = 4;
-            this.lbPortLocationCap.Text = "Cap";
-            // 
-            // lbPortLocationHead
-            // 
-            this.lbPortLocationHead.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lbPortLocationHead.AutoSize = true;
-            this.lbPortLocationHead.Location = new System.Drawing.Point(3, 5);
-            this.lbPortLocationHead.Name = "lbPortLocationHead";
-            this.lbPortLocationHead.Size = new System.Drawing.Size(33, 13);
-            this.lbPortLocationHead.TabIndex = 3;
-            this.lbPortLocationHead.Text = "Head";
-            // 
-            // PortLocationHead
-            // 
-            this.PortLocationHead.FormattingEnabled = true;
-            this.PortLocationHead.Location = new System.Drawing.Point(3, 26);
-            this.PortLocationHead.Name = "PortLocationHead";
-            this.PortLocationHead.Size = new System.Drawing.Size(121, 21);
-            this.PortLocationHead.TabIndex = 7;
-            this.PortLocationHead.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
-            // 
-            // PortLocationCap
-            // 
-            this.PortLocationCap.FormattingEnabled = true;
-            this.PortLocationCap.Location = new System.Drawing.Point(157, 26);
-            this.PortLocationCap.Name = "PortLocationCap";
-            this.PortLocationCap.Size = new System.Drawing.Size(121, 21);
-            this.PortLocationCap.TabIndex = 8;
-            this.PortLocationCap.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
-            // 
-            // lbMountingStyle
-            // 
-            this.lbMountingStyle.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lbMountingStyle.AutoSize = true;
-            this.lbMountingStyle.Location = new System.Drawing.Point(61, 32);
-            this.lbMountingStyle.Name = "lbMountingStyle";
-            this.lbMountingStyle.Size = new System.Drawing.Size(77, 13);
-            this.lbMountingStyle.TabIndex = 4;
-            this.lbMountingStyle.Text = "Mounting Style";
+            this.lbMountingType.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lbMountingType.AutoSize = true;
+            this.lbMountingType.Location = new System.Drawing.Point(82, 32);
+            this.lbMountingType.Name = "lbMountingType";
+            this.lbMountingType.Size = new System.Drawing.Size(78, 13);
+            this.lbMountingType.TabIndex = 4;
+            this.lbMountingType.Text = "Mounting Type";
             // 
             // CylinderSeries
             // 
             this.CylinderSeries.FormattingEnabled = true;
-            this.CylinderSeries.Location = new System.Drawing.Point(144, 3);
+            this.CylinderSeries.Location = new System.Drawing.Point(166, 3);
             this.CylinderSeries.Name = "CylinderSeries";
             this.CylinderSeries.Size = new System.Drawing.Size(269, 21);
             this.CylinderSeries.TabIndex = 0;
@@ -224,20 +157,20 @@
             // 
             this.lbCylinderSeries.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lbCylinderSeries.AutoSize = true;
-            this.lbCylinderSeries.Location = new System.Drawing.Point(74, 6);
+            this.lbCylinderSeries.Location = new System.Drawing.Point(84, 6);
             this.lbCylinderSeries.Name = "lbCylinderSeries";
-            this.lbCylinderSeries.Size = new System.Drawing.Size(64, 13);
+            this.lbCylinderSeries.Size = new System.Drawing.Size(76, 13);
             this.lbCylinderSeries.TabIndex = 1;
-            this.lbCylinderSeries.Text = "Cylinder PSI";
+            this.lbCylinderSeries.Text = "Cylinder Series";
             // 
-            // MountingStyle
+            // MountingType
             // 
-            this.MountingStyle.FormattingEnabled = true;
-            this.MountingStyle.Location = new System.Drawing.Point(144, 28);
-            this.MountingStyle.Name = "MountingStyle";
-            this.MountingStyle.Size = new System.Drawing.Size(269, 21);
-            this.MountingStyle.TabIndex = 2;
-            this.MountingStyle.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
+            this.MountingType.FormattingEnabled = true;
+            this.MountingType.Location = new System.Drawing.Point(166, 28);
+            this.MountingType.Name = "MountingType";
+            this.MountingType.Size = new System.Drawing.Size(269, 21);
+            this.MountingType.TabIndex = 2;
+            this.MountingType.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
             // 
             // tableLayoutPanel2
             // 
@@ -249,19 +182,19 @@
             this.tableLayoutPanel2.Controls.Add(this.RodDiameter, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.lbBoreDiameter, 0, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(144, 56);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(166, 56);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 41.50943F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 58.49057F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(323, 53);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(373, 53);
             this.tableLayoutPanel2.TabIndex = 3;
             // 
             // lbRodDiameter
             // 
             this.lbRodDiameter.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lbRodDiameter.AutoSize = true;
-            this.lbRodDiameter.Location = new System.Drawing.Point(156, 4);
+            this.lbRodDiameter.Location = new System.Drawing.Point(180, 4);
             this.lbRodDiameter.Name = "lbRodDiameter";
             this.lbRodDiameter.Size = new System.Drawing.Size(72, 13);
             this.lbRodDiameter.TabIndex = 3;
@@ -279,7 +212,7 @@
             // RodDiameter
             // 
             this.RodDiameter.FormattingEnabled = true;
-            this.RodDiameter.Location = new System.Drawing.Point(156, 24);
+            this.RodDiameter.Location = new System.Drawing.Point(180, 24);
             this.RodDiameter.Name = "RodDiameter";
             this.RodDiameter.Size = new System.Drawing.Size(137, 21);
             this.RodDiameter.TabIndex = 1;
@@ -299,7 +232,7 @@
             // 
             this.lbRodEndTypes.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lbRodEndTypes.AutoSize = true;
-            this.lbRodEndTypes.Location = new System.Drawing.Point(57, 119);
+            this.lbRodEndTypes.Location = new System.Drawing.Point(79, 119);
             this.lbRodEndTypes.Name = "lbRodEndTypes";
             this.lbRodEndTypes.Size = new System.Drawing.Size(81, 13);
             this.lbRodEndTypes.TabIndex = 5;
@@ -308,97 +241,149 @@
             // RodEndTypes
             // 
             this.RodEndTypes.FormattingEnabled = true;
-            this.RodEndTypes.Location = new System.Drawing.Point(144, 115);
+            this.RodEndTypes.Location = new System.Drawing.Point(166, 115);
             this.RodEndTypes.Name = "RodEndTypes";
             this.RodEndTypes.Size = new System.Drawing.Size(269, 21);
             this.RodEndTypes.TabIndex = 6;
             this.RodEndTypes.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
             // 
-            // lbSealingSystem
+            // lbPistonSeals
             // 
-            this.lbSealingSystem.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lbSealingSystem.AutoSize = true;
-            this.lbSealingSystem.Location = new System.Drawing.Point(59, 146);
-            this.lbSealingSystem.Name = "lbSealingSystem";
-            this.lbSealingSystem.Size = new System.Drawing.Size(79, 13);
-            this.lbSealingSystem.TabIndex = 7;
-            this.lbSealingSystem.Text = "Sealing System";
+            this.lbPistonSeals.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lbPistonSeals.AutoSize = true;
+            this.lbPistonSeals.Location = new System.Drawing.Point(81, 173);
+            this.lbPistonSeals.Name = "lbPistonSeals";
+            this.lbPistonSeals.Size = new System.Drawing.Size(79, 13);
+            this.lbPistonSeals.TabIndex = 7;
+            this.lbPistonSeals.Text = "Sealing System";
             // 
-            // SealingSystem
+            // PistonSeals
             // 
-            this.SealingSystem.FormattingEnabled = true;
-            this.SealingSystem.Location = new System.Drawing.Point(144, 142);
-            this.SealingSystem.Name = "SealingSystem";
-            this.SealingSystem.Size = new System.Drawing.Size(269, 21);
-            this.SealingSystem.TabIndex = 8;
-            this.SealingSystem.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
+            this.PistonSeals.FormattingEnabled = true;
+            this.PistonSeals.Location = new System.Drawing.Point(166, 169);
+            this.PistonSeals.Name = "PistonSeals";
+            this.PistonSeals.Size = new System.Drawing.Size(269, 21);
+            this.PistonSeals.TabIndex = 8;
+            this.PistonSeals.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
+            // 
+            // lbPistonType
+            // 
+            this.lbPistonType.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lbPistonType.AutoSize = true;
+            this.lbPistonType.Location = new System.Drawing.Point(97, 146);
+            this.lbPistonType.Name = "lbPistonType";
+            this.lbPistonType.Size = new System.Drawing.Size(63, 13);
+            this.lbPistonType.TabIndex = 26;
+            this.lbPistonType.Text = "Piston Type";
+            // 
+            // PistonType
+            // 
+            this.PistonType.FormattingEnabled = true;
+            this.PistonType.Location = new System.Drawing.Point(166, 142);
+            this.PistonType.Name = "PistonType";
+            this.PistonType.Size = new System.Drawing.Size(269, 21);
+            this.PistonType.TabIndex = 27;
+            this.PistonType.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
             // 
             // lbPorts
             // 
             this.lbPorts.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lbPorts.AutoSize = true;
-            this.lbPorts.Location = new System.Drawing.Point(112, 174);
+            this.lbPorts.Location = new System.Drawing.Point(134, 200);
             this.lbPorts.Name = "lbPorts";
             this.lbPorts.Size = new System.Drawing.Size(26, 13);
             this.lbPorts.TabIndex = 9;
             this.lbPorts.Text = "Port";
             // 
-            // lbPortLocation
-            // 
-            this.lbPortLocation.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lbPortLocation.AutoSize = true;
-            this.lbPortLocation.Location = new System.Drawing.Point(68, 214);
-            this.lbPortLocation.Name = "lbPortLocation";
-            this.lbPortLocation.Size = new System.Drawing.Size(70, 13);
-            this.lbPortLocation.TabIndex = 11;
-            this.lbPortLocation.Text = "Port Location";
-            // 
             // Ports
             // 
             this.Ports.FormattingEnabled = true;
-            this.Ports.Location = new System.Drawing.Point(144, 170);
+            this.Ports.Location = new System.Drawing.Point(166, 196);
             this.Ports.Name = "Ports";
             this.Ports.Size = new System.Drawing.Size(269, 21);
             this.Ports.TabIndex = 10;
             this.Ports.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
             // 
-            // lbCushionLocations
-            // 
-            this.lbCushionLocations.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lbCushionLocations.AutoSize = true;
-            this.lbCushionLocations.Location = new System.Drawing.Point(44, 270);
-            this.lbCushionLocations.Name = "lbCushionLocations";
-            this.lbCushionLocations.Size = new System.Drawing.Size(94, 13);
-            this.lbCushionLocations.TabIndex = 13;
-            this.lbCushionLocations.Text = "Cushion Locations";
-            // 
             // tableLayoutPanel3
             // 
             this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.67802F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.32198F));
-            this.tableLayoutPanel3.Controls.Add(this.lbCushionCap, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lbCushionHead, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.CushionHead, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.CushionCap, 1, 1);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(144, 250);
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.Controls.Add(this.PortLocationCap, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lbPortLocationHead, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lbPortLocationCap, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.PortLocationHead, 0, 1);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(166, 224);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(323, 53);
-            this.tableLayoutPanel3.TabIndex = 14;
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(200, 51);
+            this.tableLayoutPanel3.TabIndex = 30;
             // 
-            // lbCushionCap
+            // PortLocationCap
             // 
-            this.lbCushionCap.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lbCushionCap.AutoSize = true;
-            this.lbCushionCap.Location = new System.Drawing.Point(157, 6);
-            this.lbCushionCap.Name = "lbCushionCap";
-            this.lbCushionCap.Size = new System.Drawing.Size(26, 13);
-            this.lbCushionCap.TabIndex = 4;
-            this.lbCushionCap.Text = "Cap";
+            this.PortLocationCap.FormattingEnabled = true;
+            this.PortLocationCap.Location = new System.Drawing.Point(103, 28);
+            this.PortLocationCap.Name = "PortLocationCap";
+            this.PortLocationCap.Size = new System.Drawing.Size(94, 21);
+            this.PortLocationCap.TabIndex = 8;
+            this.PortLocationCap.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
+            // 
+            // lbPortLocationHead
+            // 
+            this.lbPortLocationHead.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lbPortLocationHead.AutoSize = true;
+            this.lbPortLocationHead.Location = new System.Drawing.Point(3, 6);
+            this.lbPortLocationHead.Name = "lbPortLocationHead";
+            this.lbPortLocationHead.Size = new System.Drawing.Size(33, 13);
+            this.lbPortLocationHead.TabIndex = 3;
+            this.lbPortLocationHead.Text = "Head";
+            // 
+            // lbPortLocationCap
+            // 
+            this.lbPortLocationCap.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lbPortLocationCap.AutoSize = true;
+            this.lbPortLocationCap.Location = new System.Drawing.Point(103, 6);
+            this.lbPortLocationCap.Name = "lbPortLocationCap";
+            this.lbPortLocationCap.Size = new System.Drawing.Size(26, 13);
+            this.lbPortLocationCap.TabIndex = 4;
+            this.lbPortLocationCap.Text = "Cap";
+            // 
+            // PortLocationHead
+            // 
+            this.PortLocationHead.FormattingEnabled = true;
+            this.PortLocationHead.Location = new System.Drawing.Point(3, 28);
+            this.PortLocationHead.Name = "PortLocationHead";
+            this.PortLocationHead.Size = new System.Drawing.Size(94, 21);
+            this.PortLocationHead.TabIndex = 7;
+            this.PortLocationHead.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
+            // 
+            // tableLayoutPanel8
+            // 
+            this.tableLayoutPanel8.ColumnCount = 2;
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel8.Controls.Add(this.CushionCap, 1, 1);
+            this.tableLayoutPanel8.Controls.Add(this.lbCushionHead, 0, 0);
+            this.tableLayoutPanel8.Controls.Add(this.CushionHead, 0, 1);
+            this.tableLayoutPanel8.Controls.Add(this.lbCushionCap, 1, 0);
+            this.tableLayoutPanel8.Location = new System.Drawing.Point(166, 281);
+            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
+            this.tableLayoutPanel8.RowCount = 2;
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(200, 52);
+            this.tableLayoutPanel8.TabIndex = 31;
+            // 
+            // CushionCap
+            // 
+            this.CushionCap.FormattingEnabled = true;
+            this.CushionCap.Location = new System.Drawing.Point(103, 29);
+            this.CushionCap.Name = "CushionCap";
+            this.CushionCap.Size = new System.Drawing.Size(94, 21);
+            this.CushionCap.TabIndex = 6;
+            this.CushionCap.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
             // 
             // lbCushionHead
             // 
@@ -415,166 +400,64 @@
             this.CushionHead.FormattingEnabled = true;
             this.CushionHead.Location = new System.Drawing.Point(3, 29);
             this.CushionHead.Name = "CushionHead";
-            this.CushionHead.Size = new System.Drawing.Size(121, 21);
+            this.CushionHead.Size = new System.Drawing.Size(94, 21);
             this.CushionHead.TabIndex = 5;
             this.CushionHead.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
             // 
-            // CushionCap
+            // lbCushionCap
             // 
-            this.CushionCap.FormattingEnabled = true;
-            this.CushionCap.Location = new System.Drawing.Point(157, 29);
-            this.CushionCap.Name = "CushionCap";
-            this.CushionCap.Size = new System.Drawing.Size(121, 21);
-            this.CushionCap.TabIndex = 6;
-            this.CushionCap.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
+            this.lbCushionCap.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lbCushionCap.AutoSize = true;
+            this.lbCushionCap.Location = new System.Drawing.Point(103, 6);
+            this.lbCushionCap.Name = "lbCushionCap";
+            this.lbCushionCap.Size = new System.Drawing.Size(26, 13);
+            this.lbCushionCap.TabIndex = 4;
+            this.lbCushionCap.Text = "Cap";
+            // 
+            // lbPortLocation
+            // 
+            this.lbPortLocation.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lbPortLocation.AutoSize = true;
+            this.lbPortLocation.Location = new System.Drawing.Point(90, 243);
+            this.lbPortLocation.Name = "lbPortLocation";
+            this.lbPortLocation.Size = new System.Drawing.Size(70, 13);
+            this.lbPortLocation.TabIndex = 11;
+            this.lbPortLocation.Text = "Port Location";
+            // 
+            // lbCushionLocations
+            // 
+            this.lbCushionLocations.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lbCushionLocations.AutoSize = true;
+            this.lbCushionLocations.Location = new System.Drawing.Point(66, 300);
+            this.lbCushionLocations.Name = "lbCushionLocations";
+            this.lbCushionLocations.Size = new System.Drawing.Size(94, 13);
+            this.lbCushionLocations.TabIndex = 13;
+            this.lbCushionLocations.Text = "Cushion Locations";
             // 
             // lbCylinderStroke
             // 
             this.lbCylinderStroke.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lbCylinderStroke.AutoSize = true;
-            this.lbCylinderStroke.Location = new System.Drawing.Point(24, 308);
+            this.lbCylinderStroke.Location = new System.Drawing.Point(9, 343);
             this.lbCylinderStroke.Name = "lbCylinderStroke";
-            this.lbCylinderStroke.Size = new System.Drawing.Size(114, 26);
+            this.lbCylinderStroke.Size = new System.Drawing.Size(151, 13);
             this.lbCylinderStroke.TabIndex = 15;
             this.lbCylinderStroke.Text = "Cylinder Stroke (1 - 99 15/16\")";
             // 
             // CylinderStroke
             // 
-            this.CylinderStroke.Location = new System.Drawing.Point(144, 309);
+            this.CylinderStroke.Location = new System.Drawing.Point(166, 339);
             this.CylinderStroke.Name = "CylinderStroke";
             this.CylinderStroke.Size = new System.Drawing.Size(67, 20);
             this.CylinderStroke.TabIndex = 16;
             this.CylinderStroke.Enter += new System.EventHandler(this.text_BeginEdit);
             this.CylinderStroke.Leave += new System.EventHandler(this.text_TextChanged);
             // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 59.70696F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40.29304F));
-            this.tableLayoutPanel4.Controls.Add(this.ExtraRodProtection, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.lbExtraRodProtection, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel5, 1, 1);
-            this.tableLayoutPanel4.Controls.Add(this.lbPosition, 1, 0);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(144, 371);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 2;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 24.28572F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75.71429F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(323, 58);
-            this.tableLayoutPanel4.TabIndex = 19;
-            // 
-            // ExtraRodProtection
-            // 
-            this.ExtraRodProtection.Location = new System.Drawing.Point(3, 17);
-            this.ExtraRodProtection.Name = "ExtraRodProtection";
-            this.ExtraRodProtection.Size = new System.Drawing.Size(67, 20);
-            this.ExtraRodProtection.TabIndex = 19;
-            this.ExtraRodProtection.Enter += new System.EventHandler(this.text_BeginEdit);
-            this.ExtraRodProtection.Leave += new System.EventHandler(this.text_TextChanged);
-            // 
-            // lbExtraRodProtection
-            // 
-            this.lbExtraRodProtection.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lbExtraRodProtection.AutoSize = true;
-            this.lbExtraRodProtection.Location = new System.Drawing.Point(3, 0);
-            this.lbExtraRodProtection.Name = "lbExtraRodProtection";
-            this.lbExtraRodProtection.Size = new System.Drawing.Size(152, 13);
-            this.lbExtraRodProtection.TabIndex = 18;
-            this.lbExtraRodProtection.Text = "Extra Rod Protection (up to 9\")";
-            // 
-            // tableLayoutPanel5
-            // 
-            this.tableLayoutPanel5.ColumnCount = 2;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.57143F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.42857F));
-            this.tableLayoutPanel5.Controls.Add(this.lbOptionCap, 1, 0);
-            this.tableLayoutPanel5.Controls.Add(this.lbOptionHead, 0, 0);
-            this.tableLayoutPanel5.Controls.Add(this.OptionHead, 0, 1);
-            this.tableLayoutPanel5.Controls.Add(this.OptionCap, 1, 1);
-            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(195, 17);
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.RowCount = 2;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 37.03704F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 62.96296F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(125, 38);
-            this.tableLayoutPanel5.TabIndex = 20;
-            // 
-            // lbOptionCap
-            // 
-            this.lbOptionCap.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lbOptionCap.AutoSize = true;
-            this.lbOptionCap.Location = new System.Drawing.Point(63, 0);
-            this.lbOptionCap.Name = "lbOptionCap";
-            this.lbOptionCap.Size = new System.Drawing.Size(26, 13);
-            this.lbOptionCap.TabIndex = 4;
-            this.lbOptionCap.Text = "Cap";
-            // 
-            // lbOptionHead
-            // 
-            this.lbOptionHead.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lbOptionHead.AutoSize = true;
-            this.lbOptionHead.Location = new System.Drawing.Point(3, 0);
-            this.lbOptionHead.Name = "lbOptionHead";
-            this.lbOptionHead.Size = new System.Drawing.Size(33, 13);
-            this.lbOptionHead.TabIndex = 3;
-            this.lbOptionHead.Text = "Head";
-            // 
-            // OptionHead
-            // 
-            this.OptionHead.FormattingEnabled = true;
-            this.OptionHead.Location = new System.Drawing.Point(3, 17);
-            this.OptionHead.Name = "OptionHead";
-            this.OptionHead.Size = new System.Drawing.Size(54, 21);
-            this.OptionHead.TabIndex = 7;
-            this.OptionHead.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
-            // 
-            // OptionCap
-            // 
-            this.OptionCap.FormattingEnabled = true;
-            this.OptionCap.Location = new System.Drawing.Point(63, 17);
-            this.OptionCap.Name = "OptionCap";
-            this.OptionCap.Size = new System.Drawing.Size(59, 21);
-            this.OptionCap.TabIndex = 8;
-            this.OptionCap.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
-            // 
-            // lbPosition
-            // 
-            this.lbPosition.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lbPosition.AutoSize = true;
-            this.lbPosition.Location = new System.Drawing.Point(195, 0);
-            this.lbPosition.Name = "lbPosition";
-            this.lbPosition.Size = new System.Drawing.Size(44, 13);
-            this.lbPosition.TabIndex = 21;
-            this.lbPosition.Text = "Position";
-            // 
-            // lbAdditionalOption
-            // 
-            this.lbAdditionalOption.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lbAdditionalOption.AutoSize = true;
-            this.lbAdditionalOption.Location = new System.Drawing.Point(46, 345);
-            this.lbAdditionalOption.Name = "lbAdditionalOption";
-            this.lbAdditionalOption.Size = new System.Drawing.Size(92, 13);
-            this.lbAdditionalOption.TabIndex = 20;
-            this.lbAdditionalOption.Text = "Additional Options";
-            // 
-            // AdditionalOption
-            // 
-            this.AdditionalOption.FormattingEnabled = true;
-            this.AdditionalOption.Location = new System.Drawing.Point(144, 339);
-            this.AdditionalOption.Name = "AdditionalOption";
-            this.AdditionalOption.Size = new System.Drawing.Size(269, 21);
-            this.AdditionalOption.TabIndex = 21;
-            this.AdditionalOption.SelectedValueChanged += new System.EventHandler(this.comboEvaluate);
-            // 
             // lbCatalog
             // 
             this.lbCatalog.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lbCatalog.AutoSize = true;
-            this.lbCatalog.Location = new System.Drawing.Point(85, 437);
+            this.lbCatalog.Location = new System.Drawing.Point(107, 371);
             this.lbCatalog.Name = "lbCatalog";
             this.lbCatalog.Size = new System.Drawing.Size(53, 13);
             this.lbCatalog.TabIndex = 22;
@@ -584,7 +467,7 @@
             // 
             this.Catalog.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.Catalog.AutoSize = true;
-            this.Catalog.Location = new System.Drawing.Point(144, 437);
+            this.Catalog.Location = new System.Drawing.Point(166, 371);
             this.Catalog.Name = "Catalog";
             this.Catalog.Size = new System.Drawing.Size(105, 13);
             this.Catalog.TabIndex = 23;
@@ -681,7 +564,7 @@
             this.showDeubuggerToolStripMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
-            this.mainMenu.Size = new System.Drawing.Size(470, 24);
+            this.mainMenu.Size = new System.Drawing.Size(542, 24);
             this.mainMenu.TabIndex = 1;
             this.mainMenu.Text = "menuStrip1";
             // 
@@ -743,7 +626,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(470, 479);
+            this.ClientSize = new System.Drawing.Size(542, 416);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.mainMenu);
             this.MainMenuStrip = this.mainMenu;
@@ -751,16 +634,12 @@
             this.Text = "Logician Demo C#";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.tableLayoutPanel8.ResumeLayout(false);
-            this.tableLayoutPanel8.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
-            this.tableLayoutPanel5.ResumeLayout(false);
-            this.tableLayoutPanel5.PerformLayout();
+            this.tableLayoutPanel8.ResumeLayout(false);
+            this.tableLayoutPanel8.PerformLayout();
             this.tableLayoutPanel6.ResumeLayout(false);
             this.tableLayoutPanel6.PerformLayout();
             this.tableLayoutPanel7.ResumeLayout(false);
@@ -776,29 +655,17 @@
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.ComboBox CylinderSeries;
-        private System.Windows.Forms.ComboBox MountingStyle;
+        private System.Windows.Forms.ComboBox MountingType;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Label lbRodDiameter;
         private System.Windows.Forms.ComboBox RodDiameter;
         private System.Windows.Forms.Label lbBoreDiameter;
         private System.Windows.Forms.ComboBox BoreDiameter;
         private System.Windows.Forms.ComboBox RodEndTypes;
-        private System.Windows.Forms.ComboBox SealingSystem;
+        private System.Windows.Forms.ComboBox PistonSeals;
         private System.Windows.Forms.ComboBox Ports;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Label lbCushionCap;
-        private System.Windows.Forms.Label lbCushionHead;
         private System.Windows.Forms.TextBox CylinderStroke;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.Label lbExtraRodProtection;
-        private System.Windows.Forms.TextBox ExtraRodProtection;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private System.Windows.Forms.Label lbOptionCap;
-        private System.Windows.Forms.Label lbOptionHead;
-        private System.Windows.Forms.ComboBox AdditionalOption;
-        private System.Windows.Forms.Label lbPosition;
         private System.Windows.Forms.Label Catalog;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
         private System.Windows.Forms.Label lbPortLocationCap;
         private System.Windows.Forms.Label lbPortLocationHead;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
@@ -811,28 +678,31 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox PortLocationHead;
         private System.Windows.Forms.ComboBox PortLocationCap;
-        private System.Windows.Forms.ComboBox CushionHead;
-        private System.Windows.Forms.ComboBox CushionCap;
-        private System.Windows.Forms.ComboBox OptionHead;
-        private System.Windows.Forms.ComboBox OptionCap;
         private System.Windows.Forms.MenuStrip mainMenu;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.Label lbMountingStyle;
+        private System.Windows.Forms.Label lbMountingType;
         private System.Windows.Forms.Label lbCylinderSeries;
         private System.Windows.Forms.Label lbRodEndTypes;
-        private System.Windows.Forms.Label lbSealingSystem;
+        private System.Windows.Forms.Label lbPistonSeals;
         private System.Windows.Forms.Label lbPorts;
         private System.Windows.Forms.Label lbPortLocation;
         private System.Windows.Forms.Label lbCushionLocations;
         private System.Windows.Forms.Label lbCylinderStroke;
-        private System.Windows.Forms.Label lbAdditionalOption;
         private System.Windows.Forms.Label lbCatalog;
         private System.Windows.Forms.ToolStripMenuItem showDeubuggerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showDebuggerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
+        private System.Windows.Forms.Label lbPistonType;
+        private System.Windows.Forms.ComboBox PistonType;
+        private System.Windows.Forms.ComboBox CushionCap;
+        private System.Windows.Forms.ComboBox CushionHead;
+        private System.Windows.Forms.Label lbCushionCap;
+        private System.Windows.Forms.Label lbCushionHead;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
     }
 }
 

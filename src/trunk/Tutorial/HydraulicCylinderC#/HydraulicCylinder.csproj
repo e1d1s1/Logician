@@ -54,23 +54,11 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LogicianDebuggerWPF, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\trunk\Utilities\LogicianDebuggerWPF\bin\x86\Release\LogicianDebuggerWPF.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="ROMNET, Version=1.0.4548.1340, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\trunk\ROMNET\Release\ROMNET.dll</HintPath>
-    </Reference>
-	<Reference Include="EDSEngineNET, Version=1.0.4548.1340, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\trunk\EDSEngineNET\Release\EDSEngineNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -166,6 +154,20 @@
       <ProductName>Windows Installer 4.5</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\EDSEngineNET\EDSEngineNET2013.vcxproj">
+      <Project>{c035245f-9d98-4585-8350-6e1cdd5adac3}</Project>
+      <Name>EDSEngineNET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ROMNET\ROMNET2013.vcxproj">
+      <Project>{a2e7ff12-b9e7-4276-8120-407a812ac43b}</Project>
+      <Name>ROMNET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\LogicianDebuggerWPF\LogicianDebugger2013.csproj">
+      <Project>{511f1acf-f59c-4edf-8a32-613b04e3f714}</Project>
+      <Name>LogicianDebugger2013</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
